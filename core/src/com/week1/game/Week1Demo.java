@@ -3,16 +3,12 @@ package com.week1.game;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class Week1Demo extends ApplicationAdapter {
 	public static int SCALE = 8; // 8 pixels per unit.
@@ -34,24 +30,13 @@ public class Week1Demo extends ApplicationAdapter {
 	    map = new TmxMapLoader().load("testmap.tmx");
 	    camera = new OrthographicCamera();
 	    renderer = new OrthogonalTiledMapRenderer(map, 1f / SCALE);
-	    float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
+	    // float w = Gdx.graphics.getWidth();
+		// float h = Gdx.graphics.getHeight();
 		camera.setToOrtho(false, 256, 256);
 		camera.update();
-		units = new Array<>();
-		units.add(new Unit(0, 0, 0, 0));
 	    batch = renderer.getBatch();
+	    initUnits();
 
-		unitPixmap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888);
-		unitPixmap.setColor(Color.BLUE);
-		unitPixmap.fill();
-
-		unitPixmap2 = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888);
-		unitPixmap2.setColor(Color.RED);
-		unitPixmap2.fill();
-
-		unitTexture = new Texture(unitPixmap);
-		unitTexture2 = new Texture(unitPixmap2);
 		Gdx.input.setInputProcessor(new InputAdapter() {
 			@Override
 			public boolean touchUp(int screenX, int screenY, int pointer, int button) {
@@ -72,16 +57,38 @@ public class Week1Demo extends ApplicationAdapter {
 				}
 				// Right click
                 if (selected != null) {
-                    double angle = Math.atan((selected.y - touchPos.y) / (selected.x - touchPos.x));
-                    selected.dx = (float) SPEED * (float) Math.cos(angle);
-					selected.dy = (float) SPEED * (float) Math.sin(angle);
+					float deltaX = touchPos.x - selected.x;
+					float deltaY = touchPos.y - selected.y;
+					double angle = Math.atan(deltaY / deltaX);
+					if (deltaX < 0) {
+						angle += Math.PI;
+					} else if (deltaY < 0) {
+						angle += 2 * Math.PI;
+					}
+                    selected.vx = (float) SPEED * (float) Math.cos(angle);
+					selected.vy = (float) SPEED * (float) Math.sin(angle);
+					selected.goal = new Vector3(touchPos.x, touchPos.y, 0);
 					return true;
-
 				} else {
                 	return false;
 				}
 			}
 		});
+	}
+
+	private void initUnits() {
+		unitPixmap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888);
+		unitPixmap.setColor(Color.BLUE);
+		unitPixmap.fill();
+
+		unitPixmap2 = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888);
+		unitPixmap2.setColor(Color.RED);
+		unitPixmap2.fill();
+
+		unitTexture = new Texture(unitPixmap);
+		unitTexture2 = new Texture(unitPixmap2);
+		units = new Array<>();
+		units.add(new Unit(0, 0, 0, 0));
 	}
 
 	private void select(Unit unit) {
@@ -126,7 +133,6 @@ public class Week1Demo extends ApplicationAdapter {
 			}
 		}
 		batch.end();
-
 	}
 
 	@Override
@@ -136,21 +142,27 @@ public class Week1Demo extends ApplicationAdapter {
 }
 
 class Unit extends Rectangle {
-	public float dx;
-	public float dy;
+	public float vx;
+	public float vy;
 	public boolean clicked;
-	public Unit(float x, float y, float dx, float dy) {
+	public Vector3 goal;
+	public Unit(float x, float y, float vx, float dy) {
 		super(x, y, Week1Demo.SCALE, Week1Demo.SCALE);
 		this.x = x;
 		this.y = y;
-		this.dx = dx;
-		this.dy = dy;
+		this.vx = vx;
+		this.vy = dy;
 		this.clicked = false;
 	}
 
 	public void step(float delta) {
-		x += dx * delta;
-		y += dy * delta;
+		if (goal != null) {
+			if (Math.sqrt(Math.pow(x + width / 2 - goal.x, 2) + Math.pow(y + height / 2 - goal.y, 2)) < width / 2) {
+			    goal = null;
+			    return;
+			}
+			x += vx * delta;
+			y += vy * delta;
+		}
 	}
 }
-
