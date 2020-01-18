@@ -10,4 +10,5 @@
 	<set-configuration-property name="gdx.assetpath" value="../core/assets" />
 	<set-property name="user.agent" value="gecko1_8, safari"/>
 	<collapse-property name="user.agent" values="*" />
+	<inherits name='com.badlogic.gdx.ai' />
 </module>

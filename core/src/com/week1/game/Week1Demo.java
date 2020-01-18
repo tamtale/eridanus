@@ -1,14 +1,24 @@
 package com.week1.game;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.ai.steer.behaviors.Seek;
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class Week1Demo extends ApplicationAdapter {
 	public static int SCALE = 8; // 8 pixels per unit.
@@ -24,19 +34,22 @@ public class Week1Demo extends ApplicationAdapter {
 	private TiledMap map;
 	private OrthogonalTiledMapRenderer renderer;
 	private Unit selected;
+	private Array<SteeringAgent> agents;
 
 	@Override
 	public void create () {
 	    map = new TmxMapLoader().load("testmap.tmx");
 	    camera = new OrthographicCamera();
 	    renderer = new OrthogonalTiledMapRenderer(map, 1f / SCALE);
-	    // float w = Gdx.graphics.getWidth();
-		// float h = Gdx.graphics.getHeight();
+//	    float w = Gdx.graphics.getWidth();
+//		float h = Gdx.graphics.getHeight();
 		camera.setToOrtho(false, 256, 256);
 		camera.update();
+		units = new Array<>();
+		agents = new Array<>();
 	    batch = renderer.getBatch();
-	    initUnits();
 
+		initUnits();
 		Gdx.input.setInputProcessor(new InputAdapter() {
 			@Override
 			public boolean touchUp(int screenX, int screenY, int pointer, int button) {
@@ -57,23 +70,55 @@ public class Week1Demo extends ApplicationAdapter {
 				}
 				// Right click
                 if (selected != null) {
-					float deltaX = touchPos.x - selected.x;
-					float deltaY = touchPos.y - selected.y;
-					double angle = Math.atan(deltaY / deltaX);
-					if (deltaX < 0) {
-						angle += Math.PI;
-					} else if (deltaY < 0) {
-						angle += 2 * Math.PI;
-					}
-                    selected.vx = (float) SPEED * (float) Math.cos(angle);
-					selected.vy = (float) SPEED * (float) Math.sin(angle);
-					selected.goal = new Vector3(touchPos.x, touchPos.y, 0);
+                	final Vector2 vec = new Vector2(touchPos.x,touchPos.y);
+					selected.agent.steeringBehavior = new Arrive<>(selected.agent, new Location<Vector2>() {
+						@Override
+						public Vector2 getPosition() {
+							return vec;
+						}
+
+						@Override
+						public float getOrientation() {
+							return 0;
+						}
+
+						@Override
+						public void setOrientation(float orientation) {
+
+						}
+
+						@Override
+						public float vectorToAngle(Vector2 vector) {
+							return (float)Math.atan2(-vector.x, -vector.y);
+						}
+
+						@Override
+						public Vector2 angleToVector(Vector2 outVector, float angle) {
+							outVector.x = -(float)Math.sin(angle);
+							outVector.y = -(float)Math.cos(angle);
+							return outVector;
+						}
+
+						@Override
+						public Location<Vector2> newLocation() {
+							return this;
+						}
+					}).setArrivalTolerance(0).setDecelerationRadius(50).setTimeToTarget(10);
+//						int xSign = (selected.x < touchPos.x) ? 1 : -1;
+//                		int ySign = (selected.y < touchPos.y) ? 1 : -1;
+//						double angle = Math.atan((selected.y - touchPos.y) / (selected.x - touchPos.x));
+//						float deltax = (float) SPEED * (float) Math.cos(angle);
+//						float deltay = (float) SPEED * (float) Math.sin(angle);
+//                		selected.agent.setSteeringOutputLinear(new Vector2(xSign * deltax, ySign * deltay));
+
 					return true;
+
 				} else {
                 	return false;
 				}
 			}
 		});
+
 	}
 
 	private void initUnits() {
@@ -87,10 +132,7 @@ public class Week1Demo extends ApplicationAdapter {
 
 		unitTexture = new Texture(unitPixmap);
 		unitTexture2 = new Texture(unitPixmap2);
-		units = new Array<>();
-		units.add(new Unit(0, 0, 0, 0));
 	}
-
 	private void select(Unit unit) {
 	    unselect();
 		selected = unit;
@@ -106,13 +148,19 @@ public class Week1Demo extends ApplicationAdapter {
 	private Unit spawn(float x, float y) {
 		Unit unit = new Unit(x, y, 0, 0);
 		units.add(unit);
+		SteeringAgent agent = new SteeringAgent(unit, new Vector2(x, y), 0,
+				new Vector2((float) .1, (float) .1), 0, 1, true, (float).5);
+		this.agents.add(agent);
+		unit.agent = agent;
 		return unit;
 	}
 
 	public void step(float delta) {
-		for (Unit unit: units) {
-		    unit.step(delta);
+		for(Unit unit: units) {
+			//System.out.println("from step " + agent.getSteeringOutput().linear);
+			unit.step(delta);
 		}
+
 	}
 
 	@Override
@@ -133,6 +181,7 @@ public class Week1Demo extends ApplicationAdapter {
 			}
 		}
 		batch.end();
+
 	}
 
 	@Override
@@ -142,27 +191,22 @@ public class Week1Demo extends ApplicationAdapter {
 }
 
 class Unit extends Rectangle {
-	public float vx;
-	public float vy;
+	public float dx;
+	public float dy;
 	public boolean clicked;
-	public Vector3 goal;
-	public Unit(float x, float y, float vx, float dy) {
+	public SteeringAgent agent;
+
+	public Unit(float x, float y, float dx, float dy) {
 		super(x, y, Week1Demo.SCALE, Week1Demo.SCALE);
 		this.x = x;
 		this.y = y;
-		this.vx = vx;
-		this.vy = dy;
+		this.dx = dx;
+		this.dy = dy;
 		this.clicked = false;
 	}
 
 	public void step(float delta) {
-		if (goal != null) {
-			if (Math.sqrt(Math.pow(x + width / 2 - goal.x, 2) + Math.pow(y + height / 2 - goal.y, 2)) < width / 2) {
-			    goal = null;
-			    return;
-			}
-			x += vx * delta;
-			y += vy * delta;
-		}
+		agent.update(delta);
 	}
 }
+

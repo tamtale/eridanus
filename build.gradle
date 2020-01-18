@@ -11,7 +11,7 @@ buildscript {
     }
     dependencies {
         classpath 'org.wisepersist:gwt-gradle-plugin:1.0.9'
-        
+        classpath "com.badlogicgames.gdx:gdx-ai:1.8.1"
 
     }
 }
@@ -76,5 +76,19 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         
+    }
+}
+
+project(":core") {
+    dependencies {
+        compile "com.badlogicgames.gdx:gdx-ai:1.8.1"
+    }
+}
+
+
+
+project(":html") {
+    dependencies {
+        compile "com.badlogicgames.gdx:gdx-ai:1.8.1:sources"
     }
 }
