@@ -2,9 +2,9 @@ package com.week1.game.Model;
 import com.week1.game.Networking.Messages.IMessage;
 
 public class GameEngine {
-    private EngineToRenderer adapter;
+    private IEngineToRendererAdapter adapter;
 
-    public GameEngine(EngineToRenderer engineToRendererAdapter) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
         adapter = engineToRendererAdapter;
 
     }
