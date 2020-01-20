@@ -5,6 +5,7 @@ import java.net.NetworkInterface;
 public class NetworkUtils {
     public static String getLocalHostAddr() {
         try {
+            // TODO: broken for Tam
             return NetworkInterface.getByName("wlan0").getInterfaceAddresses().get(0).getAddress().getHostAddress();
         } catch (Exception e) {
             e.printStackTrace();
