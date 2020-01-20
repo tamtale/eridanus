@@ -19,6 +19,8 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.week1.game.Model.GameState;
+import com.week1.game.Model.Unit;
 
 public class Week1Demo extends ApplicationAdapter {
 	public static int SCALE = 8; // 8 pixels per unit.
@@ -35,14 +37,16 @@ public class Week1Demo extends ApplicationAdapter {
 	private OrthogonalTiledMapRenderer renderer;
 	private Unit selected;
 	private Array<SteeringAgent> agents;
+	private GameState state;
+
+	public Week1Demo() {
+	}
 
 	@Override
 	public void create () {
 	    map = new TmxMapLoader().load("testmap.tmx");
 	    camera = new OrthographicCamera();
 	    renderer = new OrthogonalTiledMapRenderer(map, 1f / SCALE);
-//	    float w = Gdx.graphics.getWidth();
-//		float h = Gdx.graphics.getHeight();
 		camera.setToOrtho(false, 256, 256);
 		camera.update();
 		units = new Array<>();
@@ -187,26 +191,6 @@ public class Week1Demo extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		batch.dispose();
-	}
-}
-
-class Unit extends Rectangle {
-	public float dx;
-	public float dy;
-	public boolean clicked;
-	public SteeringAgent agent;
-
-	public Unit(float x, float y, float dx, float dy) {
-		super(x, y, Week1Demo.SCALE, Week1Demo.SCALE);
-		this.x = x;
-		this.y = y;
-		this.dx = dx;
-		this.dy = dy;
-		this.clicked = false;
-	}
-
-	public void step(float delta) {
-		agent.update(delta);
 	}
 }
 

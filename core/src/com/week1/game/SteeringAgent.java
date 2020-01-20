@@ -12,6 +12,7 @@ import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.week1.game.Model.Unit;
 
 // A simple steering agent for 2D.
 // Of course, for 3D (well, actually for 2.5D) you have to replace all occurrences of Vector2 with  Vector3.
