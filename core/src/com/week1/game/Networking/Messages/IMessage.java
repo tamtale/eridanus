@@ -4,6 +4,5 @@ import com.week1.game.Model.GameState;
 
 public interface IMessage {
 
-    public boolean process(GameState gameState);
-
+    boolean process(GameState gameState);
 }

@@ -2,10 +2,12 @@ package com.week1.game.Model;
 import com.week1.game.Networking.Messages.IMessage;
 
 public class GameEngine {
-    private IEngineToRendererAdapter adapter;
+    private IEngineToRendererAdapter engineToRenderer;
+    private GameState gameState;
 
     public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
-        adapter = engineToRendererAdapter;
+        gameState = new GameState();
+        engineToRenderer = engineToRendererAdapter;
 
     }
 
@@ -13,5 +15,14 @@ public class GameEngine {
 
     }
 
+    public GameState getGameState(){
+        return gameState;
+    }
+
+    public void render(){
+        engineToRenderer.startBatch();
+        gameState.render((t, x, y) -> {engineToRenderer.draw(t, x, y);} );
+        engineToRenderer.endBatch();
+    }
 
 }

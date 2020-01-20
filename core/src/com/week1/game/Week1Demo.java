@@ -172,13 +172,12 @@ public class Week1Demo extends ApplicationAdapter {
 			//System.out.println("from step " + agent.getSteeringOutput().linear);
 			unit.step(delta);
 		}
-
 	}
 
 	@Override
 	public void render () {
 	    float diff = Gdx.graphics.getDeltaTime();
-	    step(diff);
+	    step(diff); //TODO in the new version make this gameState.step(diff)
 		Gdx.gl.glClearColor(0, 1f, 1f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		camera.update();

@@ -18,11 +18,29 @@ public class GameState {
         agents = new Array<>();
     }
 
+    public void stepUnits(float delta) {
+        for(Unit unit: units) {
+            //System.out.println("from step " + agent.getSteeringOutput().linear);
+            unit.step(delta);
+        }
+    }
+
     public void addUnit(Unit u){
         units.add(u);
     }
 
     public void addAgent(SteeringAgent a){
         agents.add(a);
+    }
+
+
+    public void render(DrawFunction drawFunc){
+        for (Unit unit : units){
+            if (unit.clicked) {
+                drawFunc.draw(unit.getSelectedSkin(), unit.x, unit.y);
+            } else {
+                drawFunc.draw(unit.getUnselectedSkin(), unit.x, unit.y);
+            }
+        }
     }
 }
