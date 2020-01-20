@@ -14,6 +14,11 @@ public class ClickOracle extends InputAdapter {
     private IClickOracle2EngineAdapter engineAdapter;
     private Unit selected;
 
+    public ClickOracle(IClickOracle2RendererAdapter rendererAdapter, IClickOracle2EngineAdapter engineAdapter) {
+        this.rendererAdapter = rendererAdapter;
+        this.engineAdapter = engineAdapter;
+    }
+
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 

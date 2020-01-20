@@ -48,7 +48,6 @@ public class Week1Demo extends ApplicationAdapter {
 	private GameState state;
 	
 	public Week1Demo (String[] args) {
-		// initNetworkObjects(args);
 	}
 
 	@Override

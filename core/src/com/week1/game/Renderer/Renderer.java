@@ -22,7 +22,11 @@ public class Renderer {
     private Vector3 touchPos = new Vector3();
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
-    private IRenderer2EngineAdapter adapter;
+    private IRenderer2EngineAdapter engineAdapter;
+
+    public Renderer(IRenderer2EngineAdapter engineAdapter) {
+        this.engineAdapter = engineAdapter;
+    }
 
     public void create(GameState state) {
         map = new TmxMapLoader().load("testmap.tmx");
@@ -50,6 +54,6 @@ public class Renderer {
         camera.update();
         mapRenderer.setView(camera);
         mapRenderer.render();
-        adapter.drawUnits(batch);
+        engineAdapter.drawUnits(batch);
     }
 }
