@@ -29,7 +29,6 @@ public class Host {
         Gdx.app.log(TAG, "Creating socket for host instance with address: " +
                 NetworkUtils.getLocalHostAddr() + " on port: " + this.port);
         
-        
     }
     
     public int getPort() {
