@@ -1,5 +1,6 @@
 package com.week1.game;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.*;
@@ -25,11 +26,25 @@ public class Controller {
             }
         });
         engine = new GameEngine(new IEngineToRendererAdapter() {
+            @Override
+            public void startBatch() {
+                renderer.startBatch();
+            }
+
+            @Override
+            public void draw(Texture texture, float x, float y) {
+                renderer.draw(texture, x, y);
+            }
+
+            @Override
+            public void endBatch() {
+                renderer.endBatch();
+            }
         });
         renderer = new Renderer(new IRendererToEngineAdapter() {
             @Override
-            public void drawUnits(Batch batch) {
-                // TODO
+            public void render() {
+                engine.render();
             }
         });
         clickOracle = new ClickOracle(

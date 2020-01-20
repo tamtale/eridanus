@@ -27,6 +27,7 @@ public class Renderer {
         this.engineAdapter = engineAdapter;
     }
 
+
     public void create(GameState state) {
         map = new TmxMapLoader().load("testmap.tmx");
         camera = new OrthographicCamera();
@@ -46,13 +47,25 @@ public class Renderer {
         unitTexture2 = new Texture(unitPixmap2);
     }
 
-    public void render(GameState state) {
-        float diff = Gdx.graphics.getDeltaTime();
-        Gdx.gl.glClearColor(0, 1f, 1f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        camera.update();
-        mapRenderer.setView(camera);
-        mapRenderer.render();
-        engineAdapter.drawUnits(batch);
+    public void startBatch() {
+        batch.begin();
     }
+
+    public void draw(Texture t, float x, float y) {
+        batch.draw(t, x, y);
+    }
+
+    public void endBatch() {
+        batch.end();
+    }
+
+//    public void render(GameState state) {
+//        float diff = Gdx.graphics.getDeltaTime();
+//        Gdx.gl.glClearColor(0, 1f, 1f, 1);
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+//        camera.update();
+//        mapRenderer.setView(camera);
+//        mapRenderer.render();
+//        adapter.drawUnits(batch);
+//    }
 }
