@@ -18,10 +18,8 @@ public class Host {
     private boolean gameStarted = false;
     private StringBuilder aggregateMessage = new StringBuilder();
     
-//    private Scanner scanner;
     
     public Host() throws SocketException, IOException {
-//        this.port = port;
         this.udpSocket = new DatagramSocket();
         this.port = udpSocket.getLocalPort();
         

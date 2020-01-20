@@ -1,6 +1,8 @@
 package com.week1.game.Model;
 import com.week1.game.Networking.Messages.IMessage;
 
+import java.util.List;
+
 public class GameEngine {
     private IEngineToRendererAdapter adapter;
 
@@ -9,7 +11,7 @@ public class GameEngine {
 
     }
 
-    public void deliverMessage(IMessage message) {
+    public void deliverMessage(List<IMessage> message) {
 
     }
 

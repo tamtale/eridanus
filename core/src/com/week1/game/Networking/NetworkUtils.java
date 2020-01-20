@@ -24,7 +24,7 @@ public class NetworkUtils {
      * @param args - Either "host" or "client <ip address> <port number> <optional - start>"
      * @return The client object
      */
-    public static Client initNetworkObjects(String[] args) {
+    public static Client initNetworkObjects(String[] args, INetworkClientToEngineAdapter adapter) {
         final String INITNETWORKTAG = "initNetworkObjects - lji1";
         Gdx.app.log(INITNETWORKTAG, "Local host address: " + getLocalHostAddr());
 
@@ -41,14 +41,14 @@ public class NetworkUtils {
 
 
                 // Now make the client stuff
-                c = new Client(localIpAddr, h.getPort());
+                c = new Client(localIpAddr, h.getPort(), adapter);
 
             } else if  (args[0].equals("client")) {
                 // host ip is the number listed under ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address
 
                 String hostIpAddr = args[1];
                 int hostPort = Integer.parseInt(args[2]);
-                c = new Client(hostIpAddr, hostPort);
+                c = new Client(hostIpAddr, hostPort, adapter);
 
                 if (args.length == 4 && args[3].equals("start")) {
                     // Time to start the game
