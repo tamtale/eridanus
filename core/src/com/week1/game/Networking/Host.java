@@ -1,5 +1,7 @@
 package com.week1.game.Networking;
 
+import com.badlogic.gdx.Gdx;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -9,7 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Host {
-    
+
+    private static final String TAG = "Host - lji1";
     private int port;
     private DatagramSocket udpSocket;
     
@@ -19,11 +22,11 @@ public class Host {
     private StringBuilder aggregateMessage = new StringBuilder();
     
     
-    public Host() throws SocketException, IOException {
+    public Host() throws IOException {
         this.udpSocket = new DatagramSocket();
         this.port = udpSocket.getLocalPort();
         
-        System.out.println("Creating socket for host instance with address: " +
+        Gdx.app.log(TAG, "Creating socket for host instance with address: " +
                 NetworkUtils.getLocalHostAddr() + " on port: " + this.port);
         
         
@@ -33,12 +36,12 @@ public class Host {
         return port;
     }
 
-    public void listenForClientMessages() throws Exception {
+    public void listenForClientMessages() {
         
         // Spawn a new thread to listen for messages incoming to the host
         new Thread(() -> {
             while (true) {
-                System.out.println("Host is listening for next client message.");
+                Gdx.app.log(TAG, "Host is listening for next client message.");
                 byte[] buf = new byte[256];
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
@@ -58,24 +61,24 @@ public class Host {
         String msg = new String(packet.getData()).trim();
         
         if (!gameStarted) {
-//             Game has started
+//             Game has not started
             if (msg.equals("join")) {
-                System.out.println("Host received a 'join' message from: " + packet.getAddress().getHostAddress());
+                Gdx.app.log(TAG, "Host received a 'join' message from: " + packet.getAddress().getHostAddress());
                 registry.put(packet.getAddress(), new Player(packet.getAddress(), packet.getPort()));
 
-                System.out.println("List of Players: ");
-                registry.values().forEach((p) -> System.out.println("\t" + p.address + " : " + p.port));
+                Gdx.app.log(TAG, "List of Players: ");
+                registry.values().forEach((p) -> Gdx.app.log(TAG, "\t" + p.address + " : " + p.port));
             } else if (msg.equals("start")) {
                 gameStarted = true;
-                System.out.println("Host received a 'start' message from: " + packet.getAddress().getHostAddress());
-                System.out.println("Host will forward the start message to all registered players.");
+                Gdx.app.log(TAG, "Host received a 'start' message from: " + packet.getAddress().getHostAddress() + 
+                        "\nHost will forward the start message to all registered players.");
                 broadcastToRegisteredPlayers("start");
             } else {
-                System.out.println("Unrecognized message before start of game.");
+                Gdx.app.error(TAG, "Unrecognized message before start of game.");
             }
         } else {
             // Game has started
-            System.out.println("Host received an update message from: " + packet.getAddress().getHostAddress());
+            Gdx.app.log(TAG, "Host received an update message from: " + packet.getAddress().getHostAddress());
 
             aggregateMessage.append(msg);
             registry.get(packet.getAddress()).checkedIn = true;
@@ -106,7 +109,7 @@ public class Host {
             try {
                 this.udpSocket.send(p);
             } catch (IOException e) {
-                System.out.println("Failed to send message to: " + player.address);
+                Gdx.app.error(TAG, "Failed to send message to: " + player.address);
                 e.printStackTrace();
             }
         });
