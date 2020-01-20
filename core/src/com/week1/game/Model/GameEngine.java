@@ -17,14 +17,8 @@ public class GameEngine {
 
     }
 
-    public GameState getGameState(){
-        return gameState;
-    }
-
     public void render(){
-        engineToRenderer.startBatch();
-        gameState.render((t, x, y) -> {engineToRenderer.draw(t, x, y);} );
-        engineToRenderer.endBatch();
+        engineToRenderer.batchGame(() -> {gameState.render((t, x, y) -> {engineToRenderer.draw(t, x, y);} );});
     }
 
 }
