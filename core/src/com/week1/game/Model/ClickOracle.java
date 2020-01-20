@@ -2,19 +2,16 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.ai.steer.behaviors.Arrive;
-import com.badlogic.gdx.ai.utils.Location;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 public class ClickOracle extends InputAdapter {
 
     private Vector3 touchPos;
-    private IClickOracle2RendererAdapter rendererAdapter;
-    private IClickOracle2EngineAdapter engineAdapter;
+    private IClickOracleToRendererAdapter rendererAdapter;
+    private IClickOracleToEngineAdapter engineAdapter;
     private Unit selected;
 
-    public ClickOracle(IClickOracle2RendererAdapter rendererAdapter, IClickOracle2EngineAdapter engineAdapter) {
+    public ClickOracle(IClickOracleToRendererAdapter rendererAdapter, IClickOracleToEngineAdapter engineAdapter) {
         this.rendererAdapter = rendererAdapter;
         this.engineAdapter = engineAdapter;
     }

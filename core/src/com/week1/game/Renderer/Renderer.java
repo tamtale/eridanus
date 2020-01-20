@@ -8,7 +8,6 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.GameState;
-import com.week1.game.Model.Unit;
 
 public class Renderer {
 
@@ -22,9 +21,9 @@ public class Renderer {
     private Vector3 touchPos = new Vector3();
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
-    private IRenderer2EngineAdapter engineAdapter;
+    private IRendererToEngineAdapter engineAdapter;
 
-    public Renderer(IRenderer2EngineAdapter engineAdapter) {
+    public Renderer(IRendererToEngineAdapter engineAdapter) {
         this.engineAdapter = engineAdapter;
     }
 

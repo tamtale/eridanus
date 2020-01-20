@@ -4,6 +4,6 @@ import com.week1.game.Networking.Messages.IMessage;
 
 import java.util.List;
 
-public interface INetworkClientToEngine {
+public interface INetworkClientToEngineAdapter {
     void deliverUpdate(List<IMessage> messages);
 }
