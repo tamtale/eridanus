@@ -1,12 +1,17 @@
 package com.week1.game.Model;
-import com.week1.game.Networking.IMessage;
+import com.week1.game.Networking.Messages.IMessage;
 
 public class GameEngine {
+    private IEngineToRendererAdapter adapter;
 
-    public GameEngine(boolean hosting) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
+        adapter = engineToRendererAdapter;
+
     }
 
     public void deliverMessage(IMessage message) {
 
     }
+
+
 }

@@ -38,8 +38,9 @@ public class Week1Demo extends ApplicationAdapter {
 	private Unit selected;
 	private Array<SteeringAgent> agents;
 	private GameState state;
-
-	public Week1Demo() {
+	
+	public Week1Demo (String[] args) {
+		
 	}
 
 	@Override
