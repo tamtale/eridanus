@@ -1,8 +1,12 @@
-package demo;
+package com.week1.game.Networking;
 
 import java.io.IOException;
-import java.net.*;
-import java.util.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Host {
     
@@ -24,36 +28,6 @@ public class Host {
         System.out.println("Creating socket for host instance with address: " +
                 NetworkUtils.getLocalHostAddr() + " on port: " + this.port);
         
-//        System.out.println("**********");
-//        System.out.println(InetAddress.getLocalHost());
-//        System.out.println(InetAddress.getLocalHost().getHostAddress());
-//        System.out.println(udpSocket);
-//        System.out.println(udpSocket.getLocalAddress());
-//        System.out.println(udpSocket.getLocalAddress().getHostAddress());
-//        System.out.println(udpSocket.getInetAddress());
-////        System.out.println(udpSocket.getInetAddress().getHostAddress()); // Apparently, is null
-        
-        
-//        System.out.println(NetworkInterface.getNetworkInterfaces());
-//        
-//        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-//        while(interfaces.hasMoreElements()) {
-//            System.out.println("Interface:");
-//            NetworkInterface nextInterface = interfaces.nextElement();
-//            System.out.println("\t" + nextInterface.getDisplayName());
-//            System.out.println("name: " + nextInterface.getName());
-//            System.out.println(nextInterface.isVirtual());
-//            System.out.println(nextInterface.getInetAddresses());
-//            Enumeration<InetAddress> addrs = nextInterface.getInetAddresses();
-//            System.out.println("Has more elts: " + addrs.hasMoreElements());
-//            while(addrs.hasMoreElements()) {
-//                System.out.println("addr:");
-//                InetAddress addr = addrs.nextElement();
-//                System.out.println(addr.getHostAddress());
-//            }
-//            
-//        }
-//        System.out.println("**********");
         
     }
     

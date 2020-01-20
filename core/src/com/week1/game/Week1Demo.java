@@ -35,6 +35,10 @@ public class Week1Demo extends ApplicationAdapter {
 	private OrthogonalTiledMapRenderer renderer;
 	private Unit selected;
 	private Array<SteeringAgent> agents;
+	
+	public Week1Demo (String[] args) {
+		
+	}
 
 	@Override
 	public void create () {

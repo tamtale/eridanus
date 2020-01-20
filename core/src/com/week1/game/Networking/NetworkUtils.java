@@ -1,4 +1,4 @@
-package demo;
+package com.week1.game.Networking;
 
 import java.net.NetworkInterface;
 
