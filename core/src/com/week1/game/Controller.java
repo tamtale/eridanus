@@ -27,18 +27,15 @@ public class Controller {
         });
         engine = new GameEngine(new IEngineToRendererAdapter() {
             @Override
-            public void startBatch() {
+            public void batchGame(Runnable drawRunnable) {
                 renderer.startBatch();
+                drawRunnable.run();
+                renderer.endBatch();
             }
 
             @Override
             public void draw(Texture texture, float x, float y) {
                 renderer.draw(texture, x, y);
-            }
-
-            @Override
-            public void endBatch() {
-                renderer.endBatch();
             }
         });
         renderer = new Renderer(new IRendererToEngineAdapter() {
