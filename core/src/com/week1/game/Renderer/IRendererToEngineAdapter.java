@@ -4,5 +4,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Array;
 
 public interface IRendererToEngineAdapter<TUnit> {
-    void drawUnits(Batch batch);
+    // This will ask the engine to go through and send everything to be drawn to the renderer.
+    void render();
 }

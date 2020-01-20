@@ -47,6 +47,17 @@ public class Renderer {
         unitTexture2 = new Texture(unitPixmap2);
     }
 
+    public void startBatch() {
+        batch.begin();
+    }
+
+    public void draw(Texture t, float x, float y) {
+        batch.draw(t, x, y);
+    }
+
+    public void endBatch() {
+        batch.end();
+    }
 
 //    public void render(GameState state) {
 //        float diff = Gdx.graphics.getDeltaTime();
