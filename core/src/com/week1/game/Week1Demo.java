@@ -19,12 +19,14 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.sun.org.apache.bcel.internal.classfile.Unknown;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Unit;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.Host;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import static com.week1.game.Networking.NetworkUtils.getLocalHostAddr;
 
@@ -209,32 +211,39 @@ public class Week1Demo extends ApplicationAdapter {
 	private void initNetworkObjects(String[] args) {
 		Gdx.app.log("initNetworkObjects - lji1", "Local host address: " + getLocalHostAddr());
 
-		if (args[0].equals("host")) {
-			String localIpAddr = InetAddress.getLocalHost().getHostAddress();
-
-			// create the host instance
-			Host h = new Host();
-			// start listening for messages from clients
-			h.listenForClientMessages();
-
-
-			// Now to client stuff
-			Client c = new Client(localIpAddr, h.getPort());
-			playGame(c);
-
-		} else if  (args[0].equals("client")) {
-			// host ip is the number listed under ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address
-
-			int hostPort = Integer.parseInt(args[2]);
-			String hostIpAddr = args[1];
-			Client c = new Client(hostIpAddr, hostPort);
-
-			if (args.length == 4 && args[3].equals("start")) {
-				// Time to start the game
-				c.sendMessage("start");
-			}	
-		
-		
+//		if (args[0].equals("host")) {
+//			
+//			try {
+//				String localIpAddr = InetAddress.getLocalHost().getHostAddress();
+//			} catch (UnknownHostException e) {
+//				e.printStackTrace();
+//				Gdx.app.log
+//			}
+//
+//			// create the host instance
+//			Host h = new Host();
+//			// start listening for messages from clients
+//			h.listenForClientMessages();
+//
+//
+//			// Now to client stuff
+//			Client c = new Client(localIpAddr, h.getPort());
+//			playGame(c);
+//
+//		} else if  (args[0].equals("client")) {
+//			// host ip is the number listed under ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address
+//
+//			int hostPort = Integer.parseInt(args[2]);
+//			String hostIpAddr = args[1];
+//			Client c = new Client(hostIpAddr, hostPort);
+//
+//			if (args.length == 4 && args[3].equals("start")) {
+//				// Time to start the game
+//				c.sendMessage("start");
+//			}	
+//		
+//		
+//	}
 	}
 }
 
