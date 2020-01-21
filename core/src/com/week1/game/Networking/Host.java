@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Host {
 
     private static final String TAG = "Host - lji1";
-    private static final int UPDATE_INTERVAL = 1000;
+    private static final int UPDATE_INTERVAL = 3000;
     private int port;
     private DatagramSocket udpSocket;
     
