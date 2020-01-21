@@ -2,7 +2,7 @@ package com.week1.game.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.week1.game.Week1Demo;
+import com.week1.game.GameController;
 
 public class DesktopLauncher {
 	public static void main (String[] args) {
@@ -10,6 +10,6 @@ public class DesktopLauncher {
 		config.title = "RTS";
 		config.width = 800;
 		config.height = 480;
-		new LwjglApplication(new Week1Demo(args), config);
+		new LwjglApplication(new GameController(args), config);
 	}
 }

@@ -5,9 +5,8 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.week1.game.SteeringAgent;
-import com.week1.game.Week1Demo;
 
-import static com.week1.game.Week1Demo.SCALE;
+import static com.week1.game.GameController.SCALE;
 
 public class Unit extends Rectangle {
     public float dx;

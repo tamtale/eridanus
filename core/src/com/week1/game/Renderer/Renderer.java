@@ -28,7 +28,7 @@ public class Renderer {
     }
 
 
-    public void create(GameState state) {
+    public void create() {
         map = new TmxMapLoader().load("testmap.tmx");
         camera = new OrthographicCamera();
         mapRenderer = new OrthogonalTiledMapRenderer(map, 1f / SCALE);
@@ -45,6 +45,10 @@ public class Renderer {
 
         unitTexture = new Texture(unitPixmap);
         unitTexture2 = new Texture(unitPixmap2);
+    }
+
+    public Camera getCamera() {
+        return camera;
     }
 
     public void startBatch() {

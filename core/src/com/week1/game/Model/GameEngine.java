@@ -10,7 +10,6 @@ public class GameEngine {
     public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
         gameState = new GameState();
         engineToRenderer = engineToRendererAdapter;
-
     }
 
     public void deliverMessage(List<AMessage> message) {
