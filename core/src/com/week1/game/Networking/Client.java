@@ -1,11 +1,14 @@
 package com.week1.game.Networking;
 
 import com.badlogic.gdx.Gdx;
+import com.week1.game.Networking.Messages.AMessage;
+import com.week1.game.Networking.Messages.MessageFormatter;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.List;
 
 public class Client {
     
@@ -25,8 +28,11 @@ public class Client {
         
         Gdx.app.log(TAG, "Sending join message.");
         sendMessage("join");
+        
+        awaitUpdates();
     }
     
+    // TODO: since using UDP protocol, doesn't guarantee ordering of messages -> update to TCP to resolve
     public void sendMessage(String msg) {
         DatagramPacket p = new DatagramPacket(
                 msg.getBytes(), msg.getBytes().length, hostAddress, this.hostPort);
@@ -42,20 +48,25 @@ public class Client {
     }
     
     
-    // TODO: Needs to be updated to reflect changed expectations -> probably calls deliverUpdate on the adapter
-    public String waitForUpdate() {
-        byte[] buf = new byte[256];
-        DatagramPacket packet = new DatagramPacket(buf, buf.length);
+    public void awaitUpdates() {
+        
+        new Thread(() -> {
+            byte[] buf = new byte[256];
+            DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
-        try {
-            // blocks until a packet is received
-            udpSocket.receive(packet);
-            return new String(packet.getData()).trim();
+            try {
+                // blocks until a packet is received
+                udpSocket.receive(packet);
+                String messages = new String(packet.getData()).trim();
+                Gdx.app.log(TAG, "Received update: " + messages);
+                List<AMessage> receivedMessages = MessageFormatter.parseMessage(messages);
+                adapter.deliverUpdate(receivedMessages);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Failure to receive update.";
-        }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Gdx.app.error(TAG, "Failed to receive update messages.");
+            }
+        });
     }
     
    // TODO: Write update for  Monday! 

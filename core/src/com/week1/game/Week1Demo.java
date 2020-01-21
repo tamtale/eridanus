@@ -25,15 +25,11 @@ import com.week1.game.Model.Unit;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.Host;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
-import com.week1.game.Networking.Messages.IMessage;
+import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.NetworkUtils;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.UnknownHostException;
 import java.util.List;
 
-import static com.week1.game.Networking.NetworkUtils.getLocalHostAddr;
 
 public class Week1Demo extends ApplicationAdapter {
 	public static int SCALE = 8; // 8 pixels per unit.
@@ -63,8 +59,8 @@ public class Week1Demo extends ApplicationAdapter {
 		// TODO: only here for testing purposes - remove
 		NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
 			@Override
-			public void deliverUpdate(List<IMessage> messages) {
-				System.out.println("message delivered.");
+			public void deliverUpdate(List<AMessage> messages) {
+				System.out.println("Message delivered (NOOP).");
 			}
 		});	
 		// TODO: remove me

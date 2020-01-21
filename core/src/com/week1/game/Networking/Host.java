@@ -9,10 +9,12 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Host {
 
     private static final String TAG = "Host - lji1";
+    private static final int UPDATE_INTERVAL = 1000;
     private int port;
     private DatagramSocket udpSocket;
     
@@ -20,6 +22,8 @@ public class Host {
     
     private boolean gameStarted = false;
     private StringBuilder aggregateMessage = new StringBuilder();
+    
+    private ConcurrentLinkedQueue<String> incomingMessages = new ConcurrentLinkedQueue<>();
     
     
     public Host() throws IOException {
@@ -56,6 +60,38 @@ public class Host {
         }).start();
     }
     
+    private void runUpdateLoop() {
+        // TODO: implement
+        // every interval:
+        // - empty the incoming message queue
+        // - package the messages together into an update
+        // - broadcast them to all registered players
+        
+        // spawn a new thread to broadcast updates to the registered clients
+        Gdx.app.log(TAG, "Host is about to begin running update loop.");
+        new Thread(() -> {
+            while (true) {
+                StringBuilder outgoingMessage = new StringBuilder("[");
+                boolean first = true;
+                while (!incomingMessages.isEmpty()) { // TODO: dangerous, if many messages coming all at once
+                    if (first) {
+                        outgoingMessage.append(", ");
+                        first = false;
+                    }
+                    outgoingMessage.append(incomingMessages.poll());
+                }
+                outgoingMessage.append("]");
+                
+                Gdx.app.log(TAG, "Host is about to broadcast update message to registered clients.");
+                broadcastToRegisteredPlayers(outgoingMessage.toString());
+                
+                // Take a break before the next update
+                try { Thread.sleep(UPDATE_INTERVAL); } catch (InterruptedException e) {e.printStackTrace();}
+
+            }
+        });
+    }
+    
     private void processMessage(DatagramPacket packet) {
         String msg = new String(packet.getData()).trim();
         
@@ -71,32 +107,36 @@ public class Host {
                 gameStarted = true;
                 Gdx.app.log(TAG, "Host received a 'start' message from: " + packet.getAddress().getHostAddress() + 
                         "\nHost will forward the start message to all registered players.");
-                broadcastToRegisteredPlayers("start");
+                broadcastToRegisteredPlayers("start"); // TODO: This message probably not neccessary
+                runUpdateLoop();
+                
             } else {
                 Gdx.app.error(TAG, "Unrecognized message before start of game.");
             }
         } else {
             // Game has started
             Gdx.app.log(TAG, "Host received an update message from: " + packet.getAddress().getHostAddress());
-
-            aggregateMessage.append(msg);
-            registry.get(packet.getAddress()).checkedIn = true;
-
-            // check if all players have checked in yet
-            boolean ready = true;
-            for (Player player : registry.values()) {
-                ready = ready && player.checkedIn;
-            }
-
-            if (ready) {
-                // all players have checked in; send out the next update
-                broadcastToRegisteredPlayers(aggregateMessage.toString());
-
-                // clean up for the next round
-                aggregateMessage = new StringBuilder();
-                registry.values().forEach((player) -> player.checkedIn = false);
-            } 
-            // else, wait for the other players to check in
+            incomingMessages.add(msg);
+            
+            
+//            aggregateMessage.append(msg);
+//            registry.get(packet.getAddress()).checkedIn = true;
+//
+//            // check if all players have checked in yet
+//            boolean ready = true;
+//            for (Player player : registry.values()) {
+//                ready = ready && player.checkedIn;
+//            }
+//
+//            if (ready) {
+//                // all players have checked in; send out the next update
+//                broadcastToRegisteredPlayers(aggregateMessage.toString());
+//
+//                // clean up for the next round
+//                aggregateMessage = new StringBuilder();
+//                registry.values().forEach((player) -> player.checkedIn = false);
+//            } 
+//            // else, wait for the other players to check in
         }
         
         

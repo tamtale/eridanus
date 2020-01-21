@@ -5,10 +5,10 @@ import com.week1.game.Model.GameState;
 import com.week1.game.Model.Unit;
 import com.week1.game.SteeringAgent;
 
-public class CreateMinionMessage implements IMessage {
+public class CreateMinionMessage extends AMessage {
 
     private float x, y;
-    private int unitType, playerID;
+    private int unitType;
 
     public CreateMinionMessage(float x, float y, int unitType, int playerID){
         this.x = x;
