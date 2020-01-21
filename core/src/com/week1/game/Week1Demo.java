@@ -55,21 +55,6 @@ public class Week1Demo extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-
-		// TODO: only here for testing purposes - remove
-		NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
-			@Override
-			public void deliverUpdate(List<AMessage> messages) {
-				System.out.println("Message delivered (NOOP).");
-			}
-		});	
-		// TODO: remove me
-		
-		
-		
-		
-		
-		
 	    map = new TmxMapLoader().load("testmap.tmx");
 	    camera = new OrthographicCamera();
 	    renderer = new OrthogonalTiledMapRenderer(map, 1f / SCALE);
