@@ -31,6 +31,7 @@ public class NetworkUtils {
         Client c =  null;
         try {
             if (args[0].equals("host")) {
+                Gdx.app.log(INITNETWORKTAG, "Host option chosen.");
 
                 String localIpAddr = InetAddress.getLocalHost().getHostAddress();
 
@@ -44,6 +45,7 @@ public class NetworkUtils {
                 c = new Client(localIpAddr, h.getPort(), adapter);
 
             } else if  (args[0].equals("client")) {
+                Gdx.app.log(INITNETWORKTAG, "Client option chosen.");
                 // host ip is the number listed under ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address
 
                 String hostIpAddr = args[1];

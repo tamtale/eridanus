@@ -24,9 +24,14 @@ import com.week1.game.Model.GameState;
 import com.week1.game.Model.Unit;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.Host;
+import com.week1.game.Networking.INetworkClientToEngineAdapter;
+import com.week1.game.Networking.Messages.IMessage;
+import com.week1.game.Networking.NetworkUtils;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import static com.week1.game.Networking.NetworkUtils.getLocalHostAddr;
 
@@ -46,12 +51,29 @@ public class Week1Demo extends ApplicationAdapter {
 	private Unit selected;
 	private Array<SteeringAgent> agents;
 	private GameState state;
+	private String[] args;
 	
 	public Week1Demo (String[] args) {
+		this.args = args;
 	}
 
 	@Override
 	public void create () {
+
+		// TODO: only here for testing purposes - remove
+		NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
+			@Override
+			public void deliverUpdate(List<IMessage> messages) {
+				System.out.println("message delivered.");
+			}
+		});	
+		// TODO: remove me
+		
+		
+		
+		
+		
+		
 	    map = new TmxMapLoader().load("testmap.tmx");
 	    camera = new OrthographicCamera();
 	    renderer = new OrthogonalTiledMapRenderer(map, 1f / SCALE);
