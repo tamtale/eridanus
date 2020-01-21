@@ -51,22 +51,24 @@ public class Client {
     public void awaitUpdates() {
         
         new Thread(() -> {
-            byte[] buf = new byte[256];
-            DatagramPacket packet = new DatagramPacket(buf, buf.length);
+            while (true) {
+                byte[] buf = new byte[256];
+                DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
-            try {
-                // blocks until a packet is received
-                udpSocket.receive(packet);
-                String messages = new String(packet.getData()).trim();
-                Gdx.app.log(TAG, "Received update: " + messages);
-                List<AMessage> receivedMessages = MessageFormatter.parseMessage(messages);
-                adapter.deliverUpdate(receivedMessages);
+                try {
+                    // blocks until a packet is received
+                    udpSocket.receive(packet);
+                    String messages = new String(packet.getData()).trim();
+                    Gdx.app.log(TAG, "Received update: " + messages);
+                    List<AMessage> receivedMessages = MessageFormatter.parseMessage(messages);
+                    adapter.deliverUpdate(receivedMessages);
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                Gdx.app.error(TAG, "Failed to receive update messages.");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Gdx.app.error(TAG, "Failed to receive update messages.");
+                }
             }
-        });
+        }).start();
     }
     
    // TODO: Write update for  Monday! 

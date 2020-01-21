@@ -1,5 +1,5 @@
 package com.week1.game.Model;
-import com.week1.game.Networking.Messages.IMessage;
+import com.week1.game.Networking.Messages.AMessage;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public class GameEngine {
 
     }
 
-    public void deliverMessage(List<IMessage> message) {
+    public void deliverMessage(List<AMessage> message) {
 
     }
 

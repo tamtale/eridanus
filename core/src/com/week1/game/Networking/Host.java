@@ -74,6 +74,7 @@ public class Host {
                 StringBuilder outgoingMessage = new StringBuilder("[");
                 boolean first = true;
                 while (!incomingMessages.isEmpty()) { // TODO: dangerous, if many messages coming all at once
+//                    Gdx.app.log(TAG, "queue is non empty");
                     if (first) {
                         outgoingMessage.append(", ");
                         first = false;
@@ -89,7 +90,7 @@ public class Host {
                 try { Thread.sleep(UPDATE_INTERVAL); } catch (InterruptedException e) {e.printStackTrace();}
 
             }
-        });
+        }).start();
     }
     
     private void processMessage(DatagramPacket packet) {
