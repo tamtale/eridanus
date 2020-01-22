@@ -17,6 +17,10 @@ public class GameEngine {
 
     }
 
+    public void updateState(float delta) {
+        gameState.stepUnits(delta);
+    }
+
     public void render(){
         engineToRenderer.batchGame(() -> {gameState.render((t, x, y) -> {engineToRenderer.draw(t, x, y);} );});
     }

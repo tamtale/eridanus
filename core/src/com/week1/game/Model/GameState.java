@@ -33,7 +33,6 @@ public class GameState {
         agents.add(a);
     }
 
-
     public void render(DrawFunction drawFunc){
         for (Unit unit : units){
             if (unit.clicked) {
