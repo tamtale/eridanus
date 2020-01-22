@@ -58,13 +58,6 @@ public class Week1Demo extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-		
-		// TODO: remove me
-//		String jString = packageMessage(new CreateMinionMessage(123, 456, 69, 420));
-		NetworkUtils.getLocalHostAddr();
-		// TODO
-		
-		
 	    map = new TmxMapLoader().load("testmap.tmx");
 	    camera = new OrthographicCamera();
 	    renderer = new OrthogonalTiledMapRenderer(map, 1f / SCALE);
