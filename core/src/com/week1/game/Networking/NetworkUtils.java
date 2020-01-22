@@ -7,8 +7,10 @@ import java.nio.channels.SocketChannel;
 import java.util.Enumeration;
 
 public class NetworkUtils {
+    private static final String TAG = "NetworkUtils - lji1";
     public static String getLocalHostAddr() {
 //        https://stackoverflow.com/questions/40912417/java-getting-ipv4-address?fbclid=IwAR0JQ8qEf4V2bM42m-X0ATML0zf5zEyJ_gEWs9I7PskAHCmW_TNNj5cWp6I
+//        https://stackoverflow.com/questions/8462498/how-to-determine-internet-network-interface-in-java
         String ip;
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -26,48 +28,47 @@ public class NetworkUtils {
                     if (addr instanceof Inet6Address) continue;
 
                     ip = addr.getHostAddress();
-                    System.out.println("*******************" + iface.getDisplayName() + " " + ip);
-//                    System.out.println(addr.isAnyLocalAddress());
-//                    System.out.println(addr.isLinkLocalAddress());
-//                    System.out.println(addr.isLoopbackAddress());
-//                    System.out.println(addr.isMCGlobal());
-//                    System.out.println(addr.isMCLinkLocal());
-//                    System.out.println(addr.isMCNodeLocal());
-//                    System.out.println(addr.isMCOrgLocal());
-//                    System.out.println(addr.isMCSiteLocal());
-//                    System.out.println(addr.isMulticastAddress());
-                    try {
-                        System.out.println(addr.isReachable(3000));
-                    } catch (Exception  e)  {
-                        e.printStackTrace();
+//                    System.out.println("*******************" + iface.getDisplayName() + " " + ip);
+//                    try {
+//                        System.out.println(addr.isReachable(3000));
+//                    } catch (Exception  e)  {
+//                        e.printStackTrace();
+//                    }
+                    
+                    // try all the ports from 8000 to 9000, in case some of them are being used
+                    for (int i = 8000; i < 9000; i++) {
+                        try (SocketChannel socket = SocketChannel.open()) {
+                            socket.socket().setSoTimeout(3000);
+                            socket.bind(new InetSocketAddress(addr, i));
+
+                            // Try using the socket to connect to some reliable site
+                            // If it works, then this ip is usable
+                            socket.connect(new InetSocketAddress("google.com", 80));
+                            Gdx.app.log(TAG, "Obtained local host address: " + addr.getHostAddress() + " with port: " + i);
+                            return addr.getHostAddress();
+                        } catch (Exception e) {
+                            Gdx.app.log(TAG, "Port failed: " + i);
+//                            e.printStackTrace();
+                        }
                     }
-                    try  (SocketChannel  socket  = SocketChannel.open()) {
-                        socket.socket().setSoTimeout(3000);
-                        socket.bind(new InetSocketAddress(addr, 8080));
-                        socket.connect(new InetSocketAddress("google.com", 80));
-                        System.out.println("success!");
-                    } catch (Exception e) {
-                        System.out.println("failure!");
-                        e.printStackTrace();
-                    }
-
-
-
                 }
             }
         } catch (SocketException e) {
             throw new RuntimeException(e);
         } 
         
+        Gdx.app.error(TAG, "Unable to obtain valid ip address.");
+        return "failure to obtain ip address - see NetworkUtils";
         
-        try {
-            // TODO: broken for Tam
-            return NetworkInterface.getByName("wlan0").getInterfaceAddresses().get(0).getAddress().getHostAddress();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Failed to obtain local host address, due to anomalous network configuration. Use ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address instead.");
-            return "Failure";
-        }
+        
+//        try {
+//            // TODO: broken for Tam
+//            return NetworkInterface.getByName("wlan0").getInterfaceAddresses().get(0).getAddress().getHostAddress();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.out.println("Failed to obtain local host address, due to anomalous network configuration. Use ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address instead.");
+//            return "Failure";
+//        }
     }
 
     /**
