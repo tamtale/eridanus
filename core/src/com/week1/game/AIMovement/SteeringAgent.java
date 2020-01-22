@@ -1,6 +1,7 @@
-package com.week1.game;
+package com.week1.game.AIMovement;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Limiter;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
@@ -23,11 +24,13 @@ public class SteeringAgent implements Steerable<Vector2> {
     private static SteeringAcceleration<Vector2> steeringOutput =
             new SteeringAcceleration<Vector2>(new Vector2());
 
+    private static final String tag = "Steering Agent";
     public SteeringAgent(Unit unit, Vector2 position, float orientation, Vector2 linearVelocity, float angularVelocity, float maxSpeed,
     boolean independentFacing, float maxLinearAcceleration){
 //        this.steeringOutput =
 //                new SteeringAcceleration<Vector2>(linearVelocity);
 //        System.out.println(steeringOutput.linear);
+        Gdx.app.log(tag, "Building a SteeringAgent");
         this.unit = unit;
         this.position = position;
         this.orientation = orientation;
@@ -36,40 +39,40 @@ public class SteeringAgent implements Steerable<Vector2> {
         this.maxSpeed = maxSpeed;
         this.independentFacing = independentFacing;
         this.maxLinearAcceleration = maxLinearAcceleration;
-        //this.steeringBehavior = new Wander<>(this);
-        this.steeringBehavior = new Arrive<>(this, new Location<Vector2>() {
-            @Override
-            public Vector2 getPosition() {
-                return new Vector2(50,50);
-            }
-
-            @Override
-            public float getOrientation() {
-                return 0;
-            }
-
-            @Override
-            public void setOrientation(float orientation) {
-
-            }
-
-            @Override
-            public float vectorToAngle(Vector2 vector) {
-                return (float)Math.atan2(vector.x, vector.y);
-            }
-
-            @Override
-            public Vector2 angleToVector(Vector2 outVector, float angle) {
-                outVector.x = (float)Math.sin(angle);
-                outVector.y = (float)Math.cos(angle);
-                return outVector;
-            }
-
-            @Override
-            public Location<Vector2> newLocation() {
-                return this;
-            }
-        }).setArrivalTolerance(0).setDecelerationRadius(50).setTimeToTarget(10);
+        this.steeringBehavior = new Wander<>(this);
+//        this.steeringBehavior = new Arrive<>(this, new Location<Vector2>() {
+//            @Override
+//            public Vector2 getPosition() {
+//                return new Vector2(50,50);
+//            }
+//
+//            @Override
+//            public float getOrientation() {
+//                return 0;
+//            }
+//
+//            @Override
+//            public void setOrientation(float orientation) {
+//
+//            }
+//
+//            @Override
+//            public float vectorToAngle(Vector2 vector) {
+//                return (float)Math.atan2(vector.x, vector.y);
+//            }
+//
+//            @Override
+//            public Vector2 angleToVector(Vector2 outVector, float angle) {
+//                outVector.x = (float)Math.sin(angle);
+//                outVector.y = (float)Math.cos(angle);
+//                return outVector;
+//            }
+//
+//            @Override
+//            public Location<Vector2> newLocation() {
+//                return this;
+//            }
+//        }).setArrivalTolerance(0).setDecelerationRadius(50).setTimeToTarget(10);
 //        System.out.println(this.steeringOutput.linear);
 //        this.steeringBehavior = new S
     }
@@ -99,8 +102,15 @@ public class SteeringAgent implements Steerable<Vector2> {
 
     @Override
     public float getBoundingRadius() {
-        System.out.println("get that bounding rad");
         return 0;
+    }
+
+    public SteeringBehavior<Vector2> getSteeringBehavior() {
+        return steeringBehavior;
+    }
+
+    public void setSteeringBehavior(SteeringBehavior<Vector2> steeringBehavior) {
+        this.steeringBehavior = steeringBehavior;
     }
 
     @Override
@@ -204,6 +214,7 @@ public class SteeringAgent implements Steerable<Vector2> {
 
     public void update (float delta) {
         if (steeringBehavior != null) {
+            Gdx.app.log(tag, "Updating position and velocity");
             // Calculate steering acceleration
             steeringBehavior.calculateSteering(steeringOutput);
             /*
@@ -227,7 +238,7 @@ public class SteeringAgent implements Steerable<Vector2> {
     private void applySteering (SteeringAcceleration<Vector2> steering, float time) {
         // Update position and linear velocity. Velocity is trimmed to maximum speed
         boolean anyAccelerations = false;
-
+        
         unit.setPosition(unit.getX() + linearVelocity.x, unit.getY() + linearVelocity.y);
 //        System.out.println(steeringOutput.linear);
 //        System.out.println(steeringOutput.angular);

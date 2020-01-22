@@ -4,8 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
-import com.week1.game.SteeringAgent;
-import com.week1.game.Week1Demo;
+import com.week1.game.AIMovement.SteeringAgent;
 
 import static com.week1.game.Week1Demo.SCALE;
 
