@@ -26,9 +26,12 @@ import com.week1.game.Networking.Client;
 import com.week1.game.Networking.Host;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;
+import com.week1.game.Networking.Messages.CreateMinionMessage;
 import com.week1.game.Networking.NetworkUtils;
 
 import java.util.List;
+
+import static com.week1.game.Networking.Messages.MessageFormatter.packageMessage;
 
 
 public class Week1Demo extends ApplicationAdapter {
@@ -55,6 +58,13 @@ public class Week1Demo extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+		
+		// TODO: remove me
+//		String jString = packageMessage(new CreateMinionMessage(123, 456, 69, 420));
+		NetworkUtils.getLocalHostAddr();
+		// TODO
+		
+		
 	    map = new TmxMapLoader().load("testmap.tmx");
 	    camera = new OrthographicCamera();
 	    renderer = new OrthogonalTiledMapRenderer(map, 1f / SCALE);
