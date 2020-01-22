@@ -1,9 +1,8 @@
 package com.week1.game.Networking.Messages;
 
 import com.badlogic.gdx.Gdx;
-import com.week1.game.Model.GameState;
-
 import com.google.gson.*;
+import com.week1.game.Networking.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +18,18 @@ public class MessageFormatter {
      * @return - the parsed message
      */
     public static List<AMessage> parseMessage(String jsonString) {
-        AMessage msg = g.fromJson(jsonString, AMessage.class);
+        Gdx.app.log(TAG, "jsonString: " + jsonString);
+//            CreateMinionMessage msg = g.fromJson(jsonString, CreateMinionMessage.class);
         List<AMessage> msgList = new ArrayList<>();
-        msgList.add(msg);
+        Update update = g.fromJson(jsonString, Update.class);
+        update.messages.forEach((msg) -> {
+            AMessage parsedMsg = g.fromJson(msg, CreateMinionMessage.class);
+            if (parsedMsg == null) {
+                parsedMsg = g.fromJson(msg, TestMessage.class);
+            }
+            msgList.add(parsedMsg);
+        });
+//        msgList.add(msg);
         return msgList;
     }
 
@@ -31,7 +39,7 @@ public class MessageFormatter {
      * @param msg - known AMessage type
      * @return - the json formatted message
      */
-    public static String packageMessage(AMessage msg) {
+    public static String packageMessage(Object msg) {
         String jsonString = g.toJson(msg);
         Gdx.app.log(TAG, "Packaged message: " + jsonString);
         return jsonString;

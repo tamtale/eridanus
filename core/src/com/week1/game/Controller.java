@@ -1,5 +1,6 @@
 package com.week1.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
@@ -11,9 +12,11 @@ import com.week1.game.Networking.NetworkUtils;
 import com.week1.game.Renderer.IRendererToEngineAdapter;
 import com.week1.game.Renderer.Renderer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Controller {
+    private static final String TAG = "Controller";
     private GameEngine engine;
     private ClickOracle clickOracle;
     private Client networkClient;
@@ -21,9 +24,10 @@ public class Controller {
     public Controller(String[] args) {
         networkClient = NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
             @Override
-            public void deliverUpdate(List<AMessage> messages) {
-                engine.deliverMessage(messages);
-            }
+            public void deliverUpdate(List<? extends AMessage> messages) {
+                Gdx.app.error(TAG, "deliverUpdate is unimplemented!");
+                engine.deliverMessage(new ArrayList<>());
+            } // TODO: implement this!
         });
         engine = new GameEngine(new IEngineToRendererAdapter() {
             @Override

@@ -31,7 +31,6 @@ import com.week1.game.Networking.NetworkUtils;
 
 import java.util.List;
 
-import static com.week1.game.Networking.Messages.MessageFormatter.packageMessage;
 
 
 public class Week1Demo extends ApplicationAdapter {
@@ -56,6 +55,15 @@ public class Week1Demo extends ApplicationAdapter {
 		this.args = args;
 	}
 
+	public void hack() {
+		NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
+			@Override
+			public void deliverUpdate(List<? extends AMessage> messages) {
+				System.out.println("Deliver update is noop");
+			}
+		});
+	}
+	
 	@Override
 	public void create () {
 	    map = new TmxMapLoader().load("testmap.tmx");
@@ -68,6 +76,7 @@ public class Week1Demo extends ApplicationAdapter {
 	    batch = renderer.getBatch();
 
 		initUnits();
+		hack();
 		Gdx.input.setInputProcessor(new InputAdapter() {
 			@Override
 			public boolean touchUp(int screenX, int screenY, int pointer, int button) {

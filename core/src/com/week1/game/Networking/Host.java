@@ -1,13 +1,19 @@
 package com.week1.game.Networking;
 
 import com.badlogic.gdx.Gdx;
+import com.week1.game.Networking.Messages.CreateMinionMessage;
+import com.week1.game.Networking.Messages.MessageFormatter;
+import com.week1.game.Networking.Messages.TestMessage;
+import com.week1.game.Networking.Messages.Update;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -84,7 +90,12 @@ public class Host {
                 outgoingMessage.append("]");
                 
                 Gdx.app.log(TAG, "Host is about to broadcast update message to registered clients.");
-                broadcastToRegisteredPlayers(outgoingMessage.toString());
+//                broadcastToRegisteredPlayers(outgoingMessage.toString()); //TODO: fix!
+                broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(Arrays.asList(
+                        MessageFormatter.packageMessage(new CreateMinionMessage(123, 456, 69, 420)),
+                        MessageFormatter.packageMessage(new TestMessage(345345, "omgwow", 10000))
+//                        MessageFormatter.packageMessage(new CreateMinionMessage(111, 999, 555, 666))
+                ))));
                 
                 // Take a break before the next update
                 try { Thread.sleep(UPDATE_INTERVAL); } catch (InterruptedException e) {e.printStackTrace();}
@@ -106,9 +117,9 @@ public class Host {
                 registry.values().forEach((p) -> Gdx.app.log(TAG, "\t" + p.address + " : " + p.port));
             } else if (msg.equals("start")) {
                 gameStarted = true;
-                Gdx.app.log(TAG, "Host received a 'start' message from: " + packet.getAddress().getHostAddress() + 
-                        "\nHost will forward the start message to all registered players.");
-                broadcastToRegisteredPlayers("start"); // TODO: This message probably not neccessary
+                Gdx.app.log(TAG, "Host received a 'start' message from: " + packet.getAddress().getHostAddress());
+//                        "\nHost will forward the start message to all registered players.");
+//                broadcastToRegisteredPlayers("start"); // TODO: This message probably not neccessary
                 runUpdateLoop();
                 
             } else {
