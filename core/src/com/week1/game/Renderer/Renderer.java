@@ -32,6 +32,7 @@ public class Renderer {
         map = new TmxMapLoader().load("testmap.tmx");
         camera = new OrthographicCamera();
         mapRenderer = new OrthogonalTiledMapRenderer(map, 1f / SCALE);
+        batch = mapRenderer.getBatch();
         camera.setToOrtho(false, 256, 256);
         camera.update();
         unitPixmap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888);
@@ -63,13 +64,13 @@ public class Renderer {
         batch.end();
     }
 
-//    public void render(GameState state) {
+    public void render(GameState state) {
 //        float diff = Gdx.graphics.getDeltaTime();
 //        Gdx.gl.glClearColor(0, 1f, 1f, 1);
 //        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 //        camera.update();
 //        mapRenderer.setView(camera);
 //        mapRenderer.render();
-//        adapter.drawUnits(batch);
-//    }
+        engineAdapter.render();
+    }
 }

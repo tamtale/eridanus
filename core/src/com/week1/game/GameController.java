@@ -91,6 +91,8 @@ public class GameController extends ApplicationAdapter {
 						return null;
 					}
 				});
+
+		renderer.create();
 	}
 
 

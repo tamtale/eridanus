@@ -2,19 +2,55 @@ package com.week1.game.Networking;
 
 import com.badlogic.gdx.Gdx;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
+import java.net.*;
+import java.nio.channels.SocketChannel;
+import java.util.Enumeration;
 
 public class NetworkUtils {
+    private static final String TAG = "NetworkUtils - lji1";
     public static String getLocalHostAddr() {
+//        https://stackoverflow.com/questions/40912417/java-getting-ipv4-address?fbclid=IwAR0JQ8qEf4V2bM42m-X0ATML0zf5zEyJ_gEWs9I7PskAHCmW_TNNj5cWp6I
+//        https://stackoverflow.com/questions/8462498/how-to-determine-internet-network-interface-in-java
+        String ip;
         try {
-            // TODO: broken for Tam
-            return NetworkInterface.getByName("wlan0").getInterfaceAddresses().get(0).getAddress().getHostAddress();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Failed to obtain local host address, due to anomalous network configuration. Use ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address instead.");
-            return "Failure";
-        }
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface iface = interfaces.nextElement();
+                // filters out 127.0.0.1 and inactive interfaces
+                if (iface.isLoopback() || !iface.isUp())
+                    continue;
+
+                Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                while(addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+
+                    // *EDIT*
+                    if (addr instanceof Inet6Address) continue;
+
+                    // try all the ports from 8000 to 9000, in case some of them are being used
+                    for (int i = 8000; i < 9000; i++) {
+                        try (SocketChannel socket = SocketChannel.open()) {
+                            socket.socket().setSoTimeout(3000);
+                            socket.bind(new InetSocketAddress(addr, i));
+
+                            // Try using the socket to connect to some reliable site
+                            // If it works, then this ip is usable
+                            socket.connect(new InetSocketAddress("google.com", 80));
+                            Gdx.app.log(TAG, "Obtained local host address: " + addr.getHostAddress() + " with port: " + i);
+                            return addr.getHostAddress();
+                        } catch (Exception e) {
+                            Gdx.app.log(TAG, "Port failed: " + i);
+//                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            throw new RuntimeException(e);
+        } 
+        
+        Gdx.app.error(TAG, "Unable to obtain valid ip address.");
+        return "failure to obtain ip address - see NetworkUtils";
     }
 
     /**
