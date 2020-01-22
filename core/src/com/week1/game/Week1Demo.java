@@ -26,9 +26,12 @@ import com.week1.game.Networking.Client;
 import com.week1.game.Networking.Host;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;
+import com.week1.game.Networking.Messages.CreateMinionMessage;
 import com.week1.game.Networking.NetworkUtils;
 
 import java.util.List;
+
+import static com.week1.game.Networking.Messages.MessageFormatter.packageMessage;
 
 
 public class Week1Demo extends ApplicationAdapter {
