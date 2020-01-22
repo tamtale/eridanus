@@ -3,6 +3,8 @@ package com.week1.game.Networking.Messages;
 import com.badlogic.gdx.Gdx;
 import com.week1.game.Model.GameState;
 
+import com.google.gson.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,9 @@ public class MessageFormatter {
      * @return - the json formatted message
      */
     public static String packageMessage(AMessage msg) {
+        
+        Gson g = new Gson();
+        
         return "Unimplemented :("; // TODO: Implement me please
     }
     
