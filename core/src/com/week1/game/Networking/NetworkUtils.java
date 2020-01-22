@@ -27,14 +27,6 @@ public class NetworkUtils {
                     // *EDIT*
                     if (addr instanceof Inet6Address) continue;
 
-                    ip = addr.getHostAddress();
-//                    System.out.println("*******************" + iface.getDisplayName() + " " + ip);
-//                    try {
-//                        System.out.println(addr.isReachable(3000));
-//                    } catch (Exception  e)  {
-//                        e.printStackTrace();
-//                    }
-                    
                     // try all the ports from 8000 to 9000, in case some of them are being used
                     for (int i = 8000; i < 9000; i++) {
                         try (SocketChannel socket = SocketChannel.open()) {
@@ -59,16 +51,6 @@ public class NetworkUtils {
         
         Gdx.app.error(TAG, "Unable to obtain valid ip address.");
         return "failure to obtain ip address - see NetworkUtils";
-        
-        
-//        try {
-//            // TODO: broken for Tam
-//            return NetworkInterface.getByName("wlan0").getInterfaceAddresses().get(0).getAddress().getHostAddress();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            System.out.println("Failed to obtain local host address, due to anomalous network configuration. Use ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address instead.");
-//            return "Failure";
-//        }
     }
 
     /**
