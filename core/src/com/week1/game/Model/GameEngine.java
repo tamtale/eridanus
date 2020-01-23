@@ -29,8 +29,11 @@ public class GameEngine {
         if (messageQueue.isEmpty()) {
             Gdx.app.log("ttl4 - message processing", "queue empty!");
             return;
+        } else {
+            Gdx.app.log("GameEngine: processMessages()", "queue nonempty!");
         }
-        for (AMessage message = messageQueue.remove(); !messageQueue.isEmpty(); message = messageQueue.remove()) {
+        for (AMessage message = messageQueue.poll(); message != null; message = messageQueue.poll()) {
+            Gdx.app.log("GameEngine: processMessages()", "processing message");
             message.process(gameState);
         }
     }

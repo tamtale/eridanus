@@ -2,6 +2,7 @@ package com.week1.game;
 
 
 import com.badlogic.gdx.ai.steer.Limiter;
+import java.util.concurrent.ThreadLocalRandom;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
@@ -19,6 +20,7 @@ import com.week1.game.Model.Unit;
 public class SteeringAgent implements Steerable<Vector2> {
 
     private final Unit unit;
+    private Vector2 goal = new Vector2(ThreadLocalRandom.current().nextInt(20, 160), ThreadLocalRandom.current().nextInt(20, 160));
 
     private static SteeringAcceleration<Vector2> steeringOutput =
             new SteeringAcceleration<Vector2>(new Vector2());
@@ -40,7 +42,7 @@ public class SteeringAgent implements Steerable<Vector2> {
         this.steeringBehavior = new Arrive<>(this, new Location<Vector2>() {
             @Override
             public Vector2 getPosition() {
-                return new Vector2(50,50);
+                return goal;
             }
 
             @Override

@@ -84,8 +84,8 @@ public class Host {
 //                broadcastToRegisteredPlayers(outgoingMessage.toString()); 
                 broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(Arrays.asList(
                         MessageFormatter.packageMessage(new CreateMinionMessage(
-                                ThreadLocalRandom.current().nextInt(20, 80), 
-                                ThreadLocalRandom.current().nextInt(20, 80), 
+                                ThreadLocalRandom.current().nextInt(20, 160),
+                                ThreadLocalRandom.current().nextInt(20, 160),
                                 69, 
                                 420))
 //                        MessageFormatter.packageMessage(new TestMessage(345345, "omgwow", 10000))
