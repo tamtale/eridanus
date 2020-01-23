@@ -76,7 +76,7 @@ public class Host {
                 List<String> outgoingMessages = new ArrayList<>();
                 while (!incomingMessages.isEmpty()) { // TODO: dangerous, if many messages coming all at once
 //                    Gdx.app.log(TAG, "queue is non empty");
-//                    outgoingMessages.add(incomingMessages.poll());
+                    outgoingMessages.add(incomingMessages.poll());
                 }
 
                 Gdx.app.log(TAG, "Host is about to broadcast update message to registered clients.");
@@ -124,26 +124,6 @@ public class Host {
             // Game has started
             Gdx.app.log(TAG, "Host received an update message from: " + packet.getAddress().getHostAddress());
             incomingMessages.add(msg);
-            
-            
-//            aggregateMessage.append(msg);
-//            registry.get(packet.getAddress()).checkedIn = true;
-//
-//            // check if all players have checked in yet
-//            boolean ready = true;
-//            for (Player player : registry.values()) {
-//                ready = ready && player.checkedIn;
-//            }
-//
-//            if (ready) {
-//                // all players have checked in; send out the next update
-//                broadcastToRegisteredPlayers(aggregateMessage.toString());
-//
-//                // clean up for the next round
-//                aggregateMessage = new StringBuilder();
-//                registry.values().forEach((player) -> player.checkedIn = false);
-//            } 
-//            // else, wait for the other players to check in
         }
         
         
