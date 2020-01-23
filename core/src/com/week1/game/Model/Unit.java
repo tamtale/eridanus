@@ -9,19 +9,15 @@ import com.week1.game.SteeringAgent;
 import static com.week1.game.GameController.SCALE;
 
 public class Unit extends Rectangle {
-    public float dx;
-    public float dy;
     public boolean clicked;
     public SteeringAgent agent;
     public Texture unselectedSkin, selectedSkin;
     private Pixmap unitPixmap, unitPixmap2;
 
-    public Unit(float x, float y, float dx, float dy) {
+    public Unit(float x, float y) {
         super(x, y, SCALE, SCALE);
         this.x = x;
         this.y = y;
-        this.dx = dx;
-        this.dy = dy;
         this.clicked = false;
         // TODO put Pixmap creation somewhere at game creation. only one is necessary per unit type.
         unitPixmap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888);

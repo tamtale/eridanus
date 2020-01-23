@@ -16,7 +16,7 @@ public class GameState {
         // TODO tower types in memory after exchange
 
         units = new Array<>();
-        units.add(new Unit(20, 20, 0, 0));
+        units.add(new Unit(20, 20));
         agents = new Array<>();
     }
 
