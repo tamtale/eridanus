@@ -69,16 +69,12 @@ public class GameController extends ApplicationAdapter {
 						return engine.getGameState().findUnit(position);
 					}
 
-					@Override
-					public Unit spawn(Vector3 position) {
-						return null;
-					}
 				},
 				new IClickOracleToNetworkAdapter() {
 
 					@Override
 					public void sendMessage(AMessage msg) {
-						// TODO: implement
+
 					}
 				});
 
