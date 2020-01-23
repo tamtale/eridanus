@@ -7,6 +7,7 @@ import com.week1.game.Model.*;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;
+import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkUtils;
 import com.week1.game.Renderer.IRendererToEngineAdapter;
 import com.week1.game.Renderer.Renderer;
@@ -75,10 +76,9 @@ public class GameController extends ApplicationAdapter {
 					}
 				},
 				new IClickOracleToNetworkAdapter() {
-
 					@Override
 					public void sendMessage(AMessage msg) {
-						// TODO: implement
+						networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 					}
 				});
 

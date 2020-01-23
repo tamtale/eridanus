@@ -73,23 +73,24 @@ public class Host {
         Gdx.app.log(TAG, "Host is about to begin running update loop.");
         new Thread(() -> {
             while (true) {
-                List<AMessage> outgoingMessages = new ArrayList<>();
+                List<String> outgoingMessages = new ArrayList<>();
                 while (!incomingMessages.isEmpty()) { // TODO: dangerous, if many messages coming all at once
 //                    Gdx.app.log(TAG, "queue is non empty");
                     outgoingMessages.add(incomingMessages.poll());
                 }
-                
+
                 Gdx.app.log(TAG, "Host is about to broadcast update message to registered clients.");
-//                broadcastToRegisteredPlayers(outgoingMessage.toString()); 
-                broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(Arrays.asList(
-                        MessageFormatter.packageMessage(new CreateMinionMessage(
-                                ThreadLocalRandom.current().nextInt(20, 160),
-                                ThreadLocalRandom.current().nextInt(20, 160),
-                                69, 
-                                420))
-//                        MessageFormatter.packageMessage(new TestMessage(345345, "omgwow", 10000))
-//                        MessageFormatter.packageMessage(new CreateMinionMessage(111, 999, 555, 666))
-                ))));
+                broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(outgoingMessages)));
+                
+//                broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(Arrays.asList(
+//                        MessageFormatter.packageMessage(new CreateMinionMessage(
+//                                ThreadLocalRandom.current().nextInt(20, 160),
+//                                ThreadLocalRandom.current().nextInt(20, 160),
+//                                69, 
+//                                420))
+////                        MessageFormatter.packageMessage(new TestMessage(345345, "omgwow", 10000))
+////                        MessageFormatter.packageMessage(new CreateMinionMessage(111, 999, 555, 666))
+//                ))));
                 
                 // Take a break before the next update
                 try { Thread.sleep(UPDATE_INTERVAL); } catch (InterruptedException e) {e.printStackTrace();}
