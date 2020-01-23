@@ -76,7 +76,7 @@ public class Host {
                 List<String> outgoingMessages = new ArrayList<>();
                 while (!incomingMessages.isEmpty()) { // TODO: dangerous, if many messages coming all at once
 //                    Gdx.app.log(TAG, "queue is non empty");
-                    outgoingMessages.add(incomingMessages.poll());
+//                    outgoingMessages.add(incomingMessages.poll());
                 }
 
                 Gdx.app.log(TAG, "Host is about to broadcast update message to registered clients.");
