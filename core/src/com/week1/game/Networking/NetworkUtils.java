@@ -2,10 +2,8 @@ package com.week1.game.Networking;
 
 import com.badlogic.gdx.Gdx;
 
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
+import java.net.*;
+import java.nio.channels.SocketChannel;
 import java.util.Enumeration;
 
 public class NetworkUtils {
@@ -29,6 +27,32 @@ public class NetworkUtils {
 
                     ip = addr.getHostAddress();
                     System.out.println("*******************" + iface.getDisplayName() + " " + ip);
+//                    System.out.println(addr.isAnyLocalAddress());
+//                    System.out.println(addr.isLinkLocalAddress());
+//                    System.out.println(addr.isLoopbackAddress());
+//                    System.out.println(addr.isMCGlobal());
+//                    System.out.println(addr.isMCLinkLocal());
+//                    System.out.println(addr.isMCNodeLocal());
+//                    System.out.println(addr.isMCOrgLocal());
+//                    System.out.println(addr.isMCSiteLocal());
+//                    System.out.println(addr.isMulticastAddress());
+                    try {
+                        System.out.println(addr.isReachable(3000));
+                    } catch (Exception  e)  {
+                        e.printStackTrace();
+                    }
+                    try  (SocketChannel  socket  = SocketChannel.open()) {
+                        socket.socket().setSoTimeout(3000);
+                        socket.bind(new InetSocketAddress(addr, 8080));
+                        socket.connect(new InetSocketAddress("google.com", 80));
+                        System.out.println("success!");
+                    } catch (Exception e) {
+                        System.out.println("failure!");
+                        e.printStackTrace();
+                    }
+
+
+
                 }
             }
         } catch (SocketException e) {
