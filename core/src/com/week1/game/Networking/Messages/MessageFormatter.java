@@ -19,17 +19,18 @@ public class MessageFormatter {
      */
     public static List<AMessage> parseMessage(String jsonString) {
         Gdx.app.log(TAG, "jsonString: " + jsonString);
-//            CreateMinionMessage msg = g.fromJson(jsonString, CreateMinionMessage.class);
         List<AMessage> msgList = new ArrayList<>();
         Update update = g.fromJson(jsonString, Update.class);
         update.messages.forEach((msg) -> {
-            AMessage parsedMsg = g.fromJson(msg, CreateMinionMessage.class);
-            if (parsedMsg == null) {
+            AMessage parsedMsg = g.fromJson(msg, PrototypeMessage.class);
+//            Gdx.app.log(TAG, "Parsed Message: " + parsedMsg);
+            if (parsedMsg.messageTypeID == 0) {
                 parsedMsg = g.fromJson(msg, TestMessage.class);
+            } else {
+                parsedMsg = g.fromJson(msg, CreateMinionMessage.class);
             }
             msgList.add(parsedMsg);
         });
-//        msgList.add(msg);
         return msgList;
     }
 
@@ -41,7 +42,7 @@ public class MessageFormatter {
      */
     public static String packageMessage(Object msg) {
         String jsonString = g.toJson(msg);
-        Gdx.app.log(TAG, "Packaged message: " + jsonString);
+//        Gdx.app.log(TAG, "Packaged message: " + jsonString);
         return jsonString;
     }
     

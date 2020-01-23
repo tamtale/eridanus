@@ -59,7 +59,9 @@ public class Week1Demo extends ApplicationAdapter {
 		NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
 			@Override
 			public void deliverUpdate(List<? extends AMessage> messages) {
-				System.out.println("Deliver update is noop");
+
+				System.out.println("Messages delivered: ");
+				messages.forEach(msg -> System.out.println("\t" + msg));
 			}
 		});
 	}

@@ -69,12 +69,8 @@ public class Client {
                     udpSocket.receive(packet);
                     String messages = new String(packet.getData()).trim();
                     Gdx.app.log(TAG, "Received update: " + messages);
-                    List<AMessage> msgList = MessageFormatter.parseMessage(messages); //TODO: FIX THIS
-                    
-                    System.out.println("Messages: ");
-                    msgList.forEach(System.out::println);
-                    
-                    adapter.deliverUpdate(new ArrayList<>()); // TODO: FIX THIS
+                    List<AMessage> msgList = MessageFormatter.parseMessage(messages);
+                    adapter.deliverUpdate(msgList); 
 
                 } catch (IOException e) {
                     e.printStackTrace();

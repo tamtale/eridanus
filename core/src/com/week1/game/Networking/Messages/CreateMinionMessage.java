@@ -6,12 +6,13 @@ import com.week1.game.Model.Unit;
 import com.week1.game.SteeringAgent;
 
 public class CreateMinionMessage extends AMessage {
+    private final static int MESSAGE_TYPE = 1;
 
     private float x, y;
     private int unitType;
 
     public CreateMinionMessage(float x, float y, int unitType, int playerID){
-        super(playerID);
+        super(playerID, MESSAGE_TYPE);
         this.x = x;
         this.y = y;
         this.unitType = unitType; // TODO use this
