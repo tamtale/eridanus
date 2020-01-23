@@ -3,12 +3,15 @@ package com.week1.game.Networking;
 import com.badlogic.gdx.Gdx;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
+import com.week1.game.Networking.Messages.Update;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Client {
     
@@ -17,6 +20,8 @@ public class Client {
     private InetAddress hostAddress;
     private int hostPort;
     private INetworkClientToEngineAdapter adapter;
+    
+//    private ConcurrentLinkedQueue<AMessage> messagesToSend = new ConcurrentLinkedQueue<>();
     
     public Client(String hostIpAddr, int hostPort, INetworkClientToEngineAdapter adapter) throws IOException {
         this.hostAddress = InetAddress.getByName(hostIpAddr);
@@ -27,13 +32,17 @@ public class Client {
         Gdx.app.log(TAG, "Created socket for client instance on port: " + udpSocket.getLocalPort());
         
         Gdx.app.log(TAG, "Sending join message.");
-        sendMessage("join");
+        sendStringMessage("join");
         
         awaitUpdates();
     }
     
+//    public void sendMessage(AMessage msg) {
+//        messagesToSend.add(msg);
+//    }
+    
     // TODO: since using UDP protocol, doesn't guarantee ordering of messages -> update to TCP to resolve
-    public void sendMessage(String msg) {
+    public void sendStringMessage(String msg) {
         DatagramPacket p = new DatagramPacket(
                 msg.getBytes(), msg.getBytes().length, hostAddress, this.hostPort);
 
@@ -60,8 +69,8 @@ public class Client {
                     udpSocket.receive(packet);
                     String messages = new String(packet.getData()).trim();
                     Gdx.app.log(TAG, "Received update: " + messages);
-                    List<AMessage> receivedMessages = MessageFormatter.parseMessage(messages);
-                    adapter.deliverUpdate(receivedMessages);
+                    List<AMessage> msgList = MessageFormatter.parseMessage(messages);
+                    adapter.deliverUpdate(msgList); 
 
                 } catch (IOException e) {
                     e.printStackTrace();

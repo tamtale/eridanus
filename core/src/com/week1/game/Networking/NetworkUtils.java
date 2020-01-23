@@ -61,13 +61,18 @@ public class NetworkUtils {
      * @return The client object
      */
     public static Client initNetworkObjects(String[] args, INetworkClientToEngineAdapter adapter) {
-        final String INITNETWORKTAG = "initNetworkObjects - lji1";
-        Gdx.app.log(INITNETWORKTAG, "Local host address: " + getLocalHostAddr());
+        final String TAG = "initNetworkObjects - lji1";
+        Gdx.app.log(TAG, "Local host address: " + getLocalHostAddr());
+        
+        Gdx.app.log(TAG, "Arguments: ");
+        for (int i = 0; i < args.length; i++) {
+            Gdx.app.log(TAG, "\t" + args[i]);
+        }
 
         Client c =  null;
         try {
             if (args[0].equals("host")) {
-                Gdx.app.log(INITNETWORKTAG, "Host option chosen.");
+                Gdx.app.log(TAG, "Host option chosen.");
 
                 String localIpAddr = InetAddress.getLocalHost().getHostAddress();
 
@@ -80,8 +85,13 @@ public class NetworkUtils {
                 // Now make the client stuff
                 c = new Client(localIpAddr, h.getPort(), adapter);
 
+                if (args.length == 2 && args[1].equals("start")) {
+                    // Time to start the game
+                    c.sendStringMessage("start");
+                }
+
             } else if  (args[0].equals("client")) {
-                Gdx.app.log(INITNETWORKTAG, "Client option chosen.");
+                Gdx.app.log(TAG, "Client option chosen.");
                 // host ip is the number listed under ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address
 
                 String hostIpAddr = args[1];
@@ -90,14 +100,14 @@ public class NetworkUtils {
 
                 if (args.length == 4 && args[3].equals("start")) {
                     // Time to start the game
-                    c.sendMessage("start");
+                    c.sendStringMessage("start");
                 }
 
 
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Gdx.app.error(INITNETWORKTAG, "Failed to initialize");
+            Gdx.app.error(TAG, "Failed to initialize");
         }
 
         return c;
