@@ -1,12 +1,13 @@
 package com.week1.game.Model;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Vector3;
 
 public class ClickOracle extends InputAdapter {
 
-    private Vector3 touchPos;
+    private Vector3 touchPos = new Vector3();
     private IClickOracleToRendererAdapter rendererAdapter;
     private IClickOracleToEngineAdapter engineAdapter;
     private Unit selected;
@@ -23,11 +24,14 @@ public class ClickOracle extends InputAdapter {
         rendererAdapter.unproject(touchPos);
 
         if (button == Input.Buttons.LEFT) {
-            selected = engineAdapter.selectUnit(touchPos);
-            if (selected == null) {
+            Unit unit = engineAdapter.selectUnit(touchPos);
+            if (unit == null) {
+                Gdx.app.log("ttl4 - ClickOracle", "nothing selected!");
+                select(engineAdapter.spawn(touchPos));
+            } else {
+                Gdx.app.log("ttl4 - ClickOracle", "selected selected!");
+                select(unit);
             }
-
-            select(engineAdapter.spawn(touchPos));
             return true;
         }
         // Right click
@@ -43,7 +47,9 @@ public class ClickOracle extends InputAdapter {
     private void select(Unit unit) {
         unselect();
         selected = unit;
-        unit.clicked = true;
+        if (unit != null) {
+            unit.clicked = true;
+        }
     }
     private void unselect() {
         if (selected != null) {

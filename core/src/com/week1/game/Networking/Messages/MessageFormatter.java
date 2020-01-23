@@ -19,9 +19,9 @@ public class MessageFormatter {
      * @return - the parsed message
      */
     public static List<AMessage> parseMessage(String jsonString) {
-        AMessage msg = g.fromJson(jsonString, AMessage.class);
+        // AMessage msg = g.fromJson(jsonString, AMessage.class);
         List<AMessage> msgList = new ArrayList<>();
-        msgList.add(msg);
+        // msgList.add(msg);
         return msgList;
     }
 

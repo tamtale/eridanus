@@ -5,5 +5,5 @@ import com.week1.game.Model.GameState;
 public abstract class AMessage {
 
     int playerID; // Requires that every message has a playerID (neccessary for network processing)
-    abstract boolean process(GameState gameState);
+    public abstract boolean process(GameState gameState);
 }

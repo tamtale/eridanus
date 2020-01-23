@@ -23,6 +23,7 @@ public class Unit extends Rectangle {
         this.dx = dx;
         this.dy = dy;
         this.clicked = false;
+        // TODO put Pixmap creation somewhere at game creation. only one is necessary per unit type.
         unitPixmap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888);
         unitPixmap.setColor(Color.BLUE);
         unitPixmap.fill();
@@ -35,7 +36,9 @@ public class Unit extends Rectangle {
     }
 
     public void step(float delta) {
-        agent.update(delta);
+        if (agent != null) {
+            agent.update(delta);
+        }
     }
 
     public Texture getSelectedSkin(){

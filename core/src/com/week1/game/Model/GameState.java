@@ -1,5 +1,6 @@
 package com.week1.game.Model;
 
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.SteeringAgent;
 
@@ -15,6 +16,7 @@ public class GameState {
         // TODO tower types in memory after exchange
 
         units = new Array<>();
+        units.add(new Unit(20, 20, 0, 0));
         agents = new Array<>();
     }
 
@@ -41,5 +43,14 @@ public class GameState {
                 drawFunc.draw(unit.getUnselectedSkin(), unit.x, unit.y);
             }
         }
+    }
+
+    public Unit findUnit(Vector3 position) {
+        for (Unit unit: units) {
+           if (unit.contains(position.x, position.y))  {
+               return unit;
+           }
+        }
+        return null;
     }
 }
