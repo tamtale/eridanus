@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Host {
 
     private static final String TAG = "Host - lji1";
-    private static final int UPDATE_INTERVAL = 3000;
+    private static final int UPDATE_INTERVAL = 100;
     private int port;
     private DatagramSocket udpSocket;
     

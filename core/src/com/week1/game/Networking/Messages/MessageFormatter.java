@@ -2,6 +2,7 @@ package com.week1.game.Networking.Messages;
 
 import com.badlogic.gdx.Gdx;
 import com.google.gson.*;
+import com.week1.game.Networking.MessageTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +24,12 @@ public class MessageFormatter {
         update.messages.forEach((msg) -> {
             AMessage parsedMsg = g.fromJson(msg, PrototypeMessage.class);
 //            Gdx.app.log(TAG, "Parsed Message: " + parsedMsg);
-            if (parsedMsg.messageTypeID == 0) {
+            if (parsedMsg.messageTypeID == MessageTypes.TEST.ordinal()) {
                 parsedMsg = g.fromJson(msg, TestMessage.class);
-            } else {
+            } else if (parsedMsg.messageTypeID == MessageTypes.CREATE.ordinal()){
                 parsedMsg = g.fromJson(msg, CreateMinionMessage.class);
+            } else {
+                parsedMsg = g.fromJson(msg, MoveMinionMessage.class);
             }
             msgList.add(parsedMsg);
         });

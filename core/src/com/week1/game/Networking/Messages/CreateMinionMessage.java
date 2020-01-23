@@ -3,10 +3,13 @@ package com.week1.game.Networking.Messages;
 import com.badlogic.gdx.math.Vector2;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Unit;
+import com.week1.game.Networking.MessageTypes;
 import com.week1.game.SteeringAgent;
 
+import java.awt.*;
+
 public class CreateMinionMessage extends AMessage {
-    private final static int MESSAGE_TYPE = 1;
+    private final static int MESSAGE_TYPE = MessageTypes.CREATE.ordinal();
 
     private float x, y;
     private int unitType;
