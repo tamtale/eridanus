@@ -34,6 +34,10 @@ public class Client {
         
         awaitUpdates();
     }
+
+    public String getHostAddr() {
+        return hostAddress.toString() + ":" + hostPort;
+    }
     
     
     // TODO: since using UDP protocol, doesn't guarantee ordering of messages -> update to TCP to resolve

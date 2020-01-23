@@ -3,11 +3,13 @@ package com.week1.game.Renderer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.GameState;
+import jdk.jfr.internal.test.WhiteBox;
 
 public class Renderer {
 
@@ -22,9 +24,12 @@ public class Renderer {
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
     private IRendererToEngineAdapter engineAdapter;
+    private IRendererToNetworkAdapter networkAdapter;
+    private BitmapFont font = new BitmapFont();
 
-    public Renderer(IRendererToEngineAdapter engineAdapter) {
+    public Renderer(IRendererToEngineAdapter engineAdapter, IRendererToNetworkAdapter networkAdapter) {
         this.engineAdapter = engineAdapter;
+        this.networkAdapter = networkAdapter;
     }
 
 
@@ -64,8 +69,17 @@ public class Renderer {
         batch.end();
     }
 
+    public void renderInfo() {
+        Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        startBatch();
+        font.setColor(Color.WHITE);
+        font.draw(batch, "Host IP:" + networkAdapter.getHostAddr(), 50, 50);
+        endBatch();
+    }
+
     public void render() {
-        Gdx.gl.glClearColor(0, 1f, 1f, 1);
+        Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         mapRenderer.setView(camera);
