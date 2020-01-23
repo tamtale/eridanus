@@ -10,6 +10,7 @@ import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkUtils;
 import com.week1.game.Renderer.IRendererToEngineAdapter;
+import com.week1.game.Renderer.IRendererToNetworkAdapter;
 import com.week1.game.Renderer.Renderer;
 
 import java.util.List;
@@ -56,6 +57,16 @@ public class GameController extends ApplicationAdapter {
 			public void render() {
 				engine.render();
 			}
+		}, new IRendererToNetworkAdapter() {
+			@Override
+			public String getHostAddr() {
+				return networkClient.getHostAddr();
+			}
+
+			@Override
+			public String getClientAddr() {
+				return null;
+			}
 		});
 		clickOracle = new ClickOracle(
 				new IClickOracleToRendererAdapter() {
@@ -86,6 +97,7 @@ public class GameController extends ApplicationAdapter {
 	@Override
 	public void render () {
 		if (!engine.started()) {
+			renderer.renderInfo();
 			return;
 		}
 		float time = Gdx.graphics.getDeltaTime();
