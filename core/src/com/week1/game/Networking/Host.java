@@ -74,11 +74,10 @@ public class Host {
         new Thread(() -> {
             while (true) {
                 List<AMessage> outgoingMessages = new ArrayList<>();
-//                while (!incomingMessages.isEmpty()) { // TODO: dangerous, if many messages coming all at once
-////                    Gdx.app.log(TAG, "queue is non empty");
-//                    outgoingMessages.add(incomingMessages.poll());
-//                }
-//                outgoingMessage.append("]");
+                while (!incomingMessages.isEmpty()) { // TODO: dangerous, if many messages coming all at once
+//                    Gdx.app.log(TAG, "queue is non empty");
+                    outgoingMessages.add(incomingMessages.poll());
+                }
                 
                 Gdx.app.log(TAG, "Host is about to broadcast update message to registered clients.");
 //                broadcastToRegisteredPlayers(outgoingMessage.toString()); 

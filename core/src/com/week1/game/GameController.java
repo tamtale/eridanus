@@ -73,6 +73,13 @@ public class GameController extends ApplicationAdapter {
 					public Unit spawn(Vector3 position) {
 						return null;
 					}
+				},
+				new IClickOracleToNetworkAdapter() {
+
+					@Override
+					public void sendMessage(AMessage msg) {
+						// TODO: implement
+					}
 				});
 
 		Gdx.input.setInputProcessor(clickOracle);

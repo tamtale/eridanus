@@ -22,10 +22,10 @@ public class CreateMinionMessage extends AMessage {
     public boolean process(GameState inputState){
         Unit unit = new Unit(x, y, 0, 0);
         inputState.addUnit(unit);
-        SteeringAgent agent = new SteeringAgent(unit, new Vector2(x, y), 0,
-                new Vector2((float) .1, (float) .1), 0, 1, true, (float).5);
-        inputState.addAgent(agent);
-        unit.agent = agent;
+//        SteeringAgent agent = new SteeringAgent(unit, new Vector2(x, y), 0,
+//                new Vector2((float) .1, (float) .1), 0, 1, true, (float).5);
+//        inputState.addAgent(agent);
+//        unit.agent = agent;
         return true;
     }
     

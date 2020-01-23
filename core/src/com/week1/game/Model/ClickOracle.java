@@ -12,7 +12,9 @@ public class ClickOracle extends InputAdapter {
     private IClickOracleToEngineAdapter engineAdapter;
     private Unit selected;
 
-    public ClickOracle(IClickOracleToRendererAdapter rendererAdapter, IClickOracleToEngineAdapter engineAdapter) {
+    public ClickOracle(IClickOracleToRendererAdapter rendererAdapter, 
+                       IClickOracleToEngineAdapter engineAdapter,
+                       IClickOracleToNetworkAdapter networkAdapter) {
         this.rendererAdapter = rendererAdapter;
         this.engineAdapter = engineAdapter;
     }
