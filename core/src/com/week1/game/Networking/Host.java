@@ -47,7 +47,7 @@ public class Host {
         new Thread(() -> {
             while (true) {
                 Gdx.app.log(TAG, "Host is listening for next client message.");
-                byte[] buf = new byte[256];
+                byte[] buf = new byte[1024]; // TODO: DANGEROUS HARDCODED
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
                 try {

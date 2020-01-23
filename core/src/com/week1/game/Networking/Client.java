@@ -56,7 +56,7 @@ public class Client {
         
         new Thread(() -> {
             while (true) {
-                byte[] buf = new byte[256];
+                byte[] buf = new byte[1024]; // TODO: size this according to messag length
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
                 try {
