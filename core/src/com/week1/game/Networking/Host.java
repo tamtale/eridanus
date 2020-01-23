@@ -1,21 +1,17 @@
 package com.week1.game.Networking;
 
 import com.badlogic.gdx.Gdx;
-import com.week1.game.Networking.Messages.CreateMinionMessage;
-import com.week1.game.Networking.Messages.MessageFormatter;
-import com.week1.game.Networking.Messages.TestMessage;
-import com.week1.game.Networking.Messages.Update;
+import com.week1.game.Networking.Messages.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Host {
 
@@ -77,23 +73,22 @@ public class Host {
         Gdx.app.log(TAG, "Host is about to begin running update loop.");
         new Thread(() -> {
             while (true) {
-                StringBuilder outgoingMessage = new StringBuilder("[");
-                boolean first = true;
-                while (!incomingMessages.isEmpty()) { // TODO: dangerous, if many messages coming all at once
-//                    Gdx.app.log(TAG, "queue is non empty");
-                    if (first) {
-                        outgoingMessage.append(", ");
-                        first = false;
-                    }
-                    outgoingMessage.append(incomingMessages.poll());
-                }
-                outgoingMessage.append("]");
+                List<AMessage> outgoingMessages = new ArrayList<>();
+//                while (!incomingMessages.isEmpty()) { // TODO: dangerous, if many messages coming all at once
+////                    Gdx.app.log(TAG, "queue is non empty");
+//                    outgoingMessages.add(incomingMessages.poll());
+//                }
+//                outgoingMessage.append("]");
                 
                 Gdx.app.log(TAG, "Host is about to broadcast update message to registered clients.");
-//                broadcastToRegisteredPlayers(outgoingMessage.toString()); //TODO: fix!
+//                broadcastToRegisteredPlayers(outgoingMessage.toString()); 
                 broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(Arrays.asList(
-                        MessageFormatter.packageMessage(new CreateMinionMessage(123, 456, 69, 420)),
-                        MessageFormatter.packageMessage(new TestMessage(345345, "omgwow", 10000))
+                        MessageFormatter.packageMessage(new CreateMinionMessage(
+                                ThreadLocalRandom.current().nextInt(20, 80), 
+                                ThreadLocalRandom.current().nextInt(20, 80), 
+                                69, 
+                                420))
+//                        MessageFormatter.packageMessage(new TestMessage(345345, "omgwow", 10000))
 //                        MessageFormatter.packageMessage(new CreateMinionMessage(111, 999, 555, 666))
                 ))));
                 

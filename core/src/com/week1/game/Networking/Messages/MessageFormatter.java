@@ -2,7 +2,6 @@ package com.week1.game.Networking.Messages;
 
 import com.badlogic.gdx.Gdx;
 import com.google.gson.*;
-import com.week1.game.Networking.Player;
 
 import java.util.ArrayList;
 import java.util.List;

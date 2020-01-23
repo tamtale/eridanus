@@ -21,7 +21,7 @@ public class Client {
     private int hostPort;
     private INetworkClientToEngineAdapter adapter;
     
-    private ConcurrentLinkedQueue<AMessage> messagesToSend = new ConcurrentLinkedQueue<>();
+//    private ConcurrentLinkedQueue<AMessage> messagesToSend = new ConcurrentLinkedQueue<>();
     
     public Client(String hostIpAddr, int hostPort, INetworkClientToEngineAdapter adapter) throws IOException {
         this.hostAddress = InetAddress.getByName(hostIpAddr);
@@ -37,9 +37,9 @@ public class Client {
         awaitUpdates();
     }
     
-    public void sendMessage(AMessage msg) {
-        messagesToSend.add(msg);
-    }
+//    public void sendMessage(AMessage msg) {
+//        messagesToSend.add(msg);
+//    }
     
     // TODO: since using UDP protocol, doesn't guarantee ordering of messages -> update to TCP to resolve
     public void sendStringMessage(String msg) {
