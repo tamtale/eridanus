@@ -8,7 +8,7 @@ public class PrototypeMessage extends AMessage {
     }
 
     @Override
-    boolean process(GameState gameState) {
+    public boolean process(GameState gameState) {
         return false;
     }
     

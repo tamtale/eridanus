@@ -19,7 +19,7 @@ public class GameEngine {
         engineToRenderer = engineToRendererAdapter;
     }
 
-    public void receiveMessages(List<AMessage> messages) {
+    public void receiveMessages(List<? extends AMessage> messages) {
         communicationTurn += 1;
         Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn);
         messageQueue.addAll(messages);

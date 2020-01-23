@@ -33,7 +33,7 @@ public class GameController extends ApplicationAdapter {
 	public void create () {
 		networkClient = NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
 			@Override
-			public void deliverUpdate(List<AMessage> messages) {
+			public void deliverUpdate(List<? extends AMessage> messages) {
 				engine.receiveMessages(messages);
 			}
 		});

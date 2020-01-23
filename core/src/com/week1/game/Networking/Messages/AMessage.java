@@ -12,5 +12,5 @@ public abstract class AMessage {
         this.messageTypeID = messageTypeID;
     }
     
-    abstract boolean process(GameState gameState);
+    public abstract boolean process(GameState gameState);
 }
