@@ -2,7 +2,6 @@ package com.week1.game;
 
 
 import com.badlogic.gdx.ai.steer.Limiter;
-import java.util.concurrent.ThreadLocalRandom;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
@@ -25,11 +24,13 @@ public class SteeringAgent implements Steerable<Vector2> {
     private static SteeringAcceleration<Vector2> steeringOutput =
             new SteeringAcceleration<Vector2>(new Vector2());
 
+    private static final String tag = "Steering Agent";
     public SteeringAgent(Unit unit, Vector2 position, float orientation, Vector2 linearVelocity, float angularVelocity, float maxSpeed,
     boolean independentFacing, float maxLinearAcceleration){
 //        this.steeringOutput =
 //                new SteeringAcceleration<Vector2>(linearVelocity);
 //        System.out.println(steeringOutput.linear);
+        Gdx.app.log(tag, "Building a SteeringAgent");
         this.unit = unit;
         this.position = position;
         this.orientation = orientation;
@@ -103,6 +104,14 @@ public class SteeringAgent implements Steerable<Vector2> {
     public float getBoundingRadius() {
         System.out.println("get that bounding rad");
         return 0;
+    }
+
+    public SteeringBehavior<Vector2> getSteeringBehavior() {
+        return steeringBehavior;
+    }
+
+    public void setSteeringBehavior(SteeringBehavior<Vector2> steeringBehavior) {
+        this.steeringBehavior = steeringBehavior;
     }
 
     @Override
@@ -206,6 +215,7 @@ public class SteeringAgent implements Steerable<Vector2> {
 
     public void update (float delta) {
         if (steeringBehavior != null) {
+            Gdx.app.log(tag, "Updating position and velocity");
             // Calculate steering acceleration
             steeringBehavior.calculateSteering(steeringOutput);
             /*

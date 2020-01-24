@@ -2,7 +2,7 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.week1.game.SteeringAgent;
+import com.week1.game.AIMovement.SteeringAgent;
 
 public class GameState {
 
