@@ -20,6 +20,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.sun.org.apache.bcel.internal.classfile.Unknown;
+import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Unit;
 import com.week1.game.Networking.Client;
@@ -89,7 +90,7 @@ public class Week1Demo extends ApplicationAdapter {
 				// Right click
                 if (selected != null) {
                 	final Vector2 vec = new Vector2(touchPos.x,touchPos.y);
-					selected.agent.steeringBehavior = new Arrive<>(selected.agent, new Location<Vector2>() {
+					selected.agent.setSteeringBehavior(new Arrive<>(selected.agent, new Location<Vector2>() {
 						@Override
 						public Vector2 getPosition() {
 							return vec;
@@ -121,7 +122,7 @@ public class Week1Demo extends ApplicationAdapter {
 						public Location<Vector2> newLocation() {
 							return this;
 						}
-					}).setArrivalTolerance(0).setDecelerationRadius(50).setTimeToTarget(10);
+					}).setArrivalTolerance(0).setDecelerationRadius(50).setTimeToTarget(10));
 //						int xSign = (selected.x < touchPos.x) ? 1 : -1;
 //                		int ySign = (selected.y < touchPos.y) ? 1 : -1;
 //						double angle = Math.atan((selected.y - touchPos.y) / (selected.x - touchPos.x));

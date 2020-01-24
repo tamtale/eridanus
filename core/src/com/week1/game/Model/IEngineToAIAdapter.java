@@ -6,7 +6,7 @@ import com.week1.game.AIMovement.SteeringAgent;
 import java.util.UUID;
 
 public interface IEngineToAIAdapter {
-    void spawn(Unit unit, SteeringAgent agent, UUID id);
+    void spawn(Unit unit, UUID id);
     void spawnTower();//Tower class
     void updateTarget(Unit unit, Vector3 newTarget, UUID id);
     void buildMap();//Map class
