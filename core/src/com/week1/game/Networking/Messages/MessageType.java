@@ -1,6 +1,6 @@
-package com.week1.game.Networking;
+package com.week1.game.Networking.Messages;
 
-public enum MessageTypes {
+public enum MessageType {
     TEST,
     CREATE,
     MOVE

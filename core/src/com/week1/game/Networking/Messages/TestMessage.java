@@ -1,10 +1,9 @@
 package com.week1.game.Networking.Messages;
 
 import com.week1.game.Model.GameState;
-import com.week1.game.Networking.MessageTypes;
 
 public class TestMessage extends AMessage {
-    private final static int MESSAGE_TYPE = MessageTypes.TEST.ordinal();
+    private final static MessageType MESSAGE_TYPE = MessageType.TEST;
 
     private int coolValue;
     private String wow;

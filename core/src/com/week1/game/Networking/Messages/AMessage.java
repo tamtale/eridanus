@@ -5,9 +5,9 @@ import com.week1.game.Model.GameState;
 public abstract class AMessage {
 
     int playerID; // Requires that every message has a playerID (neccessary for network processing)
-    int messageTypeID;
+    MessageType messageTypeID;
     
-    public AMessage(int playerID, int messageTypeID) {
+    public AMessage(int playerID, MessageType messageTypeID) {
         this.playerID = playerID;
         this.messageTypeID = messageTypeID;
     }

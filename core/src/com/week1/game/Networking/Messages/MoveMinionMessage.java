@@ -1,11 +1,9 @@
 package com.week1.game.Networking.Messages;
 
 import com.week1.game.Model.GameState;
-import com.week1.game.Model.Unit;
-import com.week1.game.Networking.MessageTypes;
 
 public class MoveMinionMessage extends AMessage {
-    private final static int MESSAGE_TYPE = MessageTypes.MOVE.ordinal();
+    private final static MessageType MESSAGE_TYPE = MessageType.MOVE;
 
     private int exampleField; //TODO: remove once real fields are added
 
