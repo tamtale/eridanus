@@ -1,5 +1,6 @@
 package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Networking.Messages.AMessage;
 
 import java.util.List;
@@ -9,14 +10,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class GameEngine {
 
     private IEngineToRendererAdapter engineToRenderer;
+    private IEngineToAIAdapter engineToAIAdapter;
     private GameState gameState;
     private ConcurrentLinkedQueue<AMessage> messageQueue;
     private int communicationTurn = 0;
 
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, IEngineToAIAdapter engineToAIAdapter) {
         messageQueue = new ConcurrentLinkedQueue<>();
-        gameState = new GameState();
+        gameState = new GameState(this);
         engineToRenderer = engineToRendererAdapter;
+        this.engineToAIAdapter = engineToAIAdapter;
     }
 
     public void receiveMessages(List<? extends AMessage> messages) {
@@ -38,8 +41,11 @@ public class GameEngine {
         }
     }
 
+    public void spawn(Unit unit) {
+        engineToAIAdapter.spawn(unit);
+    }
     public void updateState(float delta) {
-        gameState.stepUnits(delta);
+        engineToAIAdapter.update(delta);
     }
 
     public void render(){
@@ -57,4 +63,7 @@ public class GameEngine {
         return communicationTurn > 0;
     }
 
+    public void updateGoal(Unit unit, Vector3 goal) {
+        engineToAIAdapter.updateTarget(unit, goal);
+    }
 }

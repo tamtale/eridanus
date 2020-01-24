@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Unit;
 import com.week1.game.Networking.MessageTypes;
-import com.week1.game.SteeringAgent;
+import com.week1.game.AIMovement.SteeringAgent;
 
 import java.awt.*;
 

@@ -3,6 +3,7 @@ package com.week1.game;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.math.Vector3;
+import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
@@ -14,6 +15,7 @@ import com.week1.game.Renderer.IRendererToNetworkAdapter;
 import com.week1.game.Renderer.Renderer;
 
 import java.util.List;
+import java.util.UUID;
 
 
 public class GameController extends ApplicationAdapter {
@@ -25,6 +27,7 @@ public class GameController extends ApplicationAdapter {
 	private GameEngine engine;
 	private Renderer renderer;
 	private ClickOracle clickOracle;
+	private AI ai;
 
 	
 	public GameController(String[] args) {
@@ -50,6 +53,31 @@ public class GameController extends ApplicationAdapter {
 			@Override
 			public void draw(Texture texture, float x, float y) {
 				renderer.draw(texture, x, y);
+			}
+		}, new IEngineToAIAdapter() {
+			@Override
+			public void spawn(Unit unit) {
+				ai.spawn(unit);
+			}
+
+			@Override
+			public void spawnTower() {
+				ai.spawnTower();
+			}
+
+			@Override
+			public void updateTarget(Unit unit, Vector3 newTarget) {
+				ai.updateTarget(unit, newTarget);
+			}
+
+			@Override
+			public void buildMap() {
+				ai.buildMap();
+			}
+
+			@Override
+			public void update(float delta) {
+				ai.update(delta);
 			}
 		});
 		renderer = new Renderer(new IRendererToEngineAdapter() {
@@ -89,6 +117,7 @@ public class GameController extends ApplicationAdapter {
 					}
 				});
 
+		ai = new AI();
 		Gdx.input.setInputProcessor(clickOracle);
 		renderer.create();
 	}
