@@ -23,9 +23,9 @@ public class MessageFormatter {
         update.messages.forEach((msg) -> {
             AMessage parsedMsg = g.fromJson(msg, PrototypeMessage.class);
 //            Gdx.app.log(TAG, "Parsed Message: " + parsedMsg);
-            if (parsedMsg.messageTypeID == MessageTypes.TEST.ordinal()) { //TODO: does this have to be an int?
+            if (parsedMsg.messageTypeID == MessageType.TEST) { 
                 parsedMsg = g.fromJson(msg, TestMessage.class);
-            } else if (parsedMsg.messageTypeID == MessageTypes.CREATE.ordinal()){
+            } else if (parsedMsg.messageTypeID == MessageType.CREATE){
                 parsedMsg = g.fromJson(msg, CreateMinionMessage.class);
             } else {
                 parsedMsg = g.fromJson(msg, MoveMinionMessage.class);
