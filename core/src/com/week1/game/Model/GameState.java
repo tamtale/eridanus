@@ -10,6 +10,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
@@ -29,14 +33,12 @@ public class GameState {
         // TODO tower types in memory after exchange
         towers = new Array<>();
         units = new Array<>();
-//        units.add(new Unit(20, 20));
         units.add(new Unit(20, 20));
 
         playerBases = new Array<>();
         playerBases.add(new PlayerBase(100, 10, 190, 0));
         playerBases.add(new PlayerBase(100, 190, 10, 0));
 
-//        units.add(new Unit(20, 20));
         agents = new Array<>();
     }
 
@@ -57,6 +59,10 @@ public class GameState {
 //        System.out.println(u.ID);
         units.add(u);
         minionCount += 1;
+    }
+
+    public void addTower(Tower t) {
+        towers.add(t);
     }
 
     public void addTower(Tower t) {

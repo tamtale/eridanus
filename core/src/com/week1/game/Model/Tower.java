@@ -27,7 +27,7 @@ public class Tower {
     private static Texture black = new Texture(blueMap){{
         blueMap.dispose();
     }};
-    
+
     public Texture getSkin() {
         return black;
 //        return skin;

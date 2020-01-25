@@ -3,6 +3,7 @@ import com.badlogic.gdx.Gdx;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Networking.Messages.AMessage;
+import com.week1.game.Networking.Messages.Game.GameMessage;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -11,7 +12,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class GameEngine {
 
     private IEngineToRendererAdapter engineToRenderer;
-    private IEngineToAIAdapter engineToAIAdapter;
     private GameState gameState;
     private ConcurrentLinkedQueue<GameMessage> messageQueue;
     private int communicationTurn = 0;

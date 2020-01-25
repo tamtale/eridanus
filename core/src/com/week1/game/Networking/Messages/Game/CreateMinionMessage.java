@@ -1,15 +1,15 @@
-package com.week1.game.Networking.Messages;
+package com.week1.game.Networking.Messages.Game;
 
 import com.badlogic.gdx.math.Vector2;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Unit;
 import com.week1.game.Networking.MessageTypes;
 import com.week1.game.AIMovement.SteeringAgent;
+import com.week1.game.Networking.Messages.Game.GameMessage;
+import com.week1.game.Networking.Messages.MessageType;
 
-import java.awt.*;
-
-public class CreateMinionMessage extends AMessage {
-    private final static int MESSAGE_TYPE = MessageTypes.CREATE.ordinal();
+public class CreateMinionMessage extends GameMessage {
+    private final static MessageType MESSAGE_TYPE = MessageType.CREATEMINION;
 
     private float x, y;
     private int unitType;

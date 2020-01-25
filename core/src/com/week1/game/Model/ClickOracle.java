@@ -28,6 +28,8 @@ public class ClickOracle extends InputAdapter {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 
+        Gdx.app.log("lji1 - ClickOracle", "Click registered.");
+
         touchPos.set(screenX, screenY, 0);
         rendererAdapter.unproject(touchPos);
 
