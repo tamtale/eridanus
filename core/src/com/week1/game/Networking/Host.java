@@ -2,28 +2,26 @@ package com.week1.game.Networking;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.Networking.Messages.*;
+import com.week1.game.Networking.Messages.Control.PlayerIdMessage;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Host {
 
     private static final String TAG = "Host - lji1";
-    private static final int UPDATE_INTERVAL = 100;
+    private static final int UPDATE_INTERVAL = 3000;
     private int port;
     private DatagramSocket udpSocket;
     
     private Map<InetAddress, Player> registry = new HashMap<>();
     
     private boolean gameStarted = false;
-    private StringBuilder aggregateMessage = new StringBuilder();
     
     private ConcurrentLinkedQueue<String> incomingMessages = new ConcurrentLinkedQueue<>();
     
@@ -63,12 +61,6 @@ public class Host {
     }
     
     private void runUpdateLoop() {
-        // TODO: implement
-        // every interval:
-        // - empty the incoming message queue
-        // - package the messages together into an update
-        // - broadcast them to all registered players
-        
         // spawn a new thread to broadcast updates to the registered clients
         Gdx.app.log(TAG, "Host is about to begin running update loop.");
         new Thread(() -> {
@@ -113,8 +105,20 @@ public class Host {
             } else if (msg.equals("start")) {
                 gameStarted = true;
                 Gdx.app.log(TAG, "Host received a 'start' message from: " + packet.getAddress().getHostAddress());
-//                        "\nHost will forward the start message to all registered players.");
-//                broadcastToRegisteredPlayers("start"); // TODO: This message probably not neccessary
+                
+                // tell each player what their id is
+                int playerId = 0;
+                for (Player player : registry.values()) {
+                    String playerIdMessage = MessageFormatter.packageMessage(new PlayerIdMessage(playerId++));
+                    DatagramPacket p = new DatagramPacket(playerIdMessage.getBytes(), playerIdMessage.getBytes().length, player.address, player.port);
+                    try {
+                        this.udpSocket.send(p);
+                    } catch (IOException e) {
+                        Gdx.app.error(TAG, "Failed to send message to: " + player.address);
+                        e.printStackTrace();
+                    }
+                }
+                
                 runUpdateLoop();
                 
             } else {

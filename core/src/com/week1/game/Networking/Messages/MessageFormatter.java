@@ -2,6 +2,9 @@ package com.week1.game.Networking.Messages;
 
 import com.badlogic.gdx.Gdx;
 import com.google.gson.*;
+import com.week1.game.Networking.Messages.Control.ControlMessage;
+import com.week1.game.Networking.Messages.Control.PlayerIdMessage;
+import com.week1.game.Networking.Messages.Game.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,23 +19,41 @@ public class MessageFormatter {
      * @param jsonString - json formatted message
      * @return - the parsed message
      */
-    public static List<AMessage> parseMessage(String jsonString) {
-        Gdx.app.log(TAG, "jsonString: " + jsonString);
-        List<AMessage> msgList = new ArrayList<>();
+    public static List<GameMessage> parseMessage(String jsonString) {
+        List<GameMessage> msgList = new ArrayList<>();
         Update update = g.fromJson(jsonString, Update.class);
         update.messages.forEach((msg) -> {
-            AMessage parsedMsg = g.fromJson(msg, PrototypeMessage.class);
+            AMessage prototypeMessage = g.fromJson(msg, PrototypeMessage.class);
 //            Gdx.app.log(TAG, "Parsed Message: " + parsedMsg);
-            if (parsedMsg.messageTypeID == MessageType.TEST) { 
+            GameMessage parsedMsg = null;
+            if (prototypeMessage.messageTypeID == MessageType.TEST) { 
                 parsedMsg = g.fromJson(msg, TestMessage.class);
-            } else if (parsedMsg.messageTypeID == MessageType.CREATE){
+            } else if (prototypeMessage.messageTypeID == MessageType.CREATEMINION){
                 parsedMsg = g.fromJson(msg, CreateMinionMessage.class);
-            } else {
+            } else if (prototypeMessage.messageTypeID == MessageType.MOVE){
                 parsedMsg = g.fromJson(msg, MoveMinionMessage.class);
+            } else if (prototypeMessage.messageTypeID == MessageType.CREATETOWER){
+                parsedMsg = g.fromJson(msg, CreateTowerMessage.class);
             }
-            msgList.add(parsedMsg);
+            if (parsedMsg == null) {
+                Gdx.app.error(TAG, "The following message had an unrecognized MessageType: " + msg);
+            } else {
+                msgList.add(parsedMsg);
+            }
         });
         return msgList;
+    }
+    
+    public static ControlMessage parseControlMessage(String jsonString) {
+        AMessage parsedMsg = g.fromJson(jsonString, PrototypeMessage.class);
+        if (parsedMsg != null) {
+            if (parsedMsg.messageTypeID == MessageType.PLAYERID) {
+                return g.fromJson(jsonString, PlayerIdMessage.class);
+            }
+        }
+        
+        Gdx.app.log(TAG, "Failed to parse as control message.");
+        return null;
     }
 
     /**

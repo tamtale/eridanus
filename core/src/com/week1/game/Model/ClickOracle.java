@@ -4,7 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Vector3;
-import com.week1.game.Networking.Messages.CreateMinionMessage;
+import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
+import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 
 public class ClickOracle extends InputAdapter {
 
@@ -29,13 +30,27 @@ public class ClickOracle extends InputAdapter {
         rendererAdapter.unproject(touchPos);
 
         if (button == Input.Buttons.LEFT) {
-            Unit unit = engineAdapter.selectUnit(touchPos);
-            if (unit == null) {
-                Gdx.app.log("ttl4 - ClickOracle", "nothing selected!");
-                networkAdapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, 420));
+            
+            // Create tower with left click and numberkey down
+            if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
+                Gdx.app.log("lji1 - ClickOracle", "Spawn basic tower.");
+                networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.BASIC, networkAdapter.getPlayerId()));
+            } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
+                Gdx.app.log("lji1 - ClickOracle", "Spawn sniper tower.");
+                networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.SNIPER, networkAdapter.getPlayerId()));
+            } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
+                Gdx.app.log("lji1 - ClickOracle", "Spawn tank tower.");
+                networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.TANK, networkAdapter.getPlayerId()));
             } else {
-                Gdx.app.log("ttl4 - ClickOracle", "selected selected!");
-                select(unit);
+
+                Unit unit = engineAdapter.selectUnit(touchPos);
+                if (unit == null) {
+                    Gdx.app.log("ttl4 - ClickOracle", "nothing selected!");
+                    networkAdapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, networkAdapter.getPlayerId()));
+                } else {
+                    Gdx.app.log("ttl4 - ClickOracle", "selected selected!");
+                    select(unit);
+                }
             }
             return true;
         }

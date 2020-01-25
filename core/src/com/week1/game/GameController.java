@@ -7,6 +7,7 @@ import com.week1.game.Model.*;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;
+import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkUtils;
 import com.week1.game.Renderer.IRendererToEngineAdapter;
@@ -35,7 +36,7 @@ public class GameController extends ApplicationAdapter {
 	public void create () {
 		networkClient = NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
 			@Override
-			public void deliverUpdate(List<? extends AMessage> messages) {
+			public void deliverUpdate(List<? extends GameMessage> messages) {
 				engine.receiveMessages(messages);
 			}
 		});
@@ -86,6 +87,10 @@ public class GameController extends ApplicationAdapter {
 					@Override
 					public void sendMessage(AMessage msg) {
 						networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
+					}
+					@Override
+					public int getPlayerId() {
+						return networkClient.getPlayerId();
 					}
 				});
 
