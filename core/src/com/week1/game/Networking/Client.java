@@ -1,17 +1,15 @@
 package com.week1.game.Networking;
 
 import com.badlogic.gdx.Gdx;
-import com.week1.game.Networking.Messages.AMessage;
-import com.week1.game.Networking.Messages.MessageFormatter;
-import com.week1.game.Networking.Messages.Update;
+import com.week1.game.Networking.Messages.*;
+import com.week1.game.Networking.Messages.Control.ControlMessage;
+import com.week1.game.Networking.Messages.Game.GameMessage;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Client {
     private static final String TAG = "Client - lji1";
@@ -19,6 +17,8 @@ public class Client {
     private InetAddress hostAddress;
     private int hostPort;
     private INetworkClientToEngineAdapter adapter;
+    
+    private int playerId;
     
     
     public Client(String hostIpAddr, int hostPort, INetworkClientToEngineAdapter adapter) throws IOException {
@@ -67,8 +67,18 @@ public class Client {
                     // blocks until a packet is received
                     udpSocket.receive(packet);
                     String messages = new String(packet.getData()).trim();
+                    
+                    Gdx.app.log(TAG, "About to try parsing message: " + messages);
+                    // try parsing as a control message first
+                    ControlMessage controlMsg = MessageFormatter.parseControlMessage(messages);
+                    if (controlMsg != null) {
+                        Gdx.app.log(TAG, "Received control message: " + controlMsg);
+                        controlMsg.updateClient(this);
+                        continue; // don't need to try parsing as game messages if already successfully parsed as control message
+                    }
+                    
                     Gdx.app.log(TAG, "Received update: " + messages);
-                    List<AMessage> msgList = MessageFormatter.parseMessage(messages);
+                    List<GameMessage> msgList = MessageFormatter.parseMessage(messages);
                     adapter.deliverUpdate(msgList); 
 
                 } catch (IOException e) {
@@ -79,8 +89,14 @@ public class Client {
         }).start();
     }
     
-   // TODO: Write update for  Monday! 
     
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
+    }
+    
+    public int getPlayerId() {
+        return this.playerId;
+    }
     
     
 }

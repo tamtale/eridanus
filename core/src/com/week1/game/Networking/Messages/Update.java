@@ -8,9 +8,4 @@ public class Update {
     public Update(List<String> messages) {
         this.messages = messages;
     }
-    
-    public void printMe() {
-        System.out.println("Messages: ");
-        messages.forEach(System.out::println);
-    }
 }

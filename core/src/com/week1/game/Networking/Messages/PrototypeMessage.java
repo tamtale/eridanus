@@ -3,16 +3,10 @@ package com.week1.game.Networking.Messages;
 import com.week1.game.Model.GameState;
 
 public class PrototypeMessage extends AMessage {
-    public PrototypeMessage(int playerID, int messageTypeID) {
+    public PrototypeMessage(int playerID, MessageType messageTypeID) {
         super(playerID, messageTypeID);
     }
 
-    @Override
-    public boolean process(GameState gameState) {
-        return false;
-    }
-    
-    
     
     @Override
     public String toString() {

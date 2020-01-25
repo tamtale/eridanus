@@ -2,6 +2,8 @@ package com.week1.game.AIMovement;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.steer.Limiter;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
@@ -9,7 +11,7 @@ import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.week1.game.Model.Unit;
 
 import java.util.concurrent.ThreadLocalRandom;
