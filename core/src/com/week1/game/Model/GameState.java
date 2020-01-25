@@ -25,13 +25,8 @@ public class GameState {
         units.add(new Unit(20, 20));
 
         playerBases = new Array<>();
-        Pixmap towerUnscaled = new Pixmap(Gdx.files.internal("basetop.png"));
-        Pixmap towerScaled = new Pixmap(100, 100, towerUnscaled.getFormat());
-        towerScaled.drawPixmap(towerUnscaled,
-                0, 0, towerUnscaled.getWidth(), towerUnscaled.getHeight(),
-                0, 0, towerUnscaled.getWidth(), towerUnscaled.getHeight()
-        );
-        playerBases.add(new PlayerBase(100, 20, 80, 0, new Texture(towerScaled)));
+        playerBases.add(new PlayerBase(100, 10, 190, 0));
+        playerBases.add(new PlayerBase(100, 190, 10, 0));
 
         agents = new Array<>();
     }
