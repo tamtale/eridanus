@@ -34,9 +34,9 @@ public class Renderer {
 
 
     public void create() {
-        map = new TmxMapLoader().load("testmap.tmx");
+        map = new TmxMapLoader().load("gridmap.tmx");
         camera = new OrthographicCamera();
-        mapRenderer = new OrthogonalTiledMapRenderer(map, 1f / SCALE);
+        mapRenderer = new OrthogonalTiledMapRenderer(map, 2f / SCALE);
         batch = mapRenderer.getBatch();
         camera.setToOrtho(false, 256, 256);
         camera.update();
