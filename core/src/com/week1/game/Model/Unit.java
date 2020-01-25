@@ -37,6 +37,7 @@ public class Unit extends Rectangle {
         }
     }
 
+    public SteeringAgent getAgent(){ return agent;}
     public Texture getSelectedSkin(){
         return selectedSkin;
     }

@@ -17,7 +17,7 @@ public class GameEngine {
 
     public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, IEngineToAIAdapter engineToAIAdapter) {
         messageQueue = new ConcurrentLinkedQueue<>();
-        gameState = new GameState(this);
+        gameState = new GameState();
         engineToRenderer = engineToRendererAdapter;
         this.engineToAIAdapter = engineToAIAdapter;
     }
@@ -45,7 +45,7 @@ public class GameEngine {
         engineToAIAdapter.spawn(unit);
     }
     public void updateState(float delta) {
-        engineToAIAdapter.update(delta);
+        gameState.stepUnits(delta);
     }
 
     public void render(){
@@ -64,6 +64,6 @@ public class GameEngine {
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
-        engineToAIAdapter.updateTarget(unit, goal);
+        gameState.updateGoal(unit, goal);
     }
 }

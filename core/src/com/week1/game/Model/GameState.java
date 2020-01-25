@@ -1,5 +1,8 @@
 package com.week1.game.Model;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
@@ -8,19 +11,17 @@ public class GameState {
 
     private Array<Unit> units;
     private int minionCount;
-    private GameEngine engine;
     private Array<SteeringAgent> agents;
 
-    public GameState(GameEngine engine){
+    public GameState(){
         // TODO board
         // TODO player data
         // TODO towers
         // TODO tower types in memory after exchange
 
         units = new Array<>();
-        units.add(new Unit(20, 20));
+//        units.add(new Unit(20, 20));
         agents = new Array<>();
-        this.engine = engine;
     }
 
     public void stepUnits(float delta) {
@@ -31,14 +32,22 @@ public class GameState {
     }
 
     public void addUnit(Unit u){
-        units.add(u);
+        Gdx.app.setLogLevel(Application.LOG_NONE);
+
+        SteeringAgent agent = new SteeringAgent(u);
+        u.agent = agent;
         u.ID = minionCount;
+//        System.out.println(u.agent);
+//        System.out.println(u.ID);
+        units.add(u);
         minionCount += 1;
-        engine.spawn(u);
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
-        engine.updateGoal(unit, goal);
+        Vector2 vec2 = new Vector2(goal.x, goal.y);
+        SteeringAgent agent = unit.getAgent();
+//        System.out.println(agent);
+        agent.setGoal(vec2);
     }
     public void addAgent(SteeringAgent a){
         agents.add(a);
@@ -65,8 +74,12 @@ public class GameState {
 
     public void moveMinion(float x, float y, int minionID) {
         for (Unit unit: units) {
+            System.out.println(units.size);
+//            System.out.println(unit.agent);
             if (unit.ID == minionID) {
-                engine.updateGoal(unit, new Vector3(x, y, 0));
+//                System.out.println(unit.ID);
+//                System.out.println(unit.agent);
+                updateGoal(unit, new Vector3(x, y, 0));
             }
         }
     }

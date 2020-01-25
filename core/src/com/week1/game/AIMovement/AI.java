@@ -22,21 +22,16 @@ public class AI {
     }
 
     public void spawn(Unit unit) {
-
         SteeringAgent agent = new SteeringAgent(unit);
         agents.add(agent);
         unitAgentMap.put(unit.ID, agent);
-        System.out.println(unitAgentMap);
     }
 
     public void spawnTower(){}
 
     public void updateTarget(Unit unit, Vector3 newTarget) {
-        System.out.println(newTarget);
         Vector2 vec2 = new Vector2(newTarget.x, newTarget.y);
         SteeringAgent agent = unitAgentMap.get(unit.ID);
-        System.out.println(unitAgentMap);
-        System.out.println(agent);
         agent.setGoal(vec2);
     }
 
