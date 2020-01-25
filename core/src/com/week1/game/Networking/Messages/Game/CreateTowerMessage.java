@@ -23,7 +23,10 @@ public class CreateTowerMessage extends GameMessage {
     @Override
     public boolean process(GameState inputState){
         Gdx.app.log("lji1 - CreateTowerMessage", "Creating tower!");
-        Tower tower = new Tower(new Texture(Gdx.files.internal("homebase.jpg")), x, y, towerType, playerID);
+        
+        // Snap the tower to grid
+        
+        Tower tower = new Tower(x, y, towerType, playerID);
         inputState.addTower(tower);
         return true;
     }

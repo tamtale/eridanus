@@ -12,7 +12,7 @@ public class PlayerBase {
     private float hp;
     private int playerID;
     private Texture skin;
-    private final int SIDELENGTH = 32;
+    private static final int SIDELENGTH = 32;
 
     public PlayerBase(float initialHp, float x, float y, int playerID) {
 
