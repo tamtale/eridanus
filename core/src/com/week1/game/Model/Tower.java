@@ -21,15 +21,15 @@ public class Tower {
     }
 
     private static Pixmap blueMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-        setColor(Color.BLUE);
+        setColor(Color.BLACK);
         fill();
     }};
-    private static Texture blue = new Texture(blueMap){{
+    private static Texture black = new Texture(blueMap){{
         blueMap.dispose();
     }};
     
     public Texture getSkin() {
-        return blue;
+        return black;
 //        return skin;
     }
 }

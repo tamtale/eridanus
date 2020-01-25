@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Tower;
-import com.week1.game.Model.Unit;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Model.TowerType;
 
@@ -24,7 +23,7 @@ public class CreateTowerMessage extends GameMessage {
     @Override
     public boolean process(GameState inputState){
         Gdx.app.log("lji1 - CreateTowerMessage", "Creating tower!");
-        Tower tower = new Tower(new Texture(Gdx.files.internal("grass.jpg")), x, y, towerType, playerID);
+        Tower tower = new Tower(new Texture(Gdx.files.internal("homebase.jpg")), x, y, towerType, playerID);
         inputState.addTower(tower);
         return true;
     }
