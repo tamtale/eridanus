@@ -4,9 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Vector3;
-import com.week1.game.Networking.Messages.CreateMinionMessage;
-import com.week1.game.Networking.Messages.CreateTowerMessage;
-import com.week1.game.Networking.Messages.TowerType;
+import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
+import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 
 public class ClickOracle extends InputAdapter {
 

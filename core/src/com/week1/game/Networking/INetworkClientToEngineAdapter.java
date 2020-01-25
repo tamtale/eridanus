@@ -1,6 +1,6 @@
 package com.week1.game.Networking;
 
-import com.week1.game.Networking.Messages.GameMessage;
+import com.week1.game.Networking.Messages.Game.GameMessage;
 
 import java.util.List;
 

@@ -1,5 +1,6 @@
 package com.week1.game.Model;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.SteeringAgent;
@@ -30,6 +31,10 @@ public class GameState {
 
     public void addUnit(Unit u){
         units.add(u);
+    }
+    
+    public void addTower(Tower t) {
+        towers.add(t);
     }
 
     public void addAgent(SteeringAgent a){

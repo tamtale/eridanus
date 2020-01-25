@@ -1,6 +1,6 @@
 package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
-import com.week1.game.Networking.Messages.GameMessage;
+import com.week1.game.Networking.Messages.Game.GameMessage;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
