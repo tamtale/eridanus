@@ -7,12 +7,6 @@ public class PrototypeMessage extends AMessage {
         super(playerID, messageTypeID);
     }
 
-    @Override
-    public boolean process(GameState gameState) {
-        return false;
-    }
-    
-    
     
     @Override
     public String toString() {

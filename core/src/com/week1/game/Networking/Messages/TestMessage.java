@@ -2,7 +2,7 @@ package com.week1.game.Networking.Messages;
 
 import com.week1.game.Model.GameState;
 
-public class TestMessage extends AMessage {
+public class TestMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.TEST;
 
     private int coolValue;

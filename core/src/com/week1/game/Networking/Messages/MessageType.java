@@ -1,7 +1,12 @@
 package com.week1.game.Networking.Messages;
 
 public enum MessageType {
+    // Game Messages
     TEST,
-    CREATE,
-    MOVE
+    CREATEMINION, 
+    MOVE,
+    CREATETOWER,
+    
+    // Control Messages
+    PLAYERID
 }

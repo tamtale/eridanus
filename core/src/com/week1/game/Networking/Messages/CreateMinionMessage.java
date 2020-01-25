@@ -3,8 +3,8 @@ package com.week1.game.Networking.Messages;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Unit;
 
-public class CreateMinionMessage extends AMessage {
-    private final static MessageType MESSAGE_TYPE = MessageType.CREATE;
+public class CreateMinionMessage extends GameMessage {
+    private final static MessageType MESSAGE_TYPE = MessageType.CREATEMINION;
 
     private float x, y;
     private int unitType;
