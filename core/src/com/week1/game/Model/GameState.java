@@ -7,6 +7,7 @@ import com.week1.game.SteeringAgent;
 public class GameState {
 
     private Array<Unit> units;
+    private Array<Tower> towers;
     private Array<SteeringAgent> agents;
 
     public GameState(){
@@ -14,7 +15,7 @@ public class GameState {
         // TODO player data
         // TODO towers
         // TODO tower types in memory after exchange
-
+        towers = new Array<>();
         units = new Array<>();
         units.add(new Unit(20, 20));
         agents = new Array<>();
@@ -42,6 +43,10 @@ public class GameState {
             } else {
                 drawFunc.draw(unit.getUnselectedSkin(), unit.x, unit.y);
             }
+        }
+
+        for (Tower tower : towers) {
+            drawFunc.draw(tower.getSkin(), tower.x, tower.y);
         }
     }
 
