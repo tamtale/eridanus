@@ -55,31 +55,6 @@ public class GameController extends ApplicationAdapter {
 			public void draw(Texture texture, float x, float y) {
 				renderer.draw(texture, x, y);
 			}
-		}, new IEngineToAIAdapter() {
-			@Override
-			public void spawn(Unit unit) {
-				ai.spawn(unit);
-			}
-
-			@Override
-			public void spawnTower() {
-				ai.spawnTower();
-			}
-
-			@Override
-			public void updateTarget(Unit unit, Vector3 newTarget) {
-				ai.updateTarget(unit, newTarget);
-			}
-
-			@Override
-			public void buildMap() {
-				ai.buildMap();
-			}
-
-			@Override
-			public void update(float delta) {
-				ai.update(delta);
-			}
 		});
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override

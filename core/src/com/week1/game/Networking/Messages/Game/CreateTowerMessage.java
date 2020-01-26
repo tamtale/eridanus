@@ -11,7 +11,7 @@ public class CreateTowerMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.CREATETOWER;
 
     private float x, y;
-    private TowerType towerType; 
+    private TowerType towerType;
 
     public CreateTowerMessage(float x, float y, TowerType towerType, int playerID){
         super(playerID, MESSAGE_TYPE);
@@ -23,10 +23,8 @@ public class CreateTowerMessage extends GameMessage {
     @Override
     public boolean process(GameState inputState){
         Gdx.app.log("lji1 - CreateTowerMessage", "Creating tower!");
-        
-        // Snap the tower to grid
-        
         Tower tower = new Tower(x, y, towerType, playerID);
+
         inputState.addTower(tower);
         return true;
     }

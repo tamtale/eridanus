@@ -4,8 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Vector3;
-import com.week1.game.Networking.Messages.CreateMinionMessage;
-import com.week1.game.Networking.Messages.MoveMinionMessage;
+import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 
@@ -61,7 +60,8 @@ public class ClickOracle extends InputAdapter {
         // Right click
         if (selected != null && button == Input.Buttons.RIGHT) {
             // TODO: steering agent behavior
-            networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y, 69, 420, selected.ID));
+            networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y, 69,
+                    networkAdapter.getPlayerId(), selected.ID));
             return true;
 
         } else {
