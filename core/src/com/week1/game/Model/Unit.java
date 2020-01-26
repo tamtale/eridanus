@@ -9,6 +9,7 @@ import com.week1.game.AIMovement.SteeringAgent;
 import static com.week1.game.GameController.SCALE;
 
 public class Unit extends Rectangle {
+    private final int playerID;
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
@@ -29,9 +30,10 @@ public class Unit extends Rectangle {
     
     private Texture unselectedSkin;
 
-    public Unit(float x, float y, Texture t) {
+    public Unit(float x, float y, Texture t, int playerID) {
         super(x, y, SCALE, SCALE);
         this.unselectedSkin = t;
+        this.playerID = playerID;
     }
 
     public void step(float delta) {
@@ -48,5 +50,6 @@ public class Unit extends Rectangle {
     public Texture getUnselectedSkin(){
         return unselectedSkin;
     }
+    public int getPlayerID(){return playerID;}
 }
 
