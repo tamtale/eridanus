@@ -24,7 +24,7 @@ public class Tower {
         if (towerType == TowerType.BASIC) {
             towerUnscaled = new Pixmap(Gdx.files.internal("towertransparent.png")); // TODO: basic skin
         } else if (towerType == TowerType.SNIPER) {
-            towerUnscaled = new Pixmap(Gdx.files.internal("towertransparent.png")); // TODO: sniper skin
+            towerUnscaled = new Pixmap(Gdx.files.internal("tower3.png")); // TODO: sniper skin
         } else if (towerType == TowerType.TANK) {
             towerUnscaled = new Pixmap(Gdx.files.internal("towertransparent.png")); // TODO: tank skin
         }
