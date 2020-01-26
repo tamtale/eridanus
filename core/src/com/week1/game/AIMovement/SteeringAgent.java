@@ -33,7 +33,7 @@ public class SteeringAgent implements Steerable<Vector2> {
 //        System.out.println(steeringOutput.linear);
         Gdx.app.log(tag, "Building a SteeringAgent");
         this.unit = unit;
-        unit.getPosition(goal);
+        this.goal = new Vector2(unit.getX(), unit.getY());
         //this.steeringBehavior = new Wander<>(this);
         this.steeringBehavior = new Arrive<>(this, new Location<Vector2>() {
             @Override
