@@ -18,30 +18,6 @@ public class CreateMinionMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.CREATEMINION;
     private final static String TAG = "CreateMinionMessage";
     
-//    private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {{
-//
-//        Pixmap blueMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-//            setColor(Color.BLUE);
-//            fill();
-//        }};
-//        Texture blueTexture = new Texture(blueMap){{ blueMap.dispose(); }};
-//        this.put(0, blueTexture);
-//
-//        Pixmap redMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-//            setColor(Color.RED);
-//            fill();
-//        }};
-//        Texture redTexture = new Texture(redMap){{ redMap.dispose(); }};
-//        this.put(1, redTexture);
-//
-//        Pixmap yellowMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-//            setColor(Color.YELLOW);
-//            fill();
-//        }};
-//        Texture yellowTexture = new Texture(yellowMap){{ yellowMap.dispose(); }};
-//        this.put(2, yellowTexture);
-//        
-//    }};
 
     private float x, y;
     private int unitType;

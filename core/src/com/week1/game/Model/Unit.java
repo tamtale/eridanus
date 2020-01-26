@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.week1.game.AIMovement.SteeringAgent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.week1.game.GameController.SCALE;
 
 public class Unit extends Rectangle {
@@ -29,16 +32,46 @@ public class Unit extends Rectangle {
         unitPixmap2.dispose();
     }};
 
-            Pixmap blueMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+//            Pixmap blueMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+//            setColor(Color.BLUE);
+//            fill();
+//        }};
+//        Texture blueTexture = new Texture(blueMap){{ blueMap.dispose(); }};
+
+
+
+    private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {{
+
+        Pixmap blueMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
             setColor(Color.BLUE);
             fill();
         }};
         Texture blueTexture = new Texture(blueMap){{ blueMap.dispose(); }};
+        this.put(0, blueTexture);
+
+        Pixmap redMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+            setColor(Color.RED);
+            fill();
+        }};
+        Texture redTexture = new Texture(redMap){{ redMap.dispose(); }};
+        this.put(1, redTexture);
+
+        Pixmap yellowMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+            setColor(Color.YELLOW);
+            fill();
+        }};
+        Texture yellowTexture = new Texture(yellowMap){{ yellowMap.dispose(); }};
+        this.put(2, yellowTexture);
+
+    }};
+        
+        
+        
     private Texture unselectedSkin;
 
     public Unit(float x, float y, Texture t, int playerID) {
         super(x, y, SCALE, SCALE);
-        this.unselectedSkin = blueTexture;
+        this.unselectedSkin = colorMap.get(0);
         this.playerID = playerID;
     }
 
@@ -54,7 +87,7 @@ public class Unit extends Rectangle {
     }
 
     public Texture getUnselectedSkin(){
-        Gdx.app.log("lji1 - getUnselectedSkin", "unselectedSkin: " + unselectedSkin);
+//        Gdx.app.log("lji1 - getUnselectedSkin", "unselectedSkin: " + unselectedSkin);
         return unselectedSkin;
     }
     public int getPlayerID(){return playerID;}
