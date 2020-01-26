@@ -74,7 +74,7 @@ public class SteeringAgent implements Steerable<Vector2> {
     float orientation = 0;
     Vector2 linearVelocity = new Vector2(1, 1);
     float angularVelocity = 0;
-    float maxSpeed = 10;
+    float maxSpeed = 2;
     boolean independentFacing = false;
     SteeringBehavior<Vector2> steeringBehavior;
     private float maxAngularAcceleration;
@@ -217,7 +217,7 @@ public class SteeringAgent implements Steerable<Vector2> {
 
     public void update (float delta) {
         if (steeringBehavior != null) {
-            Gdx.app.log(tag, "Updating position and velocity");
+            Gdx.app.debug(tag, "Updating position " + getPosition() +  " and velocity " + getLinearVelocity());
             // Calculate steering acceleration
             steeringBehavior.calculateSteering(steeringOutput);
             /*

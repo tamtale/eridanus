@@ -70,10 +70,12 @@ public class ClickOracle extends InputAdapter {
     }
 
     private void select(Unit unit) {
-        unselect();
-        selected = unit;
-        if (unit != null) {
-            unit.clicked = true;
+        if (unit.getPlayerID() == networkAdapter.getPlayerId()) {
+            unselect();
+            selected = unit;
+            if (unit != null) {
+                unit.clicked = true;
+            }
         }
     }
     private void unselect() {

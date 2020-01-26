@@ -20,7 +20,7 @@ public class CreateMinionMessage extends GameMessage {
 
     @Override
     public boolean process(GameState inputState){
-        Unit unit = new Unit(x, y);
+        Unit unit = new Unit(x, y, playerID);
         inputState.addUnit(unit);
 //        SteeringAgent agent = new SteeringAgent(unit, new Vector2(x, y), 0,
 //                new Vector2((float) .1, (float) .1), 0, 1, true, (float).5);

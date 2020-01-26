@@ -40,8 +40,6 @@ public class GameState {
     }
 
     public void addUnit(Unit u){
-        Gdx.app.setLogLevel(Application.LOG_NONE);
-
         SteeringAgent agent = new SteeringAgent(u);
         u.agent = agent;
         u.ID = minionCount;
