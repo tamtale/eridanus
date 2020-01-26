@@ -28,12 +28,17 @@ public class Unit extends Rectangle {
     private static Texture selectedSkin = new Texture(unitPixmap2){{
         unitPixmap2.dispose();
     }};
-    
+
+            Pixmap blueMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+            setColor(Color.BLUE);
+            fill();
+        }};
+        Texture blueTexture = new Texture(blueMap){{ blueMap.dispose(); }};
     private Texture unselectedSkin;
 
     public Unit(float x, float y, Texture t, int playerID) {
         super(x, y, SCALE, SCALE);
-        this.unselectedSkin = t;
+        this.unselectedSkin = blueTexture;
         this.playerID = playerID;
     }
 

@@ -20,11 +20,11 @@ public class CreateMinionMessage extends GameMessage {
     
 //    private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {{
 //
-        private final static Pixmap blueMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-            setColor(Color.BLUE);
-            fill();
-        }};
-        private final static Texture blueTexture = new Texture(blueMap){{ blueMap.dispose(); }};
+//        Pixmap blueMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+//            setColor(Color.BLUE);
+//            fill();
+//        }};
+//        Texture blueTexture = new Texture(blueMap){{ blueMap.dispose(); }};
 //        this.put(0, blueTexture);
 //
 //        Pixmap redMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
@@ -55,7 +55,7 @@ public class CreateMinionMessage extends GameMessage {
 
     @Override
     public boolean process(GameState inputState){
-        Unit unit = new Unit(x, y, blueTexture, playerID);
+        Unit unit = new Unit(x, y, null, playerID);
         inputState.addUnit(unit);
 //        SteeringAgent agent = new SteeringAgent(unit, new Vector2(x, y), 0,
 //                new Vector2((float) .1, (float) .1), 0, 1, true, (float).5);
