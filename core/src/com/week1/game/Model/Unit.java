@@ -56,12 +56,12 @@ public class Unit extends Rectangle {
         Texture redTexture = new Texture(redMap){{ redMap.dispose(); }};
         this.put(1, redTexture);
 
-        Pixmap yellowMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-            setColor(Color.YELLOW);
+        Pixmap whiteMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+            setColor(Color.WHITE);
             fill();
         }};
-        Texture yellowTexture = new Texture(yellowMap){{ yellowMap.dispose(); }};
-        this.put(2, yellowTexture);
+        Texture whiteTexture = new Texture(whiteMap){{ whiteMap.dispose(); }};
+        this.put(2, whiteTexture);
 
     }};
         
