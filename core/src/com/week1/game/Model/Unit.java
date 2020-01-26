@@ -71,7 +71,7 @@ public class Unit extends Rectangle {
 
     public Unit(float x, float y, Texture t, int playerID) {
         super(x, y, SCALE, SCALE);
-        this.unselectedSkin = colorMap.get(0);
+        this.unselectedSkin = colorMap.get(playerID);
         this.playerID = playerID;
     }
 
