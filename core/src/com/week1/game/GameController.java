@@ -3,6 +3,7 @@ package com.week1.game;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.math.Vector3;
+import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
@@ -15,6 +16,7 @@ import com.week1.game.Renderer.IRendererToNetworkAdapter;
 import com.week1.game.Renderer.Renderer;
 
 import java.util.List;
+import java.util.UUID;
 
 
 public class GameController extends ApplicationAdapter {
@@ -26,6 +28,7 @@ public class GameController extends ApplicationAdapter {
 	private GameEngine engine;
 	private Renderer renderer;
 	private ClickOracle clickOracle;
+	private AI ai;
 
 	
 	public GameController(String[] args) {
@@ -94,6 +97,7 @@ public class GameController extends ApplicationAdapter {
 					}
 				});
 
+		ai = new AI();
 		Gdx.input.setInputProcessor(clickOracle);
 		renderer.create();
 	}

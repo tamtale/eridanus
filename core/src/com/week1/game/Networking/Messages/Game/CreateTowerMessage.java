@@ -7,11 +7,13 @@ import com.week1.game.Model.Tower;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Model.TowerType;
 
+import static com.week1.game.GameController.SCALE;
+
 public class CreateTowerMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.CREATETOWER;
 
     private float x, y;
-    private TowerType towerType; 
+    private TowerType towerType;
 
     public CreateTowerMessage(float x, float y, TowerType towerType, int playerID){
         super(playerID, MESSAGE_TYPE);
@@ -23,7 +25,12 @@ public class CreateTowerMessage extends GameMessage {
     @Override
     public boolean process(GameState inputState){
         Gdx.app.log("lji1 - CreateTowerMessage", "Creating tower!");
-        Tower tower = new Tower(new Texture(Gdx.files.internal("homebase.jpg")), x, y, towerType, playerID);
+        
+        int snappedX = ((int) x) - (((int) x) % SCALE) - SCALE;
+        int snappedY = ((int) y) - (((int) y) % SCALE) - SCALE;
+        
+        Tower tower = new Tower(snappedX, snappedY, towerType, playerID);
+
         inputState.addTower(tower);
         return true;
     }

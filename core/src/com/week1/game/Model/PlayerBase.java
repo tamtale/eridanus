@@ -5,14 +5,13 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.week1.game.Networking.Player;
 
-import static com.week1.game.Renderer.Renderer.SCALE;
 
 public class PlayerBase {
     public float x, y;
     private float hp;
     private int playerID;
     private Texture skin;
-    private final int SIDELENGTH = 32;
+    private static final int SIDELENGTH = 32;
 
     public PlayerBase(float initialHp, float x, float y, int playerID) {
 

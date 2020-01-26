@@ -1,43 +1,39 @@
-package com.week1.game;
+package com.week1.game.AIMovement;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Limiter;
-import java.util.concurrent.ThreadLocalRandom;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
-import com.badlogic.gdx.ai.steer.behaviors.Seek;
-import com.badlogic.gdx.ai.steer.behaviors.Wander;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.week1.game.Model.Unit;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 // A simple steering agent for 2D.
 // Of course, for 3D (well, actually for 2.5D) you have to replace all occurrences of Vector2 with  Vector3.
 public class SteeringAgent implements Steerable<Vector2> {
 
     private final Unit unit;
-    private Vector2 goal = new Vector2(ThreadLocalRandom.current().nextInt(20, 160), ThreadLocalRandom.current().nextInt(20, 160));
+    private Vector2 goal;
 
     private static SteeringAcceleration<Vector2> steeringOutput =
             new SteeringAcceleration<Vector2>(new Vector2());
 
-    public SteeringAgent(Unit unit, Vector2 position, float orientation, Vector2 linearVelocity, float angularVelocity, float maxSpeed,
-    boolean independentFacing, float maxLinearAcceleration){
+    private static final String tag = "Steering Agent";
+    public SteeringAgent(Unit unit){
 //        this.steeringOutput =
 //                new SteeringAcceleration<Vector2>(linearVelocity);
 //        System.out.println(steeringOutput.linear);
+        Gdx.app.log(tag, "Building a SteeringAgent");
         this.unit = unit;
-        this.position = position;
-        this.orientation = orientation;
-        this.linearVelocity = linearVelocity;
-        this.angularVelocity = angularVelocity;
-        this.maxSpeed = maxSpeed;
-        this.independentFacing = independentFacing;
-        this.maxLinearAcceleration = maxLinearAcceleration;
+        this.goal = new Vector2(unit.getX(), unit.getY());
         //this.steeringBehavior = new Wander<>(this);
         this.steeringBehavior = new Arrive<>(this, new Location<Vector2>() {
             @Override
@@ -76,18 +72,26 @@ public class SteeringAgent implements Steerable<Vector2> {
 //        this.steeringBehavior = new S
     }
     Vector2 position;
-    float orientation;
-    Vector2 linearVelocity;
-    float angularVelocity;
-    float maxSpeed;
-    boolean independentFacing;
+    float orientation = 0;
+    Vector2 linearVelocity = new Vector2(1, 1);
+    float angularVelocity = 0;
+    float maxSpeed = 2;
+    boolean independentFacing = false;
     SteeringBehavior<Vector2> steeringBehavior;
     private float maxAngularAcceleration;
     private boolean tagged;
-    private float zeroLinearSpeedThreshold;
-    private float maxLinearAcceleration;
-    private float maxAngularSpeed;
+    private float zeroLinearSpeedThreshold = 3;
+    private float maxLinearAcceleration = 3;
+    private float maxAngularSpeed = 2;
 
+    public Vector2 getGoal() {
+        return goal;
+    }
+
+    public void setGoal(Vector2 goal) {
+        System.out.println(goal);
+        this.goal = goal;
+    }
     /* Here you should implement missing methods inherited from Steerable */
     @Override
     public Vector2 getLinearVelocity() {
@@ -103,6 +107,14 @@ public class SteeringAgent implements Steerable<Vector2> {
     public float getBoundingRadius() {
         System.out.println("get that bounding rad");
         return 0;
+    }
+
+    public SteeringBehavior<Vector2> getSteeringBehavior() {
+        return steeringBehavior;
+    }
+
+    public void setSteeringBehavior(SteeringBehavior<Vector2> steeringBehavior) {
+        this.steeringBehavior = steeringBehavior;
     }
 
     @Override
@@ -206,6 +218,7 @@ public class SteeringAgent implements Steerable<Vector2> {
 
     public void update (float delta) {
         if (steeringBehavior != null) {
+            Gdx.app.debug(tag, "Updating position " + getPosition() +  " and velocity " + getLinearVelocity());
             // Calculate steering acceleration
             steeringBehavior.calculateSteering(steeringOutput);
             /*

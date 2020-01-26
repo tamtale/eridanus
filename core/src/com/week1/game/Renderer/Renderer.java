@@ -11,9 +11,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.GameState;
 import jdk.jfr.internal.test.WhiteBox;
 
-public class Renderer {
+import static com.week1.game.GameController.SCALE;
 
-    public static int SCALE = 8; // 8 pixels per unit.
+public class Renderer {
     private Batch batch;
     private OrthographicCamera camera;
     private Pixmap unitPixmap;
@@ -38,7 +38,7 @@ public class Renderer {
         camera = new OrthographicCamera();
         mapRenderer = new OrthogonalTiledMapRenderer(map, 2f / SCALE);
         batch = mapRenderer.getBatch();
-        camera.setToOrtho(false, 256, 256);
+        camera.setToOrtho(false, 30 * SCALE, 30 * SCALE);
         camera.update();
         unitPixmap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888);
 

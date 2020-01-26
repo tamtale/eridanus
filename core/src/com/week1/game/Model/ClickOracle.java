@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Vector3;
+import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 
@@ -26,11 +27,13 @@ public class ClickOracle extends InputAdapter {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 
+        Gdx.app.log("lji1 - ClickOracle", "Click registered.");
+
         touchPos.set(screenX, screenY, 0);
         rendererAdapter.unproject(touchPos);
 
         if (button == Input.Buttons.LEFT) {
-            
+
             // Create tower with left click and numberkey down
             if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
                 Gdx.app.log("lji1 - ClickOracle", "Spawn basic tower.");
@@ -55,8 +58,10 @@ public class ClickOracle extends InputAdapter {
             return true;
         }
         // Right click
-        if (selected != null) {
+        if (selected != null && button == Input.Buttons.RIGHT) {
             // TODO: steering agent behavior
+            networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y, 69,
+                    networkAdapter.getPlayerId(), selected.ID));
             return true;
 
         } else {
@@ -65,10 +70,12 @@ public class ClickOracle extends InputAdapter {
     }
 
     private void select(Unit unit) {
-        unselect();
-        selected = unit;
-        if (unit != null) {
-            unit.clicked = true;
+        if (unit.getPlayerID() == networkAdapter.getPlayerId()) {
+            unselect();
+            selected = unit;
+            if (unit != null) {
+                unit.clicked = true;
+            }
         }
     }
     private void unselect() {
