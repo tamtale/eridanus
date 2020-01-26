@@ -217,7 +217,7 @@ public class SteeringAgent implements Steerable<Vector2> {
 
     public void update (float delta) {
         if (steeringBehavior != null) {
-            Gdx.app.log(tag, "Updating position and velocity");
+//            Gdx.app.log(tag, "Updating position and velocity");
             // Calculate steering acceleration
             steeringBehavior.calculateSteering(steeringOutput);
             /*

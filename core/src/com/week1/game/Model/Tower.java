@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import static com.week1.game.GameController.SCALE;
 
 public class Tower {
-    private static final int SIDELENGTH = 8;
+    private static final int SIDELENGTH = SCALE * 3;
     public float x, y;
     private Texture skin;
     private int playerID;

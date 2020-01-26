@@ -2,11 +2,8 @@ package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.badlogic.gdx.math.Vector3;
-import com.week1.game.Networking.Messages.AMessage;
-import com.week1.game.Networking.Messages.Game.GameMessage;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class GameEngine {
@@ -38,6 +35,7 @@ public class GameEngine {
         for (GameMessage message = messageQueue.poll(); message != null; message = messageQueue.poll()) {
             Gdx.app.log("GameEngine: processMessages()", "processing message");
             message.process(gameState);
+            Gdx.app.log("GameEngine: processMessages()", "done processing message");
         }
     }
 

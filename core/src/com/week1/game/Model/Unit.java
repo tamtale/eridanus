@@ -12,23 +12,26 @@ public class Unit extends Rectangle {
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
-    private static Pixmap unitPixmap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-       setColor(Color.BLUE);
-       fill();
-    }};
+//    private static Pixmap unitPixmap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+//       setColor(Color.BLUE);
+//       fill();
+//    }};
     private static Pixmap unitPixmap2 = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-        setColor(Color.RED);
+        setColor(Color.YELLOW);
         fill();
     }};
-    private static Texture unselectedSkin = new Texture(unitPixmap){{
-        unitPixmap.dispose();
-    }};
+//    private static Texture unselectedSkin = new Texture(unitPixmap){{
+//        unitPixmap.dispose();
+//    }};
     private static Texture selectedSkin = new Texture(unitPixmap2){{
         unitPixmap2.dispose();
     }};
+    
+    private Texture unselectedSkin;
 
-    public Unit(float x, float y) {
+    public Unit(float x, float y, Texture t) {
         super(x, y, SCALE, SCALE);
+        this.unselectedSkin = t;
     }
 
     public void step(float delta) {

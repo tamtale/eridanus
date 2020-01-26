@@ -11,9 +11,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.GameState;
 import jdk.jfr.internal.test.WhiteBox;
 
-public class Renderer {
+import static com.week1.game.GameController.SCALE;
 
-    public static int SCALE = 8; // 8 pixels per unit.
+public class Renderer {
     private Batch batch;
     private OrthographicCamera camera;
     private Pixmap unitPixmap;
