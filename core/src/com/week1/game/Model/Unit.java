@@ -1,5 +1,6 @@
 package com.week1.game.Model;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -48,6 +49,7 @@ public class Unit extends Rectangle {
     }
 
     public Texture getUnselectedSkin(){
+        Gdx.app.log("lji1 - getUnselectedSkin", "unselectedSkin: " + unselectedSkin);
         return unselectedSkin;
     }
     public int getPlayerID(){return playerID;}

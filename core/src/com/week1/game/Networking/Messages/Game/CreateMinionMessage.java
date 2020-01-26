@@ -20,11 +20,11 @@ public class CreateMinionMessage extends GameMessage {
     
 //    private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {{
 //
-        Pixmap blueMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+        private final static Pixmap blueMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
             setColor(Color.BLUE);
             fill();
         }};
-        Texture blueTexture = new Texture(blueMap){{ blueMap.dispose(); }};
+        private final static Texture blueTexture = new Texture(blueMap){{ blueMap.dispose(); }};
 //        this.put(0, blueTexture);
 //
 //        Pixmap redMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
