@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class SteeringAgent implements Steerable<Vector2> {
 
     private final Unit unit;
-    private Vector2 goal = new Vector2(ThreadLocalRandom.current().nextInt(20, 160), ThreadLocalRandom.current().nextInt(20, 160));
+    private Vector2 goal;
 
     private static SteeringAcceleration<Vector2> steeringOutput =
             new SteeringAcceleration<Vector2>(new Vector2());
@@ -33,6 +33,7 @@ public class SteeringAgent implements Steerable<Vector2> {
 //        System.out.println(steeringOutput.linear);
         Gdx.app.log(tag, "Building a SteeringAgent");
         this.unit = unit;
+        unit.getPosition(goal);
         //this.steeringBehavior = new Wander<>(this);
         this.steeringBehavior = new Arrive<>(this, new Location<Vector2>() {
             @Override

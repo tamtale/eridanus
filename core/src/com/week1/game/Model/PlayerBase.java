@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.week1.game.Networking.Player;
 
-import static com.week1.game.Renderer.Renderer.SCALE;
 
 public class PlayerBase {
     public float x, y;
