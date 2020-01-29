@@ -29,7 +29,7 @@ public class CreateTowerMessage extends GameMessage {
         int snappedX = ((int) x) - (((int) x) % SCALE) - SCALE;
         int snappedY = ((int) y) - (((int) y) % SCALE) - SCALE;
         
-        Tower tower = new Tower(snappedX, snappedY, towerType, playerID);
+        Tower tower = new Tower(snappedX, snappedY, towerType, 20, playerID);
 
         inputState.addTower(tower);
         return true;
