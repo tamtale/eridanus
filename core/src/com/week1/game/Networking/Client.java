@@ -19,6 +19,7 @@ public class Client {
     private INetworkClientToEngineAdapter adapter;
     
     private int playerId;
+    private int numPlayers = -1;
     
     
     public Client(String hostIpAddr, int hostPort, INetworkClientToEngineAdapter adapter) throws IOException {
@@ -74,6 +75,9 @@ public class Client {
                     if (controlMsg != null) {
                         Gdx.app.log(TAG, "Received control message: " + controlMsg);
                         controlMsg.updateClient(this);
+                        if (numPlayers != -1) {
+                            adapter.notifyNumPlayers(numPlayers);
+                        }
                         continue; // don't need to try parsing as game messages if already successfully parsed as control message
                     }
                     
@@ -98,8 +102,6 @@ public class Client {
         return this.playerId;
     }
 
-    public void setNumberOfPlayer(int numPlayers) {
-
-    }
+    public void setNumberOfPlayer(int numPlayers) { this.numPlayers = numPlayers;  }
     
 }

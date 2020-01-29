@@ -13,10 +13,10 @@ public class GameEngine {
     private ConcurrentLinkedQueue<GameMessage> messageQueue;
     private int communicationTurn = 0;
 
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, int numPlayers) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
         messageQueue = new ConcurrentLinkedQueue<>();
-        gameState = new GameState(numPlayers);
         engineToRenderer = engineToRendererAdapter;
+        gameState = new GameState();
     }
 
     public void receiveMessages(List<? extends GameMessage> messages) {
@@ -60,5 +60,9 @@ public class GameEngine {
 
     public void updateGoal(Unit unit, Vector3 goal) {
         gameState.updateGoal(unit, goal);
+    }
+
+    public void setNumPlayers(int numPlayers) {
+        this.gameState.setNumPlayers(numPlayers);
     }
 }

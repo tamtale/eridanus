@@ -42,6 +42,11 @@ public class GameController extends ApplicationAdapter {
 			public void deliverUpdate(List<? extends GameMessage> messages) {
 				engine.receiveMessages(messages);
 			}
+
+			@Override
+			public void notifyNumPlayers(int numPlayers) {
+				engine.setNumPlayers(numPlayers);
+			}
 		});
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override
@@ -55,7 +60,7 @@ public class GameController extends ApplicationAdapter {
 			public void draw(Texture texture, float x, float y) {
 				renderer.draw(texture, x, y);
 			}
-		}, 2); // TODO Luke - this needs to be changed to be dynamically chosen from the number of players in the lobby when the game is started.
+		}); // TODO Luke - this needs to be changed to be dynamically chosen from the number of players in the lobby when the game is started.
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
 			public void render() {

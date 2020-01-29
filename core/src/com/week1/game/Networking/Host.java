@@ -118,7 +118,7 @@ public class Host {
                 // tell each player what their id is
                 int playerId = 0;
                 for (Player player : registry.values()) {
-                    String playerIdMessage = MessageFormatter.packageMessage(new PlayerIdMessage(playerId++));
+                    String playerIdMessage = MessageFormatter.packageMessage(new PlayerIdMessage(playerId++, registry.size()));
                     DatagramPacket p = new DatagramPacket(playerIdMessage.getBytes(), playerIdMessage.getBytes().length, player.address, player.port);
                     try {
                         this.udpSocket.send(p);
