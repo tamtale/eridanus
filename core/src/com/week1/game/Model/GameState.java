@@ -15,7 +15,7 @@ public class GameState {
     private int minionCount;
     private Array<Tower> towers;
     private Array<PlayerBase> playerBases;
-    private Array<PlayerInfo> playerStats;
+    private Array<PlayerInfo> playerInfos;
     private Array<SteeringAgent> agents;
 
     public GameState(){
@@ -25,7 +25,7 @@ public class GameState {
         towers = new Array<>();
         units = new Array<>();
         playerBases = new Array<>();
-        playerStats = new Array<>();
+        playerInfos = new Array<>();
 
         agents = new Array<>();
     }
@@ -49,13 +49,21 @@ public class GameState {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 40, 10, 2));
         }
 
-        //
+        // Create the correct amount of actual players
+        for (int i = 0; i < numPlayers; i++) {
+            playerInfos.add(new PlayerInfo());
+        }
     }
 
     public void stepUnits(float delta) {
         for(Unit unit: units) {
-            //System.out.println("from step " + agent.getSteeringOutput().linear);
             unit.step(delta);
+        }
+    }
+
+    public void updateMana(float delta){
+        for (PlayerInfo player : playerInfos) {
+            player.regenMana(delta);
         }
     }
 

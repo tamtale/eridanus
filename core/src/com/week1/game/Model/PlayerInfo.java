@@ -24,7 +24,7 @@ public class PlayerInfo {
         }
     }
 
-    public void regenMana() {
-        mana += regen_rate;
+    public void regenMana(float delta) {
+        mana += regen_rate * delta;
     }
 }

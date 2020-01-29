@@ -41,6 +41,7 @@ public class GameEngine {
 
     public void updateState(float delta) {
         gameState.stepUnits(delta);
+        gameState.updateMana(delta);
     }
 
     public void render(){
