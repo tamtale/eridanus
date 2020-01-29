@@ -60,7 +60,7 @@ public class Client {
         
         new Thread(() -> {
             while (true) {
-                byte[] buf = new byte[1024]; // TODO: size this according to messag length
+                byte[] buf = new byte[1024]; // TODO: size this according to message length
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
                 try {
@@ -97,6 +97,9 @@ public class Client {
     public int getPlayerId() {
         return this.playerId;
     }
-    
+
+    public void setNumberOfPlayer(int numPlayers) {
+
+    }
     
 }

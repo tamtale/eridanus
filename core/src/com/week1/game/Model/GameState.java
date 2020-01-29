@@ -17,7 +17,7 @@ public class GameState {
     private Array<PlayerBase> playerBases;
     private Array<SteeringAgent> agents;
 
-    public GameState(){
+    public GameState(int numPlayers){
         // TODO board
         // TODO player data
         // TODO towers

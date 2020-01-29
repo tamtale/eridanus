@@ -13,9 +13,9 @@ public class GameEngine {
     private ConcurrentLinkedQueue<GameMessage> messageQueue;
     private int communicationTurn = 0;
 
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, int numPlayers) {
         messageQueue = new ConcurrentLinkedQueue<>();
-        gameState = new GameState();
+        gameState = new GameState(numPlayers);
         engineToRenderer = engineToRendererAdapter;
     }
 
