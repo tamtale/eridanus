@@ -2,11 +2,11 @@ package com.week1.game.Model;
 
 import static com.week1.game.Model.StatsConfig.*;
 
-public class PlayerInfo {
+public class PlayerStat {
     private float mana;
     private float regen_rate;
 
-    public PlayerInfo(){
+    public PlayerStat(){
         this.mana = startingMana;
         this.regen_rate = manaRegenRate;
     }

@@ -15,17 +15,16 @@ public class GameState {
     private int minionCount;
     private Array<Tower> towers;
     private Array<PlayerBase> playerBases;
-    private Array<PlayerInfo> playerInfos;
+    private Array<PlayerStat> playerStats;
     private Array<SteeringAgent> agents;
 
     public GameState(){
         // TODO board
-        // TODO player data
         // TODO tower types in memory after exchange
         towers = new Array<>();
         units = new Array<>();
         playerBases = new Array<>();
-        playerInfos = new Array<>();
+        playerStats = new Array<>();
 
         agents = new Array<>();
     }
@@ -51,7 +50,7 @@ public class GameState {
 
         // Create the correct amount of actual players
         for (int i = 0; i < numPlayers; i++) {
-            playerInfos.add(new PlayerInfo());
+            playerStats.add(new PlayerStat());
         }
     }
 
@@ -62,7 +61,7 @@ public class GameState {
     }
 
     public void updateMana(float delta){
-        for (PlayerInfo player : playerInfos) {
+        for (PlayerStat player : playerStats) {
             player.regenMana(delta);
         }
     }
