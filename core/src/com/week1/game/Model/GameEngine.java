@@ -15,8 +15,8 @@ public class GameEngine {
 
     public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
         messageQueue = new ConcurrentLinkedQueue<>();
-        gameState = new GameState();
         engineToRenderer = engineToRendererAdapter;
+        gameState = new GameState();
     }
 
     public void receiveMessages(List<? extends GameMessage> messages) {
@@ -41,6 +41,7 @@ public class GameEngine {
 
     public void updateState(float delta) {
         gameState.stepUnits(delta);
+        gameState.updateMana(delta);
     }
 
     public void render(){
@@ -61,4 +62,6 @@ public class GameEngine {
     public void updateGoal(Unit unit, Vector3 goal) {
         gameState.updateGoal(unit, goal);
     }
+
+    public void setNumPlayers(int numPlayers) { gameState.setNumPlayers(numPlayers); }
 }

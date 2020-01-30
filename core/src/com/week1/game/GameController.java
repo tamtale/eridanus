@@ -42,6 +42,11 @@ public class GameController extends ApplicationAdapter {
 			public void deliverUpdate(List<? extends GameMessage> messages) {
 				engine.receiveMessages(messages);
 			}
+
+			@Override
+			public void notifyNumPlayers(int numPlayers) {
+				engine.setNumPlayers(numPlayers);
+			}
 		});
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override
