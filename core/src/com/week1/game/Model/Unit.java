@@ -18,27 +18,15 @@ public class Unit extends Rectangle implements Damageable {
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
-//    private static Pixmap unitPixmap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-//       setColor(Color.BLUE);
-//       fill();
-//    }};
+    
+    
     private static Pixmap unitPixmap2 = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
         setColor(Color.YELLOW);
         fill();
     }};
-//    private static Texture unselectedSkin = new Texture(unitPixmap){{
-//        unitPixmap.dispose();
-//    }};
     private static Texture selectedSkin = new Texture(unitPixmap2){{
         unitPixmap2.dispose();
     }};
-
-//            Pixmap blueMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-//            setColor(Color.BLUE);
-//            fill();
-//        }};
-//        Texture blueTexture = new Texture(blueMap){{ blueMap.dispose(); }};
-
 
 
     private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {{
@@ -63,7 +51,20 @@ public class Unit extends Rectangle implements Damageable {
         }};
         Texture whiteTexture = new Texture(whiteMap){{ whiteMap.dispose(); }};
         this.put(2, whiteTexture);
+        
+        Pixmap purpleMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+            setColor(Color.PURPLE);
+            fill();
+        }};
+        Texture purpleTexture = new Texture(purpleMap){{ purpleMap.dispose(); }};
+        this.put(3, purpleTexture);
 
+        Pixmap pinkMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+            setColor(Color.PINK);
+            fill();
+        }};
+        Texture pinkTexture = new Texture(pinkMap){{ pinkMap.dispose(); }};
+        this.put(4, pinkTexture);
     }};
         
         
