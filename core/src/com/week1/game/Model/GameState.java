@@ -1,5 +1,6 @@
 package com.week1.game.Model;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 
@@ -27,6 +28,8 @@ public class GameState {
         playerStats = new Array<>();
 
         agents = new Array<>();
+
+        playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 90, 0));
     }
 
     /*
@@ -37,8 +40,10 @@ public class GameState {
      */
     public void setNumPlayers(int numPlayers) {
         // Create the correct amount of bases.
+        Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
+//        playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 90, 0));
         if (numPlayers == 1) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 90, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 100, 100, 0));
         } else if (numPlayers == 2) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 190, 0));
             playerBases.add(new PlayerBase(playerBaseInitialHp, 190, 10, 1));
@@ -47,11 +52,14 @@ public class GameState {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 190, 100, 1));
             playerBases.add(new PlayerBase(playerBaseInitialHp, 40, 10, 2));
         }
+        Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
 
         // Create the correct amount of actual players
         for (int i = 0; i < numPlayers; i++) {
             playerStats.add(new PlayerStat());
         }
+        Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
+
     }
 
     public void stepUnits(float delta) {

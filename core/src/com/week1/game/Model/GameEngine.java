@@ -63,7 +63,5 @@ public class GameEngine {
         gameState.updateGoal(unit, goal);
     }
 
-    public void setNumPlayers(int numPlayers) {
-        this.gameState.setNumPlayers(numPlayers);
-    }
+    public void setNumPlayers(int numPlayers) { gameState.setNumPlayers(numPlayers); }
 }
