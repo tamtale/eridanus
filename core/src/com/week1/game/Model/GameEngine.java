@@ -21,6 +21,7 @@ public class GameEngine {
 
     public void receiveMessages(List<? extends GameMessage> messages) {
         communicationTurn += 1;
+        gameState.updateMana(1); // This needs to be synchronized with the communication turn TODO is this the best way to do that?
         Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn);
         messageQueue.addAll(messages);
     }
@@ -41,7 +42,7 @@ public class GameEngine {
 
     public void updateState(float delta) {
         gameState.stepUnits(delta);
-        gameState.updateMana(delta);
+//        gameState.updateMana(delta); // TODO decide where we want mana updated.
     }
 
     public void render(){

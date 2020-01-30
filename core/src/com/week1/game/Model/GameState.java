@@ -69,9 +69,9 @@ public class GameState {
         }
     }
 
-    public void updateMana(float delta){
+    public void updateMana(float amount){
         for (PlayerStat player : playerStats) {
-            player.regenMana(delta);
+            player.regenMana(amount);
         }
     }
 
