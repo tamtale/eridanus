@@ -11,8 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class Unit extends Rectangle {
+public class Unit extends Rectangle implements Damageable {
     private final int playerID;
+    private float hp;
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
@@ -53,10 +54,11 @@ public class Unit extends Rectangle {
         
     private Texture unselectedSkin;
 
-    public Unit(float x, float y, Texture t, int playerID) {
+    public Unit(float x, float y, Texture t, float hp, int playerID) {
         super(x, y, 1, 1);
         this.unselectedSkin = colorMap.get(playerID);
         this.playerID = playerID;
+        this.hp = hp;
     }
 
     public void step(float delta) {
@@ -75,5 +77,16 @@ public class Unit extends Rectangle {
         return unselectedSkin;
     }
     public int getPlayerID(){return playerID;}
+
+    @Override
+    public boolean takeDamage(float dmg, int damageType) {
+        this.hp -= dmg;
+        if (this.hp <= 0) {
+            return true;
+            // TODO again, might need to do more than returning true.
+        } else {
+            return false;
+        }
+    }
 }
 
