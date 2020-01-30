@@ -9,13 +9,15 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class GameEngine {
 
     private IEngineToRendererAdapter engineToRenderer;
+    private IEngineToNetworkAdapter engineToNetwork;
     private GameState gameState;
     private ConcurrentLinkedQueue<GameMessage> messageQueue;
     private int communicationTurn = 0;
 
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, IEngineToNetworkAdapter engineToNetworkAdapter) {
         messageQueue = new ConcurrentLinkedQueue<>();
         engineToRenderer = engineToRendererAdapter;
+        engineToNetwork = engineToNetworkAdapter;
         gameState = new GameState();
     }
 
@@ -63,5 +65,4 @@ public class GameEngine {
         gameState.updateGoal(unit, goal);
     }
 
-    public void setNumPlayers(int numPlayers) { gameState.setNumPlayers(numPlayers); }
 }

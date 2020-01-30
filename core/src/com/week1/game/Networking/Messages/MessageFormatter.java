@@ -34,6 +34,8 @@ public class MessageFormatter {
                 parsedMsg = g.fromJson(msg, MoveMinionMessage.class);
             } else if (prototypeMessage.messageTypeID == MessageType.CREATETOWER){
                 parsedMsg = g.fromJson(msg, CreateTowerMessage.class);
+            } else if (prototypeMessage.messageTypeID == MessageType.INIT){
+                parsedMsg = g.fromJson(msg, InitMessage.class);
             }
             if (parsedMsg == null) {
                 Gdx.app.error(TAG, "The following message had an unrecognized MessageType: " + msg);

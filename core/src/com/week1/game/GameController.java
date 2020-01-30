@@ -43,10 +43,11 @@ public class GameController extends ApplicationAdapter {
 				engine.receiveMessages(messages);
 			}
 
-			@Override
-			public void notifyNumPlayers(int numPlayers) {
-				engine.setNumPlayers(numPlayers);
-			}
+			// The client should Not! make calls to the engine that perform drawing operations
+//			@Override
+//			public void notifyNumPlayers(int numPlayers) {
+//				engine.setNumPlayers(numPlayers);
+//			}
 		});
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override
@@ -60,7 +61,9 @@ public class GameController extends ApplicationAdapter {
 			public void draw(Texture texture, float x, float y) {
 				renderer.draw(texture, x, y);
 			}
-		});
+		},
+				new IEngineToNetworkAdapter() {
+				});
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
 			public void render() {

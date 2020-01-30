@@ -89,6 +89,7 @@ public class NetworkUtils {
                     // Time to start the game
                     c.sendStringMessage("start");
                 }
+                
 
             } else if  (args[0].equals("client")) {
                 Gdx.app.log(TAG, "Client option chosen.");

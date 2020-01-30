@@ -6,5 +6,4 @@ import java.util.List;
 
 public interface INetworkClientToEngineAdapter {
     void deliverUpdate(List<? extends GameMessage> messages);
-    void notifyNumPlayers(int numPlayers);
 }
