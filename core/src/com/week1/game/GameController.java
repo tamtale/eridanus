@@ -2,6 +2,7 @@ package com.week1.game;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
@@ -21,7 +22,7 @@ import java.util.UUID;
 
 public class GameController extends ApplicationAdapter {
 	private static float THRESHOLD = .2f;
-	public static int SCALE = 8; // 8 pixels per unit.
+	public static int PIXELS_PER_UNIT = 64;
 	private String[] args;
 	private float curTime = 0f;
 	private Client networkClient;
@@ -61,6 +62,12 @@ public class GameController extends ApplicationAdapter {
 			public void render() {
 				engine.render();
 			}
+
+			@Override
+			public TiledMap getMap() {
+			    return engine.getGameState().getWorld().toTiledMap();
+			}
+
 		}, new IRendererToNetworkAdapter() {
 			@Override
 			public String getHostAddr() {

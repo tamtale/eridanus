@@ -10,53 +10,37 @@ import com.week1.game.AIMovement.SteeringAgent;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.week1.game.GameController.SCALE;
 
 public class Unit extends Rectangle {
     private final int playerID;
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
-//    private static Pixmap unitPixmap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-//       setColor(Color.BLUE);
-//       fill();
-//    }};
-    private static Pixmap unitPixmap2 = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+    private static Pixmap unitPixmap2 = new Pixmap(1, 1, Pixmap.Format.RGB888){{
         setColor(Color.YELLOW);
         fill();
     }};
-//    private static Texture unselectedSkin = new Texture(unitPixmap){{
-//        unitPixmap.dispose();
-//    }};
     private static Texture selectedSkin = new Texture(unitPixmap2){{
         unitPixmap2.dispose();
     }};
 
-//            Pixmap blueMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-//            setColor(Color.BLUE);
-//            fill();
-//        }};
-//        Texture blueTexture = new Texture(blueMap){{ blueMap.dispose(); }};
-
-
-
     private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {{
 
-        Pixmap blueMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+        Pixmap blueMap = new Pixmap(1, 1, Pixmap.Format.RGB888){{
             setColor(Color.BLUE);
             fill();
         }};
         Texture blueTexture = new Texture(blueMap){{ blueMap.dispose(); }};
         this.put(0, blueTexture);
 
-        Pixmap redMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+        Pixmap redMap = new Pixmap(1, 1, Pixmap.Format.RGB888){{
             setColor(Color.RED);
             fill();
         }};
         Texture redTexture = new Texture(redMap){{ redMap.dispose(); }};
         this.put(1, redTexture);
 
-        Pixmap whiteMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+        Pixmap whiteMap = new Pixmap(1, 1, Pixmap.Format.RGB888){{
             setColor(Color.WHITE);
             fill();
         }};
@@ -70,7 +54,7 @@ public class Unit extends Rectangle {
     private Texture unselectedSkin;
 
     public Unit(float x, float y, Texture t, int playerID) {
-        super(x, y, SCALE, SCALE);
+        super(x, y, 1, 1);
         this.unselectedSkin = colorMap.get(playerID);
         this.playerID = playerID;
     }

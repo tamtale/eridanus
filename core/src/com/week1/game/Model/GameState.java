@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
+import com.week1.game.Model.World.GameWorld;
 
 public class GameState {
 
@@ -16,6 +17,7 @@ public class GameState {
     private Array<Tower> towers;
     private Array<PlayerBase> playerBases;
     private Array<SteeringAgent> agents;
+    private GameWorld world;
 
     public GameState(){
         // TODO board
@@ -24,10 +26,10 @@ public class GameState {
         // TODO tower types in memory after exchange
         towers = new Array<>();
         units = new Array<>();
-
+        world = new GameWorld();
         playerBases = new Array<>();
-        playerBases.add(new PlayerBase(100, 10, 190, 0));
-        playerBases.add(new PlayerBase(100, 190, 10, 0));
+        playerBases.add(new PlayerBase(100, 0, 90, 0));
+        playerBases.add(new PlayerBase(100, 90, 0, 1));
 
         agents = new Array<>();
     }
@@ -99,5 +101,9 @@ public class GameState {
                 updateGoal(unit, new Vector3(x, y, 0));
             }
         }
+    }
+
+    public GameWorld getWorld() {
+        return world;
     }
 }

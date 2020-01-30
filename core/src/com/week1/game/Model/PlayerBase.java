@@ -11,9 +11,9 @@ public class PlayerBase {
     private float hp;
     private int playerID;
     private Texture skin;
-    private static final int SIDELENGTH = 32;
+    private static final int SIDELENGTH = 8;
 
-    public PlayerBase(float initialHp, float x, float y, int playerID) {
+    PlayerBase(float initialHp, float x, float y, int playerID) {
 
         Pixmap towerUnscaled = new Pixmap(Gdx.files.internal("basetop.png"));
         Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, Pixmap.Format.RGBA8888);
@@ -26,7 +26,7 @@ public class PlayerBase {
         this.y = y;
     }
 
-    public Texture getSkin() {
+    Texture getSkin() {
         return skin;
     }
 }

@@ -1,14 +1,11 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 
-import static com.week1.game.GameController.SCALE;
-
 public class Tower {
-    private static final int SIDELENGTH = SCALE * 3;
+    private static final int SIDELENGTH = 4;
     public float x, y;
     private Texture skin;
     private int playerID;
