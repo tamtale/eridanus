@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-import static com.week1.game.GameController.SCALE;
+import static com.week1.game.GameController.PIXELS_PER_UNIT;
 
 interface Block {
 
@@ -14,7 +14,7 @@ interface Block {
     class TerrainBlock implements Block {
         private TextureRegion textureRegion;
         TerrainBlock(Color color) {
-            Pixmap unitPixmap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888);
+            Pixmap unitPixmap = new Pixmap(PIXELS_PER_UNIT, PIXELS_PER_UNIT, Pixmap.Format.RGB888);
             unitPixmap.setColor(color);
             unitPixmap.fill();
             this.textureRegion = new TextureRegion(new Texture(unitPixmap));

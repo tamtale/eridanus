@@ -28,8 +28,8 @@ public class GameState {
         units = new Array<>();
         world = new GameWorld();
         playerBases = new Array<>();
-        playerBases.add(new PlayerBase(100, 10, 190, 0));
-        playerBases.add(new PlayerBase(100, 190, 10, 0));
+        playerBases.add(new PlayerBase(100, 0, 90, 0));
+        playerBases.add(new PlayerBase(100, 90, 0, 1));
 
         agents = new Array<>();
     }

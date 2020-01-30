@@ -1,18 +1,8 @@
 package com.week1.game.Networking.Messages.Game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Unit;
-import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageType;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.week1.game.GameController.SCALE;
 
 public class CreateMinionMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.CREATEMINION;

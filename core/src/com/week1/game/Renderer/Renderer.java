@@ -5,13 +5,10 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.week1.game.Model.GameState;
-import jdk.jfr.internal.test.WhiteBox;
 
-import static com.week1.game.GameController.SCALE;
+import static com.week1.game.GameController.PIXELS_PER_UNIT;
 
 public class Renderer {
     private Batch batch;
@@ -32,7 +29,7 @@ public class Renderer {
     public void create() {
         map = engineAdapter.getMap();
         camera = new OrthographicCamera();
-        mapRenderer = new OrthogonalTiledMapRenderer(map, 1f / SCALE);
+        mapRenderer = new OrthogonalTiledMapRenderer(map, 1f / PIXELS_PER_UNIT);
         batch = mapRenderer.getBatch();
         camera.setToOrtho(false, 100, 100);
         camera.update();

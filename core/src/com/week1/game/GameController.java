@@ -22,7 +22,7 @@ import java.util.UUID;
 
 public class GameController extends ApplicationAdapter {
 	private static float THRESHOLD = .2f;
-	public static int SCALE = 32; // 8 pixels per unit.
+	public static int PIXELS_PER_UNIT = 64;
 	private String[] args;
 	private float curTime = 0f;
 	private Client networkClient;

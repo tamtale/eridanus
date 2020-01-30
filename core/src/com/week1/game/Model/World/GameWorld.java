@@ -4,15 +4,13 @@ import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import static com.week1.game.GameController.SCALE;
-
-import java.util.Arrays;
+import static com.week1.game.GameController.PIXELS_PER_UNIT;
 
 public class GameWorld {
     private Block[][][] blocks;
     public GameWorld() {
+        // For now, we'll make a preset 100x100x10 world.
         blocks = new Block[100][100][10];
-        // fill the top 9 levels with air.
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 blocks[i][j][0] = Block.TerrainBlock.STONE;
@@ -32,7 +30,7 @@ public class GameWorld {
     public TiledMap toTiledMap() {
         TiledMap map = new TiledMap();
         MapLayers layers = map.getLayers();
-        TiledMapTileLayer layer = new TiledMapTileLayer(blocks.length, blocks[0].length, SCALE, SCALE);
+        TiledMapTileLayer layer = new TiledMapTileLayer(blocks.length, blocks[0].length, PIXELS_PER_UNIT, PIXELS_PER_UNIT);
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
