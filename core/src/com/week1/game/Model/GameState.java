@@ -39,19 +39,17 @@ public class GameState {
      */
     public void setNumPlayers(int numPlayers) {
         // Create the correct amount of bases.
-        Gdx.app.postRunnable(() -> {
-            Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
-            if (numPlayers == 1) {
-                playerBases.add(new PlayerBase(playerBaseInitialHp, 100, 100, 0));
-            } else if (numPlayers == 2) {
-                playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 190, 0));
-                playerBases.add(new PlayerBase(playerBaseInitialHp, 190, 10, 1));
-            } else {
-                playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 190, 0));
-                playerBases.add(new PlayerBase(playerBaseInitialHp, 190, 100, 1));
-                playerBases.add(new PlayerBase(playerBaseInitialHp, 40, 10, 2));
-            }
-        });
+        Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
+        if (numPlayers == 1) {
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 100, 100, 0));
+        } else if (numPlayers == 2) {
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 190, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 190, 10, 1));
+        } else {
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 190, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 190, 100, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 40, 10, 2));
+        }
 
 
         // Create the correct amount of actual players

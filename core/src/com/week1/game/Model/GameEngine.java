@@ -9,15 +9,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class GameEngine {
 
     private IEngineToRendererAdapter engineToRenderer;
-    private IEngineToNetworkAdapter engineToNetwork;
     private GameState gameState;
     private ConcurrentLinkedQueue<GameMessage> messageQueue;
     private int communicationTurn = 0;
 
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, IEngineToNetworkAdapter engineToNetworkAdapter) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
         messageQueue = new ConcurrentLinkedQueue<>();
         engineToRenderer = engineToRendererAdapter;
-        engineToNetwork = engineToNetworkAdapter;
         gameState = new GameState();
     }
 
