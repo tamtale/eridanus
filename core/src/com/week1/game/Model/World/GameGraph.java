@@ -4,12 +4,12 @@ import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.utils.Array;
 
-public class GameGraph implements IndexedGraph<Block.TerrainBlock> {
+public class GameGraph implements IndexedGraph<Block> {
 
     private int nodeCount;
 
     @Override
-    public int getIndex(Block.TerrainBlock node) {
+    public int getIndex(Block node) {
         return node.getIndex();
     }
 
@@ -19,7 +19,7 @@ public class GameGraph implements IndexedGraph<Block.TerrainBlock> {
     }
 
     @Override
-    public Array<Connection<Block.TerrainBlock>> getConnections(Block.TerrainBlock fromNode) {
+    public Array<Connection<Block>> getConnections(Block fromNode) {
         return fromNode.getConnections();
     }
 }

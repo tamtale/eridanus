@@ -12,11 +12,13 @@ import static com.week1.game.GameController.PIXELS_PER_UNIT;
 interface Block {
 
     TextureRegion getTextureRegion();
-
+    Array<Connection<Block>> getConnections();
+    void setConnection(Connection<Block> neighbor);
+    int getIndex();
     class TerrainBlock implements Block {
         private TextureRegion textureRegion;
         private int index;
-        private Array<Connection<TerrainBlock>> edges;
+        private Array<Connection<Block>> edges;
         TerrainBlock(Color color) {
             Pixmap unitPixmap = new Pixmap(PIXELS_PER_UNIT, PIXELS_PER_UNIT, Pixmap.Format.RGB888);
             unitPixmap.setColor(color);
@@ -35,17 +37,38 @@ interface Block {
             return index;
         }
 
-        public Array<Connection<TerrainBlock>> getConnections(){
+        public Array<Connection<Block>> getConnections(){
             return edges;
+        }
+
+        @Override
+        public void setConnection(Connection<Block> neighbor) {
+            edges.add(neighbor);
         }
     }
 
 
     class TowerBlock implements Block {
-
+        private Array<Connection<Block>> edges;
+        private int index;
         @Override
         public TextureRegion getTextureRegion() {
             return null;
+        }
+
+        @Override
+        public Array<Connection<Block>> getConnections() {
+            return edges;
+        }
+
+        @Override
+        public void setConnection(Connection<Block> neighbor) {
+            edges.add(neighbor);
+        }
+
+        @Override
+        public int getIndex() {
+            return index;
         }
     }
 }

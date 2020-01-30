@@ -1,5 +1,6 @@
 package com.week1.game.Model.World;
 
+import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -14,6 +15,9 @@ public class GameWorld {
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 blocks[i][j][0] = Block.TerrainBlock.STONE;
+                if (i > 0) {
+                    blocks[i][j][0].setConnection(new WeightedBlockEdge(1, blocks[i][j][0], blocks[i - 1][j][0]));
+                }
                 for (int k = 1; k < blocks[0][0].length; k++) {
                     blocks[i][j][k] = Block.TerrainBlock.AIR;
                 }
