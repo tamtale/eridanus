@@ -1,18 +1,11 @@
 package com.week1.game.Networking.Messages.Game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Unit;
-import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageType;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.week1.game.GameController.SCALE;
+import static com.week1.game.Model.StatsConfig.*;
 
 public class CreateMinionMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.CREATEMINION;
@@ -31,7 +24,19 @@ public class CreateMinionMessage extends GameMessage {
 
     @Override
     public boolean process(GameState inputState){
-        Unit unit = new Unit(x, y, null, 5, playerID);
+        // First, check if it is able to be created.
+        // TODO do lookup of the cost based on unitType, do not use hardcoded number [tempMinion1Cost/tempMinion1Health]
+        if (tempMinion1Cost > inputState.getPlayerStats(playerID).getMana()) {
+            // Do not have enough mana!
+            Gdx.app.log("pjb3 - CreatMinionMessage", "Not enough mana (" +
+                    inputState.getPlayerStats(playerID).getMana() + ") to create unit of cost " + tempMinion1Cost);
+            return false; // indicate it was NOT placed
+        }
+
+        Gdx.app.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create tower.");
+        inputState.getPlayerStats(playerID).useMana(tempMinion1Cost);
+
+        Unit unit = new Unit(x, y, null, tempMinion1Health, playerID);
         inputState.addUnit(unit);
 //        SteeringAgent agent = new SteeringAgent(unit, new Vector2(x, y), 0,
 //                new Vector2((float) .1, (float) .1), 0, 1, true, (float).5);

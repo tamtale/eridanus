@@ -33,30 +33,36 @@ public class GameState {
 
     /*
      This message will come in when the network has chosen the specific number of players that
-     will be in the game. It inadvertantly means the game is about to start.
+     will be in the game. It inadvertently means the game is about to start.
 
      This will create the bases for all of the players and give them all an amount of currency.
      */
     public void setNumPlayers(int numPlayers) {
         // Create the correct amount of bases.
-        Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
-        if (numPlayers == 1) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 100, 100, 0));
-        } else if (numPlayers == 2) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 190, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 190, 10, 1));
-        } else {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 190, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 190, 100, 1));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 40, 10, 2));
-        }
+        Gdx.app.postRunnable(() -> {
+            Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
+            if (numPlayers == 1) {
+                playerBases.add(new PlayerBase(playerBaseInitialHp, 100, 100, 0));
+            } else if (numPlayers == 2) {
+                playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 190, 0));
+                playerBases.add(new PlayerBase(playerBaseInitialHp, 190, 10, 1));
+            } else {
+                playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 190, 0));
+                playerBases.add(new PlayerBase(playerBaseInitialHp, 190, 100, 1));
+                playerBases.add(new PlayerBase(playerBaseInitialHp, 40, 10, 2));
+            }
+        });
+
 
         // Create the correct amount of actual players
         for (int i = 0; i < numPlayers; i++) {
             playerStats.add(new PlayerStat());
         }
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
+    }
 
+    public PlayerStat getPlayerStats(int playerNum) {
+        return playerStats.get(playerNum);
     }
 
     public void stepUnits(float delta) {
