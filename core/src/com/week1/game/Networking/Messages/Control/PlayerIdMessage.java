@@ -5,17 +5,14 @@ import com.week1.game.Networking.Messages.MessageType;
 
 public class PlayerIdMessage extends ControlMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.PLAYERID;
-//    private final int numPlayers;
 
     public PlayerIdMessage(int playerID){
         super(playerID, MESSAGE_TYPE);
-//        this.numPlayers = numPlayers;
     }
 
     @Override 
     public void updateClient(Client c) {
         c.setPlayerId(this.playerID);
-//        c.setNumberOfPlayers(this.numPlayers);
     }
     
     @Override

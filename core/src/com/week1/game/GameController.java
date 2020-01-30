@@ -61,9 +61,7 @@ public class GameController extends ApplicationAdapter {
 			public void draw(Texture texture, float x, float y) {
 				renderer.draw(texture, x, y);
 			}
-		},
-				new IEngineToNetworkAdapter() {
-				});
+		});
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
 			public void render() {

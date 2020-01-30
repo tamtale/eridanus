@@ -9,20 +9,19 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class GameEngine {
 
     private IEngineToRendererAdapter engineToRenderer;
-    private IEngineToNetworkAdapter engineToNetwork;
     private GameState gameState;
     private ConcurrentLinkedQueue<GameMessage> messageQueue;
     private int communicationTurn = 0;
 
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, IEngineToNetworkAdapter engineToNetworkAdapter) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
         messageQueue = new ConcurrentLinkedQueue<>();
         engineToRenderer = engineToRendererAdapter;
-        engineToNetwork = engineToNetworkAdapter;
         gameState = new GameState();
     }
 
     public void receiveMessages(List<? extends GameMessage> messages) {
         communicationTurn += 1;
+        gameState.updateMana(1); // This needs to be synchronized with the communication turn TODO is this the best way to do that?
         Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn);
         messageQueue.addAll(messages);
     }
@@ -43,7 +42,7 @@ public class GameEngine {
 
     public void updateState(float delta) {
         gameState.stepUnits(delta);
-        gameState.updateMana(delta);
+//        gameState.updateMana(delta); // TODO decide where we want mana updated.
     }
 
     public void render(){

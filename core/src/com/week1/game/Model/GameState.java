@@ -33,7 +33,7 @@ public class GameState {
 
     /*
      This message will come in when the network has chosen the specific number of players that
-     will be in the game. It inadvertantly means the game is about to start.
+     will be in the game. It inadvertently means the game is about to start.
 
      This will create the bases for all of the players and give them all an amount of currency.
      */
@@ -51,12 +51,16 @@ public class GameState {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 40, 10, 2));
         }
 
+
         // Create the correct amount of actual players
         for (int i = 0; i < numPlayers; i++) {
             playerStats.add(new PlayerStat());
         }
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
+    }
 
+    public PlayerStat getPlayerStats(int playerNum) {
+        return playerStats.get(playerNum);
     }
 
     public void stepUnits(float delta) {
@@ -65,9 +69,9 @@ public class GameState {
         }
     }
 
-    public void updateMana(float delta){
+    public void updateMana(float amount){
         for (PlayerStat player : playerStats) {
-            player.regenMana(delta);
+            player.regenMana(amount);
         }
     }
 

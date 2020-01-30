@@ -98,9 +98,6 @@ public class Client {
         return this.playerId;
     }
 
-//    public void setNumberOfPlayers(int numPlayers) { this.numPlayers = numPlayers;  }
-//    public int getNumberOfPlayers() {return this.numPlayers; }
-//    
 //    public boolean isInitialized() {
 //        return (playerId != -1) && (numPlayers != -1);
 //    }
