@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 
 public class Tower implements Damageable {
-    private static final int SIDELENGTH = 1;
+    private static final int SIDELENGTH = 4;
     public float x, y;
     private float hp;
     private Texture skin;
