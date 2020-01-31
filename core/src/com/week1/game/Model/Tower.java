@@ -49,4 +49,8 @@ public class Tower implements Damageable {
             return false;
         }
     }
+
+    public int getSidelength(){
+        return SIDELENGTH;
+    }
 }

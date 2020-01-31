@@ -3,6 +3,7 @@ package com.week1.game.Networking.Messages.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.week1.game.Model.GameState;
+import com.week1.game.Model.PlayerStat;
 import com.week1.game.Model.Tower;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Model.TowerType;

@@ -73,7 +73,29 @@ public class GameState {
         for(Unit unit: units) {
             //System.out.println("from step " + agent.getSteeringOutput().linear);
             unit.step(delta);
+            for(Tower tower: towers) {
+                if (unit.getX() > tower.x && unit.getX() < tower.x + tower.getSidelength() &&
+                        unit.getY() > tower.y && unit.getY() < tower.y + tower.getSidelength()){
+                    Vector2 linVel = unit.agent.getLinearVelocity();
+                    unit.setX(unit.getX() -  linVel.x);
+                    unit.setY(unit.getY() -  linVel.y);
+                    unit.agent.setLinearVelocity(new Vector2(0, 0));
+                    unit.agent.setSteeringBehavior(null);
+                }
+            }
+
+            for(PlayerBase base: playerBases) {
+                if (unit.getX() > base.x && unit.getX() < base.x + base.getSidelength() &&
+                        unit.getY() > base.y && unit.getY() < base.y + base.getSidelength()){
+                    Vector2 linVel = unit.agent.getLinearVelocity();
+                    unit.setX(unit.getX() - linVel.x);
+                    unit.setY(unit.getY() - linVel.y);
+                    unit.agent.setLinearVelocity(new Vector2(0, 0));
+                    unit.agent.setSteeringBehavior(null);
+                }
+            }
         }
+
     }
 
     public void updateMana(float amount){

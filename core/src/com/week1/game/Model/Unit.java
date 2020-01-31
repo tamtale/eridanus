@@ -10,7 +10,6 @@ import com.week1.game.AIMovement.SteeringAgent;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.week1.game.GameController.SCALE;
 
 public class Unit extends Rectangle implements Damageable {
     private final int playerID;
