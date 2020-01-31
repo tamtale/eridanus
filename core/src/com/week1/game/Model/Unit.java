@@ -93,6 +93,18 @@ public class Unit extends Rectangle implements Damageable {
 //        Gdx.app.log("lji1 - getUnselectedSkin", "unselectedSkin: " + unselectedSkin);
         return unselectedSkin;
     }
+    
+    public Texture getHealthBar() {
+
+        Pixmap pinkMap = new Pixmap((int)(2 * SCALE), (int)(0.5 * SCALE), Pixmap.Format.RGB888){{
+            setColor(Color.BLACK);
+            fill();
+        }};
+        Texture barTexture = new Texture(pinkMap){{ pinkMap.dispose(); }};
+        
+        return barTexture;
+    }
+    
     public int getPlayerID(){return playerID;}
 
     @Override

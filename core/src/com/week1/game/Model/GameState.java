@@ -106,6 +106,7 @@ public class GameState {
             } else {
                 drawFunc.draw(unit.getUnselectedSkin(), unit.x, unit.y);
             }
+            drawFunc.draw(unit.getHealthBar(), unit.x, unit.y + 10);
         }
 
         for (Tower tower : towers) {
