@@ -26,7 +26,7 @@ public class PlayerBase implements Damageable {
         this.y = y;
     }
 
-    public Texture getSkin() {
+    Texture getSkin() {
         return skin;
     }
 

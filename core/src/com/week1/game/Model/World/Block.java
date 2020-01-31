@@ -23,10 +23,16 @@ interface Block {
             Pixmap unitPixmap = new Pixmap(PIXELS_PER_UNIT, PIXELS_PER_UNIT, Pixmap.Format.RGB888);
             unitPixmap.setColor(color);
             unitPixmap.fill();
+            unitPixmap.fillRectangle(3, 3, PIXELS_PER_UNIT - 6, PIXELS_PER_UNIT - 6);
+            unitPixmap.setColor(Color.GRAY);
             this.textureRegion = new TextureRegion(new Texture(unitPixmap));
         }
         public static TerrainBlock AIR = new TerrainBlock(Color.GOLD);
         public static TerrainBlock STONE = new TerrainBlock(Color.GRAY);
+            ;
+
+
+
 
         @Override
         public TextureRegion getTextureRegion() {
