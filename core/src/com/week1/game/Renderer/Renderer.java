@@ -5,21 +5,14 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.week1.game.Model.GameState;
-import jdk.jfr.internal.test.WhiteBox;
 
-import static com.week1.game.GameController.SCALE;
+import static com.week1.game.GameController.PIXELS_PER_UNIT;
 
 public class Renderer {
     private Batch batch;
     private OrthographicCamera camera;
-    private Pixmap unitPixmap;
-    private Pixmap unitPixmap2;
-    private Texture unitTexture;
-    private Texture unitTexture2;
     private Vector3 touchPos = new Vector3();
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
@@ -34,23 +27,12 @@ public class Renderer {
 
 
     public void create() {
-        map = new TmxMapLoader().load("gridmap.tmx");
+        map = engineAdapter.getMap();
         camera = new OrthographicCamera();
-        mapRenderer = new OrthogonalTiledMapRenderer(map, 2f / SCALE);
+        mapRenderer = new OrthogonalTiledMapRenderer(map, 1f / PIXELS_PER_UNIT);
         batch = mapRenderer.getBatch();
-        camera.setToOrtho(false, 30 * SCALE, 30 * SCALE);
+        camera.setToOrtho(false, 100, 100);
         camera.update();
-        unitPixmap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888);
-
-        unitPixmap.setColor(Color.BLUE);
-        unitPixmap.fill();
-
-        unitPixmap2 = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888);
-        unitPixmap2.setColor(Color.RED);
-        unitPixmap2.fill();
-
-        unitTexture = new Texture(unitPixmap);
-        unitTexture2 = new Texture(unitPixmap2);
     }
 
     public Camera getCamera() {

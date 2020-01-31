@@ -3,6 +3,7 @@ package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.week1.game.Networking.Player;
 
 
 public class PlayerBase implements Damageable {
@@ -10,7 +11,7 @@ public class PlayerBase implements Damageable {
     private float hp;
     private int playerID;
     private static Texture skin;
-    private static final int SIDELENGTH = 32;
+    private static final int SIDELENGTH = 8;
     static {
         Pixmap towerUnscaled = new Pixmap(Gdx.files.internal("basetop.png"));
         Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, Pixmap.Format.RGBA8888);
@@ -25,7 +26,7 @@ public class PlayerBase implements Damageable {
         this.y = y;
     }
 
-    public Texture getSkin() {
+    Texture getSkin() {
         return skin;
     }
 
@@ -38,5 +39,9 @@ public class PlayerBase implements Damageable {
         } else {
             return false;
         }
+    }
+
+    public int getSidelength(){
+        return SIDELENGTH;
     }
 }

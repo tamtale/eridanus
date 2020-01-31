@@ -1,15 +1,13 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 
-import static com.week1.game.GameController.SCALE;
 import static com.week1.game.Model.StatsConfig.*;
 
 public class Tower implements Damageable, Damaging {
-    private static final int SIDELENGTH = SCALE * 3;
+    private static final int SIDELENGTH = 3;
     public float x, y;
     private float hp;
     private Texture skin;
@@ -31,7 +29,7 @@ public class Tower implements Damageable, Damaging {
         } else if (towerType == TowerType.TANK) {
             towerUnscaled = new Pixmap(Gdx.files.internal("towertransparent.png")); // TODO: tank skin
         }
-        Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, Pixmap.Format.RGBA8888);
+        Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, towerUnscaled.getFormat());
         towerScaled.drawPixmap(towerUnscaled, 0, 0, towerUnscaled.getWidth(), towerUnscaled.getHeight(),
                 0, 0, SIDELENGTH, SIDELENGTH);
         this.skin = new Texture(towerScaled);
@@ -65,4 +63,7 @@ public class Tower implements Damageable, Damaging {
 
     @Override
     public int getPlayerId(){return playerID;}
+    public int getSidelength(){
+        return SIDELENGTH;
+    }
 }

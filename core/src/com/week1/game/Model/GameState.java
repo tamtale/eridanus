@@ -1,5 +1,6 @@
 package com.week1.game.Model;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
@@ -7,8 +8,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
+import com.week1.game.Model.World.GameWorld;
 
 import static com.week1.game.Model.StatsConfig.*;
+import com.week1.game.Model.World.GameWorld;
 
 public class GameState {
 
@@ -18,15 +21,18 @@ public class GameState {
     private Array<PlayerBase> playerBases;
     private Array<PlayerStat> playerStats;
     private Array<SteeringAgent> agents;
+    private GameWorld world;
 
     public GameState(){
         // TODO board
+        // TODO player data
+        // TODO towers
         // TODO tower types in memory after exchange
         towers = new Array<>();
         units = new Array<>();
+        world = new GameWorld();
         playerBases = new Array<>();
         playerStats = new Array<>();
-
         agents = new Array<>();
 
     }
@@ -41,14 +47,14 @@ public class GameState {
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
         if (numPlayers == 1) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 100, 100, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
         } else if (numPlayers == 2) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 190, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 190, 10, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 0, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 90, 1));
         } else {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 190, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 190, 100, 1));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 40, 10, 2));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 0, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 70, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 90, 2));
         }
 
 
@@ -65,8 +71,29 @@ public class GameState {
 
     public void stepUnits(float delta) {
         for(Unit unit: units) {
+            //System.out.println("from step " + agent.getSteeringOutput().linear);
             unit.step(delta);
+            for(Tower tower: towers) {
+                if (unit.getX() > tower.x && unit.getX() < tower.x + tower.getSidelength() &&
+                        unit.getY() > tower.y && unit.getY() < tower.y + tower.getSidelength()){
+                    Vector3 linVel = unit.agent.getLinearVelocity();
+                    unit.setX(unit.getX() - 2 * linVel.x);
+                    unit.setY(unit.getY() - 2 * linVel.y);
+                    unit.agent.setLinearVelocity(new Vector3(0, 0, 0));
+                }
+            }
+
+            for(PlayerBase base: playerBases) {
+                if (unit.getX() > base.x && unit.getX() < base.x + base.getSidelength() &&
+                        unit.getY() > base.y && unit.getY() < base.y + base.getSidelength()){
+                    Vector3 linVel = unit.agent.getLinearVelocity();
+                    unit.setX(unit.getX() - 2 * linVel.x);
+                    unit.setY(unit.getY() - 2 * linVel.y);
+                    unit.agent.setLinearVelocity(new Vector3(0, 0, 0));
+                }
+            }
         }
+
     }
 
     public void updateMana(float amount){
@@ -90,10 +117,10 @@ public class GameState {
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
-        Vector2 vec2 = new Vector2(goal.x, goal.y);
+//        Vector2 vec2 = new Vector2(goal.x, goal.y);
         SteeringAgent agent = unit.getAgent();
 //        System.out.println(agent);
-        agent.setGoal(vec2);
+        agent.setGoal(goal);
     }
     public void addAgent(SteeringAgent a){
         agents.add(a);
@@ -106,7 +133,7 @@ public class GameState {
             } else {
                 drawFunc.draw(unit.getUnselectedSkin(), unit.x, unit.y);
             }
-            drawFunc.draw(unit.getHealthBar(), unit.x, unit.y + 10);
+            drawFunc.draw(unit.getHealthBar(), unit.x, (float)(unit.y + 1.5));
         }
 
         for (Tower tower : towers) {
@@ -182,4 +209,8 @@ public class GameState {
         }
     }
     
+
+    public GameWorld getWorld() {
+        return world;
+    }
 }

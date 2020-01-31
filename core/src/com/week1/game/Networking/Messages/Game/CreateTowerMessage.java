@@ -1,15 +1,14 @@
 package com.week1.game.Networking.Messages.Game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.week1.game.Model.GameState;
+import com.week1.game.Model.PlayerStat;
 import com.week1.game.Model.Tower;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Model.TowerType;
 
 import static com.week1.game.Model.StatsConfig.*;
 
-import static com.week1.game.GameController.SCALE;
 
 public class CreateTowerMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.CREATETOWER;
@@ -38,11 +37,7 @@ public class CreateTowerMessage extends GameMessage {
         inputState.getPlayerStats(playerID).useMana(tempTower1Cost);
 
         Gdx.app.log("lji1 - CreateTowerMessage", "Creating tower!");
-
-        int snappedX = ((int) x) - (((int) x) % SCALE) - SCALE;
-        int snappedY = ((int) y) - (((int) y) % SCALE) - SCALE;
-        
-        Tower tower = new Tower(snappedX, snappedY, towerType, tempTowerHealth, playerID);
+        Tower tower = new Tower((int) x, (int) y, towerType, tempTowerHealth, playerID);
 
         inputState.addTower(tower);
         return true;
