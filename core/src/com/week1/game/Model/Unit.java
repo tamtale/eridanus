@@ -10,9 +10,11 @@ import com.week1.game.AIMovement.SteeringAgent;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.week1.game.GameController.SCALE;
 
-public class Unit extends Rectangle {
+public class Unit extends Rectangle implements Damageable {
     private final int playerID;
+    private float hp;
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
@@ -47,16 +49,30 @@ public class Unit extends Rectangle {
         Texture whiteTexture = new Texture(whiteMap){{ whiteMap.dispose(); }};
         this.put(2, whiteTexture);
 
+        Pixmap purpleMap = new Pixmap(1, 1, Pixmap.Format.RGB888){{
+            setColor(Color.PURPLE);
+            fill();
+        }};
+        Texture purpleTexture = new Texture(purpleMap){{ purpleMap.dispose(); }};
+        this.put(3, purpleTexture);
+
+        Pixmap pinkMap = new Pixmap(1, 1, Pixmap.Format.RGB888){{
+            setColor(Color.PINK);
+            fill();
+        }};
+        Texture pinkTexture = new Texture(pinkMap){{ pinkMap.dispose(); }};
+        this.put(4, pinkTexture);
     }};
         
         
         
     private Texture unselectedSkin;
 
-    public Unit(float x, float y, Texture t, int playerID) {
+    public Unit(float x, float y, Texture t, float hp, int playerID) {
         super(x, y, 1, 1);
         this.unselectedSkin = colorMap.get(playerID);
         this.playerID = playerID;
+        this.hp = hp;
     }
 
     public void step(float delta) {
@@ -75,5 +91,16 @@ public class Unit extends Rectangle {
         return unselectedSkin;
     }
     public int getPlayerID(){return playerID;}
+
+    @Override
+    public boolean takeDamage(float dmg, int damageType) {
+        this.hp -= dmg;
+        if (this.hp <= 0) {
+            return true;
+            // TODO again, might need to do more than returning true.
+        } else {
+            return false;
+        }
+    }
 }
 

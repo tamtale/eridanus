@@ -43,6 +43,12 @@ public class GameController extends ApplicationAdapter {
 			public void deliverUpdate(List<? extends GameMessage> messages) {
 				engine.receiveMessages(messages);
 			}
+
+			// The client should Not! make calls to the engine that perform drawing operations
+//			@Override
+//			public void notifyNumPlayers(int numPlayers) {
+//				engine.setNumPlayers(numPlayers);
+//			}
 		});
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override

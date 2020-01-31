@@ -10,12 +10,16 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.World.GameWorld;
 
+import static com.week1.game.Model.StatsConfig.*;
+import com.week1.game.Model.World.GameWorld;
+
 public class GameState {
 
     private Array<Unit> units;
     private int minionCount;
     private Array<Tower> towers;
     private Array<PlayerBase> playerBases;
+    private Array<PlayerStat> playerStats;
     private Array<SteeringAgent> agents;
     private GameWorld world;
 
@@ -28,16 +32,53 @@ public class GameState {
         units = new Array<>();
         world = new GameWorld();
         playerBases = new Array<>();
-        playerBases.add(new PlayerBase(100, 0, 90, 0));
-        playerBases.add(new PlayerBase(100, 90, 0, 1));
-
+        playerStats = new Array<>();
         agents = new Array<>();
+
+    }
+
+    /*
+     This message will come in when the network has chosen the specific number of players that
+     will be in the game. It inadvertently means the game is about to start.
+
+     This will create the bases for all of the players and give them all an amount of currency.
+     */
+    public void setNumPlayers(int numPlayers) {
+        // Create the correct amount of bases.
+        Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
+        if (numPlayers == 1) {
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
+        } else if (numPlayers == 2) {
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 0, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 90, 1));
+        } else {
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 0, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 70, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 90, 2));
+        }
+
+
+        // Create the correct amount of actual players
+        for (int i = 0; i < numPlayers; i++) {
+            playerStats.add(new PlayerStat());
+        }
+        Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
+    }
+
+    public PlayerStat getPlayerStats(int playerNum) {
+        return playerStats.get(playerNum);
     }
 
     public void stepUnits(float delta) {
         for(Unit unit: units) {
             //System.out.println("from step " + agent.getSteeringOutput().linear);
             unit.step(delta);
+        }
+    }
+
+    public void updateMana(float amount){
+        for (PlayerStat player : playerStats) {
+            player.regenMana(amount);
         }
     }
 

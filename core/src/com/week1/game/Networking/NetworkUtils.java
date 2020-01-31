@@ -77,7 +77,7 @@ public class NetworkUtils {
                 String localIpAddr = InetAddress.getLocalHost().getHostAddress();
 
                 // create the host instance
-                Host h = new Host();
+                Host h = new Host(Integer.parseInt(args[1]));
                 // start listening for messages from clients
                 h.listenForClientMessages();
 
@@ -85,10 +85,11 @@ public class NetworkUtils {
                 // Now make the client stuff
                 c = new Client(localIpAddr, h.getPort(), adapter);
 
-                if (args.length == 2 && args[1].equals("start")) {
+                if (args.length == 3 && args[2].equals("start")) {
                     // Time to start the game
                     c.sendStringMessage("start");
                 }
+                
 
             } else if  (args[0].equals("client")) {
                 Gdx.app.log(TAG, "Client option chosen.");

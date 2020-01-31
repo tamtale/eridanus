@@ -3,6 +3,7 @@ package com.week1.game.Networking;
 import com.badlogic.gdx.Gdx;
 import com.week1.game.Networking.Messages.*;
 import com.week1.game.Networking.Messages.Control.PlayerIdMessage;
+import com.week1.game.Networking.Messages.Game.InitMessage;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -29,9 +30,11 @@ public class Host {
     private ConcurrentLinkedQueue<String> incomingMessages = new ConcurrentLinkedQueue<>();
     
     
-    public Host() throws IOException {
-        this.udpSocket = new DatagramSocket();
-        this.port = udpSocket.getLocalPort();
+    public Host(int port) throws IOException {
+        this.udpSocket = new DatagramSocket(port);
+        udpSocket.setReuseAddress(true);
+//        this.port = udpSocket.getLocalPort();
+        this.port = port;
         
         Gdx.app.log(TAG, "Creating socket for host instance with address: " +
                 NetworkUtils.getLocalHostAddr() + " on port: " + this.port);
@@ -76,22 +79,11 @@ public class Host {
             while (true) {
                 List<String> outgoingMessages = new ArrayList<>();
                 while (!incomingMessages.isEmpty()) { // TODO: dangerous, if many messages coming all at once
-//                    Gdx.app.log(TAG, "queue is non empty");
                     outgoingMessages.add(incomingMessages.poll());
                 }
 
                 Gdx.app.log(TAG, "Host is about to broadcast update message to registered clients.");
                 broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(outgoingMessages)));
-                
-//                broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(Arrays.asList(
-//                        MessageFormatter.packageMessage(new CreateMinionMessage(
-//                                ThreadLocalRandom.current().nextInt(20, 160),
-//                                ThreadLocalRandom.current().nextInt(20, 160),
-//                                69, 
-//                                420))
-////                        MessageFormatter.packageMessage(new TestMessage(345345, "omgwow", 10000))
-////                        MessageFormatter.packageMessage(new CreateMinionMessage(111, 999, 555, 666))
-//                ))));
                 
                 // Take a break before the next update
                 try { Thread.sleep(UPDATE_INTERVAL); } catch (InterruptedException e) {e.printStackTrace();}
@@ -128,6 +120,10 @@ public class Host {
                     }
                 }
 
+                // TODO: this gets sent first so that the game engine does any initialization before the game starts (but udp doesn't guarantee order)
+                broadcastToRegisteredPlayers(MessageFormatter.packageMessage(
+                        new Update(Arrays.asList(new String[] {MessageFormatter.packageMessage(new InitMessage(registry.size(), -1))}))));
+                
                 runUpdateLoop();
                 
             } else {
