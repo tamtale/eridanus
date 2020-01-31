@@ -33,6 +33,7 @@ public class Renderer {
         batch = mapRenderer.getBatch();
         camera.setToOrtho(false, 100, 100);
         camera.update();
+
     }
 
     public Camera getCamera() {
@@ -60,6 +61,12 @@ public class Renderer {
         endBatch();
     }
 
+    public void drawPlayerUI() {
+        startBatch();
+        font.draw(batch, String.format("Mana: %.2f", engineAdapter.getPlayerMana(networkAdapter.getPlayerId())), 90, 14);
+        endBatch();
+    }
+
     public void render() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -67,5 +74,6 @@ public class Renderer {
         mapRenderer.setView(camera);
         mapRenderer.render();
         engineAdapter.render();
+        drawPlayerUI();
     }
 }

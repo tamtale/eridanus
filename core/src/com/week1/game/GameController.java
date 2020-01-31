@@ -74,10 +74,18 @@ public class GameController extends ApplicationAdapter {
 			    return engine.getGameState().getWorld().toTiledMap();
 			}
 
+			public float getPlayerMana(int playerId) {
+				return engine.getGameState().getPlayerStats(playerId).getMana();
+			}
 		}, new IRendererToNetworkAdapter() {
 			@Override
 			public String getHostAddr() {
 				return networkClient.getHostAddr();
+			}
+
+			@Override
+			public int getPlayerId() {
+				return networkClient.getPlayerId();
 			}
 
 			@Override
