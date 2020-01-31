@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 
 public class Tower implements Damageable {
-    private static final int SIDELENGTH = 4;
+    private static final int SIDELENGTH = 3;
     public float x, y;
     private float hp;
     private Texture skin;
@@ -27,7 +27,7 @@ public class Tower implements Damageable {
         } else if (towerType == TowerType.TANK) {
             towerUnscaled = new Pixmap(Gdx.files.internal("towertransparent.png")); // TODO: tank skin
         }
-        Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, Pixmap.Format.RGBA8888);
+        Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, towerUnscaled.getFormat());
         towerScaled.drawPixmap(towerUnscaled, 0, 0, towerUnscaled.getWidth(), towerUnscaled.getHeight(),
                 0, 0, SIDELENGTH, SIDELENGTH);
         this.skin = new Texture(towerScaled);
