@@ -25,46 +25,25 @@ public class Unit extends Rectangle implements Damageable {
         unitPixmap2.dispose();
     }};
 
-    private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {{
+    private static Texture makeTexture(Color color) {
+        Pixmap map = new Pixmap(1, 1, Pixmap.Format.RGB888);
+        map.setColor(color);
+        map.fill();
+        Texture texture = new Texture(map);
+        map.dispose();
+        return texture;
+    }
 
-        Pixmap blueMap = new Pixmap(1, 1, Pixmap.Format.RGB888){{
-            setColor(Color.BLUE);
-            fill();
-        }};
-        Texture blueTexture = new Texture(blueMap){{ blueMap.dispose(); }};
-        this.put(0, blueTexture);
+    private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {
+        {
+            put(0, makeTexture(Color.BLUE));
+            put(1, makeTexture(Color.RED));
+            put(2, makeTexture(Color.WHITE));
+            put(3, makeTexture(Color.PURPLE));
+            put(4, makeTexture(Color.PINK));
+        }
+    };
 
-        Pixmap redMap = new Pixmap(1, 1, Pixmap.Format.RGB888){{
-            setColor(Color.RED);
-            fill();
-        }};
-        Texture redTexture = new Texture(redMap){{ redMap.dispose(); }};
-        this.put(1, redTexture);
-
-        Pixmap whiteMap = new Pixmap(1, 1, Pixmap.Format.RGB888){{
-            setColor(Color.WHITE);
-            fill();
-        }};
-        Texture whiteTexture = new Texture(whiteMap){{ whiteMap.dispose(); }};
-        this.put(2, whiteTexture);
-        
-        Pixmap purpleMap = new Pixmap(1, 1, Pixmap.Format.RGB888){{
-            setColor(Color.PURPLE);
-            fill();
-        }};
-        Texture purpleTexture = new Texture(purpleMap){{ purpleMap.dispose(); }};
-        this.put(3, purpleTexture);
-
-        Pixmap pinkMap = new Pixmap(1, 1, Pixmap.Format.RGB888){{
-            setColor(Color.PINK);
-            fill();
-        }};
-        Texture pinkTexture = new Texture(pinkMap){{ pinkMap.dispose(); }};
-        this.put(4, pinkTexture);
-    }};
-        
-        
-        
     private Texture unselectedSkin;
 
     public Unit(float x, float y, Texture t, float hp, int playerID) {
