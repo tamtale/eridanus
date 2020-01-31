@@ -42,7 +42,7 @@ public class GameEngine {
 
     public void updateState(float delta) {
         gameState.stepUnits(delta);
-        gameState.unitsDoDamage(delta);
+        gameState.dealDamage(delta);
 //        gameState.updateMana(delta); // TODO decide where we want mana updated.
     }
 

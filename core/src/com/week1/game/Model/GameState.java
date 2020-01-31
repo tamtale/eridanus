@@ -138,20 +138,39 @@ public class GameState {
         }
     }
     
-    public void unitsDoDamage(float delta) {
+    public void dealDamage(float delta) {
         Array<Integer> deadUnits  = new Array<>();
         
         for (int attackerIdx = 0; attackerIdx < units.size; attackerIdx++) {
-            Unit attacker = units.get
+            Unit attacker = units.get(attackerIdx);
             for (int victimIdx = 0; victimIdx < units.size; victimIdx++) {
-                if (!units.get(victimIdx).equals(units.get(attackerIdx)) && // check each unit against all OTHER units
-                        units.get(attackerIdx).hasUnitInRange(units.get(victimIdx)) && // victim is within range
-                        !units.get(victimIdx).isDead() && // the victim is not already dead
-                        units.get(attackerIdx).getPlayerID() == units.get(victimIdx).getPlayerID()) { // TODO: victim was spawned by another player
+                Unit victim = units.get(victimIdx);
+                
+                if (!victim.equals(attacker) && // check each unit against all OTHER units
+                        attacker.hasUnitInRange(victim) && // victim is within range
+                        !victim.isDead() && // the victim is not already dead
+                        attacker.getPlayerId() == victim.getPlayerId()) { // TODO: victim was spawned by another player
 
-                    if (units.get(victimIdx).takeDamage(units.get(attacker) * delta)) {
+                    if (victim.takeDamage(attacker.getDamage() * delta)) {
                         deadUnits.add(victimIdx);
                     } 
+                    break; // the attacker can only damage one opponent per attack cycle
+                }
+            }
+        }
+        
+        for (int towerIdx = 0; towerIdx < towers.size; towerIdx++) {
+            Tower tower = towers.get(towerIdx);
+            for (int victimIdx = 0; victimIdx < units.size; victimIdx++) {
+                Unit victim = units.get(victimIdx);
+
+                if (tower.hasUnitInRange(victim) && // victim is within range
+                        !victim.isDead() && // the victim is not already dead
+                        tower.getPlayerId() == victim.getPlayerId()) { // TODO: victim was spawned by another player
+
+                    if (victim.takeDamage(tower.getDamage() * delta)) {
+                        deadUnits.add(victimIdx);
+                    }
                     break; // the attacker can only damage one opponent per attack cycle
                 }
             }
@@ -163,7 +182,4 @@ public class GameState {
         }
     }
     
-    public void towersDoDamage(float delta) {
-        
-    }
 }

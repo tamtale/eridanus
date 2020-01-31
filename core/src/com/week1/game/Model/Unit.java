@@ -11,9 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.week1.game.GameController.SCALE;
+import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 
-public class Unit extends Rectangle implements Damageable {
+public class Unit extends Rectangle implements Damageable, Damaging {
     private final int playerID;
     private float hp;
     private float maxHp;
@@ -108,7 +109,6 @@ public class Unit extends Rectangle implements Damageable {
         return barTexture;
     }
     
-    public int getPlayerID(){return playerID;}
 
     @Override
     public boolean takeDamage(float dmg, int damageType) {
@@ -121,13 +121,23 @@ public class Unit extends Rectangle implements Damageable {
         }
     }
     
+    
+    public boolean isDead() {
+        return this.hp <= 0;
+    }
+
+    @Override
     public boolean hasUnitInRange(Unit victim) {
         return Math.sqrt(Math.pow(this.x - victim.x, 2) + Math.pow(this.y - victim.y, 2)) < tempMinionRange;
 //        return true; // TODO
     }
     
-    public boolean isDead() {
-        return this.hp <= 0;
+    @Override
+    public float getDamage() {
+        return tempDamage;
     }
+
+    @Override
+    public int getPlayerId(){return playerID;}
 }
 

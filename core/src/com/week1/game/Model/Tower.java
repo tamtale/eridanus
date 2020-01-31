@@ -6,8 +6,9 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 
 import static com.week1.game.GameController.SCALE;
+import static com.week1.game.Model.StatsConfig.*;
 
-public class Tower implements Damageable {
+public class Tower implements Damageable, Damaging {
     private static final int SIDELENGTH = SCALE * 3;
     public float x, y;
     private float hp;
@@ -50,4 +51,18 @@ public class Tower implements Damageable {
             return false;
         }
     }
+
+    @Override
+    public boolean hasUnitInRange(Unit victim) {
+        return Math.sqrt(Math.pow(this.x - victim.x, 2) + Math.pow(this.y - victim.y, 2)) < tempTowerRange;
+//        return true; // TODO
+    }
+
+    @Override
+    public float getDamage() {
+        return tempTowerDamage;
+    }
+
+    @Override
+    public int getPlayerId(){return playerID;}
 }

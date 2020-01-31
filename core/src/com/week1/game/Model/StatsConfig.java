@@ -14,6 +14,10 @@ public class StatsConfig {
     static public final float tempMinion1Health = 10;
     
     static public final float tempMinionRange = 20;
+    static public final float tempTowerRange = 60;
+    
+    static public final float tempDamage = 1;
+    static public final float tempTowerDamage = 2;
 
 
 }
