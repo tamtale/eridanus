@@ -30,9 +30,11 @@ public class Host {
     private ConcurrentLinkedQueue<String> incomingMessages = new ConcurrentLinkedQueue<>();
     
     
-    public Host() throws IOException {
-        this.udpSocket = new DatagramSocket();
-        this.port = udpSocket.getLocalPort();
+    public Host(int port) throws IOException {
+        this.udpSocket = new DatagramSocket(port);
+        udpSocket.setReuseAddress(true);
+//        this.port = udpSocket.getLocalPort();
+        this.port = port;
         
         Gdx.app.log(TAG, "Creating socket for host instance with address: " +
                 NetworkUtils.getLocalHostAddr() + " on port: " + this.port);

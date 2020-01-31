@@ -47,7 +47,20 @@ public class Unit extends Rectangle implements Damageable {
         }};
         Texture whiteTexture = new Texture(whiteMap){{ whiteMap.dispose(); }};
         this.put(2, whiteTexture);
+        
+        Pixmap purpleMap = new Pixmap(1, 1, Pixmap.Format.RGB888){{
+            setColor(Color.PURPLE);
+            fill();
+        }};
+        Texture purpleTexture = new Texture(purpleMap){{ purpleMap.dispose(); }};
+        this.put(3, purpleTexture);
 
+        Pixmap pinkMap = new Pixmap(1, 1, Pixmap.Format.RGB888){{
+            setColor(Color.PINK);
+            fill();
+        }};
+        Texture pinkTexture = new Texture(pinkMap){{ pinkMap.dispose(); }};
+        this.put(4, pinkTexture);
     }};
         
         
