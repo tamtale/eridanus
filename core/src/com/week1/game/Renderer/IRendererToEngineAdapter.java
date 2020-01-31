@@ -6,4 +6,5 @@ import com.badlogic.gdx.utils.Array;
 public interface IRendererToEngineAdapter<TUnit> {
     // This will ask the engine to go through and send everything to be drawn to the renderer.
     void render();
+    float getPlayerMana(int playerId);
 }

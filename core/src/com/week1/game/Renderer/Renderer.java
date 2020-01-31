@@ -8,8 +8,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.week1.game.Model.GameState;
-import jdk.jfr.internal.test.WhiteBox;
 
 import static com.week1.game.GameController.SCALE;
 
@@ -18,8 +16,6 @@ public class Renderer {
     private OrthographicCamera camera;
     private Pixmap unitPixmap;
     private Pixmap unitPixmap2;
-    private Texture unitTexture;
-    private Texture unitTexture2;
     private Vector3 touchPos = new Vector3();
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
@@ -48,9 +44,6 @@ public class Renderer {
         unitPixmap2 = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888);
         unitPixmap2.setColor(Color.RED);
         unitPixmap2.fill();
-
-        unitTexture = new Texture(unitPixmap);
-        unitTexture2 = new Texture(unitPixmap2);
     }
 
     public Camera getCamera() {
@@ -78,6 +71,12 @@ public class Renderer {
         endBatch();
     }
 
+    public void drawPlayerUI() {
+        startBatch();
+        font.draw(batch, String.format("Mana: %.2f", engineAdapter.getPlayerMana(networkAdapter.getPlayerId())), 90, 14);
+        endBatch();
+    }
+
     public void render() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -85,5 +84,6 @@ public class Renderer {
         mapRenderer.setView(camera);
         mapRenderer.render();
         engineAdapter.render();
+        drawPlayerUI();
     }
 }
