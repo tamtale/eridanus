@@ -10,7 +10,6 @@ import com.week1.game.AIMovement.SteeringAgent;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.week1.game.GameController.SCALE;
 
 public class Unit extends Rectangle implements Damageable {
     private final int playerID;
@@ -18,9 +17,7 @@ public class Unit extends Rectangle implements Damageable {
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
-    
-    
-    private static Pixmap unitPixmap2 = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
+    private static Pixmap unitPixmap2 = new Pixmap(64, 64, Pixmap.Format.RGB888){{
         setColor(Color.YELLOW);
         fill();
     }};
@@ -28,51 +25,29 @@ public class Unit extends Rectangle implements Damageable {
         unitPixmap2.dispose();
     }};
 
+    private static Texture makeTexture(Color color) {
+        Pixmap map = new Pixmap(1, 1, Pixmap.Format.RGB888);
+        map.setColor(color);
+        map.fill();
+        Texture texture = new Texture(map);
+        map.dispose();
+        return texture;
+    }
 
-    private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {{
+    private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {
+        {
+            put(0, makeTexture(Color.BLUE));
+            put(1, makeTexture(Color.RED));
+            put(2, makeTexture(Color.WHITE));
+            put(3, makeTexture(Color.PURPLE));
+            put(4, makeTexture(Color.PINK));
+        }
+    };
 
-        Pixmap blueMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-            setColor(Color.BLUE);
-            fill();
-        }};
-        Texture blueTexture = new Texture(blueMap){{ blueMap.dispose(); }};
-        this.put(0, blueTexture);
-
-        Pixmap redMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-            setColor(Color.RED);
-            fill();
-        }};
-        Texture redTexture = new Texture(redMap){{ redMap.dispose(); }};
-        this.put(1, redTexture);
-
-        Pixmap whiteMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-            setColor(Color.WHITE);
-            fill();
-        }};
-        Texture whiteTexture = new Texture(whiteMap){{ whiteMap.dispose(); }};
-        this.put(2, whiteTexture);
-        
-        Pixmap purpleMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-            setColor(Color.PURPLE);
-            fill();
-        }};
-        Texture purpleTexture = new Texture(purpleMap){{ purpleMap.dispose(); }};
-        this.put(3, purpleTexture);
-
-        Pixmap pinkMap = new Pixmap(SCALE, SCALE, Pixmap.Format.RGB888){{
-            setColor(Color.PINK);
-            fill();
-        }};
-        Texture pinkTexture = new Texture(pinkMap){{ pinkMap.dispose(); }};
-        this.put(4, pinkTexture);
-    }};
-        
-        
-        
     private Texture unselectedSkin;
 
     public Unit(float x, float y, Texture t, float hp, int playerID) {
-        super(x, y, SCALE, SCALE);
+        super(x, y, 1, 1);
         this.unselectedSkin = colorMap.get(playerID);
         this.playerID = playerID;
         this.hp = hp;

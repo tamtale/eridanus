@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
+import com.week1.game.Model.World.GameWorld;
 
 import static com.week1.game.Model.StatsConfig.*;
 
@@ -18,15 +19,16 @@ public class GameState {
     private Array<PlayerBase> playerBases;
     private Array<PlayerStat> playerStats;
     private Array<SteeringAgent> agents;
+    private GameWorld world;
 
     public GameState(){
         // TODO board
         // TODO tower types in memory after exchange
         towers = new Array<>();
         units = new Array<>();
+        world = new GameWorld();
         playerBases = new Array<>();
         playerStats = new Array<>();
-
         agents = new Array<>();
 
     }
@@ -41,14 +43,14 @@ public class GameState {
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
         if (numPlayers == 1) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 100, 100, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
         } else if (numPlayers == 2) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 190, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 190, 10, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 0, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 90, 1));
         } else {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 190, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 190, 100, 1));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 40, 10, 2));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 0, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 70, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 90, 2));
         }
 
 
@@ -135,5 +137,9 @@ public class GameState {
                 updateGoal(unit, new Vector3(x, y, 0));
             }
         }
+    }
+
+    public GameWorld getWorld() {
+        return world;
     }
 }
