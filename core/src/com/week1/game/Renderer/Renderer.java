@@ -33,7 +33,6 @@ public class Renderer {
         batch = mapRenderer.getBatch();
         camera.setToOrtho(false, 100, 100);
         camera.update();
-
     }
 
     public Camera getCamera() {
