@@ -96,7 +96,7 @@ public class Unit extends Rectangle implements Damageable {
     
     public Texture getHealthBar() {
 
-        Pixmap pinkMap = new Pixmap((int)(2 * SCALE), (int)(0.5 * SCALE), Pixmap.Format.RGB888){{
+        Pixmap pinkMap = new Pixmap((int)(SCALE), (int)(0.25 * SCALE), Pixmap.Format.RGB888){{
             setColor(Color.BLACK);
             fill();
         }};
