@@ -112,7 +112,6 @@ public class Unit extends Rectangle implements Damageable {
 
     @Override
     public boolean takeDamage(float dmg, int damageType) {
-        Gdx.app.log("lji1 - Unit", "Unit just took damage.");
         this.hp -= dmg;
         if (this.hp <= 0) {
             return true;
