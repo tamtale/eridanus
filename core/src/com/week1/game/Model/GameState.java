@@ -76,22 +76,20 @@ public class GameState {
             for(Tower tower: towers) {
                 if (unit.getX() > tower.x && unit.getX() < tower.x + tower.getSidelength() &&
                         unit.getY() > tower.y && unit.getY() < tower.y + tower.getSidelength()){
-                    Vector2 linVel = unit.agent.getLinearVelocity();
+                    Vector3 linVel = unit.agent.getLinearVelocity();
                     unit.setX(unit.getX() -  linVel.x);
                     unit.setY(unit.getY() -  linVel.y);
-                    unit.agent.setLinearVelocity(new Vector2(0, 0));
-                    unit.agent.setSteeringBehavior(null);
+                    unit.agent.setLinearVelocity(new Vector3(0, 0, 0));
                 }
             }
 
             for(PlayerBase base: playerBases) {
                 if (unit.getX() > base.x && unit.getX() < base.x + base.getSidelength() &&
                         unit.getY() > base.y && unit.getY() < base.y + base.getSidelength()){
-                    Vector2 linVel = unit.agent.getLinearVelocity();
+                    Vector3 linVel = unit.agent.getLinearVelocity();
                     unit.setX(unit.getX() - linVel.x);
                     unit.setY(unit.getY() - linVel.y);
-                    unit.agent.setLinearVelocity(new Vector2(0, 0));
-                    unit.agent.setSteeringBehavior(null);
+                    unit.agent.setLinearVelocity(new Vector3(0, 0, 0));
                 }
             }
         }
@@ -119,10 +117,10 @@ public class GameState {
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
-        Vector2 vec2 = new Vector2(goal.x, goal.y);
+//        Vector2 vec2 = new Vector2(goal.x, goal.y);
         SteeringAgent agent = unit.getAgent();
 //        System.out.println(agent);
-        agent.setGoal(vec2);
+        agent.setGoal(goal);
     }
     public void addAgent(SteeringAgent a){
         agents.add(a);

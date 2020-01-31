@@ -30,9 +30,9 @@ public class AI {
     public void spawnTower(){}
 
     public void updateTarget(Unit unit, Vector3 newTarget) {
-        Vector2 vec2 = new Vector2(newTarget.x, newTarget.y);
+        Vector3 vec3 = new Vector3(newTarget.x, newTarget.y, 0); //TODO: actually make 3D
         SteeringAgent agent = unitAgentMap.get(unit.ID);
-        agent.setGoal(vec2);
+        agent.setGoal(vec3);
     }
 
     public void buildMap(){}
