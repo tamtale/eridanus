@@ -23,6 +23,8 @@ public class GameState {
     private Array<SteeringAgent> agents;
     private GameWorld world;
 
+    private boolean fullyInitialized = false;
+
     public GameState(){
         // TODO board
         // TODO player data
@@ -43,7 +45,7 @@ public class GameState {
 
      This will create the bases for all of the players and give them all an amount of currency.
      */
-    public void setNumPlayers(int numPlayers) {
+    public void initializeGame(int numPlayers) {
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
         if (numPlayers == 1) {
@@ -63,10 +65,15 @@ public class GameState {
             playerStats.add(new PlayerStat());
         }
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
+        fullyInitialized = true;
     }
 
     public PlayerStat getPlayerStats(int playerNum) {
-        return playerStats.get(playerNum);
+        if (isInitialized()) {
+            return playerStats.get(playerNum);
+        } else {
+            return PlayerStat.BLANK;
+        }
     }
 
     public void stepUnits(float delta) {
@@ -212,5 +219,9 @@ public class GameState {
 
     public GameWorld getWorld() {
         return world;
+    }
+
+    public boolean isInitialized() {
+        return fullyInitialized;
     }
 }
