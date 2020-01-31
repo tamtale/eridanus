@@ -12,6 +12,8 @@ public class StatsConfig {
 
     static public final float tempMinion1Cost = 10;
     static public final float tempMinion1Health = 10;
+    
+    static public final float tempMinionRange = 20;
 
 
 }

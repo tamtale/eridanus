@@ -11,10 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.week1.game.GameController.SCALE;
+import static com.week1.game.Model.StatsConfig.tempMinionRange;
 
 public class Unit extends Rectangle implements Damageable {
     private final int playerID;
     private float hp;
+    private float maxHp;
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
@@ -76,6 +78,7 @@ public class Unit extends Rectangle implements Damageable {
         this.unselectedSkin = colorMap.get(playerID);
         this.playerID = playerID;
         this.hp = hp;
+        this.maxHp = hp;
     }
 
     public void step(float delta) {
@@ -96,7 +99,7 @@ public class Unit extends Rectangle implements Damageable {
     
     public Texture getHealthBar() {
 
-        Pixmap pinkMap = new Pixmap((int)(SCALE), (int)(0.25 * SCALE), Pixmap.Format.RGB888){{
+        Pixmap pinkMap = new Pixmap((int)((hp / maxHp) * SCALE), (int)(0.25 * SCALE), Pixmap.Format.RGB888){{
             setColor(Color.BLACK);
             fill();
         }};
@@ -109,6 +112,7 @@ public class Unit extends Rectangle implements Damageable {
 
     @Override
     public boolean takeDamage(float dmg, int damageType) {
+        Gdx.app.log("lji1 - Unit", "Unit just took damage.");
         this.hp -= dmg;
         if (this.hp <= 0) {
             return true;
@@ -116,6 +120,15 @@ public class Unit extends Rectangle implements Damageable {
         } else {
             return false;
         }
+    }
+    
+    public boolean hasUnitInRange(Unit victim) {
+        return Math.sqrt(Math.pow(this.x - victim.x, 2) + Math.pow(this.y - victim.y, 2)) < tempMinionRange;
+//        return true; // TODO
+    }
+    
+    public boolean isDead() {
+        return this.hp <= 0;
     }
 }
 

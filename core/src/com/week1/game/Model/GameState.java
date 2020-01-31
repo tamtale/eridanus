@@ -137,4 +137,34 @@ public class GameState {
             }
         }
     }
+    
+    public void unitsDoDamage(float delta) {
+//        Gdx.app.log("lji1 - unitsDoDamage", "Called!");
+        
+        Array<Integer> deadUnits  = new Array<>();
+        
+        for (int attackerIdx = 0; attackerIdx < units.size; attackerIdx++) {
+            for (int victimIdx = 0; victimIdx < units.size; victimIdx++) {
+                if (!units.get(victimIdx).equals(units.get(attackerIdx)) && // check each unit against all OTHER units
+                        units.get(attackerIdx).hasUnitInRange(units.get(victimIdx)) && // victim is within range
+                        !units.get(victimIdx).isDead() && // the victim is not already dead
+                        units.get(attackerIdx).getPlayerID() == units.get(victimIdx).getPlayerID()) { // TODO: victim was spawned by another player
+
+                    Gdx.app.log("lji1 - unitsDoDamage", "Victim found!");
+                    if (units.get(victimIdx).takeDamage((float)0.01)) {
+                        Gdx.app.log("lji1 - unitsDoDamage", "Unit died!");
+                        deadUnits.add(victimIdx);
+                    } 
+                    break; // the attacker can only damage one opponent per attack cycle
+                }
+            }
+        }
+        
+        // get rid of all the dead units
+        for (int deadUnitIdx : deadUnits) {
+            units.removeIndex(deadUnitIdx);
+        }
+        
+        
+    }
 }
