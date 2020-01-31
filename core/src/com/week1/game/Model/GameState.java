@@ -176,7 +176,7 @@ public class GameState {
                 if (!victim.equals(attacker) && // check each unit against all OTHER units
                         attacker.hasUnitInRange(victim) && // victim is within range
                         !victim.isDead() && // the victim is not already dead
-                        attacker.getPlayerId() == victim.getPlayerId()) { // TODO: victim was spawned by another player
+                        attacker.getPlayerId() != victim.getPlayerId()) { // TODO: victim was spawned by another player
 
                     if (victim.takeDamage(attacker.getDamage() * delta)) {
                         deadUnits.add(victimIdx);
@@ -193,7 +193,7 @@ public class GameState {
 
                 if (tower.hasUnitInRange(victim) && // victim is within range
                         !victim.isDead() && // the victim is not already dead
-                        tower.getPlayerId() == victim.getPlayerId()) { // TODO: victim was spawned by another player
+                        tower.getPlayerId() != victim.getPlayerId()) { // TODO: victim was spawned by another player
 
                     if (victim.takeDamage(tower.getDamage() * delta)) {
                         deadUnits.add(victimIdx);
