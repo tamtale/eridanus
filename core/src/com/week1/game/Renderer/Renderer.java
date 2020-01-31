@@ -62,7 +62,7 @@ public class Renderer {
 
     public void drawPlayerUI() {
         startBatch();
-        font.draw(batch, String.format("Mana: %.2f", engineAdapter.getPlayerMana(networkAdapter.getPlayerId())), 90, 14);
+        font.draw(batch, String.format("Mana: %d", (int)engineAdapter.getPlayerMana(networkAdapter.getPlayerId())), 20, 14);
         endBatch();
     }
 

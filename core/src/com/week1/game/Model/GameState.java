@@ -25,8 +25,6 @@ public class GameState {
 
     private boolean fullyInitialized = false;
 
-    private boolean fullyInitialized = false;
-
     public GameState(){
         // TODO board
         // TODO player data
@@ -173,7 +171,6 @@ public class GameState {
             }
         }
     }
-<<<<<<< HEAD
     
     public void dealDamage(float delta) {
         Array<Integer> deadUnits  = new Array<>();
@@ -223,8 +220,6 @@ public class GameState {
     public GameWorld getWorld() {
         return world;
     }
-=======
->>>>>>> 32ae42ef56f24a4ae80a91b1a482d14a5549417e
 
     public boolean isInitialized() {
         return fullyInitialized;
