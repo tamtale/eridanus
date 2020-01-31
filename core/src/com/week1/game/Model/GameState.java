@@ -77,8 +77,8 @@ public class GameState {
                 if (unit.getX() > tower.x && unit.getX() < tower.x + tower.getSidelength() &&
                         unit.getY() > tower.y && unit.getY() < tower.y + tower.getSidelength()){
                     Vector3 linVel = unit.agent.getLinearVelocity();
-                    unit.setX(unit.getX() -  linVel.x);
-                    unit.setY(unit.getY() -  linVel.y);
+                    unit.setX(unit.getX() - 2 * linVel.x);
+                    unit.setY(unit.getY() - 2 * linVel.y);
                     unit.agent.setLinearVelocity(new Vector3(0, 0, 0));
                 }
             }
@@ -87,8 +87,8 @@ public class GameState {
                 if (unit.getX() > base.x && unit.getX() < base.x + base.getSidelength() &&
                         unit.getY() > base.y && unit.getY() < base.y + base.getSidelength()){
                     Vector3 linVel = unit.agent.getLinearVelocity();
-                    unit.setX(unit.getX() - linVel.x);
-                    unit.setY(unit.getY() - linVel.y);
+                    unit.setX(unit.getX() - 2 * linVel.x);
+                    unit.setY(unit.getY() - 2 * linVel.y);
                     unit.agent.setLinearVelocity(new Vector3(0, 0, 0));
                 }
             }
