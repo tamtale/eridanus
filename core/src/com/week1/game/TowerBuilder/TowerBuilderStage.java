@@ -58,6 +58,7 @@ public class TowerBuilderStage {
         tower2Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+//                System.out.println("tower 2 button");
                 builder.currTower = builder.presets.getTower2();
                 sw.setLabelStyle(2);
             }

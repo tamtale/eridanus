@@ -1,5 +1,6 @@
 package com.week1.game.TowerBuilder;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.week1.game.GameController;
 import com.week1.game.GameScreen;
@@ -56,7 +57,7 @@ public class TowerBuilderScreen implements Screen {
     }
 
     public void startGame() {
-        System.out.println("starting game");
+        Gdx.app.log("Tower Builder Screen skv2", "starting game");
         game.setScreen(new GameScreen(game.gameArgs));
     }
 

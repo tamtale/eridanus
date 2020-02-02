@@ -17,7 +17,6 @@ import com.badlogic.gdx.utils.Array;
 // Need a class, or something, to convert a tower layout into stats
 
 //Next things
-// Integrate with other repo
 // Color scheme
 // top-down views of all towers
 // Fill out ui -> need to assets, stage, etc classes
