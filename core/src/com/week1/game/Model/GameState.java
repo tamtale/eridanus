@@ -84,26 +84,27 @@ public class GameState {
             for(Tower tower: towers) {
                 if (unit.getX() > tower.x && unit.getX() < tower.x + tower.getSidelength() &&
                         unit.getY() > tower.y && unit.getY() < tower.y + tower.getSidelength()){
-                    Vector3 linVel = unit.agent.getLinearVelocity();
-                    unit.setX(unit.getX() - 2 * linVel.x);
-                    unit.setY(unit.getY() - 2 * linVel.y);
-                    unit.agent.setLinearVelocity(new Vector3(0, 0, 0));
+                    collide(unit);
                 }
             }
 
             for(PlayerBase base: playerBases) {
                 if (unit.getX() > base.x && unit.getX() < base.x + base.getSidelength() &&
                         unit.getY() > base.y && unit.getY() < base.y + base.getSidelength()){
-                    Vector3 linVel = unit.agent.getLinearVelocity();
-                    unit.setX(unit.getX() - 2 * linVel.x);
-                    unit.setY(unit.getY() - 2 * linVel.y);
-                    unit.agent.setLinearVelocity(new Vector3(0, 0, 0));
+                    collide(unit);
                 }
             }
         }
 
     }
 
+    public void collide(Unit unit){
+        Vector3 linVel = unit.agent.getLinearVelocity();
+        unit.setX(unit.getX() - 2 * linVel.x);
+        unit.setY(unit.getY() - 2 * linVel.y);
+        unit.agent.setLinearVelocity(new Vector3(0, 0, 0));
+        unit.agent.setSteeringBehavior(null);
+    }
     public void updateMana(float amount){
         for (PlayerStat player : playerStats) {
             player.regenMana(amount);

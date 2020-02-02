@@ -1,11 +1,10 @@
 package com.week1.game.Model.World;
 
-import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import static com.week1.game.GameController.PIXELS_PER_UNIT;
+import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
 
 public class GameWorld {
     private Block[][][] blocks;

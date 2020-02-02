@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
-import static com.week1.game.GameController.PIXELS_PER_UNIT;
+import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
 
 interface Block {
 
