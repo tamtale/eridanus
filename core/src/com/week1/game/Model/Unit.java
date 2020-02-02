@@ -20,7 +20,9 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
-    private static Pixmap unitPixmap2 = new Pixmap(1, 1, Pixmap.Format.RGB888){{
+    public  static int SIZE = 10;
+    
+    private static Pixmap unitPixmap2 = new Pixmap(SIZE, SIZE, Pixmap.Format.RGB888){{
         setColor(Color.YELLOW);
         fill();
     }};
@@ -29,7 +31,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     }};
 
     private static Texture makeTexture(Color color) {
-        Pixmap map = new Pixmap(1, 1, Pixmap.Format.RGB888);
+        Pixmap map = new Pixmap(SIZE, SIZE, Pixmap.Format.RGB888);
         map.setColor(color);
         map.fill();
         Texture texture = new Texture(map);
@@ -50,7 +52,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     private Texture unselectedSkin;
 
     public Unit(float x, float y, Texture t, float hp, int playerID) {
-        super(x, y, 1, 1);
+        super(x, y, SIZE, SIZE);
         this.unselectedSkin = colorMap.get(playerID);
         this.playerID = playerID;
         this.hp = hp;
@@ -75,7 +77,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     
     public Texture getHealthBar() {
 
-        Pixmap pinkMap = new Pixmap((int)((hp / maxHp) * 10), (int)( 1), Pixmap.Format.RGB888){{
+        Pixmap pinkMap = new Pixmap((int)((hp / maxHp) * 2* SIZE), 3, Pixmap.Format.RGB888){{
             setColor(Color.BLACK);
             fill();
         }};

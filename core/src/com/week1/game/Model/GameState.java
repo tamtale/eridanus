@@ -2,6 +2,7 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
 
@@ -133,14 +134,19 @@ public class GameState {
         agents.add(a);
     }
 
-    public void render(DrawFunction drawFunc){
+    public void render(DrawFunction drawFunc) {
         for (Unit unit : units){
             if (unit.clicked) {
                 drawFunc.draw(unit.getSelectedSkin(), unit.x, unit.y);
             } else {
                 drawFunc.draw(unit.getUnselectedSkin(), unit.x, unit.y);
             }
-            drawFunc.draw(unit.getHealthBar(), unit.x, (float)(unit.y + 1.5));
+            
+            Texture healthBar = unit.getHealthBar();
+            drawFunc.draw(healthBar, 
+                    unit.x - (healthBar.getWidth() / 2f) + (Unit.SIZE / 2f), 
+                    unit.y + Unit.SIZE + (Unit.SIZE * 2 / 10f)
+            );
         }
 
         for (Tower tower : towers) {
