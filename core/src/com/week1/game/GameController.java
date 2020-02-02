@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.GL20;
 
 public class GameController implements ApplicationListener {
     Screen currScreen;
-    public static final float VIRTUAL_WIDTH = 960;
-    public static final float VIRTUAL_HEIGHT = 540;
+    public static final float VIRTUAL_WIDTH = 800;
+    public static final float VIRTUAL_HEIGHT = 800;
     public String[] gameArgs;
 
     public GameController(String[] args) {
