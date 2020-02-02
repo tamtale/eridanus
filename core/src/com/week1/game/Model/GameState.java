@@ -167,6 +167,17 @@ public class GameState {
         }
         return null;
     }
+    
+    public Array<Unit> findUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
+        Array<Unit> unitsToSelect = new Array<>();
+        for (Unit u : units) {
+            if (Math.min(cornerA.x, cornerB.x) < u.x && u.x < Math.max(cornerA.x, cornerB.x) &&
+                Math.min(cornerA.y, cornerB.y) < u.y && u.y < Math.max(cornerA.y, cornerB.y)) {
+                unitsToSelect.add(u);
+            }
+        }
+        return unitsToSelect;
+    }
 
     public void moveMinion(float x, float y, int minionID) {
         for (Unit unit: units) {

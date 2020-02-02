@@ -12,6 +12,7 @@ import java.util.Map;
 
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
+import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
 public class Unit extends Rectangle implements Damageable, Damaging {
     private final int playerID;
@@ -22,30 +23,16 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     public int ID;
     public  static int SIZE = 5;
     
-    private static Pixmap unitPixmap2 = new Pixmap(SIZE, SIZE, Pixmap.Format.RGB888){{
-        setColor(Color.YELLOW);
-        fill();
-    }};
-    private static Texture selectedSkin = new Texture(unitPixmap2){{
-        unitPixmap2.dispose();
-    }};
+    private static Texture selectedSkin = makeTexture(SIZE, SIZE, Color.YELLOW);
 
-    private static Texture makeTexture(Color color) {
-        Pixmap map = new Pixmap(SIZE, SIZE, Pixmap.Format.RGB888);
-        map.setColor(color);
-        map.fill();
-        Texture texture = new Texture(map);
-        map.dispose();
-        return texture;
-    }
 
     private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {
         {
-            put(0, makeTexture(Color.BLUE));
-            put(1, makeTexture(Color.RED));
-            put(2, makeTexture(Color.WHITE));
-            put(3, makeTexture(Color.PURPLE));
-            put(4, makeTexture(Color.PINK));
+            put(0, makeTexture(SIZE, SIZE, Color.BLUE));
+            put(1, makeTexture(SIZE, SIZE, Color.RED));
+            put(2, makeTexture(SIZE, SIZE, Color.WHITE));
+            put(3, makeTexture(SIZE, SIZE, Color.PURPLE));
+            put(4, makeTexture(SIZE, SIZE, Color.PINK));
         }
     };
 

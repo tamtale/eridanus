@@ -33,7 +33,7 @@ public class CreateMinionMessage extends GameMessage {
             return false; // indicate it was NOT placed
         }
 
-        Gdx.app.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create tower.");
+        Gdx.app.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
         inputState.getPlayerStats(playerID).useMana(tempMinion1Cost);
 
         Unit unit = new Unit(x, y, null, tempMinion1Health, playerID);

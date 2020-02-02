@@ -47,7 +47,7 @@ public class GameEngine {
     }
 
     public void render(){
-        engineToRenderer.batchGame(() -> {gameState.render((t, x, y) -> {engineToRenderer.draw(t, x, y);} );});
+        engineToRenderer.batchDrawOperations(() -> gameState.render(engineToRenderer::draw ));
     }
 
     public GameState getGameState() {

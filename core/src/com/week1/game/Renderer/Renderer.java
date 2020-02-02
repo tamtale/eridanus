@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
+import com.week1.game.Model.IRendererToClickOracleAdapter;
 
 import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
 
@@ -18,11 +19,13 @@ public class Renderer {
     private OrthogonalTiledMapRenderer mapRenderer;
     private IRendererToEngineAdapter engineAdapter;
     private IRendererToNetworkAdapter networkAdapter;
+    private IRendererToClickOracleAdapter clickOracleAdapter;
     private BitmapFont font = new BitmapFont();
 
-    public Renderer(IRendererToEngineAdapter engineAdapter, IRendererToNetworkAdapter networkAdapter) {
+    public Renderer(IRendererToEngineAdapter engineAdapter, IRendererToNetworkAdapter networkAdapter, IRendererToClickOracleAdapter clickOracleAdapter) {
         this.engineAdapter = engineAdapter;
         this.networkAdapter = networkAdapter;
+        this.clickOracleAdapter = clickOracleAdapter;
     }
 
 
@@ -39,6 +42,10 @@ public class Renderer {
         return camera;
     }
 
+    public void changeAlpha(float f) {
+        batch.setColor(1, 1,1, f);
+    }
+    
     public void startBatch() {
         batch.begin();
     }
@@ -73,6 +80,7 @@ public class Renderer {
         mapRenderer.setView(camera);
         mapRenderer.render();
         engineAdapter.render();
+        clickOracleAdapter.render();
         drawPlayerUI();
     }
 }
