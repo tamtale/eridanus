@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class GameEngine {
 
-    private IEngineToRendererAdapter engineToRenderer;
     private GameState gameState;
     private ConcurrentLinkedQueue<GameMessage> messageQueue;
     private int communicationTurn = 0;
@@ -20,9 +19,8 @@ public class GameEngine {
         return batch;
     }
 
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
+    public GameEngine() {
         messageQueue = new ConcurrentLinkedQueue<>();
-        engineToRenderer = engineToRendererAdapter;
         gameState = new GameState();
         batch = new SpriteBatch();
     }
