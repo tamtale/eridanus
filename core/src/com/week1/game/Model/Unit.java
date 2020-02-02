@@ -20,7 +20,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
-    public  static int SIZE = 10;
+    public  static int SIZE = 5;
     
     private static Pixmap unitPixmap2 = new Pixmap(SIZE, SIZE, Pixmap.Format.RGB888){{
         setColor(Color.YELLOW);

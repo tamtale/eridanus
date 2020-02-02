@@ -11,7 +11,7 @@ public class PlayerBase implements Damageable {
     private float hp;
     private int playerID;
     private static Texture skin;
-    private static final int SIDELENGTH = 8;
+    private static final int SIDELENGTH = 40;
     static {
         Pixmap towerUnscaled = new Pixmap(Gdx.files.internal("basetop.png"));
         Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, Pixmap.Format.RGBA8888);
