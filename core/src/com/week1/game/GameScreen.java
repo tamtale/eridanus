@@ -141,6 +141,7 @@ public class GameScreen implements Screen {
 			engine.processMessages();
 		}
 		engine.updateState(time);
+		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
 		renderer.render();
 	}
 

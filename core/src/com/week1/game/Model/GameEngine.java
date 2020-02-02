@@ -1,5 +1,7 @@
 package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.badlogic.gdx.math.Vector3;
 
@@ -12,11 +14,17 @@ public class GameEngine {
     private GameState gameState;
     private ConcurrentLinkedQueue<GameMessage> messageQueue;
     private int communicationTurn = 0;
+    private SpriteBatch batch;
+
+    public Batch getBatch() {
+        return batch;
+    }
 
     public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
         messageQueue = new ConcurrentLinkedQueue<>();
         engineToRenderer = engineToRendererAdapter;
         gameState = new GameState();
+        batch = new SpriteBatch();
     }
 
     public void receiveMessages(List<? extends GameMessage> messages) {
@@ -47,7 +55,9 @@ public class GameEngine {
     }
 
     public void render(){
-        engineToRenderer.batchGame(() -> {gameState.render((t, x, y) -> {engineToRenderer.draw(t, x, y);} );});
+        batch.begin();
+        gameState.render(batch);
+        batch.end();
     }
 
     public GameState getGameState() {
