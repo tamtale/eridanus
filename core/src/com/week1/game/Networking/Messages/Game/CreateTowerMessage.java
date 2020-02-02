@@ -15,6 +15,8 @@ public class CreateTowerMessage extends GameMessage {
 
     private float x, y;
     private TowerType towerType;
+    
+    private static int SNAPSCALE = 5;
 
     public CreateTowerMessage(float x, float y, TowerType towerType, int playerID){
         super(playerID, MESSAGE_TYPE);
@@ -37,7 +39,11 @@ public class CreateTowerMessage extends GameMessage {
         inputState.getPlayerStats(playerID).useMana(tempTower1Cost);
 
         Gdx.app.log("lji1 - CreateTowerMessage", "Creating tower!");
-        Tower tower = new Tower((int) x, (int) y, towerType, tempTowerHealth, playerID);
+        
+        int snappedX = ((int) x) - (((int) x) % SNAPSCALE) - SNAPSCALE;
+        int snappedY = ((int) y) - (((int) y) % SNAPSCALE) - SNAPSCALE; 
+        
+        Tower tower = new Tower(snappedX, snappedY, towerType, tempTowerHealth, playerID);
 
         inputState.addTower(tower);
         return true;

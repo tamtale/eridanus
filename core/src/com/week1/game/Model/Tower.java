@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import static com.week1.game.Model.StatsConfig.*;
 
 public class Tower implements Damageable, Damaging {
-    private static final int SIDELENGTH = 3;
+    private static final int SIDELENGTH = 15;
     public float x, y;
     private float hp;
     private Texture skin;
