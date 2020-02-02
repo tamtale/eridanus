@@ -90,5 +90,7 @@ project(":core") {
 project(":html") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx-ai:1.8.1:sources"
+        api "org.json:json:20190722"
+
     }
 }

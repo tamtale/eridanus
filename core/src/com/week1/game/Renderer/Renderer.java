@@ -8,7 +8,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 
-import static com.week1.game.GameController.PIXELS_PER_UNIT;
+import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
 
 public class Renderer {
     private Batch batch;

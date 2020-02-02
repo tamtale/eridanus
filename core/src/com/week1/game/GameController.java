@@ -1,149 +1,67 @@
 package com.week1.game;
 
-import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.math.Vector3;
-import com.week1.game.AIMovement.AI;
-import com.week1.game.Model.*;
-import com.week1.game.Networking.Client;
-import com.week1.game.Networking.INetworkClientToEngineAdapter;
-import com.week1.game.Networking.Messages.AMessage;
-import com.week1.game.Networking.Messages.Game.GameMessage;
-import com.week1.game.Networking.Messages.MessageFormatter;
-import com.week1.game.Networking.NetworkUtils;
-import com.week1.game.Renderer.IRendererToEngineAdapter;
-import com.week1.game.Renderer.IRendererToNetworkAdapter;
-import com.week1.game.Renderer.Renderer;
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
 
-import java.util.List;
-import java.util.UUID;
+public class GameController implements ApplicationListener {
+    Screen currScreen;
+    public static final float VIRTUAL_WIDTH = 960;
+    public static final float VIRTUAL_HEIGHT = 540;
+    public String[] gameArgs;
 
+    public GameController(String[] args) {
+        this.gameArgs = args;
+    }
 
-public class GameController extends ApplicationAdapter {
-	private static float THRESHOLD = .2f;
-	public static int PIXELS_PER_UNIT = 64;
-	private String[] args;
-	private float curTime = 0f;
-	private Client networkClient;
-	private GameEngine engine;
-	private Renderer renderer;
-	private ClickOracle clickOracle;
-	private AI ai;
+    @Override
+    public void create() {
+        setScreen(new MainMenuScreen(this));
+    }
 
-	
-	public GameController(String[] args) {
-		this.args = args;
-	}
+    public void setScreen(Screen screen) {
+        if (this.currScreen != null) {
+            this.currScreen.hide();
+            this.currScreen.dispose();
+        }
 
-	@Override
-	public void create () {
-		networkClient = NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
-			@Override
-			public void deliverUpdate(List<? extends GameMessage> messages) {
-				engine.receiveMessages(messages);
-			}
-
-			// The client should Not! make calls to the engine that perform drawing operations
-//			@Override
-//			public void notifyNumPlayers(int numPlayers) {
-//				engine.setNumPlayers(numPlayers);
-//			}
-		});
-		engine = new GameEngine(new IEngineToRendererAdapter() {
-			@Override
-			public void batchGame(Runnable drawRunnable) {
-				renderer.startBatch();
-				drawRunnable.run();
-				renderer.endBatch();
-			}
-
-			@Override
-			public void draw(Texture texture, float x, float y) {
-				renderer.draw(texture, x, y);
-			}
-		});
-		renderer = new Renderer(new IRendererToEngineAdapter() {
-			@Override
-			public void render() {
-				engine.render();
-			}
-
-			@Override
-			public TiledMap getMap() {
-			    return engine.getGameState().getWorld().toTiledMap();
-			}
-
-			public float getPlayerMana(int playerId) {
-				return engine.getGameState().getPlayerStats(playerId).getMana();
-			}
-		}, new IRendererToNetworkAdapter() {
-			@Override
-			public String getHostAddr() {
-				return networkClient.getHostAddr();
-			}
-
-			@Override
-			public int getPlayerId() {
-				return networkClient.getPlayerId();
-			}
-
-			@Override
-			public String getClientAddr() {
-				return null;
-			}
-		});
-		clickOracle = new ClickOracle(
-				new IClickOracleToRendererAdapter() {
-					@Override
-					public void unproject(Vector3 projected) {
-						renderer.getCamera().unproject(projected);
-					}
-				},
-				new IClickOracleToEngineAdapter() {
-					@Override
-					public Unit selectUnit(Vector3 position) {
-						return engine.getGameState().findUnit(position);
-					}
-
-				},
-				new IClickOracleToNetworkAdapter() {
-					@Override
-					public void sendMessage(AMessage msg) {
-						networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
-					}
-					@Override
-					public int getPlayerId() {
-						return networkClient.getPlayerId();
-					}
-				});
-
-		ai = new AI();
-		Gdx.input.setInputProcessor(clickOracle);
-		renderer.create();
-	}
+        this.currScreen = screen;
 
 
-	@Override
-	public void render () {
-		if (!engine.started()) {
-			renderer.renderInfo();
-			return;
-		}
-		float time = Gdx.graphics.getDeltaTime();
-	    curTime += time;
-	    if (curTime > THRESHOLD) {
-	    	curTime = 0;
-	    	engine.processMessages();
-		}
-		engine.updateState(time);
-		renderer.render();
-	}
+        //This is just for safety
+        if (this.currScreen != null) {
+            this.currScreen.show();
+            this.currScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        } else {
+            System.out.println("Bad Error: Tried to set null screen");
+        }
+    }
 
-	@Override
-	public void dispose () {
+    @Override
+    public void resize(int width, int height) {
+        this.currScreen.resize(width, height);
+    }
 
-	}
+    @Override
+    public void render() {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        currScreen.render(0);
+    }
 
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
+
+    @Override
+    public void dispose() {
+
+    }
 }
-
