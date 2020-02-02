@@ -32,41 +32,8 @@ public class SteeringAgent implements Steerable<Vector3> {
         Gdx.app.log(tag, "Building a SteeringAgent");
         this.unit = unit;
         this.goal = new Vector3(unit.getX(), unit.getY(), 0);
-        this.steeringBehavior = new Arrive<>(this, new Location<Vector3>() {
-            @Override
-            public Vector3 getPosition() {
-                return goal;
-            }
-
-            @Override
-            public float getOrientation() {
-                return 0;
-            }
-
-            @Override
-            public void setOrientation(float orientation) {
-
-            }
-
-            @Override
-            public float vectorToAngle(Vector3 vector) {
-                return (float)Math.atan2(vector.x, vector.y);
-            }
-
-            @Override
-            public Vector3 angleToVector(Vector3 outVector, float angle) {
-                outVector.x = (float)Math.sin(angle);
-                outVector.y = (float)Math.cos(angle);
-                return outVector;
-            }
-
-            @Override
-            public Location<Vector3> newLocation() {
-                return this;
-            }
-        }).setArrivalTolerance(0).setDecelerationRadius(50).setTimeToTarget(10);
+        this.steeringBehavior = arrive;
 //        this.steeringBehavior = new Wander<>(this);
-        this.arrive = false;
     }
     Vector3 position;
     float orientation = 0;
@@ -80,17 +47,48 @@ public class SteeringAgent implements Steerable<Vector3> {
     private float zeroLinearSpeedThreshold = 3;
     private float maxLinearAcceleration = 3;
     private float maxAngularSpeed = 2;
-    private boolean arrive;
+
+    private SteeringBehavior<Vector3> arrive = new Arrive<>(this, new Location<Vector3>() {
+        @Override
+        public Vector3 getPosition() {
+            return goal;
+        }
+
+        @Override
+        public float getOrientation() {
+            return 0;
+        }
+
+        @Override
+        public void setOrientation(float orientation) {
+
+        }
+
+        @Override
+        public float vectorToAngle(Vector3 vector) {
+            return (float)Math.atan2(vector.x, vector.y);
+        }
+
+        @Override
+        public Vector3 angleToVector(Vector3 outVector, float angle) {
+            outVector.x = (float)Math.sin(angle);
+            outVector.y = (float)Math.cos(angle);
+            return outVector;
+        }
+
+        @Override
+        public Location<Vector3> newLocation() {
+            return this;
+        }
+    }).setArrivalTolerance(0).setDecelerationRadius(50).setTimeToTarget(10);
     public Vector3 getGoal() {
         return goal;
     }
 
     public void setGoal(Vector3 goal) {
         System.out.println(goal);
-//        if (!arrive) {
-//
-//        }
         this.goal = goal;
+        this.steeringBehavior = arrive;
     }
     /* Here you should implement missing methods inherited from Steerable */
     @Override
