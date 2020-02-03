@@ -30,8 +30,8 @@ public class InfoUtil {
         for (int i = 0; i < messages.size; i++) {
             DisplayMessage message = messages.get(i);
             font.draw(batch, message.text, 5f, 100 - (float) i * 3.0f);
-            message.time--;
-            if (message.time <= 0) {
+            message.decay();
+            if (message.finished()) {
                 toDelete.add(message);
             }
         }
@@ -45,8 +45,14 @@ public class InfoUtil {
 }
 
 class DisplayMessage {
-    String text;
-    int time = 30; // TODO maybe use the delta time to decrement
+    final String text;
+    private int time = 30; // TODO maybe use the delta time to decrement
+    void decay() {
+        time--;
+    }
+    boolean finished() {
+        return time <= 0;
+    }
     DisplayMessage(String text) {
         this.text = text;
     }
