@@ -9,6 +9,10 @@ import java.util.Iterator;
 public class OutputPath implements GraphPath<Block> {
 
     private Array<Block> path = new Array<>();
+
+    public Array<Block> getPath(){
+        return path;
+    }
     @Override
     public int getCount() {
         return path.size;

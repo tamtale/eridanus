@@ -1,5 +1,6 @@
 package com.week1.game.Model;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -50,11 +51,14 @@ public class GameState {
             @Override
             public float estimate(Block node, Block endNode) {
                 //TODO: Blocks have there x,y,z? do distance formula
-                return 0;
+                return 1;
             }
         };
+        Gdx.app.setLogLevel(Application.LOG_NONE);
+        OutputPath path = new OutputPath();
         pathFinder.searchNodePath(world.getBlock(0 , 0, 0), world.getBlock(50, 50, 0),
-                heuristic, new OutputPath());
+                heuristic, path);
+        System.out.println(path.getPath());
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();
