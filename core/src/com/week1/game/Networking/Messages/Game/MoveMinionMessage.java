@@ -26,7 +26,9 @@ public class MoveMinionMessage extends GameMessage {
         
         minionIDs.forEach((id) -> {
             Unit minion = inputState.getMinionById(id);
-            inputState.moveMinion(x, y, minion);
+            if (minion != null) {
+                inputState.moveMinion(x, y, minion);
+            }
         });
         return true;
     }

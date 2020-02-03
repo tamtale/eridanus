@@ -180,7 +180,7 @@ public class GameState {
             }
         }
         
-        Gdx.app.error("getMinionById - lji1", "Unable to find minion by given ID, returning null.");
+//        Gdx.app.error("getMinionById - lji1", "Unable to find minion by given ID, returning null.");
         return null;
     }
     public void moveMinion(float x, float y, Unit u) {
