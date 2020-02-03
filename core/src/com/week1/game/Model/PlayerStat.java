@@ -5,8 +5,8 @@ import com.week1.game.Networking.Player;
 import static com.week1.game.Model.StatsConfig.*;
 
 public class PlayerStat {
-    private float mana;
-    private float regen_rate;
+    private double mana;
+    private double regen_rate;
 
     public static PlayerStat BLANK = new PlayerStat(0,0);
 
@@ -20,11 +20,11 @@ public class PlayerStat {
         this.regen_rate = manaRegenRate;
     }
 
-    public float getMana() {
+    public double getMana() {
         return mana;
     }
 
-    public boolean useMana(float amount) {
+    public boolean useMana(double amount) {
         if (amount > mana){
             return false;
         } else {

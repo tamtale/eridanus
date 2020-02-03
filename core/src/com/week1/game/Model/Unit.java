@@ -15,8 +15,8 @@ import static com.week1.game.Model.StatsConfig.tempMinionRange;
 
 public class Unit extends Rectangle implements Damageable, Damaging {
     private final int playerID;
-    private float hp;
-    private float maxHp;
+    private double hp;
+    private double maxHp;
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
@@ -49,7 +49,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
     private Texture unselectedSkin;
 
-    public Unit(float x, float y, Texture t, float hp, int playerID) {
+    public Unit(float x, float y, Texture t, double hp, int playerID) {
         super(x, y, 1, 1);
         this.unselectedSkin = colorMap.get(playerID);
         this.playerID = playerID;
@@ -86,7 +86,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     
 
     @Override
-    public boolean takeDamage(float dmg, int damageType) {
+    public boolean takeDamage(double dmg, Damage.type damageType) {
         this.hp -= dmg;
         if (this.hp <= 0) {
             return true;
@@ -108,7 +108,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     }
     
     @Override
-    public float getDamage() {
+    public double getDamage() {
         return tempDamage;
     }
 
