@@ -3,6 +3,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.week1.game.Networking.Messages.Game.GameMessage;
+
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.InfoUtil;
 
@@ -15,24 +16,41 @@ public class GameEngine {
     private ConcurrentLinkedQueue<GameMessage> messageQueue;
     private int communicationTurn = 0;
     private SpriteBatch batch;
+    private IEngineToRendererAdapter engineToRenderer;
+    private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
     private InfoUtil util;
 
     public Batch getBatch() {
         return batch;
     }
 
-    public GameEngine(InfoUtil util) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, InfoUtil util) {
         messageQueue = new ConcurrentLinkedQueue<>();
         gameState = new GameState();
         batch = new SpriteBatch();
+        engineToRenderer = engineToRendererAdapter;
         this.util = util;
     }
 
     public void receiveMessages(List<? extends GameMessage> messages) {
         communicationTurn += 1;
-        gameState.updateMana(1); // This needs to be synchronized with the communication turn TODO is this the best way to do that?
-        // Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn);
+
+        // TODO unit movement should be 'reverted' and then stepped here in the long term so state is consistent.
+        synchronousUpdateState();
+
+        Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn);
+
         messageQueue.addAll(messages);
+    }
+
+    public void synchronousUpdateState() {
+        gameState.updateMana(1);
+        gameState.dealDamage(1);
+        if (!gameState.isPlayerAlive(enginePlayerId)) {
+            engineToRenderer.endGame(0); // TODO make an enum probably im tired
+        } else if (gameState.checkIfWon(enginePlayerId)) {
+            engineToRenderer.endGame(1); // TODO same as above
+        }
     }
 
     public void processMessages() {
@@ -51,8 +69,6 @@ public class GameEngine {
 
     public void updateState(float delta) {
         gameState.stepUnits(delta);
-        gameState.dealDamage(delta);
-//        gameState.updateMana(delta); // TODO decide where we want mana updated.
     }
 
     public void render(){
@@ -72,8 +88,16 @@ public class GameEngine {
         return communicationTurn > 0;
     }
 
-    public void updateGoal(Unit unit, Vector3 goal) {
-        gameState.updateGoal(unit, goal);
+    /**
+     *
+     * @return whether the player that this is associated with is alive or not.
+     */
+    public boolean isPlayerAlive() {
+        if (!started()) {
+            return true;
+        }
+        return gameState.isPlayerAlive(enginePlayerId);
     }
 
+    public void setEnginePlayerId(int playerId) { this.enginePlayerId = playerId; }
 }

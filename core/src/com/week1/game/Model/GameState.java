@@ -2,7 +2,7 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
-
+import com.badlogic.gdx.graphics.Texture;
 
 
 import com.badlogic.gdx.graphics.Pixmap;
@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.World.GameWorld;
+
 
 import static com.week1.game.Model.StatsConfig.*;
 import static com.week1.game.Model.StatsConfig.tempTower2Cost;
@@ -39,7 +40,6 @@ public class GameState {
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();
-
     }
 
     /*
@@ -54,12 +54,17 @@ public class GameState {
         if (numPlayers == 1) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
         } else if (numPlayers == 2) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 0, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 0, 0));
             playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 90, 1));
-        } else {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 0, 0));
+        } else if (numPlayers == 3) {
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 0, 0));
             playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 70, 1));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 90, 2));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 90, 2));
+        } else {
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 0, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 90, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 90, 2));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 0, 3));
         }
 
 
@@ -143,11 +148,11 @@ public class GameState {
         }
 
         for (Tower tower : towers) {
-            batch.draw(tower.getSkin(), tower.x, tower.y);
+            tower.draw(batch);
         }
 
         for (PlayerBase playerBase : playerBases) {
-            batch.draw(playerBase.getSkin(), playerBase.x, playerBase.y);
+            playerBase.draw(batch);
         }
     }
 
@@ -159,59 +164,88 @@ public class GameState {
         }
         return null;
     }
-
-    public void moveMinion(float x, float y, int minionID) {
-        for (Unit unit: units) {
-//            System.out.println(unit.agent);
-            if (unit.ID == minionID) {
-//                System.out.println(unit.ID);
-//                System.out.println(unit.agent);
-                updateGoal(unit, new Vector3(x, y, 0));
+    
+    public Array<Unit> findUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
+        Array<Unit> unitsToSelect = new Array<>();
+        for (Unit u : units) {
+            if (Math.min(cornerA.x, cornerB.x) < u.x && u.x < Math.max(cornerA.x, cornerB.x) &&
+                Math.min(cornerA.y, cornerB.y) < u.y && u.y < Math.max(cornerA.y, cornerB.y)) {
+                unitsToSelect.add(u);
             }
         }
+        return unitsToSelect;
     }
+
     
-    public void dealDamage(float delta) {
-        Array<Integer> deadUnits  = new Array<>();
+    public Unit getMinionById(int minionId) {
+
+        for (int i = 0; i < units.size; i++) {
+            if (minionId == units.get(i).ID) {
+                return units.get(i);
+            }
+        }
         
-        for (int attackerIdx = 0; attackerIdx < units.size; attackerIdx++) {
-            Unit attacker = units.get(attackerIdx);
-            for (int victimIdx = 0; victimIdx < units.size; victimIdx++) {
-                Unit victim = units.get(victimIdx);
-                
-                if (!victim.equals(attacker) && // check each unit against all OTHER units
-                        attacker.hasUnitInRange(victim) && // victim is within range
+//        Gdx.app.error("getMinionById - lji1", "Unable to find minion by given ID, returning null.");
+        return null;
+    }
+    public void moveMinion(float dx, float dy, Unit u) {
+        System.out.println("u.x: " + u.x + " u.y: " + u.y + " dx: " + dx + " dy: " + dy);
+        updateGoal(u, new Vector3(u.x + dx, u.y + dy, 0));
+    }
+
+    public void dealDamage(float delta) {
+        Array<Pair> deadEntities  = new Array<>();
+
+        Array<Damaging> everythingDamaging = new Array<>(units);
+        everythingDamaging.addAll(towers);
+
+        Array<Damageable> everythingDamageable = new Array<>(units);
+        everythingDamageable.addAll(towers);
+        everythingDamageable.addAll(playerBases);
+
+        // Loop through all entities (units and towers) that can attack
+        for (int attackerIdx = 0; attackerIdx < everythingDamaging.size; attackerIdx++) {
+            Damaging attacker = everythingDamaging.get(attackerIdx);
+
+            // Loop though all entities that can be damaged (units, towers, and bases)
+            for (int victimIdx = 0; victimIdx < everythingDamageable.size; victimIdx++) {
+                Damageable victim = everythingDamageable.get(victimIdx);
+
+                if (attacker.hasTargetInRange(victim) && // victim is within range
                         !victim.isDead() && // the victim is not already dead
-                        attacker.getPlayerId() != victim.getPlayerId()) { // TODO: victim was spawned by another player
+                        attacker.getPlayerId() != victim.getPlayerId()) {
 
                     if (victim.takeDamage(attacker.getDamage() * delta)) {
-                        deadUnits.add(victimIdx);
-                    } 
-                    break; // the attacker can only damage one opponent per attack cycle
-                }
-            }
-        }
-        
-        for (int towerIdx = 0; towerIdx < towers.size; towerIdx++) {
-            Tower tower = towers.get(towerIdx);
-            for (int victimIdx = 0; victimIdx < units.size; victimIdx++) {
-                Unit victim = units.get(victimIdx);
-
-                if (tower.hasUnitInRange(victim) && // victim is within range
-                        !victim.isDead() && // the victim is not already dead
-                        tower.getPlayerId() != victim.getPlayerId()) { // TODO: victim was spawned by another player
-
-                    if (victim.takeDamage(tower.getDamage() * delta)) {
-                        deadUnits.add(victimIdx);
+                        deadEntities.add(new Pair(attacker, victim));
                     }
-                    break; // the attacker can only damage one opponent per attack cycle
+                    // the attacker can only damage one opponent per attack cycle
+                    break;
                 }
             }
         }
-        
-        // get rid of all the dead units
-        for (int deadUnitIdx : deadUnits) {
-            units.removeIndex(deadUnitIdx);
+
+        // get rid of all the dead entities and gives rewards
+        for (int deadIndex = 0; deadIndex < deadEntities.size; deadIndex++) {
+            Pair deadPair = deadEntities.get(deadIndex);
+            int attackingPlayerId = deadPair.getFirst().getPlayerId();
+            Damageable deadEntity = deadPair.getSecond();
+
+            if (deadEntity.getClass() == Unit.class) {
+                units.removeValue((Unit)deadEntity, false);
+
+            } else if (deadEntity.getClass() == Tower.class) {
+                towers.removeValue((Tower)deadEntity, false);
+                // Reward the player who destroyed the tower the mana.
+                playerStats.get(attackingPlayerId).giveMana(((Tower)deadEntity).getCost() * towerDestructionBonus);
+
+            } else {
+                int deadPlayer = deadEntity.getPlayerId();
+                playerBases.removeIndex(deadPlayer);
+
+                playerBases.insert(deadPlayer, new DestroyedBase(0, deadEntity.getX(), deadEntity.getY(), deadPlayer));
+                // Reward the player who destroyed the base a lump sum
+                playerStats.get(attackingPlayerId).giveMana((playerBaseBonus));
+            }
         }
     }
 
@@ -294,5 +328,32 @@ public class GameState {
 
     public boolean isInitialized() {
         return fullyInitialized;
+    }
+
+    public boolean isPlayerAlive(int playerId) {
+        if (!isInitialized() || playerId == PLAYERNOTASSIGNED){
+            return true; // Return that the player is alive because the game has not started
+        }
+
+        if (playerBases.get(playerId).getHp() <= 0) {
+           // Yikes, you died!
+            return false;
+        }
+        return true;
+    }
+
+    public boolean checkIfWon(int playerId) {
+        if (!isPlayerAlive(playerId) || !isInitialized() || playerId == PLAYERNOTASSIGNED){
+            return false; // Can't win if you're dead lol or if the game has not started
+        }
+
+        // Check if you are the last base alive
+        for (int playerIndex = 0; playerIndex < playerBases.size; playerIndex += 1) {
+            if (playerIndex != playerId && !playerBases.get(playerIndex).isDead()) {
+                // Since there is another placers base that is not dead yet, you have not won.
+                return false;
+            }
+        }
+        return true;
     }
 }
