@@ -31,13 +31,20 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
-    public  static int SIZE = 5;
+    public  static int SIZE = 1;
     
     private static Texture selectedSkin = makeTexture(SIZE, SIZE, Color.YELLOW);
 
+    public Unit(float x, float y, Texture t, double hp, int playerID) {
+        super(x, y, 1, 1); // TODO make the x and y the center points of it for getX() and getY() which is used in range calculations
+        this.unselectedSkin = colorMap.get(playerID);
+        this.playerID = playerID;
+        this.hp = hp;
+        this.maxHp = hp;
+    }
 
     public void draw(Batch batch) {
-        batch.draw(getSkin(), this.x, this.y, 1, 1);
+        batch.draw(getSkin(), this.x, this.y, SIZE, SIZE);
         // TODO draw this in a UI rendering procedure
         batch.draw(healthBarBackground, this.x, (float) (this.y + 1.5), 1, .5f);
         batch.draw(getHealthBar(hp, maxHp), this.x, (float) (this.y + 1.5), (float) (hp / maxHp), .5f);
@@ -56,13 +63,6 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
     private Texture unselectedSkin;
 
-    public Unit(float x, float y, Texture t, double hp, int playerID) {
-        super(x, y, 1, 1); // TODO make the x and y the center points of it for getX() and getY() which is used in range calculations
-        this.unselectedSkin = colorMap.get(playerID);
-        this.playerID = playerID;
-        this.hp = hp;
-        this.maxHp = hp;
-    }
 
     void step(float delta) {
         if (agent != null) {

@@ -33,9 +33,9 @@ public class Renderer {
     public void create() {
         map = engineAdapter.getMap();
         camera = new OrthographicCamera();
-        mapRenderer = new OrthogonalTiledMapRenderer(map, 5f / PIXELS_PER_UNIT);
+        mapRenderer = new OrthogonalTiledMapRenderer(map, 1f / PIXELS_PER_UNIT);
         batch = mapRenderer.getBatch();
-        camera.setToOrtho(false, 500, 500);
+        camera.setToOrtho(false, 100, 100);
         camera.update();
     }
 

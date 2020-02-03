@@ -124,8 +124,10 @@ public class ClickOracle extends InputAdapter {
 
 
     private void deMultiSelect() {
-        multiSelected.forEach((u) -> {u.clicked = false;});
-        multiSelected = null;
+        if (multiSelected != null) {
+            multiSelected.forEach((u) -> u.clicked = false);
+            multiSelected = null;
+        }
     }
     
     private void multiSelect(Unit unit) {

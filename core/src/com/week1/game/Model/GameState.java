@@ -317,7 +317,7 @@ public class GameState {
     }
 
     public boolean isPlayerAlive(int playerId) {
-        Gdx.app.log("pjb3 - GameState - isPlayerAlive", "Player id is " +  playerId);
+        Gdx.app.debug("pjb3 - GameState - isPlayerAlive", "Player id is " +  playerId);
         if (!isInitialized() || playerId == PLAYERNOTASSIGNED){
             return true; // Return that the player is alive because the game has not started
         }
