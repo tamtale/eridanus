@@ -21,7 +21,6 @@ public class ClickOracle extends InputAdapter {
     private Vector3 touchPos = new Vector3();
     private IClickOracleToRendererAdapter rendererAdapter;
     private IClickOracleToEngineAdapter engineAdapter;
-    private Unit selected;
     private Array<Unit> multiSelected = new Array<>();
     private IClickOracleToNetworkAdapter networkAdapter;
     
@@ -57,28 +56,29 @@ public class ClickOracle extends InputAdapter {
     
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        Gdx.app.debug("lji1 - ClickOracle", "Click registered.");
+        Gdx.app.log("lji1 - ClickOracle", "Click registered.");
         
-        if (selectionLocationEnd != null) {
-            
-            // mark the units in the box as selected
-            Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
-            deMultiSelect();
-            multiSelected = new Array<>();
-            unitsToSelect.forEach((unit) -> multiSelect(unit));
-            
-            
-            selectionLocationStart = null;
-            selectionLocationEnd = null;
-            
-            return true;
-        }
+//        if (selectionLocationEnd != null) {
+//            
+//            // mark the units in the box as selected
+//            Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
+//            deMultiSelect();
+//            multiSelected = new Array<>();
+//            unitsToSelect.forEach((unit) -> multiSelect(unit));
+//            
+//            
+//            selectionLocationStart = null;
+//            selectionLocationEnd = null;
+//            
+//            return true;
+//        }
 
         touchPos.set(screenX, screenY, 0);
         rendererAdapter.unproject(touchPos);
 
         // The player must be alive to be able to register any clicks
         if (!engineAdapter.isPlayerAlive()) {
+            Gdx.app.log("lji1 - ClickOracle", "Player has died.");
             return false;
         }
 
@@ -110,10 +110,10 @@ public class ClickOracle extends InputAdapter {
             return true;
         }
         // Right click
-        if (selected != null && button == Input.Buttons.RIGHT) {
+        if (multiSelected != null && button == Input.Buttons.RIGHT) {
             // TODO: steering agent behavior
-            networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y, 69,
-                    networkAdapter.getPlayerId(), selected.ID));
+            networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y,
+                    networkAdapter.getPlayerId(), multiSelected));
             return true;
 
         }

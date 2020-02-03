@@ -171,15 +171,27 @@ public class GameState {
         return unitsToSelect;
     }
 
-    public void moveMinion(float x, float y, int minionID) {
-        for (Unit unit: units) {
-//            System.out.println(unit.agent);
-            if (unit.ID == minionID) {
-//                System.out.println(unit.ID);
-//                System.out.println(unit.agent);
-                updateGoal(unit, new Vector3(x, y, 0));
+    
+    public Unit getMinionById(int minionId) {
+
+        for (int i = 0; i < units.size; i++) {
+            if (minionId == units.get(i).ID) {
+                return units.get(i);
             }
         }
+        
+        Gdx.app.error("getMinionById - lji1", "Unable to find minion by given ID, returning null.");
+        return null;
+    }
+    public void moveMinion(float x, float y, Unit u) {
+//        for (Unit unit: units) {
+//            System.out.println(unit.agent);
+//            if (u.ID == minionID) {
+//                System.out.println(unit.ID);
+//                System.out.println(unit.agent);
+                updateGoal(u, new Vector3(x, y, 0));
+//            }
+//        }
     }
 
     public void dealDamage(float delta) {

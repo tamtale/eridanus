@@ -39,7 +39,6 @@ public class CreateMinionMessage extends GameMessage {
             return false;
         }
 
-        Gdx.app.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create tower.");
         Gdx.app.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
         inputState.getPlayerStats(playerID).useMana(tempMinion1Cost);
 
