@@ -34,7 +34,7 @@ public class PlayerBase implements Damageable {
     public void draw(Batch batch) {
         batch.draw(getSkin(), this.x, this.y, SIDELENGTH, SIDELENGTH);
         // TODO draw this in a UI rendering procedure
-        batch.draw(healthBarBackground, this.x, (float) (this.y + 9), 3, .5f);
+        batch.draw(healthBarBackground, this.x, (float) (this.y + 9), 8, .5f);
         batch.draw(getHealthBar(hp, maxHp), this.x, (float) (this.y + 9), (float) (hp / maxHp) * 8, .5f);
     }
     
