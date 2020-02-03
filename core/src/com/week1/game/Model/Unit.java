@@ -39,10 +39,6 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         return texture;
     }
 
-    private static Texture healthBarHigh = makeTexture(Color.GREEN);
-    private static Texture healthBarMid = makeTexture(Color.ORANGE);
-    private static Texture healthBarLow = makeTexture(Color.FIREBRICK);
-    private static Texture healthBarBackground = makeTexture(Color.BLACK);
 
     private static Texture selectedSkin = makeTexture(Color.YELLOW);
 
@@ -53,12 +49,6 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         batch.draw(getHealthBar(), this.x, (float) (this.y + 1.5), (float) (hp / maxHp), .5f);
     }
 
-    private Texture getHealthBar() {
-        double perc = hp / maxHp;
-        if (perc > .5) return healthBarHigh;
-        else if (perc > .2) return healthBarMid;
-        else return healthBarLow;
-    }
 
     private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {
         {
