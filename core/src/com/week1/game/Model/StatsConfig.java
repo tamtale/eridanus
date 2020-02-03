@@ -9,12 +9,17 @@ public class StatsConfig {
 
     static final double playerBaseInitialHp = 100;
 
+    static final float placementRange = 10;
+
+    static final float playerBaseInitialHp = 100;
+  
     // Basic
     static public final double tempTower1Cost = 75;
     static public final double tempTower1Health = 50;
     static public final double tempTower1Damage = 1.5;
     static public final double tempTower1Range = 6;
     static public final Pixmap basicTexture = new Pixmap(Gdx.files.internal("towertransparent.png"));
+
 
     // Sniper
     static public final double tempTower2Cost = 150;

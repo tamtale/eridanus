@@ -28,9 +28,15 @@ public class CreateMinionMessage extends GameMessage {
         // TODO do lookup of the cost based on unitType, do not use hardcoded number [tempMinion1Cost/tempMinion1Health]
         if (tempMinion1Cost > inputState.getPlayerStats(playerID).getMana()) {
             // Do not have enough mana!
-            Gdx.app.log("pjb3 - CreatMinionMessage", "Not enough mana (" +
+            Gdx.app.log("pjb3 - CreateMinionMessage", "Not enough mana (" +
                     inputState.getPlayerStats(playerID).getMana() + ") to create unit of cost " + tempMinion1Cost);
             return false; // indicate it was NOT placed
+        }
+
+        // Test to see if it is in the proximity of a tower or a home base
+        if (!inputState.findNearbyStructure(x, y, playerID)) {
+            Gdx.app.log("pjb3 - CreateMinionMessage", "Not close enough to an existing tower");
+            return false;
         }
 
         Gdx.app.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create tower.");

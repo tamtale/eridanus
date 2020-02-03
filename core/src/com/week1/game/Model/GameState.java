@@ -272,6 +272,24 @@ public class GameState {
             return tankTexture;
         }
     }
+  
+    public boolean findNearbyStructure(float x, float y, int playerId) {
+        // Check if it is near the home base
+        if (Math.sqrt(Math.pow(x - playerBases.get(playerId).x, 2) + Math.pow(y - playerBases.get(playerId).y, 2)) < placementRange){
+            return true;
+        }
+
+        // Check if it is near any of your towers
+        for (Tower t : towers) {
+            if (t.getPlayerId() == playerId) {
+                if (Math.sqrt(Math.pow(x - t.x, 2) + Math.pow(y - t.y, 2)) < placementRange){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     public GameWorld getWorld() {
         return world;
