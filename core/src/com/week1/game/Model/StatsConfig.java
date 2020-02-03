@@ -4,6 +4,8 @@ public class StatsConfig {
     static final float startingMana = 100;
     static final float manaRegenRate = 1;
 
+    static final float placementRange = 10;
+
     static final float playerBaseInitialHp = 100;
 
     static public final float tempTower1Cost = 50;
