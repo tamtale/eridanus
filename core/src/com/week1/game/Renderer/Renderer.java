@@ -38,6 +38,12 @@ public class Renderer {
         camera.update();
     }
 
+    public void zoom(int amount) {
+        float h = camera.viewportHeight;
+        float w = camera.viewportWidth;
+        camera.setToOrtho(false, h + (float) amount, w + (float) amount);
+    }
+
     public Camera getCamera() {
         return camera;
     }

@@ -80,6 +80,16 @@ public class GameScreen implements Screen {
 					public void unproject(Vector3 projected) {
 						renderer.getCamera().unproject(projected);
 					}
+
+					@Override
+					public void translate(Vector3 translated) {
+					    renderer.getCamera().translate(translated);
+					}
+
+					@Override
+					public void zoom(int amount) {
+					    renderer.zoom(amount);
+					}
 				},
 				new IClickOracleToEngineAdapter() {
 					@Override

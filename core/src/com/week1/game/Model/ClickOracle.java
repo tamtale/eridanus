@@ -15,6 +15,8 @@ public class ClickOracle extends InputAdapter {
     private IClickOracleToEngineAdapter engineAdapter;
     private Unit selected;
     private IClickOracleToNetworkAdapter networkAdapter;
+    private Vector3 translated = new Vector3();
+    private int keyPressed = -1;
 
     public ClickOracle(IClickOracleToRendererAdapter rendererAdapter, 
                        IClickOracleToEngineAdapter engineAdapter,
@@ -22,6 +24,20 @@ public class ClickOracle extends InputAdapter {
         this.rendererAdapter = rendererAdapter;
         this.engineAdapter = engineAdapter;
         this.networkAdapter = networkAdapter;
+    }
+
+
+    @Override
+    public boolean keyDown(int keycode) {
+        keyPressed = keycode;
+        return true;
+    }
+
+
+    @Override
+    public boolean keyUp(int keycode) {
+        keyPressed = -1;
+        return true;
     }
 
     @Override
@@ -83,5 +99,11 @@ public class ClickOracle extends InputAdapter {
             selected.setClicked(false);
         }
         selected = null;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        rendererAdapter.zoom(amount);
+        return true;
     }
 }
