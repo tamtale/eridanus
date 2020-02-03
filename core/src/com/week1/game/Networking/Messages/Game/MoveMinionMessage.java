@@ -23,13 +23,31 @@ public class MoveMinionMessage extends GameMessage {
     }
     @Override
     public boolean process(GameState inputState){
-        
-        minionIDs.forEach((id) -> {
+        float centerX = 0;//x - inputState.getMinionById(minionIDs.get(0)).x;
+        float centerY = 0;//y - inputState.getMinionById(minionIDs.get(0)).y;
+        int goodMinions = 0;
+
+        for (Integer id : minionIDs) {
             Unit minion = inputState.getMinionById(id);
             if (minion != null) {
-                inputState.moveMinion(x, y, minion);
+                goodMinions++;
+                centerX += minion.x;
+                centerY += minion.y;
             }
-        });
+        }
+        
+        if (goodMinions > 0) {
+            centerX = centerX / goodMinions;
+            centerY = centerY / goodMinions;
+
+            for (Integer id : minionIDs) {
+                Unit minion = inputState.getMinionById(id);
+                if (minion != null) {
+                    inputState.moveMinion(x - centerX, y - centerY, minion);
+                }
+            }
+        }
+        
         return true;
     }
     
