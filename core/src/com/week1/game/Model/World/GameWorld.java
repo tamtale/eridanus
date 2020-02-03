@@ -5,6 +5,8 @@ import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.Vector3;
+
 import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
 
 public class GameWorld {
@@ -16,13 +18,13 @@ public class GameWorld {
         GameGraph graph = new GameGraph();
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
-                blocks[i][j][0] = new Block.TerrainBlock.StoneBlock();
+                blocks[i][j][0] = new Block.TerrainBlock.StoneBlock(new Vector3(i, j, 0));
                 graph.addBlock(blocks[i][j][0]);
 //                if (i > 0) {
 //                    blocks[i][j][0].setConnection(new WeightedBlockEdge(1, blocks[i][j][0], blocks[i - 1][j][0]));
 //                }
                 for (int k = 1; k < blocks[0][0].length; k++) {
-                    blocks[i][j][k] = new Block.TerrainBlock.AirBlock();
+                    blocks[i][j][k] = new Block.TerrainBlock.AirBlock(new Vector3(i, j, k));
                     graph.addBlock(blocks[i][j][k]);
                 }
             }

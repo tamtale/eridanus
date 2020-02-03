@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
@@ -17,10 +18,12 @@ public interface Block {
     void setConnection(Connection<Block> neighbor);
     int getIndex();
     float getCost();
+    Vector3 getCoords();
 
     void setIndex(int nodeCount);
 
     class TerrainBlock implements Block {
+        private Vector3 coords;
         private TextureRegion textureRegion;
         private int index;
         private Array<Connection<Block>> edges;
@@ -32,9 +35,14 @@ public interface Block {
             unitPixmap.fillRectangle(3, 3, PIXELS_PER_UNIT - 6, PIXELS_PER_UNIT - 6);
             this.textureRegion = new TextureRegion(new Texture(unitPixmap));
         }
+
+        public TerrainBlock(Vector3 coords) {
+            this.coords = coords;
+        }
+
         static class AirBlock extends TerrainBlock{
 
-            AirBlock() {
+            AirBlock(Vector3 vector3) {
                 super(Color.GOLD);
             }
 
@@ -47,6 +55,10 @@ public interface Block {
 
             StoneBlock(){
                 super(Color.BLACK);
+            }
+
+            public StoneBlock(Vector3 vector3) {
+                super(vector3);
             }
 
             @Override
@@ -62,6 +74,11 @@ public interface Block {
 
         public float getCost(){
             return 1;
+        }
+
+        @Override
+        public Vector3 getCoords() {
+            return coords;
         }
 
         @Override
@@ -87,6 +104,10 @@ public interface Block {
     class TowerBlock implements Block {
         private Array<Connection<Block>> edges;
         private int index;
+        private Vector3 coords;
+        public TowerBlock(Vector3 coords) {
+            this.coords = coords;
+        }
         @Override
         public TextureRegion getTextureRegion() {
             return null;
@@ -110,6 +131,11 @@ public interface Block {
         @Override
         public float getCost() {
             return Float.POSITIVE_INFINITY;
+        }
+
+        @Override
+        public Vector3 getCoords() {
+            return coords;
         }
 
         @Override

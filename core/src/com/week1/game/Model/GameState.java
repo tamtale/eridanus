@@ -25,7 +25,7 @@ import static com.week1.game.Model.TowerType.*;
 
 public class GameState {
 
-    private final GameGraph graph;
+    private GameGraph graph;
     private PathFinder<Block> pathFinder;
     private Array<Unit> units;
     private int minionCount;
@@ -42,23 +42,31 @@ public class GameState {
         // TODO player data
         // TODO towers
         // TODO tower types in memory after exchange
+        System.out.println("GAMESTATE");
         towers = new Array<>();
         units = new Array<>();
         world = new GameWorld();
-        graph = world.buildGraph();
-        pathFinder = new IndexedAStarPathFinder<>(graph);
-        Heuristic<Block> heuristic = new Heuristic<Block>() {
-            @Override
-            public float estimate(Block node, Block endNode) {
-                //TODO: Blocks have there x,y,z? do distance formula
-                return 1;
-            }
-        };
-        Gdx.app.setLogLevel(Application.LOG_NONE);
-        OutputPath path = new OutputPath();
-        pathFinder.searchNodePath(world.getBlock(0 , 0, 0), world.getBlock(50, 50, 0),
-                heuristic, path);
-        System.out.println(path.getPath());
+//        graph = world.buildGraph();
+//        pathFinder = new IndexedAStarPathFinder<>(graph);
+//        System.out.println("PATHFINDER");
+//        Heuristic<Block> heuristic = new Heuristic<Block>() {
+//            @Override
+//            public float estimate(Block node, Block endNode) {
+//                //TODO: Blocks have there x,y,z? do distance formula
+//                float D = 1f;
+//                float D2 = (float) Math.sqrt(2);
+//                Vector3 nodeCoords = node.getCoords();
+//                Vector3 endNodeCoords = endNode.getCoords();
+//                float dx = Math.abs(nodeCoords.x - endNodeCoords.x);
+//                float dy = Math.abs(nodeCoords.y - endNodeCoords.y);
+//                float dz = Math.abs(nodeCoords.z - endNodeCoords.z);
+//                return D * (dx + dy + dz) + (D2 - 2 * D) * Math.min(dx, Math.min(dy, dz));
+//            }
+//        };
+//        OutputPath path = new OutputPath();
+//        pathFinder.searchNodePath(world.getBlock(0 , 0, 0), world.getBlock(50, 50, 0),
+//                heuristic, path);
+//        System.out.println("WARREN BIGELOW " + path.getPath());
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();
