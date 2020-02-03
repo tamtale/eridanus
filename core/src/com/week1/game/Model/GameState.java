@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.World.GameWorld;
-import jdk.internal.net.http.common.Pair;
+
 
 import static com.week1.game.Model.StatsConfig.*;
 import static com.week1.game.Model.StatsConfig.tempTower2Cost;
@@ -170,7 +170,7 @@ public class GameState {
     }
 
     public void dealDamage(float delta) {
-        Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
+        Array<Pair> deadEntities  = new Array<>();
 
         Array<Damaging> everythingDamaging = new Array<>(units);
         everythingDamaging.addAll(towers);
@@ -192,7 +192,7 @@ public class GameState {
                         attacker.getPlayerId() != victim.getPlayerId()) {
 
                     if (victim.takeDamage(attacker.getDamage() * delta)) {
-                        deadEntities.add(new Pair<>(attacker, victim));
+                        deadEntities.add(new Pair(attacker, victim));
                     }
                     // the attacker can only damage one opponent per attack cycle
                     break;
@@ -201,9 +201,9 @@ public class GameState {
         }
 
         // get rid of all the dead entities and gives rewards
-        for (Pair<Damaging, Damageable> deadPair : deadEntities) {
-            int attackingPlayerId = deadPair.first.getPlayerId();
-            Damageable deadEntity = deadPair.second;
+        for (Pair deadPair : deadEntities) {
+            int attackingPlayerId = deadPair.getFirst().getPlayerId();
+            Damageable deadEntity = deadPair.getSecond();
 
             if (deadEntity.getClass() == Unit.class) {
                 units.removeValue((Unit)deadEntity, false);
