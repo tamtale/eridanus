@@ -44,12 +44,6 @@ public class GameScreen implements Screen {
 			@Override
 			public void setPlayerId(int playerId) {
 				engine.setEnginePlayerId(playerId);
-//=======
-//			public void batchDrawOperations(Runnable drawRunnable) {
-//				renderer.startBatch();
-//				drawRunnable.run();
-//				renderer.endBatch();
-//>>>>>>> moreHpBar
 			}
 		});
 

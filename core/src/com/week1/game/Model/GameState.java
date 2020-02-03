@@ -331,7 +331,6 @@ public class GameState {
     }
 
     public boolean isPlayerAlive(int playerId) {
-        Gdx.app.debug("pjb3 - GameState - isPlayerAlive", "Player id is " +  playerId);
         if (!isInitialized() || playerId == PLAYERNOTASSIGNED){
             return true; // Return that the player is alive because the game has not started
         }
@@ -345,8 +344,6 @@ public class GameState {
 
     public boolean checkIfWon(int playerId) {
         if (!isPlayerAlive(playerId) || !isInitialized() || playerId == PLAYERNOTASSIGNED){
-
-            Gdx.app.log("pjb3 - State", "Stopping from winning because soemjasndfaksdf");
             return false; // Can't win if you're dead lol or if the game has not started
         }
 
@@ -357,7 +354,6 @@ public class GameState {
                 return false;
             }
         }
-        Gdx.app.log("pjb3 - State", "Returning true");
         return true;
     }
 }

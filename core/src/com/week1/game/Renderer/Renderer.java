@@ -55,10 +55,7 @@ public class Renderer {
         batch.end();
     }
 
-    public void endGame(int winOrLoss) {
-        winState = winOrLoss;
-        Gdx.app.log("pjb3 - Renderer - endGame", "received an endGame message that has " + winOrLoss);
-    }
+    public void endGame(int winOrLoss) { winState = winOrLoss; }
 
     public void renderInfo() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
