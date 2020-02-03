@@ -1,8 +1,5 @@
 package com.week1.game.Model;
 
-import com.badlogic.gdx.Gdx;
-import com.week1.game.Networking.Player;
-
 import static com.week1.game.Model.StatsConfig.*;
 
 public class PlayerStat {

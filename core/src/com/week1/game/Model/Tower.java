@@ -1,10 +1,7 @@
 package com.week1.game.Model;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-
-import static com.week1.game.Model.StatsConfig.*;
 
 public class Tower implements Damageable, Damaging {
     private static final int SIDELENGTH = 3;
@@ -73,7 +70,7 @@ public class Tower implements Damageable, Damaging {
 
     @Override
     public double getDamage() {
-        return tempTowerDamage;
+        return this.dmg;
     }
 
     @Override

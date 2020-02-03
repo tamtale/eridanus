@@ -3,7 +3,6 @@ package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.week1.game.Networking.Player;
 
 
 public class PlayerBase implements Damageable {
@@ -27,9 +26,7 @@ public class PlayerBase implements Damageable {
         this.y = y;
     }
 
-    Texture getSkin() {
-        return skin;
-    }
+    Texture getSkin() { return skin; }
 
     @Override
     public boolean takeDamage(double dmg, Damage.type damageType) {
@@ -43,9 +40,7 @@ public class PlayerBase implements Damageable {
     }
 
     @Override
-    public float getX() {
-        return this.x;
-    }
+    public float getX() { return this.x; }
 
     @Override
     public float getY() {
@@ -66,7 +61,5 @@ public class PlayerBase implements Damageable {
         return SIDELENGTH;
     }
 
-    public double getHp() {
-        return hp;
-    }
+    public double getHp() { return hp; }
 }
