@@ -106,6 +106,7 @@ public class GameState {
                 if (unit.getX() > tower.x && unit.getX() < tower.x + tower.getSidelength() &&
                         unit.getY() > tower.y && unit.getY() < tower.y + tower.getSidelength()){
                     collide(unit);
+                    Gdx.app.log("stepUnits - wab2", "Unit " + unit.ID + " collided with " + tower);
                 }
             }
 
@@ -113,6 +114,7 @@ public class GameState {
                 if (unit.getX() > base.x && unit.getX() < base.x + base.getSidelength() &&
                         unit.getY() > base.y && unit.getY() < base.y + base.getSidelength()){
                     collide(unit);
+                    Gdx.app.log("stepUnits - wab2", "Unit " + unit.ID + " collided with " + base);
                 }
             }
         }
