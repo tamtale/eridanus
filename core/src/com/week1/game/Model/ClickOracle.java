@@ -74,13 +74,13 @@ public class ClickOracle extends InputAdapter {
             unselect();
             selected = unit;
             if (unit != null) {
-                unit.clicked = true;
+                unit.setClicked(true);
             }
         }
     }
     private void unselect() {
         if (selected != null) {
-            selected.clicked = false;
+            selected.setClicked(false);
         }
         selected = null;
     }

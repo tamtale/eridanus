@@ -1,6 +1,8 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Batch;
+
 
 
 import com.badlogic.gdx.graphics.Pixmap;
@@ -135,22 +137,17 @@ public class GameState {
         agents.add(a);
     }
 
-    public void render(DrawFunction drawFunc){
+    public void render(Batch batch){
         for (Unit unit : units){
-            if (unit.clicked) {
-                drawFunc.draw(unit.getSelectedSkin(), unit.x, unit.y);
-            } else {
-                drawFunc.draw(unit.getUnselectedSkin(), unit.x, unit.y);
-            }
-            drawFunc.draw(unit.getHealthBar(), unit.x, (float)(unit.y + 1.5));
+            unit.draw(batch);
         }
 
         for (Tower tower : towers) {
-            drawFunc.draw(tower.getSkin(), tower.x, tower.y);
+            batch.draw(tower.getSkin(), tower.x, tower.y);
         }
 
         for (PlayerBase playerBase : playerBases) {
-            drawFunc.draw(playerBase.getSkin(), playerBase.x, playerBase.y);
+            batch.draw(playerBase.getSkin(), playerBase.x, playerBase.y);
         }
     }
 

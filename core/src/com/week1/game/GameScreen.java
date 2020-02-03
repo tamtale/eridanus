@@ -1,7 +1,6 @@
 package com.week1.game;
 
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.AIMovement.AI;
@@ -17,7 +16,6 @@ import com.week1.game.Renderer.IRendererToNetworkAdapter;
 import com.week1.game.Renderer.Renderer;
 
 import java.util.List;
-import java.util.UUID;
 
 
 public class GameScreen implements Screen {
@@ -42,19 +40,7 @@ public class GameScreen implements Screen {
 				engine.receiveMessages(messages);
 			}
 		});
-		engine = new GameEngine(new IEngineToRendererAdapter() {
-			@Override
-			public void batchGame(Runnable drawRunnable) {
-				renderer.startBatch();
-				drawRunnable.run();
-				renderer.endBatch();
-			}
-
-			@Override
-			public void draw(Texture texture, float x, float y) {
-				renderer.draw(texture, x, y);
-			}
-		});
+		engine = new GameEngine();
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
 			public void render() {
@@ -135,6 +121,7 @@ public class GameScreen implements Screen {
 			engine.processMessages();
 		}
 		engine.updateState(time);
+		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
 		renderer.render();
 	}
 
