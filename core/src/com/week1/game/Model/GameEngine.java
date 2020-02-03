@@ -42,8 +42,11 @@ public class GameEngine {
         gameState.updateMana(1);
         gameState.dealDamage(1);
         if (!gameState.isPlayerAlive(enginePlayerId)) {
+            Gdx.app.log("pjb3 - Engine", "player is NOT alive. Game over 4 u!!!");
             engineToRenderer.endGame(0); // TODO make an enum probably im tired
         } else if (gameState.checkIfWon(enginePlayerId)) {
+
+            Gdx.app.log("pjb3 - Engine", "checkIfWon returned true");
             engineToRenderer.endGame(1); // TODO same as above
         }
     }

@@ -339,8 +339,10 @@ public class GameState {
     }
 
     public boolean checkIfWon(int playerId) {
-        if (!isPlayerAlive(playerId)){
-            return false; // Can't win if you're dead lol
+        if (!isPlayerAlive(playerId) || !isInitialized() || playerId == PLAYERNOTASSIGNED){
+
+            Gdx.app.log("pjb3 - State", "Stopping from winning because soemjasndfaksdf");
+            return false; // Can't win if you're dead lol or if the game has not started
         }
 
         // Check if you are the last base alive
@@ -350,6 +352,7 @@ public class GameState {
                 return false;
             }
         }
+        Gdx.app.log("pjb3 - State", "Returning true");
         return true;
     }
 }

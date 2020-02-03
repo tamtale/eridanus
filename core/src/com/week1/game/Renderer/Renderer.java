@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.IRendererToClickOracleAdapter;
 
 import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
+import static com.week1.game.Model.StatsConfig.tempMinion1Cost;
 
 public class Renderer {
     private Batch batch;
@@ -28,7 +29,6 @@ public class Renderer {
         this.networkAdapter = networkAdapter;
         this.clickOracleAdapter = clickOracleAdapter;
     }
-
 
     public void create() {
         map = engineAdapter.getMap();
@@ -55,7 +55,10 @@ public class Renderer {
         batch.end();
     }
 
-    public void endGame(int winOrLoss) { winState = winOrLoss; }
+    public void endGame(int winOrLoss) {
+        winState = winOrLoss;
+        Gdx.app.log("pjb3 - Renderer - endGame", "received an endGame message that has " + winOrLoss);
+    }
 
     public void renderInfo() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
