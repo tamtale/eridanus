@@ -3,11 +3,15 @@ package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+
+import static com.week1.game.Model.HealthBar.getHealthBar;
+import static com.week1.game.Model.HealthBar.healthBarBackground;
 
 
 public class PlayerBase implements Damageable {
     public float x, y;
-    private double hp;
+    private double hp, maxHp;
     private int playerID;
     private static Texture skin;
     protected static final int SIDELENGTH = 8;
@@ -21,11 +25,19 @@ public class PlayerBase implements Damageable {
 
     public PlayerBase(double initialHp, float x, float y, int playerID) {
         this.hp = initialHp;
+        this.maxHp = initialHp;
         this.playerID = playerID;
         this.x = x;
         this.y = y;
     }
 
+    public void draw(Batch batch) {
+        batch.draw(getSkin(), this.x, this.y, SIDELENGTH, SIDELENGTH);
+        // TODO draw this in a UI rendering procedure
+        batch.draw(healthBarBackground, this.x, (float) (this.y + 9), 3, .5f);
+        batch.draw(getHealthBar(hp, maxHp), this.x, (float) (this.y + 9), (float) (hp / maxHp) * 8, .5f);
+    }
+    
     Texture getSkin() { return skin; }
 
     @Override
