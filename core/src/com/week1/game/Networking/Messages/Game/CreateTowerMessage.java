@@ -38,8 +38,14 @@ public class CreateTowerMessage extends GameMessage {
 
         if (towerCost > inputState.getPlayerStats(playerID).getMana()) {
             // Do not have enough mana!
-            util.log("pjb3 - CreateTowerMessage", "Not enough mana to create tower.");
+            util.log("pjb3 - CreateTowerMessage", "Not enough mana to create tower. Need " + towerCost);
             return false; // indicate it was NOT placed
+        }
+
+        // Test to see if it is in the proximity of a tower or a home base
+        if (!inputState.findNearbyStructure(x, y, playerID)) {
+            util.log("pjb3 - CreateTowerMessage", "Not close enough to an existing tower or home base");
+            return false;
         }
 
         util.log("pjb3 - CreateTowerMessage", "Used " + towerCost + " mana to create tower.");
