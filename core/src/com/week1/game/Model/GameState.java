@@ -56,10 +56,15 @@ public class GameState {
         } else if (numPlayers == 2) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 0, 0));
             playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 90, 1));
-        } else {
+        } else if (numPlayers == 3) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 0, 0));
             playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 70, 1));
             playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 90, 2));
+        } else {
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 0, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 90, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 0, 90, 2));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 0, 3));
         }
 
 
