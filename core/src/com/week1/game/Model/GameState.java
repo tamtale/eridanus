@@ -1,17 +1,18 @@
 package com.week1.game.Model;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector2;
 
 
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.World.GameWorld;
 
 import static com.week1.game.Model.StatsConfig.*;
-import com.week1.game.Model.World.GameWorld;
+import static com.week1.game.Model.StatsConfig.tempTower2Cost;
+import static com.week1.game.Model.TowerType.*;
+
 
 public class GameState {
 
@@ -216,7 +217,61 @@ public class GameState {
             units.removeIndex(deadUnitIdx);
         }
     }
-    
+
+    public double getTowerHp(TowerType towerType) {
+        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
+        if (towerType == BASIC) {
+            return tempTower1Health;
+        } else if (towerType == SNIPER) {
+            return tempTower2Health;
+        } else {
+            return tempTower3Health;
+        }
+    }
+
+    public double getTowerCost(TowerType towerType) {
+        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
+        if (towerType == BASIC) {
+            return tempTower1Cost;
+        } else if (towerType == SNIPER) {
+            return tempTower2Cost;
+        } else {
+            return tempTower3Cost;
+        }
+    }
+
+    public double getTowerDmg(TowerType towerType) {
+        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
+        if (towerType == BASIC) {
+            return tempTower1Damage;
+        } else if (towerType == SNIPER) {
+            return tempTower2Damage;
+        } else {
+            return tempTower3Damage;
+        }
+    }
+
+    public double getTowerRange(TowerType towerType) {
+        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
+        if (towerType == BASIC) {
+            return tempTower1Range;
+        } else if (towerType == SNIPER) {
+            return tempTower2Range;
+        } else {
+            return tempTower3Range;
+        }
+    }
+
+    public Pixmap getTowerPixmap(TowerType towerType) {
+        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
+        if (towerType == BASIC) {
+            return basicTexture;
+        } else if (towerType == SNIPER) {
+            return sniperTexture;
+        } else {
+            return tankTexture;
+        }
+    }
 
     public GameWorld getWorld() {
         return world;

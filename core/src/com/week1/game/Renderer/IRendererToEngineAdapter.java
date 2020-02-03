@@ -10,5 +10,5 @@ public interface IRendererToEngineAdapter<TUnit> {
 
     // TODO get rid of this
     TiledMap getMap();
-    float getPlayerMana(int playerId);
+    double getPlayerMana(int playerId);
 }

@@ -41,12 +41,6 @@ public class GameScreen implements Screen {
 			public void deliverUpdate(List<? extends GameMessage> messages) {
 				engine.receiveMessages(messages);
 			}
-
-			// The client should Not! make calls to the engine that perform drawing operations
-//			@Override
-//			public void notifyNumPlayers(int numPlayers) {
-//				engine.setNumPlayers(numPlayers);
-//			}
 		});
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override
@@ -72,7 +66,7 @@ public class GameScreen implements Screen {
 			    return engine.getGameState().getWorld().toTiledMap();
 			}
 
-			public float getPlayerMana(int playerId) {
+			public double getPlayerMana(int playerId) {
 				return engine.getGameState().getPlayerStats(playerId).getMana();
 			}
 		}, new IRendererToNetworkAdapter() {

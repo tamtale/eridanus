@@ -8,10 +8,11 @@ import com.week1.game.Networking.Player;
 
 public class PlayerBase implements Damageable {
     public float x, y;
-    private float hp;
+    private double hp;
     private int playerID;
     private static Texture skin;
     private static final int SIDELENGTH = 8;
+
     static {
         Pixmap towerUnscaled = new Pixmap(Gdx.files.internal("basetop.png"));
         Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, Pixmap.Format.RGBA8888);
@@ -19,7 +20,7 @@ public class PlayerBase implements Damageable {
         skin = new Texture(towerScaled);
     }
 
-    public PlayerBase(float initialHp, float x, float y, int playerID) {
+    public PlayerBase(double initialHp, float x, float y, int playerID) {
         this.hp = initialHp;
         this.playerID = playerID;
         this.x = x;
@@ -31,7 +32,7 @@ public class PlayerBase implements Damageable {
     }
 
     @Override
-    public boolean takeDamage(float dmg, int damageType) {
+    public boolean takeDamage(double dmg, Damage.type damageType) {
         this.hp -= dmg;
         if (this.hp <= 0) {
             // This base has been destroyed. Something probably needs to be done here besides just return
