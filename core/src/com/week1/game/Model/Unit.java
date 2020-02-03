@@ -10,6 +10,8 @@ import com.week1.game.AIMovement.SteeringAgent;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.week1.game.Model.HealthBar.getHealthBar;
+import static com.week1.game.Model.HealthBar.healthBarBackground;
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 
@@ -30,7 +32,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     public int ID;
 
 
-    private static Texture makeTexture(Color color) {
+    public static Texture makeTexture(Color color) {
         Pixmap map = new Pixmap(64, 64, Pixmap.Format.RGB888);
         map.setColor(color);
         map.fill();
@@ -46,7 +48,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         batch.draw(getSkin(), this.x, this.y, 1, 1);
         // TODO draw this in a UI rendering procedure
         batch.draw(healthBarBackground, this.x, (float) (this.y + 1.5), 1, .5f);
-        batch.draw(getHealthBar(), this.x, (float) (this.y + 1.5), (float) (hp / maxHp), .5f);
+        batch.draw(getHealthBar(hp, maxHp), this.x, (float) (this.y + 1.5), (float) (hp / maxHp), .5f);
     }
 
 
