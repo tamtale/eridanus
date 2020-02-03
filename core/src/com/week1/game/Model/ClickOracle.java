@@ -118,9 +118,7 @@ public class ClickOracle extends InputAdapter {
             // TODO: steering agent behavior
             
             System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
-            networkAdapter.sendMessage(new MoveMinionMessage(
-                    touchPos.x, //(float)((touchPos.x + 0.5 * Math.abs(selectionLocationStart.x - selectionLocationEnd.x)) - Math.min(selectionLocationStart.x, selectionLocationEnd.x)),
-                    touchPos.y, //(float)((touchPos.y + 0.5 * Math.abs(selectionLocationStart.y - selectionLocationEnd.y)) - Math.min(selectionLocationStart.y, selectionLocationEnd.y)),
+            networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y,
                     networkAdapter.getPlayerId(), multiSelected));
             return true;
 
@@ -150,15 +148,16 @@ public class ClickOracle extends InputAdapter {
         batch.setColor(1, 1,1, 0.5f);
         batch.begin();
         
+        int SCALE = 8; //TODO: This is butt ugly and needs to be fixed
         if (dragging) {
             Texture t = TextureUtils.makeUnfilledRectangle(
-                    Math.abs((int)(selectionLocationEnd.x - selectionLocationStart.x)),
-                    Math.abs((int)(selectionLocationEnd.y - selectionLocationStart.y)), 
+                    Math.abs((int)(selectionLocationEnd.x - selectionLocationStart.x)) * SCALE,
+                    Math.abs((int)(selectionLocationEnd.y - selectionLocationStart.y)) * SCALE, 
                     Color.YELLOW);
             batch.draw(
                     t, 
-                    Math.min(selectionLocationStart.x, selectionLocationEnd.x),
-                    Math.min(selectionLocationStart.y, selectionLocationEnd.y)
+                    Math.min(selectionLocationStart.x, selectionLocationEnd.x) * SCALE,
+                    Math.min(selectionLocationStart.y, selectionLocationEnd.y) * SCALE
             );
         }
         
