@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class GameGraph implements IndexedGraph<Block> {
 
-    private int nodeCount;
+    private int nodeCount = 0;
 
     @Override
     public int getIndex(Block node) {
@@ -24,6 +24,12 @@ public class GameGraph implements IndexedGraph<Block> {
     }
 
     public void setConnection(float weight, Block fromNode, Block toNode){
+
         fromNode.setConnection(new WeightedBlockEdge(weight, fromNode, toNode));
+    }
+
+    public void addBlock(Block block) {
+        block.setIndex(nodeCount);
+        nodeCount+=1;
     }
 }

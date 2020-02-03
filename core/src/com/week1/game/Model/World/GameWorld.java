@@ -9,17 +9,21 @@ import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
 
 public class GameWorld {
     private Block[][][] blocks;
+    private GameGraph graph;
     public GameWorld() {
         // For now, we'll make a preset 100x100x10 world.
         blocks = new Block[100][100][10];
+        GameGraph graph = new GameGraph();
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 blocks[i][j][0] = new Block.TerrainBlock.StoneBlock();
+                graph.addBlock(blocks[i][j][0]);
 //                if (i > 0) {
 //                    blocks[i][j][0].setConnection(new WeightedBlockEdge(1, blocks[i][j][0], blocks[i - 1][j][0]));
 //                }
                 for (int k = 1; k < blocks[0][0].length; k++) {
                     blocks[i][j][k] = new Block.TerrainBlock.AirBlock();
+                    graph.addBlock(blocks[i][j][k]);
                 }
             }
         }
@@ -48,7 +52,7 @@ public class GameWorld {
 
 
     public GameGraph buildGraph(){
-        GameGraph graph = new GameGraph();
+
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 for (int k = 0; k < blocks[0][0].length; k++) {
@@ -64,11 +68,27 @@ public class GameWorld {
                     if(j < blocks[0].length) {
                         graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i][j + 1][k]);
                     }
-                    if (k > 0) {
-                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i][j][k - 1]);
+                    //TODO: climbing jumping into k.
+//                    if (k > 0) {
+//                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i][j][k - 1]);
+//                    }
+//                    if(k < blocks[0].length) {
+//                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i][j][k + 1]);
+                    if (i > 0 && j > 0) {
+                        graph.setConnection(blocks[i][j][k].getCost() * (float) Math.sqrt(2),
+                                blocks[i][j][k], blocks[i - 1][j - 1][k]);
                     }
-                    if(k < blocks[0].length) {
-                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i][j][k + 1]);
+                    if (i > 0 && j < blocks[0].length) {
+                        graph.setConnection(blocks[i][j][k].getCost() * (float) Math.sqrt(2),
+                                blocks[i][j][k], blocks[i - 1][j + 1][k]);
+                    }
+                    if (i < blocks.length && j > 0) {
+                        graph.setConnection(blocks[i][j][k].getCost() * (float) Math.sqrt(2),
+                                blocks[i][j][k], blocks[i + 1][j - 1][k]);
+                    }
+                    if (i < blocks.length && j < blocks[0].length) {
+                        graph.setConnection(blocks[i][j][k].getCost() * (float) Math.sqrt(2),
+                                blocks[i][j][k], blocks[i + 1][j + 1][k]);
                     }
                 }
             }

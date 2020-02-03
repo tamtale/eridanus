@@ -9,13 +9,17 @@ import com.badlogic.gdx.utils.Array;
 
 import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
 
-interface Block {
+public interface Block {
 
     TextureRegion getTextureRegion();
+
     Array<Connection<Block>> getConnections();
     void setConnection(Connection<Block> neighbor);
     int getIndex();
     float getCost();
+
+    void setIndex(int nodeCount);
+
     class TerrainBlock implements Block {
         private TextureRegion textureRegion;
         private int index;
@@ -59,6 +63,12 @@ interface Block {
         public float getCost(){
             return 1;
         }
+
+        @Override
+        public void setIndex(int nodeCount) {
+            this.index = nodeCount;
+        }
+
         public int getIndex() {
             return index;
         }
@@ -100,6 +110,11 @@ interface Block {
         @Override
         public float getCost() {
             return Float.POSITIVE_INFINITY;
+        }
+
+        @Override
+        public void setIndex(int nodeCount) {
+            this.index = nodeCount;
         }
     }
 }

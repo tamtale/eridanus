@@ -1,23 +1,31 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.graphics.g2d.Batch;
 
-
+import com.badlogic.gdx.ai.pfa.Heuristic;
+import com.badlogic.gdx.ai.pfa.PathFinder;
+import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
+import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
+import com.week1.game.Model.World.Block;
 
 import static com.week1.game.Model.StatsConfig.*;
 import static com.week1.game.Model.StatsConfig.tempTower2Cost;
 import static com.week1.game.Model.TowerType.*;
 
 
+
 public class GameState {
 
+    private final GameGraph graph;
+    private PathFinder<Block> pathFinder;
     private Array<Unit> units;
     private int minionCount;
     private Array<Tower> towers;
@@ -36,6 +44,17 @@ public class GameState {
         towers = new Array<>();
         units = new Array<>();
         world = new GameWorld();
+        graph = world.buildGraph();
+        pathFinder = new IndexedAStarPathFinder<>(graph);
+        Heuristic<Block> heuristic = new Heuristic<Block>() {
+            @Override
+            public float estimate(Block node, Block endNode) {
+                //TODO: Blocks have there x,y,z? do distance formula
+                return 0;
+            }
+        };
+        pathFinder.searchNodePath(world.getBlock(0 , 0, 0), world.getBlock(50, 50, 0),
+                heuristic, new OutputPath());
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();
