@@ -27,8 +27,6 @@ public class GameState {
     private Array<SteeringAgent> agents;
     private GameWorld world;
 
-    private int playerId; // Not part of the game state exactly, but used to determine if the game is over for this user
-
     private boolean fullyInitialized = false;
 
     public GameState(){
@@ -50,9 +48,7 @@ public class GameState {
 
      This will create the bases for all of the players and give them all an amount of currency.
      */
-    public void initializeGame(int numPlayers, int playerId) {
-        this.playerId = playerId;
-
+    public void initializeGame(int numPlayers) {
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
         if (numPlayers == 1) {
@@ -198,7 +194,7 @@ public class GameState {
                         attacker.getPlayerId() != victim.getPlayerId()) {
 
                     if (victim.takeDamage(attacker.getDamage() * delta)) {
-                        deadEntities.add(new Pair(attacker, victim));
+                        deadEntities.add(new Pair<>(attacker, victim));
                     }
                     // the attacker can only damage one opponent per attack cycle
                     break;
@@ -308,16 +304,21 @@ public class GameState {
         return fullyInitialized;
     }
 
-    public boolean isPlayerAlive() {
-        if (playerBases.get(this.playerId).getHp() <= 0) {
+    public boolean isPlayerAlive(int playerId) {
+        Gdx.app.log("pjb3 - GameState - isPlayerAlive", "Player id is " +  playerId);
+        if (!isInitialized() || playerId == PLAYERNOTASSIGNED){
+            return true; // Return that the player is alive because the game has not started
+        }
+
+        if (playerBases.get(playerId).getHp() <= 0) {
            // Yikes, you died!
             return false;
         }
         return true;
     }
 
-    public boolean checkIfWon() {
-        if (!isPlayerAlive()){
+    public boolean checkIfWon(int playerId) {
+        if (!isPlayerAlive(playerId)){
             return false; // Can't win if you're dead lol
         }
 

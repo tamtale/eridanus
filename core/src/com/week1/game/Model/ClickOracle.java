@@ -32,6 +32,11 @@ public class ClickOracle extends InputAdapter {
         touchPos.set(screenX, screenY, 0);
         rendererAdapter.unproject(touchPos);
 
+        // The player must be alive to be able to register any clicks
+        if (!engineAdapter.isPlayerAlive()) {
+            return false;
+        }
+
         if (button == Input.Buttons.LEFT) {
 
             // Create tower with left click and numberkey down

@@ -19,6 +19,7 @@ public class Renderer {
     private IRendererToEngineAdapter engineAdapter;
     private IRendererToNetworkAdapter networkAdapter;
     private BitmapFont font = new BitmapFont();
+    private int winState = -1;
 
     public Renderer(IRendererToEngineAdapter engineAdapter, IRendererToNetworkAdapter networkAdapter) {
         this.engineAdapter = engineAdapter;
@@ -51,6 +52,8 @@ public class Renderer {
         batch.end();
     }
 
+    public void endGame(int winOrLoss) { winState = winOrLoss; }
+
     public void renderInfo() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -63,6 +66,11 @@ public class Renderer {
     public void drawPlayerUI() {
         startBatch();
         font.draw(batch, String.format("Mana: %d", (int)engineAdapter.getPlayerMana(networkAdapter.getPlayerId())), 20, 14);
+        if (winState == 1) {
+            font.draw(batch, "YOU WIN!!", 20, 50);
+        } else if (winState == 0) {
+            font.draw(batch, "YOU LOST", 20, 50);
+        }
         endBatch();
     }
 

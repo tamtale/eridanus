@@ -14,15 +14,18 @@ public class GameEngine {
     private ConcurrentLinkedQueue<GameMessage> messageQueue;
     private int communicationTurn = 0;
     private SpriteBatch batch;
+    private IEngineToRendererAdapter engineToRenderer;
+    private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
 
     public Batch getBatch() {
         return batch;
     }
 
-    public GameEngine() {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
         messageQueue = new ConcurrentLinkedQueue<>();
         gameState = new GameState();
         batch = new SpriteBatch();
+        engineToRenderer = engineToRendererAdapter;
     }
 
     public void receiveMessages(List<? extends GameMessage> messages) {
@@ -38,9 +41,9 @@ public class GameEngine {
     public void synchronousUpdateState() {
         gameState.updateMana(1);
         gameState.dealDamage(1);
-        if (!gameState.isPlayerAlive()) {
+        if (!gameState.isPlayerAlive(enginePlayerId)) {
             engineToRenderer.endGame(0); // TODO make an enum probably im tired
-        } else if (gameState.checkIfWon()) {
+        } else if (gameState.checkIfWon(enginePlayerId)) {
             engineToRenderer.endGame(1); // TODO same as above
         }
     }
@@ -80,8 +83,20 @@ public class GameEngine {
         return communicationTurn > 0;
     }
 
-    public void updateGoal(Unit unit, Vector3 goal) {
+    /**
+     *
+     * @return whether the player that this is associated with is alive or not.
+     */
+    public boolean isPlayerAlive() {
+        if (!started()) {
+            return true;
+        }
+        return gameState.isPlayerAlive(enginePlayerId);
+    }
+
+    public void updateGoal(Unit unit, Vector3 goal) { // REVIEWERS @Warren this is not used right now can we remove it?
         gameState.updateGoal(unit, goal);
     }
 
+    public void setEnginePlayerId(int playerId) { this.enginePlayerId = playerId; }
 }

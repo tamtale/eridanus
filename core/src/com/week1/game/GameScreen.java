@@ -39,8 +39,20 @@ public class GameScreen implements Screen {
 			public void deliverUpdate(List<? extends GameMessage> messages) {
 				engine.receiveMessages(messages);
 			}
+
+			@Override
+			public void setPlayerId(int playerId) {
+				engine.setEnginePlayerId(playerId);
+			}
 		});
-		engine = new GameEngine();
+
+		engine = new GameEngine(new IEngineToRendererAdapter() {
+			@Override
+			public void endGame(int winOrLoss) {
+				renderer.endGame(winOrLoss);
+			}
+		});
+
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
 			public void render() {
@@ -71,6 +83,7 @@ public class GameScreen implements Screen {
 				return null;
 			}
 		});
+
 		clickOracle = new ClickOracle(
 				new IClickOracleToRendererAdapter() {
 					@Override
@@ -82,6 +95,11 @@ public class GameScreen implements Screen {
 					@Override
 					public Unit selectUnit(Vector3 position) {
 						return engine.getGameState().findUnit(position);
+					}
+
+					@Override
+					public boolean isPlayerAlive() {
+						return engine.isPlayerAlive();
 					}
 
 				},

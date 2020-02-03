@@ -92,13 +92,10 @@ public class Client {
     
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
+        adapter.setPlayerId(playerId);
     }
     
     public int getPlayerId() {
         return this.playerId;
     }
-
-//    public boolean isInitialized() {
-//        return (playerId != -1) && (numPlayers != -1);
-//    }
 }
