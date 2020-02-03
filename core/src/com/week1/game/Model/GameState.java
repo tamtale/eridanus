@@ -240,7 +240,9 @@ public class GameState {
                 playerStats.get(attackingPlayerId).giveMana(((Tower)deadEntity).getCost() * towerDestructionBonus);
 
             } else {
-                playerBases.removeValue((PlayerBase)deadEntity, false);
+                int deadPlayer = deadEntity.getPlayerId();
+                playerBases.removeIndex(deadPlayer);
+                playerBases.insert(deadPlayer, new DestroyedBase(0, deadEntity.getX(), deadEntity.getY(), deadPlayer));
                 // Reward the player who destroyed the base a lump sum
                 playerStats.get(attackingPlayerId).giveMana((playerBaseBonus));
             }
@@ -346,11 +348,11 @@ public class GameState {
             return false; // Can't win if you're dead lol
         }
 
-        for (int pIndex = 0; pIndex < playerBases.size; pIndex++) {
-            PlayerBase p = playerBases.get(playerId);
-            // Check if there are any other bases still alive.
-            if (p.getPlayerId() != playerId && p.getHp() > 0) {
-                return false; // You have not won yet.
+        // Check if you are the last base alive
+        for (int playerIndex = 0; playerIndex < playerBases.size; playerIndex += 1) {
+            if (playerIndex != playerId && !playerBases.get(playerIndex).isDead()) {
+                // Since there is another placers base that is not dead yet, you have not won.
+                return false;
             }
         }
         return true;

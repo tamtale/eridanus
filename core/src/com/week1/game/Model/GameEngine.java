@@ -3,7 +3,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.week1.game.Networking.Messages.Game.GameMessage;
-import com.badlogic.gdx.math.Vector3;
+
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -92,10 +92,6 @@ public class GameEngine {
             return true;
         }
         return gameState.isPlayerAlive(enginePlayerId);
-    }
-
-    public void updateGoal(Unit unit, Vector3 goal) { // REVIEWERS @Warren this is not used right now can we remove it?
-        gameState.updateGoal(unit, goal);
     }
 
     public void setEnginePlayerId(int playerId) { this.enginePlayerId = playerId; }
