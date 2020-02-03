@@ -201,7 +201,8 @@ public class GameState {
         }
 
         // get rid of all the dead entities and gives rewards
-        for (Pair deadPair : deadEntities) {
+        for (int deadIndex = 0; deadIndex < deadEntities.size; deadIndex++) {
+            Pair deadPair = deadEntities.get(deadIndex);
             int attackingPlayerId = deadPair.getFirst().getPlayerId();
             Damageable deadEntity = deadPair.getSecond();
 
@@ -320,8 +321,8 @@ public class GameState {
             return false; // Can't win if you're dead lol
         }
 
-        for (PlayerBase p : playerBases) {
-
+        for (int pIndex = 0; pIndex < playerBases.size; pIndex++) {
+            PlayerBase p = playerBases.get(playerId);
             // Check if there are any other bases still alive.
             if (p.getPlayerId() != playerId && p.getHp() > 0) {
                 return false; // You have not won yet.
