@@ -18,7 +18,10 @@ import com.badlogic.gdx.utils.Array;
 
 //Next things
 // Color scheme
-// top-down views of all towers
+// Programmatic generation of tower stats for gameplay--
+    //top down view (static of all presets)
+    //generation of tower stats
+    //tower footprint on ground and in all dimension
 // Fill out ui -> need to assets, stage, etc classes
 // tower building
 

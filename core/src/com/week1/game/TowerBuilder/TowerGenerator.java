@@ -25,13 +25,13 @@ public class TowerGenerator {
 
     Texture catTex = new Texture("cat_boi.png");
 
-    Texture gunTex = new Texture("gun_basic.png");
+    Texture gunTex = new Texture("fire_wip2.png");
 
-    Texture splashTex = new Texture("splash_gun.png");
+    Texture splashTex = new Texture("water_wip.png");
 
-    Texture aoeTex = new Texture("aoe_gun.png");
+    Texture aoeTex = new Texture("earth_wip4.png");
 
-    Texture goldTex = new Texture("gold.png");
+    Texture goldTex = new Texture("gold_wip_6.png");
 
     Texture coreTex = new Texture("core_block.png");
 
