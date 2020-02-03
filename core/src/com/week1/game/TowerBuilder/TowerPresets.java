@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class TowerPresets {
 
-    TowerGenerator tg;
+    TowerLogic tg;
 
     private Array<ModelInstance> tower1 = new Array<ModelInstance>();
     private Array<ModelInstance> tower2 = new Array<ModelInstance>();
@@ -163,7 +163,7 @@ public class TowerPresets {
     }
 
     public TowerPresets() {
-        tg = new TowerGenerator();
+        tg = new TowerLogic();
         initPresets();
         initLogo();
 
