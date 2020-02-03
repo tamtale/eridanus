@@ -16,7 +16,7 @@ public class InitMessage extends GameMessage {
 
     @Override
     public boolean process(GameState inputState){
-        inputState.initializeGame(this.numPlayers);
+        inputState.initializeGame(this.numPlayers, this.playerID);
         return true;
     }
 

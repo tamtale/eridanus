@@ -27,9 +27,22 @@ public class GameEngine {
 
     public void receiveMessages(List<? extends GameMessage> messages) {
         communicationTurn += 1;
-        gameState.updateMana(1); // This needs to be synchronized with the communication turn TODO is this the best way to do that?
+         // This needs to be synchronized with the communication turn.
+        // TODO unit movement should be 'reverted' and then stepped here in the long term so state is consistent.
+        synchronousUpdateState();
+
         Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn);
         messageQueue.addAll(messages);
+    }
+
+    public void synchronousUpdateState() {
+        gameState.updateMana(1);
+        gameState.dealDamage(1);
+        if (!gameState.isPlayerAlive()) {
+            engineToRenderer.endGame(0); // TODO make an enum probably im tired
+        } else if (gameState.checkIfWon()) {
+            engineToRenderer.endGame(1); // TODO same as above
+        }
     }
 
     public void processMessages() {
@@ -48,8 +61,6 @@ public class GameEngine {
 
     public void updateState(float delta) {
         gameState.stepUnits(delta);
-        gameState.dealDamage(delta);
-//        gameState.updateMana(delta); // TODO decide where we want mana updated.
     }
 
     public void render(){

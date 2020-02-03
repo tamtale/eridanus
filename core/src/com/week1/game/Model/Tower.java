@@ -12,15 +12,16 @@ public class Tower implements Damageable, Damaging {
     private Texture skin;
     private int playerID;
 
-    private double hp, dmg, range;
+    private double hp, dmg, range, cost;
     private Damage.type attackType;
 
 
-    public Tower(float x, float y, double hp, double dmg, double range, Damage.type attackType, Pixmap towerUnscaled, int playerID) {
+    public Tower(float x, float y, double hp, double dmg, double range, Damage.type attackType, double cost, Pixmap towerUnscaled, int playerID) {
         this.x = x;
         this.y = y;
         this.hp = hp;
         this.dmg = dmg;
+        this.cost = cost;
         this.range = range;
         this.playerID = playerID;
         this.attackType = attackType;
@@ -35,6 +36,10 @@ public class Tower implements Damageable, Damaging {
         return skin;
     }
 
+    public double getCost() {
+        return cost;
+    }
+
     @Override
     public boolean takeDamage(double dmg, Damage.type damageType) {
         this.hp -= dmg;
@@ -47,9 +52,23 @@ public class Tower implements Damageable, Damaging {
     }
 
     @Override
-    public boolean hasUnitInRange(Unit victim) {
-        return Math.sqrt(Math.pow(this.x - victim.x, 2) + Math.pow(this.y - victim.y, 2)) < tempTowerRange;
-//        return true; // TODO
+    public float getX() {
+        return this.x;
+    }
+
+    @Override
+    public float getY() {
+        return this.y;
+    }
+
+    @Override
+    public boolean isDead() {
+        return this.hp <= 0;
+    }
+
+    @Override
+    public boolean hasTargetInRange(Damageable victim) {
+        return Math.sqrt(Math.pow(this.x - victim.getX(), 2) + Math.pow(this.y - victim.getY(), 2)) < range;
     }
 
     @Override

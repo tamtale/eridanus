@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.World.GameWorld;
+import jdk.internal.net.http.common.Pair;
 
 import static com.week1.game.Model.StatsConfig.*;
 import static com.week1.game.Model.StatsConfig.tempTower2Cost;
@@ -26,6 +27,8 @@ public class GameState {
     private Array<SteeringAgent> agents;
     private GameWorld world;
 
+    private int playerId; // Not part of the game state exactly, but used to determine if the game is over for this user
+
     private boolean fullyInitialized = false;
 
     public GameState(){
@@ -39,7 +42,6 @@ public class GameState {
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();
-
     }
 
     /*
@@ -48,7 +50,9 @@ public class GameState {
 
      This will create the bases for all of the players and give them all an amount of currency.
      */
-    public void initializeGame(int numPlayers) {
+    public void initializeGame(int numPlayers, int playerId) {
+        this.playerId = playerId;
+
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
         if (numPlayers == 1) {
@@ -170,48 +174,56 @@ public class GameState {
             }
         }
     }
-    
+
     public void dealDamage(float delta) {
-        Array<Integer> deadUnits  = new Array<>();
-        
-        for (int attackerIdx = 0; attackerIdx < units.size; attackerIdx++) {
-            Unit attacker = units.get(attackerIdx);
-            for (int victimIdx = 0; victimIdx < units.size; victimIdx++) {
-                Unit victim = units.get(victimIdx);
-                
-                if (!victim.equals(attacker) && // check each unit against all OTHER units
-                        attacker.hasUnitInRange(victim) && // victim is within range
+        Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
+
+        Array<Damaging> everythingDamaging = new Array<>(units);
+        everythingDamaging.addAll(towers);
+
+        Array<Damageable> everythingDamageable = new Array<>(units);
+        everythingDamageable.addAll(towers);
+        everythingDamageable.addAll(playerBases);
+
+        // Loop through all entities (units and towers) that can attack
+        for (int attackerIdx = 0; attackerIdx < everythingDamaging.size; attackerIdx++) {
+            Damaging attacker = everythingDamaging.get(attackerIdx);
+
+            // Loop though all entities that can be damaged (units, towers, and bases)
+            for (int victimIdx = 0; victimIdx < everythingDamageable.size; victimIdx++) {
+                Damageable victim = everythingDamageable.get(victimIdx);
+
+                if (attacker.hasTargetInRange(victim) && // victim is within range
                         !victim.isDead() && // the victim is not already dead
-                        attacker.getPlayerId() != victim.getPlayerId()) { // TODO: victim was spawned by another player
+                        attacker.getPlayerId() != victim.getPlayerId()) {
 
                     if (victim.takeDamage(attacker.getDamage() * delta)) {
-                        deadUnits.add(victimIdx);
-                    } 
-                    break; // the attacker can only damage one opponent per attack cycle
-                }
-            }
-        }
-        
-        for (int towerIdx = 0; towerIdx < towers.size; towerIdx++) {
-            Tower tower = towers.get(towerIdx);
-            for (int victimIdx = 0; victimIdx < units.size; victimIdx++) {
-                Unit victim = units.get(victimIdx);
-
-                if (tower.hasUnitInRange(victim) && // victim is within range
-                        !victim.isDead() && // the victim is not already dead
-                        tower.getPlayerId() != victim.getPlayerId()) { // TODO: victim was spawned by another player
-
-                    if (victim.takeDamage(tower.getDamage() * delta)) {
-                        deadUnits.add(victimIdx);
+                        deadEntities.add(new Pair(attacker, victim));
                     }
-                    break; // the attacker can only damage one opponent per attack cycle
+                    // the attacker can only damage one opponent per attack cycle
+                    break;
                 }
             }
         }
-        
-        // get rid of all the dead units
-        for (int deadUnitIdx : deadUnits) {
-            units.removeIndex(deadUnitIdx);
+
+        // get rid of all the dead entities and gives rewards
+        for (Pair<Damaging, Damageable> deadPair : deadEntities) {
+            int attackingPlayerId = deadPair.first.getPlayerId();
+            Damageable deadEntity = deadPair.second;
+
+            if (deadEntity.getClass() == Unit.class) {
+                units.removeValue((Unit)deadEntity, false);
+
+            } else if (deadEntity.getClass() == Tower.class) {
+                towers.removeValue((Tower)deadEntity, false);
+                // Reward the player who destroyed the tower the mana.
+                playerStats.get(attackingPlayerId).giveMana(((Tower)deadEntity).getCost() * towerDestructionBonus);
+
+            } else {
+                playerBases.removeValue((PlayerBase)deadEntity, false);
+                // Reward the player who destroyed the base a lump sum
+                playerStats.get(attackingPlayerId).giveMana((playerBaseBonus));
+            }
         }
     }
 
@@ -294,5 +306,28 @@ public class GameState {
 
     public boolean isInitialized() {
         return fullyInitialized;
+    }
+
+    public boolean isPlayerAlive() {
+        if (playerBases.get(this.playerId).getHp() <= 0) {
+           // Yikes, you died!
+            return false;
+        }
+        return true;
+    }
+
+    public boolean checkIfWon() {
+        if (!isPlayerAlive()){
+            return false; // Can't win if you're dead lol
+        }
+
+        for (PlayerBase p : playerBases) {
+
+            // Check if there are any other bases still alive.
+            if (p.getPlayerId() != playerId && p.getHp() > 0) {
+                return false; // You have not won yet.
+            }
+        }
+        return true;
     }
 }

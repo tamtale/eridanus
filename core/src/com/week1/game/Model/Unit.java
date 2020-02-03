@@ -73,7 +73,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     private Texture unselectedSkin;
 
     public Unit(float x, float y, Texture t, double hp, int playerID) {
-        super(x, y, 1, 1);
+        super(x, y, 1, 1); // TODO make the x and y the center points of it for getX() and getY() which is used in range calculations
         this.unselectedSkin = colorMap.get(playerID);
         this.playerID = playerID;
         this.hp = hp;
@@ -112,8 +112,8 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     }
 
     @Override
-    public boolean hasUnitInRange(Unit victim) {
-        return Math.sqrt(Math.pow(this.x - victim.x, 2) + Math.pow(this.y - victim.y, 2)) < tempMinionRange;
+    public boolean hasTargetInRange(Damageable victim) {
+        return Math.sqrt(Math.pow(this.x - victim.getX(), 2) + Math.pow(this.y - victim.getY(), 2)) < tempMinionRange;
 //        return true; // TODO
     }
     

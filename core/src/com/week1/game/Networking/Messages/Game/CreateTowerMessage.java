@@ -30,12 +30,12 @@ public class CreateTowerMessage extends GameMessage {
         // TODO do lookup of the cost based on towerType, do not use hardcoded number [tempTower1Cost]
         double towerCost, towerHealth, towerDmg, towerRange;
         towerCost = inputState.getTowerCost(towerType);
-        towerHealth = inputState.getTowerCost(towerType);
+        towerHealth = inputState.getTowerHp(towerType);
         towerDmg = inputState.getTowerDmg(towerType);
         towerRange = inputState.getTowerRange(towerType);
         Pixmap towerPixmap = inputState.getTowerPixmap(towerType);
 
-        if (tempTower1Cost > inputState.getPlayerStats(playerID).getMana()) {
+        if (towerCost > inputState.getPlayerStats(playerID).getMana()) {
             // Do not have enough mana!
             Gdx.app.log("pjb3 - CreateTowerMessage", "Not enough mana to create tower.");
             return false; // indicate it was NOT placed
@@ -45,7 +45,7 @@ public class CreateTowerMessage extends GameMessage {
         inputState.getPlayerStats(playerID).useMana(tempTower1Cost);
 
         Gdx.app.log("lji1 - CreateTowerMessage", "Creating tower!");
-        Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerPixmap, playerID);
+        Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerCost, towerPixmap, playerID);
 
         inputState.addTower(tower);
         return true;

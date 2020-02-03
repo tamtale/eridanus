@@ -42,7 +42,31 @@ public class PlayerBase implements Damageable {
         }
     }
 
+    @Override
+    public float getX() {
+        return this.x;
+    }
+
+    @Override
+    public float getY() {
+        return this.y;
+    }
+
+    @Override
+    public boolean isDead() {
+        return this.hp <= 0;
+    }
+
+    @Override
+    public int getPlayerId() {
+        return this.playerID;
+    }
+
     public int getSidelength(){
         return SIDELENGTH;
+    }
+
+    public double getHp() {
+        return hp;
     }
 }

@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Pixmap;
 public class StatsConfig {
     static final double startingMana = 100;
     static final double manaRegenRate = 1;
+    static final double towerDestructionBonus = 0.5; // This will be multiplies by the cost of the tower to determine bonus mana.
+    static final double playerBaseBonus = 200;
 
     static final double playerBaseInitialHp = 100;
 
