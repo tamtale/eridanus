@@ -19,13 +19,27 @@ public interface Block {
     int getIndex();
     float getCost();
     Vector3 getCoords();
-
+    void setCoords(Vector3 coords);
     void setIndex(int nodeCount);
 
     class TerrainBlock implements Block {
         private Vector3 coords;
         private TextureRegion textureRegion;
         private int index;
+        public static TerrainBlock AIR = new TerrainBlock(Color.GOLD) {
+            @Override
+            public float getCost(){
+                return 0;
+            }
+
+        };
+        public static TerrainBlock STONE = new TerrainBlock(Color.BLACK) {
+            @Override
+            public float getCost(){
+                return 1;
+            }
+        };
+
         private Array<Connection<Block>> edges;
         TerrainBlock(Color color) {
             Pixmap unitPixmap = new Pixmap(PIXELS_PER_UNIT, PIXELS_PER_UNIT, Pixmap.Format.RGB888);
@@ -34,38 +48,10 @@ public interface Block {
             unitPixmap.setColor(Color.GRAY);
             unitPixmap.fillRectangle(3, 3, PIXELS_PER_UNIT - 6, PIXELS_PER_UNIT - 6);
             this.textureRegion = new TextureRegion(new Texture(unitPixmap));
+
         }
 
-        public TerrainBlock(Vector3 coords) {
-            this.coords = coords;
-        }
 
-        static class AirBlock extends TerrainBlock{
-
-            AirBlock(Vector3 vector3) {
-                super(Color.GOLD);
-            }
-
-            @Override
-            public float getCost(){
-                return 0;
-            }
-        }
-        static class StoneBlock extends TerrainBlock{
-
-            StoneBlock(){
-                super(Color.BLACK);
-            }
-
-            public StoneBlock(Vector3 vector3) {
-                super(vector3);
-            }
-
-            @Override
-            public float getCost(){
-                return 1;
-            }
-        }
 
         @Override
         public TextureRegion getTextureRegion() {
@@ -79,6 +65,11 @@ public interface Block {
         @Override
         public Vector3 getCoords() {
             return coords;
+        }
+
+        @Override
+        public void setCoords(Vector3 coords) {
+            this.coords = coords;
         }
 
         @Override
@@ -136,6 +127,11 @@ public interface Block {
         @Override
         public Vector3 getCoords() {
             return coords;
+        }
+
+        @Override
+        public void setCoords(Vector3 coords) {
+            this.coords = coords;
         }
 
         @Override

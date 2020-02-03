@@ -23,8 +23,11 @@ public class GameEngine {
 
     public GameEngine(InfoUtil util) {
         messageQueue = new ConcurrentLinkedQueue<>();
+        Gdx.app.log("wab2- GameEngine", "messageQueue built");
         gameState = new GameState();
+        Gdx.app.log("wab2- GameEngine", "gameState built");
         batch = new SpriteBatch();
+
         this.util = util;
     }
 

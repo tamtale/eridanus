@@ -45,7 +45,9 @@ public class GameState {
         System.out.println("GAMESTATE");
         towers = new Array<>();
         units = new Array<>();
+        Gdx.app.log("Game State - wab2", "units set");
         world = new GameWorld();
+        Gdx.app.log("Game State - wab2", "world built");
 //        graph = world.buildGraph();
 //        pathFinder = new IndexedAStarPathFinder<>(graph);j
 //        System.out.println("PATHFINDER");
