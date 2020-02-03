@@ -17,9 +17,19 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     private final int playerID;
     private float hp;
     private float maxHp;
+
+    public boolean isClicked() {
+        return clicked;
+    }
+
+    public void setClicked(boolean clicked) {
+        this.clicked = clicked;
+    }
+
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
+
 
     private static Texture makeTexture(Color color) {
         Pixmap map = new Pixmap(64, 64, Pixmap.Format.RGB888);
