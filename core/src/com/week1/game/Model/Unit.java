@@ -15,9 +15,6 @@ import static com.week1.game.Model.StatsConfig.tempMinionRange;
 
 public class Unit extends Rectangle implements Damageable, Damaging {
     private final int playerID;
-    private float hp;
-    private float maxHp;
-
     public boolean isClicked() {
         return clicked;
     }
@@ -26,6 +23,8 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         this.clicked = clicked;
     }
 
+    private double hp;
+    private double maxHp;
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
@@ -51,11 +50,11 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         batch.draw(getSkin(), this.x, this.y, 1, 1);
         // TODO draw this in a UI rendering procedure
         batch.draw(healthBarBackground, this.x, (float) (this.y + 1.5), 1, .5f);
-        batch.draw(getHealthBar(), this.x, (float) (this.y + 1.5), hp / maxHp, .5f);
+        batch.draw(getHealthBar(), this.x, (float) (this.y + 1.5), (float) (hp / maxHp), .5f);
     }
 
     private Texture getHealthBar() {
-        float perc = hp / maxHp;
+        double perc = hp / maxHp;
         if (perc > .5) return healthBarHigh;
         else if (perc > .2) return healthBarMid;
         else return healthBarLow;
@@ -73,7 +72,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
     private Texture unselectedSkin;
 
-    public Unit(float x, float y, Texture t, float hp, int playerID) {
+    public Unit(float x, float y, Texture t, double hp, int playerID) {
         super(x, y, 1, 1);
         this.unselectedSkin = colorMap.get(playerID);
         this.playerID = playerID;
@@ -97,7 +96,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     }
     
     @Override
-    public boolean takeDamage(float dmg, int damageType) {
+    public boolean takeDamage(double dmg, Damage.type damageType) {
         this.hp -= dmg;
         if (this.hp <= 0) {
             return true;
@@ -119,7 +118,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     }
     
     @Override
-    public float getDamage() {
+    public double getDamage() {
         return tempDamage;
     }
 

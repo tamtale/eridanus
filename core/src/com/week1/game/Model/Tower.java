@@ -9,26 +9,22 @@ import static com.week1.game.Model.StatsConfig.*;
 public class Tower implements Damageable, Damaging {
     private static final int SIDELENGTH = 3;
     public float x, y;
-    private float hp;
     private Texture skin;
     private int playerID;
-    private TowerType type;
 
-    public Tower(float x, float y, TowerType towerType, float hp, int playerID) {
+    private double hp, dmg, range;
+    private Damage.type attackType;
+
+
+    public Tower(float x, float y, double hp, double dmg, double range, Damage.type attackType, Pixmap towerUnscaled, int playerID) {
         this.x = x;
         this.y = y;
-        this.type = towerType;
         this.hp = hp;
+        this.dmg = dmg;
+        this.range = range;
         this.playerID = playerID;
+        this.attackType = attackType;
 
-        Pixmap towerUnscaled = null; // TODO: load different textures for different tower types
-        if (towerType == TowerType.BASIC) {
-            towerUnscaled = new Pixmap(Gdx.files.internal("towertransparent.png"));
-        } else if (towerType == TowerType.SNIPER) {
-            towerUnscaled = new Pixmap(Gdx.files.internal("tower3.png"));
-        } else if (towerType == TowerType.TANK) {
-            towerUnscaled = new Pixmap(Gdx.files.internal("towertransparent.png")); // TODO: tank skin
-        }
         Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, towerUnscaled.getFormat());
         towerScaled.drawPixmap(towerUnscaled, 0, 0, towerUnscaled.getWidth(), towerUnscaled.getHeight(),
                 0, 0, SIDELENGTH, SIDELENGTH);
@@ -40,7 +36,7 @@ public class Tower implements Damageable, Damaging {
     }
 
     @Override
-    public boolean takeDamage(float dmg, int damageType) {
+    public boolean takeDamage(double dmg, Damage.type damageType) {
         this.hp -= dmg;
         if (this.hp <= 0) {
             return true;
@@ -57,7 +53,7 @@ public class Tower implements Damageable, Damaging {
     }
 
     @Override
-    public float getDamage() {
+    public double getDamage() {
         return tempTowerDamage;
     }
 

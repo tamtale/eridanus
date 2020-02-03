@@ -21,7 +21,7 @@ public class TowerGenerator {
 
     Texture stoneTex = new Texture("space_obsidian.png");
 
-    Texture woodTex = new Texture("wood2.png");
+    Texture woodTex = new Texture("moonstone.png");
 
     Texture catTex = new Texture("cat_boi.png");
 
