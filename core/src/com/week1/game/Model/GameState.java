@@ -236,6 +236,7 @@ public class GameState {
             } else {
                 int deadPlayer = deadEntity.getPlayerId();
                 playerBases.removeIndex(deadPlayer);
+
                 playerBases.insert(deadPlayer, new DestroyedBase(0, deadEntity.getX(), deadEntity.getY(), deadPlayer));
                 // Reward the player who destroyed the base a lump sum
                 playerStats.get(attackingPlayerId).giveMana((playerBaseBonus));
