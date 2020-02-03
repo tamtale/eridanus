@@ -143,7 +143,8 @@ public class GameState {
         }
 
         for (Tower tower : towers) {
-            batch.draw(tower.getSkin(), tower.x, tower.y);
+//            batch.draw(tower.getSkin(), tower.x, tower.y);
+            tower.draw(batch);
         }
 
         for (PlayerBase playerBase : playerBases) {
@@ -183,15 +184,9 @@ public class GameState {
 //        Gdx.app.error("getMinionById - lji1", "Unable to find minion by given ID, returning null.");
         return null;
     }
-    public void moveMinion(float x, float y, Unit u) {
-//        for (Unit unit: units) {
-//            System.out.println(unit.agent);
-//            if (u.ID == minionID) {
-//                System.out.println(unit.ID);
-//                System.out.println(unit.agent);
-                updateGoal(u, new Vector3(x, y, 0));
-//            }
-//        }
+    public void moveMinion(float dx, float dy, Unit u) {
+        System.out.println("u.x: " + u.x + " u.y: " + u.y + " dx: " + dx + " dy: " + dy);
+        updateGoal(u, new Vector3(u.x + dx, u.y + dy, 0));
     }
 
     public void dealDamage(float delta) {

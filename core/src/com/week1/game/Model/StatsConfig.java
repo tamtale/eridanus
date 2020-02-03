@@ -17,7 +17,7 @@ public class StatsConfig {
   
     // Basic
     static public final double tempTower1Cost = 75;
-    static public final double tempTower1Health = 50;
+    static public final double tempTower1Health = 100;
     static public final double tempTower1Damage = 1.5;
     static public final double tempTower1Range = 6;
     static public final Pixmap basicTexture = new Pixmap(Gdx.files.internal("towertransparent.png"));
@@ -38,7 +38,7 @@ public class StatsConfig {
     static public final Pixmap tankTexture = new Pixmap(Gdx.files.internal("tower3.png"));
 
     static public final double tempMinion1Cost = 10;
-    static public final double tempMinion1Health = 10;
+    static public final double tempMinion1Health = 50;
     
     static public final double tempMinionRange = 5;
     static public final double tempTowerRange = 20;
