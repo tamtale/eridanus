@@ -143,7 +143,8 @@ public class GameState {
         }
 
         for (Tower tower : towers) {
-            batch.draw(tower.getSkin(), tower.x, tower.y);
+//            batch.draw(tower.getSkin(), tower.x, tower.y);
+            tower.draw(batch);
         }
 
         for (PlayerBase playerBase : playerBases) {

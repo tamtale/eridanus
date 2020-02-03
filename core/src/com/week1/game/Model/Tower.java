@@ -2,6 +2,10 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+
+import static com.week1.game.Model.HealthBar.getHealthBar;
+import static com.week1.game.Model.HealthBar.healthBarBackground;
 
 public class Tower implements Damageable, Damaging {
     private static final int SIDELENGTH = 3;
@@ -9,7 +13,8 @@ public class Tower implements Damageable, Damaging {
     private Texture skin;
     private int playerID;
 
-    private double hp, dmg, range, cost;
+    private double hp, maxHp, dmg, range, cost;
+    
     private Damage.type attackType;
 
 
@@ -17,6 +22,7 @@ public class Tower implements Damageable, Damaging {
         this.x = x;
         this.y = y;
         this.hp = hp;
+        this.maxHp = hp;
         this.dmg = dmg;
         this.cost = cost;
         this.range = range;
@@ -27,6 +33,13 @@ public class Tower implements Damageable, Damaging {
         towerScaled.drawPixmap(towerUnscaled, 0, 0, towerUnscaled.getWidth(), towerUnscaled.getHeight(),
                 0, 0, SIDELENGTH, SIDELENGTH);
         this.skin = new Texture(towerScaled);
+    }
+    
+    public void draw(Batch batch) {
+        batch.draw(getSkin(), this.x, this.y, SIDELENGTH, SIDELENGTH);
+        // TODO draw this in a UI rendering procedure
+        batch.draw(healthBarBackground, this.x, (float) (this.y + 4), 3, .5f);
+        batch.draw(getHealthBar(hp, maxHp), this.x, (float) (this.y + 4), (float) (hp / maxHp) * 3, .5f);
     }
 
     public Texture getSkin() {
