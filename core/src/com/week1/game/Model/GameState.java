@@ -47,7 +47,7 @@ public class GameState {
         units = new Array<>();
         world = new GameWorld();
 //        graph = world.buildGraph();
-//        pathFinder = new IndexedAStarPathFinder<>(graph);
+//        pathFinder = new IndexedAStarPathFinder<>(graph);j
 //        System.out.println("PATHFINDER");
 //        Heuristic<Block> heuristic = new Heuristic<Block>() {
 //            @Override
