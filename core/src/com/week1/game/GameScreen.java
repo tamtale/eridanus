@@ -3,6 +3,7 @@ package com.week1.game;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
 import com.week1.game.Networking.Client;
@@ -41,8 +42,20 @@ public class GameScreen implements Screen {
 			public void deliverUpdate(List<? extends GameMessage> messages) {
 				engine.receiveMessages(messages);
 			}
+
+			@Override
+			public void setPlayerId(int playerId) {
+				engine.setEnginePlayerId(playerId);
+			}
 		});
-		engine = new GameEngine(util);
+
+		engine = new GameEngine(new IEngineToRendererAdapter() {
+			@Override
+			public void endGame(int winOrLoss) {
+				renderer.endGame(winOrLoss);
+			}
+		}, util);
+
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
 			public void render() {
@@ -51,7 +64,7 @@ public class GameScreen implements Screen {
 
 			@Override
 			public TiledMap getMap() {
-			    return engine.getGameState().getWorld().toTiledMap();
+				return engine.getGameState().getWorld().toTiledMap();
 			}
 
 			public double getPlayerMana(int playerId) {
@@ -73,7 +86,12 @@ public class GameScreen implements Screen {
 				return null;
 			}
 		},
-				util);
+		new IRendererToClickOracleAdapter() {
+			@Override
+			public void render() {
+				clickOracle.render();
+			}
+		}, util);
 		clickOracle = new ClickOracle(
 				new IClickOracleToRendererAdapter() {
 					@Override
@@ -85,6 +103,16 @@ public class GameScreen implements Screen {
 					@Override
 					public Unit selectUnit(Vector3 position) {
 						return engine.getGameState().findUnit(position);
+					}
+
+					@Override
+					public boolean isPlayerAlive() {
+						return engine.isPlayerAlive();
+					}
+					
+					@Override
+					public Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
+						return engine.getGameState().findUnitsInBox(cornerA, cornerB);
 					}
 
 				},
@@ -102,6 +130,9 @@ public class GameScreen implements Screen {
 		ai = new AI();
 		Gdx.input.setInputProcessor(clickOracle);
 		renderer.create();
+		
+		// Set the logging level
+		Gdx.app.setLogLevel(Application.LOG_INFO);
 	}
 
 

@@ -8,7 +8,6 @@ import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Model.TowerType;
 import com.week1.game.InfoUtil;
 
-import static com.week1.game.Model.StatsConfig.*;
 
 
 public class CreateTowerMessage extends GameMessage {
@@ -16,6 +15,8 @@ public class CreateTowerMessage extends GameMessage {
 
     private float x, y;
     private TowerType towerType;
+    
+    private static int SNAPSCALE = 5;
 
     public CreateTowerMessage(float x, float y, TowerType towerType, int playerID){
         super(playerID, MESSAGE_TYPE);
@@ -30,22 +31,29 @@ public class CreateTowerMessage extends GameMessage {
         // TODO do lookup of the cost based on towerType, do not use hardcoded number [tempTower1Cost]
         double towerCost, towerHealth, towerDmg, towerRange;
         towerCost = inputState.getTowerCost(towerType);
-        towerHealth = inputState.getTowerCost(towerType);
+        towerHealth = inputState.getTowerHp(towerType);
         towerDmg = inputState.getTowerDmg(towerType);
         towerRange = inputState.getTowerRange(towerType);
         Pixmap towerPixmap = inputState.getTowerPixmap(towerType);
 
-        if (tempTower1Cost > inputState.getPlayerStats(playerID).getMana()) {
+        if (towerCost > inputState.getPlayerStats(playerID).getMana()) {
             // Do not have enough mana!
-            util.log("pjb3 - CreateTowerMessage", "Not enough mana to create tower.");
+            util.log("pjb3 - CreateTowerMessage", "Not enough mana to create tower. Need " + towerCost);
             return false; // indicate it was NOT placed
         }
 
-        util.log("pjb3 - CreateTowerMessage", "Used " + tempTower1Cost + " mana to create tower.");
-        inputState.getPlayerStats(playerID).useMana(tempTower1Cost);
+        // Test to see if it is in the proximity of a tower or a home base
+        if (!inputState.findNearbyStructure(x, y, playerID)) {
+            util.log("pjb3 - CreateTowerMessage", "Not close enough to an existing tower or home base");
+            return false;
+        }
+
+        util.log("pjb3 - CreateTowerMessage", "Used " + towerCost + " mana to create tower.");
+        inputState.getPlayerStats(playerID).useMana(towerCost);
+
 
         util.log("lji1 - CreateTowerMessage", "Creating tower!");
-        Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerPixmap, playerID);
+        Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerCost, towerPixmap, playerID);
 
         inputState.addTower(tower);
         return true;

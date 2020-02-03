@@ -11,5 +11,10 @@ public interface Damageable {
      * This function must be implemented. It returns false if the entity was not destroyed
      * and returns true if the entity was destroyed
      */
-    boolean takeDamage(double dmg, Damage.type damageType); // TODO change this
+    boolean takeDamage(double dmg, Damage.type damageType);
+
+    float getX();
+    float getY();
+    boolean isDead();
+    int getPlayerId();
 }

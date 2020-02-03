@@ -1,7 +1,5 @@
 package com.week1.game.Model;
 
-import com.week1.game.Networking.Player;
-
 import static com.week1.game.Model.StatsConfig.*;
 
 public class PlayerStat {
@@ -33,7 +31,7 @@ public class PlayerStat {
         }
     }
 
-    public void regenMana(float delta) {
-        mana += regen_rate * delta;
-    }
+    public void giveMana(double amount) { this.mana += amount; }
+
+    public void regenMana(float delta) { mana += regen_rate * delta; }
 }

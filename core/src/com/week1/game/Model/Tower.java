@@ -1,10 +1,11 @@
 package com.week1.game.Model;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 
-import static com.week1.game.Model.StatsConfig.*;
+import static com.week1.game.Model.HealthBar.getHealthBar;
+import static com.week1.game.Model.HealthBar.healthBarBackground;
 
 public class Tower implements Damageable, Damaging {
     private static final int SIDELENGTH = 3;
@@ -12,15 +13,18 @@ public class Tower implements Damageable, Damaging {
     private Texture skin;
     private int playerID;
 
-    private double hp, dmg, range;
+    private double hp, maxHp, dmg, range, cost;
+    
     private Damage.type attackType;
 
 
-    public Tower(float x, float y, double hp, double dmg, double range, Damage.type attackType, Pixmap towerUnscaled, int playerID) {
+    public Tower(float x, float y, double hp, double dmg, double range, Damage.type attackType, double cost, Pixmap towerUnscaled, int playerID) {
         this.x = x;
         this.y = y;
         this.hp = hp;
+        this.maxHp = hp;
         this.dmg = dmg;
+        this.cost = cost;
         this.range = range;
         this.playerID = playerID;
         this.attackType = attackType;
@@ -30,9 +34,20 @@ public class Tower implements Damageable, Damaging {
                 0, 0, SIDELENGTH, SIDELENGTH);
         this.skin = new Texture(towerScaled);
     }
+    
+    public void draw(Batch batch) {
+        batch.draw(getSkin(), this.x, this.y, SIDELENGTH, SIDELENGTH);
+        // TODO draw this in a UI rendering procedure
+        batch.draw(healthBarBackground, this.x, (float) (this.y + 4), 3, .5f);
+        batch.draw(getHealthBar(hp, maxHp), this.x, (float) (this.y + 4), (float) (hp / maxHp) * 3, .5f);
+    }
 
     public Texture getSkin() {
         return skin;
+    }
+
+    public double getCost() {
+        return cost;
     }
 
     @Override
@@ -47,14 +62,28 @@ public class Tower implements Damageable, Damaging {
     }
 
     @Override
-    public boolean hasUnitInRange(Unit victim) {
-        return Math.sqrt(Math.pow(this.x - victim.x, 2) + Math.pow(this.y - victim.y, 2)) < tempTowerRange;
-//        return true; // TODO
+    public float getX() {
+        return this.x;
+    }
+
+    @Override
+    public float getY() {
+        return this.y;
+    }
+
+    @Override
+    public boolean isDead() {
+        return this.hp <= 0;
+    }
+
+    @Override
+    public boolean hasTargetInRange(Damageable victim) {
+        return Math.sqrt(Math.pow(this.x - victim.getX(), 2) + Math.pow(this.y - victim.getY(), 2)) < range;
     }
 
     @Override
     public double getDamage() {
-        return tempTowerDamage;
+        return this.dmg;
     }
 
     @Override

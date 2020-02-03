@@ -68,7 +68,7 @@ public class Client {
                     udpSocket.receive(packet);
                     String messages = new String(packet.getData()).trim();
                     
-                    Gdx.app.log(TAG, "About to try parsing message: " + messages);
+                    Gdx.app.debug(TAG, "About to try parsing message: " + messages);
                     // try parsing as a control message first
                     ControlMessage controlMsg = MessageFormatter.parseControlMessage(messages);
                     if (controlMsg != null) {
@@ -77,7 +77,7 @@ public class Client {
                         continue; // don't need to try parsing as game messages if already successfully parsed as control message
                     }
                     
-                    Gdx.app.log(TAG, "Received update: " + messages);
+                    Gdx.app.debug(TAG, "Received update: " + messages);
                     List<GameMessage> msgList = MessageFormatter.parseMessage(messages);
                     adapter.deliverUpdate(msgList); 
 
@@ -92,13 +92,10 @@ public class Client {
     
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
+        adapter.setPlayerId(playerId);
     }
     
     public int getPlayerId() {
         return this.playerId;
     }
-
-//    public boolean isInitialized() {
-//        return (playerId != -1) && (numPlayers != -1);
-//    }
 }

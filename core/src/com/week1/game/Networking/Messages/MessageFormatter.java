@@ -54,7 +54,7 @@ public class MessageFormatter {
             }
         }
         
-        Gdx.app.log(TAG, "Failed to parse as control message.");
+        Gdx.app.debug(TAG, "Failed to parse as control message.");
         return null;
     }
 
