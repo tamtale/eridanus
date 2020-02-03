@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Unit;
 import com.week1.game.Networking.Messages.MessageType;
+import com.week1.game.InfoUtil;
 
 public class MoveMinionMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.MOVE;
@@ -22,7 +23,7 @@ public class MoveMinionMessage extends GameMessage {
 
     }
     @Override
-    public boolean process(GameState inputState){
+    public boolean process(GameState inputState, InfoUtil util){
         float centerX = 0;//x - inputState.getMinionById(minionIDs.get(0)).x;
         float centerY = 0;//y - inputState.getMinionById(minionIDs.get(0)).y;
         int goodMinions = 0;
@@ -47,7 +48,6 @@ public class MoveMinionMessage extends GameMessage {
                 }
             }
         }
-        
         return true;
     }
     

@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 
+import com.badlogic.gdx.math.Vector3;
+import com.week1.game.InfoUtil;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -16,25 +18,28 @@ public class GameEngine {
     private SpriteBatch batch;
     private IEngineToRendererAdapter engineToRenderer;
     private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
+    private InfoUtil util;
 
     public Batch getBatch() {
         return batch;
     }
 
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, InfoUtil util) {
         messageQueue = new ConcurrentLinkedQueue<>();
         gameState = new GameState();
         batch = new SpriteBatch();
         engineToRenderer = engineToRendererAdapter;
+        this.util = util;
     }
 
     public void receiveMessages(List<? extends GameMessage> messages) {
         communicationTurn += 1;
-         // This needs to be synchronized with the communication turn.
+
         // TODO unit movement should be 'reverted' and then stepped here in the long term so state is consistent.
         synchronousUpdateState();
 
         Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn);
+
         messageQueue.addAll(messages);
     }
 
@@ -50,14 +55,14 @@ public class GameEngine {
 
     public void processMessages() {
         if (messageQueue.isEmpty()) {
-            Gdx.app.log("ttl4 - message processing", "queue empty!");
+            // Gdx.app.log("ttl4 - message processing", "queue empty!");
             return;
         } else {
             Gdx.app.log("GameEngine: processMessages()", "queue nonempty!");
         }
         for (GameMessage message = messageQueue.poll(); message != null; message = messageQueue.poll()) {
             Gdx.app.log("GameEngine: processMessages()", "processing message");
-            message.process(gameState);
+            message.process(gameState, util);
             Gdx.app.log("GameEngine: processMessages()", "done processing message");
         }
     }

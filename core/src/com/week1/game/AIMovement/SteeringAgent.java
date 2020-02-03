@@ -39,7 +39,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     float orientation = 0;
     Vector3 linearVelocity = new Vector3(0, 0, 0);
     float angularVelocity = 0;
-    float maxSpeed = 2;
+    float maxSpeed = .5f;
     boolean independentFacing = false;
     SteeringBehavior<Vector3> steeringBehavior;
     private float maxAngularAcceleration;

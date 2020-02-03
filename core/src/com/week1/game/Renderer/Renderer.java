@@ -7,10 +7,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
+
 import com.week1.game.Model.IRendererToClickOracleAdapter;
+import com.week1.game.InfoUtil;
+
 
 import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
-import static com.week1.game.Model.StatsConfig.tempMinion1Cost;
 
 public class Renderer {
     private Batch batch;
@@ -22,12 +24,15 @@ public class Renderer {
     private IRendererToNetworkAdapter networkAdapter;
     private IRendererToClickOracleAdapter clickOracleAdapter;
     private BitmapFont font = new BitmapFont();
-    private int winState = -1;
 
-    public Renderer(IRendererToEngineAdapter engineAdapter, IRendererToNetworkAdapter networkAdapter, IRendererToClickOracleAdapter clickOracleAdapter) {
+    private int winState = -1;
+    private InfoUtil util;
+
+    public Renderer(IRendererToEngineAdapter engineAdapter, IRendererToNetworkAdapter networkAdapter, IRendererToClickOracleAdapter clickOracleAdapter, InfoUtil util) {
         this.engineAdapter = engineAdapter;
         this.networkAdapter = networkAdapter;
         this.clickOracleAdapter = clickOracleAdapter;
+        this.util = util;
     }
 
     public void create() {
@@ -68,6 +73,8 @@ public class Renderer {
 
     public void drawPlayerUI() {
         startBatch();
+        font.getData().setScale(1f);
+        font.setColor(Color.BLUE);
         font.draw(batch, String.format("Mana: %d", (int)engineAdapter.getPlayerMana(networkAdapter.getPlayerId())), 20, 14);
         if (winState == 1) {
             font.draw(batch, "YOU WIN!!", 20, 50);
@@ -86,5 +93,6 @@ public class Renderer {
         engineAdapter.render();
         clickOracleAdapter.render();
         drawPlayerUI();
+        util.drawMessages(batch, font);
     }
 }

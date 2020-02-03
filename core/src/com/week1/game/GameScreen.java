@@ -29,12 +29,14 @@ public class GameScreen implements Screen {
 	private Renderer renderer;
 	private ClickOracle clickOracle;
 	private AI ai;
+	private InfoUtil util;
 
 	
 	public GameScreen(String[] args) {
 		this.args = args;
 
 
+		util = new InfoUtil(true);
 		networkClient = NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
 			@Override
 			public void deliverUpdate(List<? extends GameMessage> messages) {
@@ -52,7 +54,7 @@ public class GameScreen implements Screen {
 			public void endGame(int winOrLoss) {
 				renderer.endGame(winOrLoss);
 			}
-		});
+		}, util);
 
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
@@ -84,13 +86,12 @@ public class GameScreen implements Screen {
 				return null;
 			}
 		},
-				new IRendererToClickOracleAdapter() {
-					@Override
-					public void render() {
-						clickOracle.render();
-					}
-				});
-		
+		new IRendererToClickOracleAdapter() {
+			@Override
+			public void render() {
+				clickOracle.render();
+			}
+		}, util);
 		clickOracle = new ClickOracle(
 				new IClickOracleToRendererAdapter() {
 					@Override
