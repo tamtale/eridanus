@@ -3,6 +3,7 @@ package com.week1.game;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
 import com.week1.game.Networking.Client;
@@ -43,6 +44,12 @@ public class GameScreen implements Screen {
 			@Override
 			public void setPlayerId(int playerId) {
 				engine.setEnginePlayerId(playerId);
+//=======
+//			public void batchDrawOperations(Runnable drawRunnable) {
+//				renderer.startBatch();
+//				drawRunnable.run();
+//				renderer.endBatch();
+//>>>>>>> moreHpBar
 			}
 		});
 
@@ -61,7 +68,7 @@ public class GameScreen implements Screen {
 
 			@Override
 			public TiledMap getMap() {
-			    return engine.getGameState().getWorld().toTiledMap();
+				return engine.getGameState().getWorld().toTiledMap();
 			}
 
 			public double getPlayerMana(int playerId) {
@@ -82,8 +89,14 @@ public class GameScreen implements Screen {
 			public String getClientAddr() {
 				return null;
 			}
-		});
-
+		},
+				new IRendererToClickOracleAdapter() {
+					@Override
+					public void render() {
+						clickOracle.render();
+					}
+				});
+		
 		clickOracle = new ClickOracle(
 				new IClickOracleToRendererAdapter() {
 					@Override
@@ -101,6 +114,11 @@ public class GameScreen implements Screen {
 					public boolean isPlayerAlive() {
 						return engine.isPlayerAlive();
 					}
+					
+					@Override
+					public Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
+						return engine.getGameState().findUnitsInBox(cornerA, cornerB);
+					}
 
 				},
 				new IClickOracleToNetworkAdapter() {
@@ -117,6 +135,9 @@ public class GameScreen implements Screen {
 		ai = new AI();
 		Gdx.input.setInputProcessor(clickOracle);
 		renderer.create();
+		
+		// Set the logging level
+		Gdx.app.setLogLevel(Application.LOG_INFO);
 	}
 
 

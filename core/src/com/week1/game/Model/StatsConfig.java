@@ -50,5 +50,4 @@ public class StatsConfig {
         BASIC_DMG,
         SPLASH_DMG,
     }
-
 }

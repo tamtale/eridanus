@@ -16,6 +16,8 @@ public class CreateTowerMessage extends GameMessage {
 
     private float x, y;
     private TowerType towerType;
+    
+    private static int SNAPSCALE = 5;
 
     public CreateTowerMessage(float x, float y, TowerType towerType, int playerID){
         super(playerID, MESSAGE_TYPE);
@@ -46,6 +48,11 @@ public class CreateTowerMessage extends GameMessage {
 
         Gdx.app.log("lji1 - CreateTowerMessage", "Creating tower!");
         Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerCost, towerPixmap, playerID);
+        
+        // Shouldn't need to snap manually, with Tam's new unit based blocks
+//        int snappedX = ((int) x) - (((int) x) % SNAPSCALE) - SNAPSCALE;
+//        int snappedY = ((int) y) - (((int) y) % SNAPSCALE) - SNAPSCALE; 
+//        Tower tower = new Tower(snappedX, snappedY, towerType, tempTowerHealth, playerID);
 
         inputState.addTower(tower);
         return true;

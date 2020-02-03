@@ -77,7 +77,13 @@ public class NetworkUtils {
                 String localIpAddr = InetAddress.getLocalHost().getHostAddress();
 
                 // create the host instance
-                Host h = new Host(Integer.parseInt(args[1]));
+                int port;
+                try {
+                    port = Integer.parseInt(args[1]);
+                } catch (Exception e) {
+                    throw new IndexOutOfBoundsException("Expected arguments in format: host <portnumber> <start (optional)>");
+                }
+                Host h = new Host(port);
                 // start listening for messages from clients
                 h.listenForClientMessages();
 
@@ -95,13 +101,18 @@ public class NetworkUtils {
                 Gdx.app.log(TAG, "Client option chosen.");
                 // host ip is the number listed under ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address
 
-                String hostIpAddr = args[1];
-                int hostPort = Integer.parseInt(args[2]);
-                c = new Client(hostIpAddr, hostPort, adapter);
+                try {
+                    String hostIpAddr = args[1];
+                    int hostPort = Integer.parseInt(args[2]);
+                    c = new Client(hostIpAddr, hostPort, adapter);
 
-                if (args.length == 4 && args[3].equals("start")) {
-                    // Time to start the game
-                    c.sendStringMessage("start");
+                    if (args.length == 4 && args[3].equals("start")) {
+                        // Time to start the game
+                        c.sendStringMessage("start");
+                    } 
+                }
+                catch (Exception e) {
+                    throw new IndexOutOfBoundsException("Expected arguments in format: client <ip address> <portnumber> <start (optional)>");
                 }
 
 
