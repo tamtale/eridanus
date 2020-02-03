@@ -1,5 +1,6 @@
 package com.week1.game.Model.World;
 
+
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -13,12 +14,12 @@ public class GameWorld {
         blocks = new Block[100][100][10];
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
-                blocks[i][j][0] = Block.TerrainBlock.STONE;
+                blocks[i][j][0] = new Block.TerrainBlock.StoneBlock();
 //                if (i > 0) {
 //                    blocks[i][j][0].setConnection(new WeightedBlockEdge(1, blocks[i][j][0], blocks[i - 1][j][0]));
 //                }
                 for (int k = 1; k < blocks[0][0].length; k++) {
-                    blocks[i][j][k] = Block.TerrainBlock.AIR;
+                    blocks[i][j][k] = new Block.TerrainBlock.AirBlock();
                 }
             }
         }
@@ -43,5 +44,35 @@ public class GameWorld {
         }
         layers.add(layer);
         return map;
+    }
+
+
+    public GameGraph buildGraph(){
+        GameGraph graph = new GameGraph();
+        for (int i = 0; i < blocks.length; i++) {
+            for (int j = 0; j < blocks[0].length; j++) {
+                for (int k = 0; k < blocks[0][0].length; k++) {
+                    if (i > 0) {
+                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i - 1][j][k]);
+                    }
+                    if(i < blocks.length) {
+                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i + 1][j][k]);
+                    }
+                    if (j > 0) {
+                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i][j - 1][k]);
+                    }
+                    if(j < blocks[0].length) {
+                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i][j + 1][k]);
+                    }
+                    if (k > 0) {
+                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i][j][k - 1]);
+                    }
+                    if(k < blocks[0].length) {
+                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i][j][k + 1]);
+                    }
+                }
+            }
+        }
+        return graph;
     }
 }

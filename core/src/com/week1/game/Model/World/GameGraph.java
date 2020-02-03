@@ -22,4 +22,8 @@ public class GameGraph implements IndexedGraph<Block> {
     public Array<Connection<Block>> getConnections(Block fromNode) {
         return fromNode.getConnections();
     }
+
+    public void setConnection(float weight, Block fromNode, Block toNode){
+        fromNode.setConnection(new WeightedBlockEdge(weight, fromNode, toNode));
+    }
 }

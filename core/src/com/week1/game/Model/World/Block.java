@@ -15,6 +15,7 @@ interface Block {
     Array<Connection<Block>> getConnections();
     void setConnection(Connection<Block> neighbor);
     int getIndex();
+    float getCost();
     class TerrainBlock implements Block {
         private TextureRegion textureRegion;
         private int index;
@@ -27,18 +28,37 @@ interface Block {
             unitPixmap.fillRectangle(3, 3, PIXELS_PER_UNIT - 6, PIXELS_PER_UNIT - 6);
             this.textureRegion = new TextureRegion(new Texture(unitPixmap));
         }
-        public static TerrainBlock AIR = new TerrainBlock(Color.GOLD);
-        public static TerrainBlock STONE = new TerrainBlock(Color.BLACK);
-            ;
+        static class AirBlock extends TerrainBlock{
 
+            AirBlock() {
+                super(Color.GOLD);
+            }
 
+            @Override
+            public float getCost(){
+                return 0;
+            }
+        }
+        static class StoneBlock extends TerrainBlock{
 
+            StoneBlock(){
+                super(Color.BLACK);
+            }
+
+            @Override
+            public float getCost(){
+                return 1;
+            }
+        }
 
         @Override
         public TextureRegion getTextureRegion() {
             return textureRegion;
         }
 
+        public float getCost(){
+            return 1;
+        }
         public int getIndex() {
             return index;
         }
@@ -75,6 +95,11 @@ interface Block {
         @Override
         public int getIndex() {
             return index;
+        }
+
+        @Override
+        public float getCost() {
+            return Float.POSITIVE_INFINITY;
         }
     }
 }
