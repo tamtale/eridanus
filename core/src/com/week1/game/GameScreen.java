@@ -28,19 +28,21 @@ public class GameScreen implements Screen {
 	private Renderer renderer;
 	private ClickOracle clickOracle;
 	private AI ai;
+	private InfoUtil util;
 
 	
 	public GameScreen(String[] args) {
 		this.args = args;
 
 
+		util = new InfoUtil(true);
 		networkClient = NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
 			@Override
 			public void deliverUpdate(List<? extends GameMessage> messages) {
 				engine.receiveMessages(messages);
 			}
 		});
-		engine = new GameEngine();
+		engine = new GameEngine(util);
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
 			public void render() {
@@ -70,7 +72,8 @@ public class GameScreen implements Screen {
 			public String getClientAddr() {
 				return null;
 			}
-		});
+		},
+				util);
 		clickOracle = new ClickOracle(
 				new IClickOracleToRendererAdapter() {
 					@Override

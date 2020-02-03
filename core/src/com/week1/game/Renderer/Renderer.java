@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
+import com.week1.game.InfoUtil;
 
 import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
 
@@ -19,10 +20,12 @@ public class Renderer {
     private IRendererToEngineAdapter engineAdapter;
     private IRendererToNetworkAdapter networkAdapter;
     private BitmapFont font = new BitmapFont();
+    private InfoUtil util;
 
-    public Renderer(IRendererToEngineAdapter engineAdapter, IRendererToNetworkAdapter networkAdapter) {
+    public Renderer(IRendererToEngineAdapter engineAdapter, IRendererToNetworkAdapter networkAdapter, InfoUtil util) {
         this.engineAdapter = engineAdapter;
         this.networkAdapter = networkAdapter;
+        this.util = util;
     }
 
 
@@ -62,6 +65,8 @@ public class Renderer {
 
     public void drawPlayerUI() {
         startBatch();
+        font.getData().setScale(1f);
+        font.setColor(Color.BLUE);
         font.draw(batch, String.format("Mana: %d", (int)engineAdapter.getPlayerMana(networkAdapter.getPlayerId())), 20, 14);
         endBatch();
     }
@@ -74,5 +79,6 @@ public class Renderer {
         mapRenderer.render();
         engineAdapter.render();
         drawPlayerUI();
+        util.drawMessages(batch, font);
     }
 }
