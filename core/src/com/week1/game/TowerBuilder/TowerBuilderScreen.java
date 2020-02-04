@@ -8,14 +8,16 @@ import com.week1.game.GameScreen;
 public class TowerBuilderScreen implements Screen {
 
     private GameController game;
-    TowerBuilderStage gameUI;
-    TowerBuilderCamera builder;
+    TowerBuilderStage towerStage;
+    TowerBuilderCamera towerCam;
 
     public TowerBuilderScreen(GameController game) {
         this.game = game;
-        gameUI = new TowerBuilderStage(this);
-        builder = new TowerBuilderCamera(gameUI);
-        gameUI.setTowerBuilder(builder);
+        towerStage = new TowerBuilderStage(this);
+        towerCam = new TowerBuilderCamera(towerStage);
+        towerStage.setTowerBuilder(towerCam);
+
+
 
     }
 
@@ -26,13 +28,16 @@ public class TowerBuilderScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        builder.render();
-        gameUI.render();
+        //Delegate render to the camera (3d cam) and the stage (buttons and widgets)
+        towerCam.render();
+        towerStage.render();
 
     }
 
     @Override
     public void resize(int width, int height) {
+        towerCam.resize(width, height);
+        towerStage.stage.getViewport().update(width, height);
 
     }
 
@@ -53,6 +58,7 @@ public class TowerBuilderScreen implements Screen {
 
     @Override
     public void dispose() {
+
 
     }
 

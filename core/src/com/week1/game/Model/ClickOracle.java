@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
@@ -27,8 +28,8 @@ public class ClickOracle extends InputAdapter {
     private Vector3 touchPos = new Vector3();
     private Array<Unit> multiSelected = new Array<>();
 
-    private Vector3 selectionLocationStart = null;
-    private Vector3 selectionLocationEnd = null;
+    private Vector3 selectionLocationStart = new Vector3();
+    private Vector3 selectionLocationEnd = new Vector3();
     private boolean dragging = false;
     private Map<Integer, Direction> keycodeToDirection = new HashMap<>();
     {
@@ -38,7 +39,12 @@ public class ClickOracle extends InputAdapter {
         keycodeToDirection.put(Input.Keys.RIGHT, Direction.RIGHT);
     }
 
-    private SpriteBatch batch; // TODO: is it okay that this is a different SpriteBatch than the one used in the GameEngine?
+    private SpriteBatch cursorBatch = new SpriteBatch(); // TODO: is it okay that this is a different SpriteBatch than the one used in the GameEngine?
+    {
+        Matrix4 projection = new Matrix4();
+        projection.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cursorBatch.setProjectionMatrix(projection);
+    }
 
     public ClickOracle(IClickOracleToRendererAdapter rendererAdapter, 
                        IClickOracleToEngineAdapter engineAdapter,
@@ -46,7 +52,6 @@ public class ClickOracle extends InputAdapter {
         this.rendererAdapter = rendererAdapter;
         this.engineAdapter = engineAdapter;
         this.networkAdapter = networkAdapter;
-        this.batch = new SpriteBatch();
     }
 
     @Override
@@ -69,7 +74,7 @@ public class ClickOracle extends InputAdapter {
 
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
-        selectionLocationStart = new Vector3(screenX, screenY, 0);
+        selectionLocationStart.set(screenX, screenY, 0);
         rendererAdapter.unproject(selectionLocationStart);
         Gdx.app.log("ClickOracle - lji1", "Touchdown!");
         return true;
@@ -78,7 +83,7 @@ public class ClickOracle extends InputAdapter {
     @Override
     public boolean touchDragged (int screenX, int screenY, int pointer) {
         dragging = true;
-        selectionLocationEnd = new Vector3(screenX, screenY, 0);
+        selectionLocationEnd.set(screenX, screenY, 0);
         rendererAdapter.unproject(selectionLocationEnd);
         Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
         return true;
@@ -133,8 +138,8 @@ public class ClickOracle extends InputAdapter {
                     Gdx.app.log("ttl4 - ClickOracle", "selected selected!");
                     deMultiSelect();
                     multiSelected = new Array<>();
-                    selectionLocationStart = new Vector3(unit.x, unit.y, 0);
-                    selectionLocationEnd = new Vector3(unit.x, unit.y, 0);
+                    selectionLocationStart.set(unit.x, unit.y, 0);
+                    selectionLocationEnd.set(unit.x, unit.y, 0);
                     multiSelect(unit);
                 }
             }
@@ -172,8 +177,8 @@ public class ClickOracle extends InputAdapter {
     
     public void render() {
 
-        batch.setColor(1, 1,1, 0.5f);
-        batch.begin();
+        cursorBatch.setColor(1, 1,1, 0.5f);
+        cursorBatch.begin();
         
         int SCALE = 8; //TODO: This is butt ugly and needs to be fixed
         if (dragging) {
@@ -181,15 +186,15 @@ public class ClickOracle extends InputAdapter {
                     Math.abs((int)(selectionLocationEnd.x - selectionLocationStart.x)) * SCALE,
                     Math.abs((int)(selectionLocationEnd.y - selectionLocationStart.y)) * SCALE, 
                     Color.YELLOW);
-            batch.draw(
+            cursorBatch.draw(
                     t, 
                     Math.min(selectionLocationStart.x, selectionLocationEnd.x) * SCALE,
                     Math.min(selectionLocationStart.y, selectionLocationEnd.y) * SCALE
             );
         }
         
-        batch.end();
-        batch.setColor(1, 1,1, 1);
+        cursorBatch.end();
+        cursorBatch.setColor(1, 1,1, 1);
     }
 
     @Override
