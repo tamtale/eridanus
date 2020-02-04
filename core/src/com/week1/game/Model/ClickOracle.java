@@ -4,11 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
@@ -16,21 +13,31 @@ import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 import com.week1.game.Renderer.TextureUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ClickOracle extends InputAdapter {
 
-    private Vector3 touchPos = new Vector3();
+    private static final String TAG = "ClickOracle";
+
     private IClickOracleToRendererAdapter rendererAdapter;
     private IClickOracleToEngineAdapter engineAdapter;
-    private Array<Unit> multiSelected = new Array<>();
     private IClickOracleToNetworkAdapter networkAdapter;
-    private Vector3 translated = new Vector3();
-    private int keyPressed = -1;
+
+    private Vector3 touchPos = new Vector3();
+    private Array<Unit> multiSelected = new Array<>();
 
     private Vector3 selectionLocationStart = null;
     private Vector3 selectionLocationEnd = null;
-    
     private boolean dragging = false;
-    
+    private Map<Integer, Direction> keycodeToDirection = new HashMap<>();
+    {
+        keycodeToDirection.put(Input.Keys.UP, Direction.UP);
+        keycodeToDirection.put(Input.Keys.DOWN, Direction.DOWN);
+        keycodeToDirection.put(Input.Keys.LEFT, Direction.LEFT);
+        keycodeToDirection.put(Input.Keys.RIGHT, Direction.RIGHT);
+    }
+
     private SpriteBatch batch; // TODO: is it okay that this is a different SpriteBatch than the one used in the GameEngine?
 
     public ClickOracle(IClickOracleToRendererAdapter rendererAdapter, 
@@ -42,17 +49,21 @@ public class ClickOracle extends InputAdapter {
         this.batch = new SpriteBatch();
     }
 
-
     @Override
     public boolean keyDown(int keycode) {
-        keyPressed = keycode;
+        if (keycodeToDirection.containsKey(keycode)) {
+            rendererAdapter.setTranslationDirection(keycodeToDirection.get(keycode));
+            return true;
+        }
         return true;
     }
 
 
     @Override
     public boolean keyUp(int keycode) {
-        keyPressed = -1;
+        if (keycodeToDirection.containsKey(keycode)) {
+            rendererAdapter.setTranslationDirection(Direction.NONE);
+        }
         return true;
     }
 
@@ -187,3 +198,4 @@ public class ClickOracle extends InputAdapter {
         return true;
     }
 }
+

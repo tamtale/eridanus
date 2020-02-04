@@ -100,15 +100,15 @@ public class GameScreen implements Screen {
 					}
 
 					@Override
-					public void translate(Vector3 translated) {
-					    renderer.getCamera().translate(translated);
-					}
-
-					@Override
 					public void zoom(int amount) {
 					    renderer.zoom(amount);
 					}
-				},
+
+                    @Override
+                    public void setTranslationDirection(Direction direction) {
+					    renderer.setPanning(direction);
+                    }
+                },
 				new IClickOracleToEngineAdapter() {
 					@Override
 					public Unit selectUnit(Vector3 position) {

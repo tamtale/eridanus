@@ -5,6 +5,6 @@ import com.badlogic.gdx.math.Vector3;
 
 public interface IClickOracleToRendererAdapter {
     void unproject(Vector3 projected);
-    void translate(Vector3 translated);
     void zoom(int amount);
+    void setTranslationDirection(Direction direction);
 }

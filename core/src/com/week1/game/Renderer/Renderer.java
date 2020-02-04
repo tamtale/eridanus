@@ -1,6 +1,7 @@
 package com.week1.game.Renderer;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -8,9 +9,13 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 
+import com.week1.game.Model.Direction;
 import com.week1.game.Model.IRendererToClickOracleAdapter;
 import com.week1.game.InfoUtil;
 
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
 
@@ -24,6 +29,18 @@ public class Renderer {
     private IRendererToNetworkAdapter networkAdapter;
     private IRendererToClickOracleAdapter clickOracleAdapter;
     private BitmapFont font = new BitmapFont();
+    private Vector3 panning = new Vector3();
+    private Map<Direction, Vector3> directionToVector;
+
+    {
+        directionToVector = new HashMap<Direction, Vector3>() {{
+            put(Direction.UP, new Vector3(0, 1, 0));
+            put(Direction.DOWN, new Vector3(0, -1, 0));
+            put(Direction.LEFT, new Vector3(-1, 0, 0));
+            put(Direction.RIGHT, new Vector3(1, 0, 0));
+            put(Direction.NONE, new Vector3(0, 0, 0));
+        }};
+    }
 
     private int winState = -1;
     private InfoUtil util;
@@ -78,6 +95,7 @@ public class Renderer {
     }
 
     public void drawPlayerUI() {
+        // TODO use a separate batch here.
         startBatch();
         font.getData().setScale(1f);
         font.setColor(Color.BLUE);
@@ -90,10 +108,20 @@ public class Renderer {
         endBatch();
     }
 
+    public void setPanning(Direction direction) {
+        panning.set(directionToVector.get(direction));
+    }
+
+    private void updateCamera() {
+        // TODO prevent the camera from displaying outside the bounds of the map.
+        camera.translate(panning);
+        camera.update();
+    }
+
     public void render() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        camera.update();
+        updateCamera();
         mapRenderer.setView(camera);
         mapRenderer.render();
         engineAdapter.render();
