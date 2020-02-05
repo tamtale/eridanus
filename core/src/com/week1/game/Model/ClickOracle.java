@@ -41,13 +41,11 @@ public class ClickOracle extends InputAdapter {
         this.engineAdapter = engineAdapter;
         this.networkAdapter = networkAdapter;
         this.batch = new SpriteBatch();
-
     }
 
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
         selectionLocationStart.set(screenX, screenY, 0);
-        //rendererAdapter.unproject(selectionLocationStart);
         Gdx.app.log("ClickOracle - lji1", "Touchdown!");
         return true;
     }
@@ -56,7 +54,6 @@ public class ClickOracle extends InputAdapter {
     public boolean touchDragged (int screenX, int screenY, int pointer) {
         dragging = true;
         selectionLocationEnd.set(screenX, screenY, 0);
-//        rendererAdapter.unproject(selectionLocationEnd);
         Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
         return true;
     }
@@ -74,6 +71,7 @@ public class ClickOracle extends InputAdapter {
             rendererAdapter.unproject(unprojectedEnd);
             
             Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(unprojectedStart, unprojectedEnd);
+            
             deMultiSelect();
             multiSelected = new Array<>();
             unitsToSelect.forEach((unit) -> multiSelect(unit));
@@ -165,7 +163,6 @@ public class ClickOracle extends InputAdapter {
         batch.begin();
         
         
-        int SCALE = 1; //TODO: This is butt ugly and needs to be fixed
         if (dragging) {
 
 //            System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
@@ -174,13 +171,13 @@ public class ClickOracle extends InputAdapter {
             System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
             
             Texture t = TextureUtils.makeUnfilledRectangle(
-                    Math.abs((int)(selectionLocationEnd.x - selectionLocationStart.x)) * SCALE,
-                    Math.abs((int)(selectionLocationEnd.y - selectionLocationStart.y)) * SCALE, 
+                    Math.abs((int)(selectionLocationEnd.x - selectionLocationStart.x)),
+                    Math.abs((int)(selectionLocationEnd.y - selectionLocationStart.y)), 
                     Color.YELLOW);
             batch.draw(
                     t, 
-                    Math.min(selectionLocationStart.x, selectionLocationEnd.x) * SCALE,
-                    Math.min(Gdx.graphics.getHeight() - selectionLocationStart.y, Gdx.graphics.getHeight() - selectionLocationEnd.y) * SCALE
+                    Math.min(selectionLocationStart.x, selectionLocationEnd.x),
+                    Math.min(Gdx.graphics.getHeight() - selectionLocationStart.y, Gdx.graphics.getHeight() - selectionLocationEnd.y)
             );
         }
         

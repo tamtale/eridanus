@@ -18,7 +18,10 @@ import com.badlogic.gdx.utils.Array;
 
 //Next things
 // Color scheme
-// top-down views of all towers
+// Programmatic generation of tower stats for gameplay--
+    //top down view (static of all presets)
+    //generation of tower stats
+    //tower footprint on ground and in all dimension
 // Fill out ui -> need to assets, stage, etc classes
 // tower building
 
@@ -32,7 +35,8 @@ public class TowerBuilderCamera {
     AssetManager assets;
     public Array<ModelInstance> currTower;
 
-    TowerBuilderStage gameUI;
+
+    TowerBuilderStage towerStage;
     ModelInstance space;
     Boolean loading;
 
@@ -61,14 +65,14 @@ public class TowerBuilderCamera {
         //Init the camera
         camController = new CameraInputController(cam);
         InputMultiplexer multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(gameUI.stage);
+        multiplexer.addProcessor(towerStage.stage);
         multiplexer.addProcessor(camController);
         Gdx.input.setInputProcessor(multiplexer);
     }
 
 
-    public TowerBuilderCamera(TowerBuilderStage gameUI) {
-        this.gameUI = gameUI;
+    public TowerBuilderCamera(TowerBuilderStage towerStage) {
+        this.towerStage = towerStage;
         initEnvironment();
         initModelBatch();
         initPersCamera();
@@ -104,31 +108,31 @@ public class TowerBuilderCamera {
         //Number keys toggle presests
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
             currTower = presets.getTower1();
-            gameUI.sw.setLabelStyle(1);
+            towerStage.sw.setLabelStyle(1);
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
             currTower = presets.getTower2();
-            gameUI.sw.setLabelStyle(2);
+            towerStage.sw.setLabelStyle(2);
 
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
             currTower = presets.getTower3();
-            gameUI.sw.setLabelStyle(3);
+            towerStage.sw.setLabelStyle(3);
 
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_4)) {
             currTower = presets.getTower4();
-            gameUI.sw.setLabelStyle(4);
+            towerStage.sw.setLabelStyle(4);
 
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_5)) {
             currTower = presets.getTower5();
-            gameUI.sw.setLabelStyle(5);
+            towerStage.sw.setLabelStyle(5);
 
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_6)) {
             currTower = presets.getTower6();
-            gameUI.sw.setLabelStyle(6);
+            towerStage.sw.setLabelStyle(6);
 
         }
 
