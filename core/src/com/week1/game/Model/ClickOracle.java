@@ -66,7 +66,12 @@ public class ClickOracle extends InputAdapter {
             dragging = false;
             
             // mark the units in the box as selected
-            Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
+            Vector3 unprojectedStart = new Vector3(selectionLocationStart);
+            rendererAdapter.unproject(unprojectedStart);
+            Vector3 unprojectedEnd = new Vector3(selectionLocationEnd);
+            rendererAdapter.unproject(unprojectedEnd);
+            
+            Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(unprojectedStart, unprojectedEnd);
             deMultiSelect();
             multiSelected = new Array<>();
             unitsToSelect.forEach((unit) -> multiSelect(unit));
@@ -170,11 +175,10 @@ public class ClickOracle extends InputAdapter {
                     Math.abs((int)(selectionLocationEnd.x - selectionLocationStart.x)) * SCALE,
                     Math.abs((int)(selectionLocationEnd.y - selectionLocationStart.y)) * SCALE, 
                     Color.YELLOW);
-//            Gdx.graphics.getWidth()
             batch.draw(
                     t, 
                     Math.min(selectionLocationStart.x, selectionLocationEnd.x) * SCALE,
-                    Math.min(selectionLocationStart.y, selectionLocationEnd.y) * SCALE
+                    Math.min(Gdx.graphics.getHeight() - selectionLocationStart.y, Gdx.graphics.getHeight() - selectionLocationEnd.y) * SCALE
             );
         }
         
