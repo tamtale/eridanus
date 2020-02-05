@@ -25,8 +25,10 @@ public class ClickOracle extends InputAdapter {
     private Array<Unit> multiSelected = new Array<>();
     private IClickOracleToNetworkAdapter networkAdapter;
     
-    private Vector3 selectionLocationStart = null;
-    private Vector3 selectionLocationEnd = null;
+    private Vector3 selectionLocationStart = new Vector3();
+    private Vector3 selectionLocationEnd = new Vector3();
+    private Vector3 unprojectedStart = new Vector3();
+    private Vector3 unprojectedEnd = new Vector3();
     
     private boolean dragging = false;
     
@@ -44,7 +46,7 @@ public class ClickOracle extends InputAdapter {
 
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
-        selectionLocationStart = new Vector3(screenX, screenY, 0);
+        selectionLocationStart.set(screenX, screenY, 0);
         //rendererAdapter.unproject(selectionLocationStart);
         Gdx.app.log("ClickOracle - lji1", "Touchdown!");
         return true;
@@ -53,7 +55,7 @@ public class ClickOracle extends InputAdapter {
     @Override
     public boolean touchDragged (int screenX, int screenY, int pointer) {
         dragging = true;
-        selectionLocationEnd = new Vector3(screenX, screenY, 0);
+        selectionLocationEnd.set(screenX, screenY, 0);
 //        rendererAdapter.unproject(selectionLocationEnd);
         Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
         return true;
@@ -66,9 +68,9 @@ public class ClickOracle extends InputAdapter {
             dragging = false;
             
             // mark the units in the box as selected
-            Vector3 unprojectedStart = new Vector3(selectionLocationStart);
+            unprojectedStart.set(selectionLocationStart);
             rendererAdapter.unproject(unprojectedStart);
-            Vector3 unprojectedEnd = new Vector3(selectionLocationEnd);
+            unprojectedEnd.set(selectionLocationEnd);
             rendererAdapter.unproject(unprojectedEnd);
             
             Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(unprojectedStart, unprojectedEnd);
@@ -113,8 +115,8 @@ public class ClickOracle extends InputAdapter {
                     Gdx.app.log("ttl4 - ClickOracle", "selected selected!");
                     deMultiSelect();
                     multiSelected = new Array<>();
-                    selectionLocationStart = new Vector3(unit.x, unit.y, 0);
-                    selectionLocationEnd = new Vector3(unit.x, unit.y, 0);
+                    selectionLocationStart.set(unit.x, unit.y, 0);
+                    selectionLocationEnd.set(unit.x, unit.y, 0);
                     multiSelect(unit);
                 }
             }
