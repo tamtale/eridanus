@@ -44,7 +44,7 @@ public class GameScreen implements Screen {
 		connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 
 		TextButton startbtn = new TextButton("Send Start Message", new Skin(Gdx.files.internal("uiskin.json")));
-		startbtn.setSize(128,64);
+		startbtn.setSize(200,64);
 		startbtn.setPosition(GameController.VIRTUAL_WIDTH/2 - startbtn.getWidth(), GameController.VIRTUAL_HEIGHT/2 - startbtn.getHeight());
 		connectionStage.addActor(startbtn);
 
