@@ -93,7 +93,8 @@ public class NetworkUtils {
 
                 if (args.length == 3 && args[2].equals("start")) {
                     // Time to start the game
-                    c.sendStringMessage("start");
+//                    c.sendStringMessage("start");
+                    c.sendStartMessage();
                 }
                 
 
@@ -108,7 +109,8 @@ public class NetworkUtils {
 
                     if (args.length == 4 && args[3].equals("start")) {
                         // Time to start the game
-                        c.sendStringMessage("start");
+                        c.sendStartMessage();
+//                        c.sendStringMessage("start");
                     } 
                 }
                 catch (Exception e) {

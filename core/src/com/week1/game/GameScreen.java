@@ -58,6 +58,8 @@ public class GameScreen implements Screen {
 	
 	public GameScreen(String[] args) {
 		this.args = args;
+		// Set the logging level
+		Gdx.app.setLogLevel(Application.LOG_INFO);
 
 
 
@@ -74,7 +76,6 @@ public class GameScreen implements Screen {
 			}
 		});
 
-		makeTempStage();
 
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override
@@ -155,11 +156,12 @@ public class GameScreen implements Screen {
 				});
 
 		ai = new AI();
+		
+		
+		
 		Gdx.input.setInputProcessor(clickOracle);
 		renderer.create();
 		
-		// Set the logging level
-		Gdx.app.setLogLevel(Application.LOG_INFO);
 	}
 
 
