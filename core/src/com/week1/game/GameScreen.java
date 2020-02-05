@@ -38,6 +38,7 @@ public class GameScreen implements Screen {
 	private InfoUtil util;
 	//This is a temporary stage that is displayed before connection of clients
 	private Stage connectionStage;
+	private boolean pressedStartbtn = false;
 
 	private void makeTempStage() {
 		connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
@@ -181,10 +182,12 @@ public class GameScreen implements Screen {
 			return;
 		}
 
-		if (engine.getCommunicationTurn() == 1) {
+		if (!pressedStartbtn) {
 			Gdx.input.setInputProcessor(clickOracle);
 			connectionStage.dispose();
+			pressedStartbtn = true;
 		}
+
 
 		float time = Gdx.graphics.getDeltaTime();
 		curTime += time;

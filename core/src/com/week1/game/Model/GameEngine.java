@@ -24,10 +24,6 @@ public class GameEngine {
         return batch;
     }
 
-    public int getCommunicationTurn() {
-        return communicationTurn;
-    }
-
     public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, InfoUtil util) {
         messageQueue = new ConcurrentLinkedQueue<>();
         gameState = new GameState();
