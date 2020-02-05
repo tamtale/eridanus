@@ -5,4 +5,5 @@ import com.badlogic.gdx.math.Vector3;
 
 public interface IClickOracleToRendererAdapter {
     void unproject(Vector3 projected);
+    Camera getCamera();
 }

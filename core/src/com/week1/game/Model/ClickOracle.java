@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -38,12 +39,13 @@ public class ClickOracle extends InputAdapter {
         this.engineAdapter = engineAdapter;
         this.networkAdapter = networkAdapter;
         this.batch = new SpriteBatch();
+
     }
 
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
         selectionLocationStart = new Vector3(screenX, screenY, 0);
-        rendererAdapter.unproject(selectionLocationStart);
+        //rendererAdapter.unproject(selectionLocationStart);
         Gdx.app.log("ClickOracle - lji1", "Touchdown!");
         return true;
     }
@@ -52,7 +54,7 @@ public class ClickOracle extends InputAdapter {
     public boolean touchDragged (int screenX, int screenY, int pointer) {
         dragging = true;
         selectionLocationEnd = new Vector3(screenX, screenY, 0);
-        rendererAdapter.unproject(selectionLocationEnd);
+//        rendererAdapter.unproject(selectionLocationEnd);
         Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
         return true;
     }
@@ -143,17 +145,32 @@ public class ClickOracle extends InputAdapter {
         }
     }
     
+    public SpriteBatch getBatch() {
+        return batch;
+    }
+    
     public void render() {
-
+        Matrix4 cameraCpy = rendererAdapter.getCamera().combined.cpy();
+        cameraCpy.setToOrtho2D(0, 0, Gdx.graphics.getHeight(), Gdx.graphics.getWidth());
+        batch.setProjectionMatrix(cameraCpy);
+        
         batch.setColor(1, 1,1, 0.5f);
         batch.begin();
         
-        int SCALE = 8; //TODO: This is butt ugly and needs to be fixed
+        
+        int SCALE = 1; //TODO: This is butt ugly and needs to be fixed
         if (dragging) {
+
+//            System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
+//            rendererAdapter.unproject(selectionLocationStart);
+//            rendererAdapter.unproject(selectionLocationEnd);
+            System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
+            
             Texture t = TextureUtils.makeUnfilledRectangle(
                     Math.abs((int)(selectionLocationEnd.x - selectionLocationStart.x)) * SCALE,
                     Math.abs((int)(selectionLocationEnd.y - selectionLocationStart.y)) * SCALE, 
                     Color.YELLOW);
+//            Gdx.graphics.getWidth()
             batch.draw(
                     t, 
                     Math.min(selectionLocationStart.x, selectionLocationEnd.x) * SCALE,

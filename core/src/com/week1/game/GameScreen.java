@@ -1,6 +1,7 @@
 package com.week1.game;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -98,6 +99,11 @@ public class GameScreen implements Screen {
 					public void unproject(Vector3 projected) {
 						renderer.getCamera().unproject(projected);
 					}
+
+					@Override
+					public Camera getCamera() {
+						return renderer.getCamera();
+					}
 				},
 				new IClickOracleToEngineAdapter() {
 					@Override
@@ -156,6 +162,7 @@ public class GameScreen implements Screen {
 		}
 		engine.updateState(time);
 		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
+//		clickOracle.getBatch().setProjectionMatrix(renderer.getCamera().combined);
 		renderer.render();
 	}
 
