@@ -18,10 +18,7 @@ import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkUtils;
-import com.week1.game.Renderer.GameButtonsStage;
-import com.week1.game.Renderer.IRendererToEngineAdapter;
-import com.week1.game.Renderer.IRendererToNetworkAdapter;
-import com.week1.game.Renderer.Renderer;
+import com.week1.game.Renderer.*;
 
 import java.util.List;
 
@@ -163,7 +160,12 @@ public class GameScreen implements Screen {
 
 		makeTempStage();
 
-		gameButtonsStage = new GameButtonsStage();
+		gameButtonsStage = new GameButtonsStage(new IGameButtonsToClickOracleAdapter() {
+			@Override
+			public void setSelectedSpawnState(SpawnInfo type) {
+				clickOracle.setSpawnType(type);
+			}
+		});
 
 		InputMultiplexer multiplexer = new InputMultiplexer();
 		multiplexer.addProcessor(gameButtonsStage.stage);

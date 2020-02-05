@@ -1,43 +1,56 @@
 package com.week1.game.Renderer;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
+import com.week1.game.Renderer.SpawnInfo.*;
 
 public class GameButtonsStage {
 
-//    private TowerBuilderScreen towerscreen;
+    private IGameButtonsToClickOracleAdapter clickOracleAdapter;
     public Stage stage;
     private TextButton unitButton;
     private TextButton tower1Button;
     private TextButton tower2Button;
     private TextButton tower3Button;
 
+    private Button previouslySelected;
+
+//    private Button.ButtonStyle down = new Button.ButtonStyle().down;
+    private Button.ButtonStyle pressed = new TextButton.TextButtonStyle(new Button.ButtonStyle().down, new Button.ButtonStyle().down, new Button.ButtonStyle().down, new BitmapFont());
+    private Button.ButtonStyle normal = new TextButton.TextButtonStyle(new ButtonStyle().up, new Button.ButtonStyle().down, new ButtonStyle().checked, new BitmapFont());
     // .setStyle(ButtonStyle.down)
 
 
-    public GameButtonsStage() {
+    public GameButtonsStage(IGameButtonsToClickOracleAdapter clickOracleAdapter) {
         stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
+        this.clickOracleAdapter = clickOracleAdapter;
 
         setWidgets();
         configureWidgets();
         setListeners();
+
+        unitButton.setStyle(pressed);
+        previouslySelected = unitButton;
+        clickOracleAdapter.setSelectedSpawnState(new SpawnInfo(SpawnType.UNIT));
     }
 
     private void setWidgets() {
-        unitButton = new TextButton("Spawn Units", new Skin(Gdx.files.internal("uiskin.json")));
+        unitButton   = new TextButton("Spawn Units",   new Skin(Gdx.files.internal("uiskin.json")));
         tower1Button = new TextButton("Spawn Tower 1", new Skin(Gdx.files.internal("uiskin.json")));
         tower2Button = new TextButton("Spawn Tower 2", new Skin(Gdx.files.internal("uiskin.json")));
         tower3Button = new TextButton("Spawn Tower 3", new Skin(Gdx.files.internal("uiskin.json")));
     }
 
     private void configureWidgets() {
-
         unitButton.setSize(128, 48);
         tower1Button.setSize(128, 48);
         tower2Button.setSize(128, 48);
@@ -54,11 +67,19 @@ public class GameButtonsStage {
         stage.addActor(tower3Button);
     }
 
+    public void unselectAndReselect(Button oldButton, Button newButton) {
+        oldButton.setStyle(normal);
+        newButton.setStyle(pressed);
+        previouslySelected = newButton;
+    }
+
     public void setListeners() {
         unitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("pjb3 - GameButtonsStage", "Clicked the Unit button");
+                clickOracleAdapter.setSelectedSpawnState(new SpawnInfo(SpawnType.UNIT));
+                unselectAndReselect(previouslySelected, unitButton);
             }
         });
 
@@ -66,6 +87,8 @@ public class GameButtonsStage {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("pjb3 - GameButtonsStage", "Clicked the Tower 1 button");
+                clickOracleAdapter.setSelectedSpawnState(new SpawnInfo(SpawnType.TOWER1));
+                unselectAndReselect(previouslySelected, tower1Button);
             }
         });
 
@@ -73,6 +96,8 @@ public class GameButtonsStage {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("pjb3 - GameButtonsStage", "Clicked the Tower 2 button");
+                clickOracleAdapter.setSelectedSpawnState(new SpawnInfo(SpawnType.TOWER2));
+                unselectAndReselect(previouslySelected, tower2Button);
             }
         });
 
@@ -80,6 +105,8 @@ public class GameButtonsStage {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("pjb3 - GameButtonsStage", "Clicked the Tower 3 button");
+                clickOracleAdapter.setSelectedSpawnState(new SpawnInfo(SpawnType.TOWER3));
+                unselectAndReselect(previouslySelected, tower3Button);
             }
         });
 

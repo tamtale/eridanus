@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
+import com.week1.game.Renderer.SpawnInfo;
 import com.week1.game.Renderer.TextureUtils;
 
 public class ClickOracle extends InputAdapter {
@@ -30,6 +31,7 @@ public class ClickOracle extends InputAdapter {
     private boolean dragging = false;
     
     private SpriteBatch batch; // TODO: is it okay that this is a different SpriteBatch than the one used in the GameEngine?
+    private SpawnInfo.SpawnType spawnType;
 
     public ClickOracle(IClickOracleToRendererAdapter rendererAdapter, 
                        IClickOracleToEngineAdapter engineAdapter,
@@ -60,6 +62,13 @@ public class ClickOracle extends InputAdapter {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         Gdx.app.log("lji1 - ClickOracle", "Click registered, dragging: " + dragging);
+
+        // The player must be alive to be able to register any clicks
+        if (!engineAdapter.isPlayerAlive()) {
+            Gdx.app.log("lji1 - ClickOracle", "Player has died.");
+            return false;
+        }
+
         if (dragging) {
             dragging = false;
             
@@ -76,15 +85,11 @@ public class ClickOracle extends InputAdapter {
         touchPos.set(screenX, screenY, 0);
         rendererAdapter.unproject(touchPos);
 
-        // The player must be alive to be able to register any clicks
-        if (!engineAdapter.isPlayerAlive()) {
-            Gdx.app.log("lji1 - ClickOracle", "Player has died.");
-            return false;
-        }
 
         if (button == Input.Buttons.LEFT) {
 
-            // Create tower with left click and numberkey down
+            // Create tower with left click and numberkey down.
+            // For advanced users, we will keep this as the first check, then defer to the other users
             if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
                 Gdx.app.log("lji1 - ClickOracle", "Spawn basic tower.");
                 networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.BASIC, networkAdapter.getPlayerId()));
@@ -100,7 +105,19 @@ public class ClickOracle extends InputAdapter {
                 if (unit == null) {
                     Gdx.app.log("ttl4 - ClickOracle", "nothing selected!");
                     System.out.println("aaaaa");
-                    networkAdapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, networkAdapter.getPlayerId()));
+                    if (spawnType == SpawnInfo.SpawnType.UNIT) {
+                        networkAdapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, networkAdapter.getPlayerId()));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.BASIC, networkAdapter.getPlayerId()));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn Tower 2 tower via state");
+                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.SNIPER, networkAdapter.getPlayerId()));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.TANK, networkAdapter.getPlayerId()));
+                    }
+
                 } else {
                     System.out.println("bbbbb");
                     Gdx.app.log("ttl4 - ClickOracle", "selected selected!");
@@ -141,6 +158,10 @@ public class ClickOracle extends InputAdapter {
             multiSelected.add(unit);
             unit.clicked = true;
         }
+    }
+
+    public void setSpawnType(SpawnInfo newInfo) {
+        spawnType = newInfo.getType();
     }
     
     public void render() {
