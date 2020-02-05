@@ -36,7 +36,7 @@ public class CreateMinionMessage extends GameMessage {
         // Test to see if it is in the proximity of a tower or a home base
         if (!inputState.findNearbyStructure(x, y, playerID)) {
             util.log("pjb3 - CreateMinionMessage", "Not close enough to an existing tower or home base");
-            return false;
+            // return false;
         }
 
 

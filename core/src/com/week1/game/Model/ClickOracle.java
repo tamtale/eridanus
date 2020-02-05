@@ -29,6 +29,7 @@ public class ClickOracle extends InputAdapter {
     private Vector3 selectionLocationEnd = new Vector3();
     private Vector3 unprojectedStart = new Vector3();
     private Vector3 unprojectedEnd = new Vector3();
+    // private Matrix4 selectionMatrix = new Matrix4();
     
     private boolean dragging = false;
     
@@ -46,6 +47,7 @@ public class ClickOracle extends InputAdapter {
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
         selectionLocationStart.set(screenX, screenY, 0);
+        rendererAdapter.unproject(selectionLocationStart);
         Gdx.app.log("ClickOracle - lji1", "Touchdown!");
         return true;
     }
@@ -54,6 +56,7 @@ public class ClickOracle extends InputAdapter {
     public boolean touchDragged (int screenX, int screenY, int pointer) {
         dragging = true;
         selectionLocationEnd.set(screenX, screenY, 0);
+        rendererAdapter.unproject(selectionLocationEnd);
         Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
         return true;
     }
@@ -73,7 +76,6 @@ public class ClickOracle extends InputAdapter {
             Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(unprojectedStart, unprojectedEnd);
             
             deMultiSelect();
-            multiSelected = new Array<>();
             unitsToSelect.forEach((unit) -> multiSelect(unit));
 
             Gdx.app.log("lji1 - ClickOracle", "Cleared selection locations.");
@@ -112,7 +114,6 @@ public class ClickOracle extends InputAdapter {
                     System.out.println("bbbbb");
                     Gdx.app.log("ttl4 - ClickOracle", "selected selected!");
                     deMultiSelect();
-                    multiSelected = new Array<>();
                     selectionLocationStart.set(unit.x, unit.y, 0);
                     selectionLocationEnd.set(unit.x, unit.y, 0);
                     multiSelect(unit);
@@ -121,7 +122,7 @@ public class ClickOracle extends InputAdapter {
             return true;
         }
         // Right click
-        if (multiSelected != null && button == Input.Buttons.RIGHT) {
+        if (multiSelected.notEmpty() && button == Input.Buttons.RIGHT) {
             // TODO: steering agent behavior
             
             System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
@@ -137,9 +138,9 @@ public class ClickOracle extends InputAdapter {
 
 
     private void deMultiSelect() {
-        if (multiSelected != null) {
+        if (multiSelected.notEmpty()) {
             multiSelected.forEach((u) -> u.clicked = false);
-            multiSelected = null;
+            multiSelected.clear();
         }
     }
     
@@ -155,9 +156,10 @@ public class ClickOracle extends InputAdapter {
     }
     
     public void render() {
-        Matrix4 cameraCpy = rendererAdapter.getCamera().combined.cpy();
-        cameraCpy.setToOrtho2D(0, 0, Gdx.graphics.getHeight(), Gdx.graphics.getWidth());
-        batch.setProjectionMatrix(cameraCpy);
+        batch.setProjectionMatrix(rendererAdapter.getCamera().combined);
+        Gdx.app.log("projection matrix ", batch.getProjectionMatrix().toString());
+        // selectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getHeight(), Gdx.graphics.getWidth());
+        // batch.setProjectionMatrix(selectionMatrix);
         
         batch.setColor(1, 1,1, 0.5f);
         batch.begin();
@@ -170,14 +172,15 @@ public class ClickOracle extends InputAdapter {
 //            rendererAdapter.unproject(selectionLocationEnd);
             System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
             
-            Texture t = TextureUtils.makeUnfilledRectangle(
-                    Math.abs((int)(selectionLocationEnd.x - selectionLocationStart.x)),
-                    Math.abs((int)(selectionLocationEnd.y - selectionLocationStart.y)), 
-                    Color.YELLOW);
+            Texture t = TextureUtils.makeUnfilledRectangle(1,1, Color.YELLOW);
             batch.draw(
                     t, 
                     Math.min(selectionLocationStart.x, selectionLocationEnd.x),
-                    Math.min(Gdx.graphics.getHeight() - selectionLocationStart.y, Gdx.graphics.getHeight() - selectionLocationEnd.y)
+                    Math.min(selectionLocationStart.y, selectionLocationEnd.y),
+                    Math.abs((selectionLocationEnd.x - selectionLocationStart.x)),
+                    Math.abs((selectionLocationEnd.y - selectionLocationStart.y))
+
+                    // Math.min(Gdx.graphics.getHeight() - selectionLocationStart.y - 1, Gdx.graphics.getHeight() - selectionLocationEnd.y - 1)
             );
         }
         
