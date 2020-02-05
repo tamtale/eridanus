@@ -3,7 +3,13 @@ package com.week1.game;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
 import com.week1.game.Networking.Client;
@@ -30,10 +36,29 @@ public class GameScreen implements Screen {
 	private ClickOracle clickOracle;
 	private AI ai;
 	private InfoUtil util;
+	//This is a temporary stage that is displayed before connection of clients
+	private Stage connectionStage;
 
+	private void makeTempStage() {
+		connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
+
+		TextButton startbtn = new TextButton("Send Start Message", new Skin(Gdx.files.internal("uiskin.json")));
+		startbtn.setSize(128,64);
+		startbtn.setPosition(GameController.VIRTUAL_WIDTH/2 - startbtn.getWidth(), GameController.VIRTUAL_HEIGHT/2 - startbtn.getHeight());
+		connectionStage.addActor(startbtn);
+
+		startbtn.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+//				System.out.println("pressed btn");
+
+			}
+		});
+	}
 	
 	public GameScreen(String[] args) {
 		this.args = args;
+
 
 
 		util = new InfoUtil(true);
@@ -48,6 +73,8 @@ public class GameScreen implements Screen {
 				engine.setEnginePlayerId(playerId);
 			}
 		});
+
+		makeTempStage();
 
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override
@@ -145,7 +172,8 @@ public class GameScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		if (!engine.started()) {
-			renderer.renderInfo();
+			connectionStage.draw();
+//			renderer.renderInfo();
 			return;
 		}
 		float time = Gdx.graphics.getDeltaTime();
@@ -161,7 +189,9 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-
+		if (!engine.started()) {
+			connectionStage.getViewport().update(width, height);
+		}
 	}
 
 	@Override
