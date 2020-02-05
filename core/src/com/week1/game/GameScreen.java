@@ -51,7 +51,7 @@ public class GameScreen implements Screen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				networkClient.sendStartMessage();
-				Gdx.input.setInputProcessor(clickOracle);
+//				Gdx.input.setInputProcessor(clickOracle);
 //				connectionStage.dispose();
 			}
 		});
@@ -180,6 +180,12 @@ public class GameScreen implements Screen {
 //			renderer.renderInfo();
 			return;
 		}
+
+		if (engine.getCommunicationTurn() == 1) {
+			Gdx.input.setInputProcessor(clickOracle);
+			connectionStage.dispose();
+		}
+
 		float time = Gdx.graphics.getDeltaTime();
 		curTime += time;
 		if (curTime > THRESHOLD) {
