@@ -177,6 +177,7 @@ public class ClickOracle extends InputAdapter {
                     Math.abs((int)(selectionLocationEnd.x - selectionLocationStart.x)) * SCALE,
                     Math.abs((int)(selectionLocationEnd.y - selectionLocationStart.y)) * SCALE, 
                     Color.YELLOW);
+//            Gdx.graphics.getWidth()
             batch.draw(
                     t, 
                     Math.min(selectionLocationStart.x, selectionLocationEnd.x) * SCALE,
