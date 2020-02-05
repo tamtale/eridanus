@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 public class InfoUtil {
@@ -14,6 +13,7 @@ public class InfoUtil {
     private Array<DisplayMessage> messages = new Array<>();
     private Array<DisplayMessage> toDelete = new Array<>();
     private Matrix4 projectionMatrix = new Matrix4();
+    private BitmapFont font = new BitmapFont();
 
     public InfoUtil(boolean messagesOnScreen) {
         this.messagesOnScreen = messagesOnScreen;
@@ -26,7 +26,7 @@ public class InfoUtil {
         }
     }
 
-    public void drawMessages(Batch batch, BitmapFont font) {
+    public void drawMessages(Batch batch) {
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
         projectionMatrix.setToOrtho2D(0, 0, w, h);

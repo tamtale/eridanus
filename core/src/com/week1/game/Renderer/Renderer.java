@@ -1,7 +1,6 @@
 package com.week1.game.Renderer;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -127,6 +126,6 @@ public class Renderer {
         engineAdapter.render();
         clickOracleAdapter.render();
         drawPlayerUI();
-        util.drawMessages(batch, font);
+        util.drawMessages(batch);
     }
 }
