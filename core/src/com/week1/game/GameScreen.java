@@ -50,8 +50,9 @@ public class GameScreen implements Screen {
 		startbtn.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-//				System.out.println("pressed btn");
-
+				networkClient.sendStartMessage();
+				Gdx.input.setInputProcessor(clickOracle);
+//				connectionStage.dispose();
 			}
 		});
 	}
@@ -156,10 +157,11 @@ public class GameScreen implements Screen {
 				});
 
 		ai = new AI();
+		makeTempStage();
+
 		
-		
-		
-		Gdx.input.setInputProcessor(clickOracle);
+		Gdx.input.setInputProcessor(connectionStage);
+//		Gdx.input.setInputProcessor(clickOracle);
 		renderer.create();
 		
 	}
