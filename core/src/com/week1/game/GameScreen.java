@@ -18,6 +18,7 @@ import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkUtils;
+import com.week1.game.Renderer.GameButtonsStage;
 import com.week1.game.Renderer.IRendererToEngineAdapter;
 import com.week1.game.Renderer.IRendererToNetworkAdapter;
 import com.week1.game.Renderer.Renderer;
@@ -33,6 +34,7 @@ public class GameScreen implements Screen {
 	private Client networkClient;
 	private GameEngine engine;
 	private Renderer renderer;
+	private GameButtonsStage gameButtonsStage;
 	private ClickOracle clickOracle;
 	private AI ai;
 	private InfoUtil util;
@@ -158,11 +160,18 @@ public class GameScreen implements Screen {
 				});
 
 		ai = new AI();
+
 		makeTempStage();
 
-		
-		Gdx.input.setInputProcessor(connectionStage);
-//		Gdx.input.setInputProcessor(clickOracle);
+		gameButtonsStage = new GameButtonsStage();
+
+		InputMultiplexer multiplexer = new InputMultiplexer();
+		multiplexer.addProcessor(gameButtonsStage.stage);
+		multiplexer.addProcessor(connectionStage);
+		multiplexer.addProcessor(clickOracle);
+
+		Gdx.input.setInputProcessor(multiplexer);
+
 		renderer.create();
 		
 	}
@@ -197,7 +206,9 @@ public class GameScreen implements Screen {
 		}
 		engine.updateState(time);
 		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
+
 		renderer.render();
+		gameButtonsStage.render();
 	}
 
 	@Override

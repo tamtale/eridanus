@@ -45,7 +45,7 @@ public class ClickOracle extends InputAdapter {
         selectionLocationStart = new Vector3(screenX, screenY, 0);
         rendererAdapter.unproject(selectionLocationStart);
         Gdx.app.log("ClickOracle - lji1", "Touchdown!");
-        return true;
+        return false;
     }
     
     @Override
@@ -54,7 +54,7 @@ public class ClickOracle extends InputAdapter {
         selectionLocationEnd = new Vector3(screenX, screenY, 0);
         rendererAdapter.unproject(selectionLocationEnd);
         Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
-        return true;
+        return false;
     }
     
     @Override
@@ -70,7 +70,7 @@ public class ClickOracle extends InputAdapter {
             unitsToSelect.forEach((unit) -> multiSelect(unit));
 
             Gdx.app.log("lji1 - ClickOracle", "Cleared selection locations.");
-            return true;
+            return false;
         }
 
         touchPos.set(screenX, screenY, 0);
@@ -111,7 +111,7 @@ public class ClickOracle extends InputAdapter {
                     multiSelect(unit);
                 }
             }
-            return true;
+            return false;
         }
         // Right click
         if (multiSelected != null && button == Input.Buttons.RIGHT) {
@@ -120,7 +120,7 @@ public class ClickOracle extends InputAdapter {
             System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
             networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y,
                     networkAdapter.getPlayerId(), multiSelected));
-            return true;
+            return false;
 
         }
         
