@@ -108,5 +108,12 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
     @Override
     public int getPlayerId(){return playerID;}
+    
+    @Override
+    public boolean contains(float x, float y) {
+        return (this.x - (SIZE / 2f) < x) && (x < this.x + (SIZE / 2f)) &&
+                (this.y - (SIZE / 2f) < y) && (y < this.y + (SIZE / 2f));
+                
+    }
 }
 
