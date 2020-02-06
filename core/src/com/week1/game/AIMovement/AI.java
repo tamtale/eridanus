@@ -1,13 +1,11 @@
 package com.week1.game.AIMovement;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.week1.game.Model.Unit;
+import com.week1.game.Model.Entities.Unit;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Allen Iverson

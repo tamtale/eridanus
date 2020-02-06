@@ -1,12 +1,13 @@
-package com.week1.game.Model;
+package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.week1.game.Model.Damage;
 
-import static com.week1.game.Model.HealthBar.getHealthBar;
-import static com.week1.game.Model.HealthBar.healthBarBackground;
+import static com.week1.game.Model.Entities.HealthBar.getHealthBar;
+import static com.week1.game.Model.Entities.HealthBar.healthBarBackground;
 
 
 public class PlayerBase implements Damageable {
@@ -32,10 +33,9 @@ public class PlayerBase implements Damageable {
     }
 
     public void draw(Batch batch) {
-        batch.draw(getSkin(), this.x, this.y, SIDELENGTH, SIDELENGTH);
+        batch.draw(getSkin(), this.x - (SIDELENGTH / 2f), this.y - (SIDELENGTH / 2f), SIDELENGTH, SIDELENGTH);
         // TODO draw this in a UI rendering procedure
-        batch.draw(healthBarBackground, this.x, (float) (this.y + 9), 8, .5f);
-        batch.draw(getHealthBar(hp, maxHp), this.x, (float) (this.y + 9), (float) (hp / maxHp) * 8, .5f);
+        drawHealthBar(batch, x, y, 0, SIDELENGTH, hp, maxHp);
     }
     
     Texture getSkin() { return skin; }

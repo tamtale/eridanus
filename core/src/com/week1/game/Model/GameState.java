@@ -2,19 +2,20 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.Texture;
 
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
+import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.World.GameWorld;
+import com.week1.game.Pair;
 
 
 import static com.week1.game.Model.StatsConfig.*;
 import static com.week1.game.Model.StatsConfig.tempTower2Cost;
-import static com.week1.game.Model.TowerType.*;
+import static com.week1.game.Model.Entities.TowerType.*;
 
 
 public class GameState {
@@ -54,17 +55,17 @@ public class GameState {
         if (numPlayers == 1) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
         } else if (numPlayers == 2) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 0, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 90, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
         } else if (numPlayers == 3) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 0, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 70, 1));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 90, 2));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 85, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
         } else {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 0, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 90, 1));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 90, 2));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 0, 3));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 15, 3));
         }
 
 
@@ -89,15 +90,19 @@ public class GameState {
             //System.out.println("from step " + agent.getSteeringOutput().linear);
             unit.step(delta);
             for(Tower tower: towers) {
-                if (unit.getX() > tower.x && unit.getX() < tower.x + tower.getSidelength() &&
-                        unit.getY() > tower.y && unit.getY() < tower.y + tower.getSidelength()){
+                if ((unit.getX() > tower.x - (tower.getSidelength() / 2f) + 0.5f) && 
+                        (unit.getX() < tower.x + (tower.getSidelength() / 2f) + 0.5f) &&
+                        (unit.getY() > tower.y - (tower.getSidelength() / 2f) + 0.5f) &&
+                        (unit.getY() < tower.y + (tower.getSidelength() / 2f) + 0.5f)) {
                     collide(unit);
                 }
             }
 
             for(PlayerBase base: playerBases) {
-                if (unit.getX() > base.x && unit.getX() < base.x + base.getSidelength() &&
-                        unit.getY() > base.y && unit.getY() < base.y + base.getSidelength()){
+                if ((unit.getX() > base.x - (base.getSidelength() / 2f)) && 
+                        (unit.getX() < base.x + (base.getSidelength() / 2f)) &&
+                        (unit.getY() > base.y - (base.getSidelength() / 2f)) &&
+                        (unit.getY() < base.y + (base.getSidelength() / 2f))) {
                     collide(unit);
                 }
             }
@@ -194,7 +199,7 @@ public class GameState {
     }
 
     public void dealDamage(float delta) {
-        Array<Pair> deadEntities  = new Array<>();
+        Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
 
         Array<Damaging> everythingDamaging = new Array<>(units);
         everythingDamaging.addAll(towers);
@@ -216,7 +221,7 @@ public class GameState {
                         attacker.getPlayerId() != victim.getPlayerId()) {
 
                     if (victim.takeDamage(attacker.getDamage() * delta)) {
-                        deadEntities.add(new Pair(attacker, victim));
+                        deadEntities.add(new Pair<>(attacker, victim));
                     }
                     // the attacker can only damage one opponent per attack cycle
                     break;
@@ -226,9 +231,9 @@ public class GameState {
 
         // get rid of all the dead entities and gives rewards
         for (int deadIndex = 0; deadIndex < deadEntities.size; deadIndex++) {
-            Pair deadPair = deadEntities.get(deadIndex);
-            int attackingPlayerId = deadPair.getFirst().getPlayerId();
-            Damageable deadEntity = deadPair.getSecond();
+            Pair<Damaging, Damageable> deadPair = deadEntities.get(deadIndex);
+            int attackingPlayerId = deadPair.key.getPlayerId();
+            Damageable deadEntity = deadPair.value;
 
             if (deadEntity.getClass() == Unit.class) {
                 units.removeValue((Unit)deadEntity, false);

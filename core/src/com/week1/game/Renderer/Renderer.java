@@ -58,6 +58,10 @@ public class Renderer {
         batch.draw(t, x, y);
     }
 
+    public void resize() {
+        camera.update();
+    }
+
     public void endBatch() {
         batch.end();
     }
