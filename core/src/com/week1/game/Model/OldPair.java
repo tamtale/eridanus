@@ -1,9 +1,9 @@
 package com.week1.game.Model;
 
-public class Pair {
+public class OldPair {
     private Damaging first;
     private Damageable second;
-    public Pair(Damaging attacker, Damageable victim) {
+    public OldPair(Damaging attacker, Damageable victim) {
         first = attacker;
         second = victim;
     }

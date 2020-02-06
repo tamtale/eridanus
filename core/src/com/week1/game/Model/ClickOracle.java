@@ -149,7 +149,7 @@ public class ClickOracle extends InputAdapter {
     
     public void render() {
         batch.setProjectionMatrix(rendererAdapter.getCamera().combined);
-        Gdx.app.log("projection matrix ", batch.getProjectionMatrix().toString());
+//        Gdx.app.log("projection matrix ", batch.getProjectionMatrix().toString());
         // selectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getHeight(), Gdx.graphics.getWidth());
         // batch.setProjectionMatrix(selectionMatrix);
         
