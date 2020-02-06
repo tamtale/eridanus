@@ -16,7 +16,6 @@ public class CreateTowerMessage extends GameMessage {
     private float x, y;
     private TowerType towerType;
     
-    private static int SNAPSCALE = 5;
 
     public CreateTowerMessage(float x, float y, TowerType towerType, int playerID){
         super(playerID, MESSAGE_TYPE);

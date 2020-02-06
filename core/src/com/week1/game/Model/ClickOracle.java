@@ -27,13 +27,10 @@ public class ClickOracle extends InputAdapter {
     
     private Vector3 selectionLocationStart = new Vector3();
     private Vector3 selectionLocationEnd = new Vector3();
-    private Vector3 unprojectedStart = new Vector3();
-    private Vector3 unprojectedEnd = new Vector3();
-    // private Matrix4 selectionMatrix = new Matrix4();
     
     private boolean dragging = false;
     
-    private SpriteBatch batch; // TODO: is it okay that this is a different SpriteBatch than the one used in the GameEngine?
+    private SpriteBatch batch; 
 
     public ClickOracle(IClickOracleToRendererAdapter rendererAdapter, 
                        IClickOracleToEngineAdapter engineAdapter,
@@ -68,12 +65,7 @@ public class ClickOracle extends InputAdapter {
             dragging = false;
             
             // mark the units in the box as selected
-            unprojectedStart.set(selectionLocationStart);
-            rendererAdapter.unproject(unprojectedStart);
-            unprojectedEnd.set(selectionLocationEnd);
-            rendererAdapter.unproject(unprojectedEnd);
-            
-            Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(unprojectedStart, unprojectedEnd);
+            Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
             
             deMultiSelect();
             unitsToSelect.forEach((unit) -> multiSelect(unit));
@@ -167,9 +159,6 @@ public class ClickOracle extends InputAdapter {
         
         if (dragging) {
 
-//            System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
-//            rendererAdapter.unproject(selectionLocationStart);
-//            rendererAdapter.unproject(selectionLocationEnd);
             System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
             
             Texture t = TextureUtils.makeUnfilledRectangle(1,1, Color.YELLOW);
@@ -179,8 +168,6 @@ public class ClickOracle extends InputAdapter {
                     Math.min(selectionLocationStart.y, selectionLocationEnd.y),
                     Math.abs((selectionLocationEnd.x - selectionLocationStart.x)),
                     Math.abs((selectionLocationEnd.y - selectionLocationStart.y))
-
-                    // Math.min(Gdx.graphics.getHeight() - selectionLocationStart.y - 1, Gdx.graphics.getHeight() - selectionLocationEnd.y - 1)
             );
         }
         

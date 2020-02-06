@@ -44,10 +44,10 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     }
 
     public void draw(Batch batch) {
-        batch.draw(getSkin(), this.x, this.y, SIZE, SIZE);
+        batch.draw(getSkin(), this.x - (SIZE / 2f), this.y - (SIZE / 2f), SIZE, SIZE);
         // TODO draw this in a UI rendering procedure
-        batch.draw(healthBarBackground, this.x, (float) (this.y + 1.5), 1, .5f);
-        batch.draw(getHealthBar(hp, maxHp), this.x, (float) (this.y + 1.5), (float) (hp / maxHp), .5f);
+        batch.draw(healthBarBackground, this.x - (SIZE / 2f), this.y + 1.5f - (SIZE / 2f), 1, .5f);
+        batch.draw(getHealthBar(hp, maxHp), this.x - (SIZE / 2f), this.y + 1.5f - (SIZE / 2f), (float) (hp / maxHp), .5f);
     }
 
 

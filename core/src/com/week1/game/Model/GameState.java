@@ -96,8 +96,10 @@ public class GameState {
             }
 
             for(PlayerBase base: playerBases) {
-                if (unit.getX() > base.x && unit.getX() < base.x + base.getSidelength() &&
-                        unit.getY() > base.y && unit.getY() < base.y + base.getSidelength()){
+                if ((unit.getX() > base.x - (base.getSidelength() / 2f)) && 
+                        (unit.getX() < base.x + (base.getSidelength() / 2f)) &&
+                        (unit.getY() > base.y - (base.getSidelength() / 2f)) &&
+                        (unit.getY() < base.y + (base.getSidelength() / 2f))){
                     collide(unit);
                 }
             }
