@@ -24,15 +24,19 @@ public class GameButtonsStage {
 
     private Button previouslySelected;
 
-//    private Button.ButtonStyle down = new Button.ButtonStyle().down;
-    private Button.ButtonStyle pressed = new TextButton.TextButtonStyle(new Button.ButtonStyle().down, new Button.ButtonStyle().down, new Button.ButtonStyle().down, new BitmapFont());
-    private Button.ButtonStyle normal = new TextButton.TextButtonStyle(new ButtonStyle().up, new Button.ButtonStyle().down, new ButtonStyle().checked, new BitmapFont());
-    // .setStyle(ButtonStyle.down)
+    private Button.ButtonStyle pressed;
+    private Button.ButtonStyle normal;
 
 
     public GameButtonsStage(IGameButtonsToClickOracleAdapter clickOracleAdapter) {
         stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
         this.clickOracleAdapter = clickOracleAdapter;
+
+        // TODO figure out how to actually change the appearance of buttons. Will need to make a json skin file but will probably wait until we are making it pretty
+        // https://github.com/libgdx/libgdx/wiki/Skin#skin-json  https://badlogicgames.com/forum/viewtopic.php?f=11&t=14659
+
+        normal = new TextButton.TextButtonStyle(new ButtonStyle().up, new Button.ButtonStyle().down, new ButtonStyle().checked, new BitmapFont());
+        pressed = new TextButton.TextButtonStyle(new Button.ButtonStyle().down, new Button.ButtonStyle().down, new Button.ButtonStyle().down, new BitmapFont());
 
         setWidgets();
         configureWidgets();
@@ -45,9 +49,13 @@ public class GameButtonsStage {
 
     private void setWidgets() {
         unitButton   = new TextButton("Spawn Units",   new Skin(Gdx.files.internal("uiskin.json")));
+        unitButton.setStyle(pressed);
         tower1Button = new TextButton("Spawn Tower 1", new Skin(Gdx.files.internal("uiskin.json")));
+        tower1Button.setStyle(normal);
         tower2Button = new TextButton("Spawn Tower 2", new Skin(Gdx.files.internal("uiskin.json")));
+        tower2Button.setStyle(normal);
         tower3Button = new TextButton("Spawn Tower 3", new Skin(Gdx.files.internal("uiskin.json")));
+        tower3Button.setStyle(normal);
     }
 
     private void configureWidgets() {
