@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
@@ -15,7 +14,7 @@ import com.week1.game.Renderer.SpawnInfo.*;
 
 public class GameButtonsStage {
 
-    private IGameButtonsToClickOracleAdapter clickOracleAdapter;
+    private IRendererToClickOracleAdapter clickOracleAdapter;
     public Stage stage;
     private TextButton unitButton;
     private TextButton tower1Button;
@@ -28,7 +27,7 @@ public class GameButtonsStage {
     private Button.ButtonStyle normal;
 
 
-    public GameButtonsStage(IGameButtonsToClickOracleAdapter clickOracleAdapter) {
+    public GameButtonsStage(IRendererToClickOracleAdapter clickOracleAdapter) {
         stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
         this.clickOracleAdapter = clickOracleAdapter;
 
