@@ -91,10 +91,11 @@ public class NetworkUtils {
                 // Now make the client stuff
                 c = new Client(localIpAddr, h.getPort(), adapter);
 
-                if (args.length == 3 && args[2].equals("start")) {
+//                if (args.length == 3 && args[2].equals("start")) {
                     // Time to start the game
-                    c.sendStringMessage("start");
-                }
+//                    c.sendStringMessage("start");
+//                    c.sendStartMessage();
+//                }
                 
 
             } else if  (args[0].equals("client")) {
@@ -106,10 +107,11 @@ public class NetworkUtils {
                     int hostPort = Integer.parseInt(args[2]);
                     c = new Client(hostIpAddr, hostPort, adapter);
 
-                    if (args.length == 4 && args[3].equals("start")) {
+//                    if (args.length == 4 && args[3].equals("start")) {
                         // Time to start the game
-                        c.sendStringMessage("start");
-                    } 
+//                        c.sendStartMessage();
+//                        c.sendStringMessage("start");
+//                    }
                 }
                 catch (Exception e) {
                     throw new IndexOutOfBoundsException("Expected arguments in format: client <ip address> <portnumber> <start (optional)>");

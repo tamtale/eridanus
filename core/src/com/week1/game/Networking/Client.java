@@ -98,4 +98,8 @@ public class Client {
     public int getPlayerId() {
         return this.playerId;
     }
+    
+    public void sendStartMessage() {
+        this.sendStringMessage("start");
+    }
 }

@@ -4,7 +4,13 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
 import com.week1.game.Networking.Client;
@@ -31,10 +37,33 @@ public class GameScreen implements Screen {
 	private ClickOracle clickOracle;
 	private AI ai;
 	private InfoUtil util;
+	//This is a temporary stage that is displayed before connection of clients
+	private Stage connectionStage;
+	private boolean pressedStartbtn = false;
 
+	private void makeTempStage() {
+		connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
+
+		TextButton startbtn = new TextButton("Send Start Message", new Skin(Gdx.files.internal("uiskin.json")));
+		startbtn.setSize(200,64);
+		startbtn.setPosition(GameController.VIRTUAL_WIDTH/2 - startbtn.getWidth(), GameController.VIRTUAL_HEIGHT/2 - startbtn.getHeight());
+		connectionStage.addActor(startbtn);
+
+		startbtn.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				networkClient.sendStartMessage();
+//				Gdx.input.setInputProcessor(clickOracle);
+//				connectionStage.dispose();
+			}
+		});
+	}
 	
 	public GameScreen(String[] args) {
 		this.args = args;
+		// Set the logging level
+		Gdx.app.setLogLevel(Application.LOG_INFO);
+
 
 
 		util = new InfoUtil(true);
@@ -49,6 +78,7 @@ public class GameScreen implements Screen {
 				engine.setEnginePlayerId(playerId);
 			}
 		});
+
 
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override
@@ -134,11 +164,13 @@ public class GameScreen implements Screen {
 				});
 
 		ai = new AI();
-		Gdx.input.setInputProcessor(clickOracle);
+		makeTempStage();
+
+		
+		Gdx.input.setInputProcessor(connectionStage);
+//		Gdx.input.setInputProcessor(clickOracle);
 		renderer.create();
 		
-		// Set the logging level
-		Gdx.app.setLogLevel(Application.LOG_INFO);
 	}
 
 
@@ -151,9 +183,18 @@ public class GameScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		if (!engine.started()) {
-			renderer.renderInfo();
+			connectionStage.draw();
+//			renderer.renderInfo();
 			return;
 		}
+
+		if (!pressedStartbtn) {
+			Gdx.input.setInputProcessor(clickOracle);
+			connectionStage.dispose();
+			pressedStartbtn = true;
+		}
+
+
 		float time = Gdx.graphics.getDeltaTime();
 		curTime += time;
 		if (curTime > THRESHOLD) {
@@ -169,6 +210,9 @@ public class GameScreen implements Screen {
 	@Override
 	public void resize(int width, int height) {
 		renderer.resize();
+		if (!engine.started()) {
+			connectionStage.getViewport().update(width, height);
+		}
 	}
 
 	@Override
