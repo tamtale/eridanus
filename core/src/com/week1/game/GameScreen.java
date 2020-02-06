@@ -167,12 +167,7 @@ public class GameScreen implements Screen {
 			}
 		});
 
-		InputMultiplexer multiplexer = new InputMultiplexer();
-		multiplexer.addProcessor(gameButtonsStage.stage);
-		multiplexer.addProcessor(connectionStage);
-		multiplexer.addProcessor(clickOracle);
-
-		Gdx.input.setInputProcessor(multiplexer);
+		Gdx.input.setInputProcessor(connectionStage);
 
 		renderer.create();
 		
@@ -194,7 +189,11 @@ public class GameScreen implements Screen {
 		}
 
 		if (!pressedStartbtn) {
-			Gdx.input.setInputProcessor(clickOracle);
+			InputMultiplexer multiplexer = new InputMultiplexer();
+			multiplexer.addProcessor(gameButtonsStage.stage);
+			multiplexer.addProcessor(clickOracle);
+			Gdx.input.setInputProcessor(multiplexer);
+
 			connectionStage.dispose();
 			pressedStartbtn = true;
 		}
