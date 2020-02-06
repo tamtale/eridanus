@@ -55,17 +55,17 @@ public class GameState {
         if (numPlayers == 1) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
         } else if (numPlayers == 2) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 0, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 90, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
         } else if (numPlayers == 3) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 0, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 70, 1));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 90, 2));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 85, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
         } else {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 0, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 90, 1));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 10, 90, 2));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 90, 0, 3));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 15, 3));
         }
 
 
