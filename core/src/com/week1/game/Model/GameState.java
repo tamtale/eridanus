@@ -221,7 +221,7 @@ public class GameState {
                         attacker.getPlayerId() != victim.getPlayerId()) {
 
                     if (victim.takeDamage(attacker.getDamage() * delta)) {
-                        deadEntities.add(new Pair(attacker, victim));
+                        deadEntities.add(new Pair<>(attacker, victim));
                     }
                     // the attacker can only damage one opponent per attack cycle
                     break;
