@@ -1,16 +1,17 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.ai.pfa.GraphPath;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.week1.game.Model.World.Block;
+
 
 import java.util.Iterator;
 
-public class OutputPath implements GraphPath<Block> {
+public class OutputPath implements GraphPath<Vector3> {
 
-    private Array<Block> path = new Array<>();
+    private Array<Vector3> path = new Array<>();
 
-    public Array<Block> getPath(){
+    public Array<Vector3> getPath(){
         return path;
     }
     @Override
@@ -19,12 +20,14 @@ public class OutputPath implements GraphPath<Block> {
     }
 
     @Override
-    public Block get(int index) {
+    public Vector3 get(int index) {
+
         return path.get(index);
     }
 
     @Override
-    public void add(Block node) {
+    public void add(Vector3 node) {
+        System.out.println("OutputPath" + node);
         path.add(node);
     }
 
@@ -39,7 +42,7 @@ public class OutputPath implements GraphPath<Block> {
     }
 
     @Override
-    public Iterator<Block> iterator() {
+    public Iterator<Vector3> iterator() {
         return path.iterator();
     }
 }

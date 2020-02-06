@@ -15,20 +15,18 @@ public class GameWorld {
     private GameGraph graph;
     public GameWorld() {
         // For now, we'll make a preset 100x100x10 world.
-        blocks = new Block[100][100][3];
-        GameGraph graph = new GameGraph();
+        blocks = new Block[10][10][3];
+        this.graph = new GameGraph();
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 blocks[i][j][0] = Block.TerrainBlock.STONE;
-                blocks[i][j][0].setCoords(new Vector3(i, j, 0));
-                graph.addBlock(blocks[i][j][0]);
+                graph.addVector3(new Vector3(i, j, 0));
 //                if (i > 0) {
 //                    blocks[i][j][0].setConnection(new WeightedBlockEdge(1, blocks[i][j][0], blocks[i - 1][j][0]));
 //                }
                 for (int k = 1; k < blocks[0][0].length; k++) {
                     blocks[i][j][k] = Block.TerrainBlock.AIR;
-                    blocks[i][j][0].setCoords(new Vector3(i, j, k));
-                    graph.addBlock(blocks[i][j][k]);
+                    graph.addVector3(new Vector3(i, j, k));
                 }
             }
         }
@@ -62,21 +60,19 @@ public class GameWorld {
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 for (int k = 0; k < blocks[0][0].length; k++) {
+                    Vector3 coords = new Vector3(i, j, k);
                     if (i > 0) {
-                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i - 1][j][k]);
+                        graph.setConnection(coords, new Vector3(i - 1, j, k), blocks[i][j][k].getCost());
                     }
-                    if(i < blocks.length) {
-                        Gdx.app.log("wab2", "Building graph at i:" + i + " j:" + j + " k:" + k);
-                        System.out.println(blocks[i][j][k]);
-                        System.out.println(blocks[i + 1][j][k]);
-                        System.out.println(graph);
-                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i + 1][j][k]);
+                    if(i < blocks.length - 1) {
+                        graph.setConnection(coords, new Vector3(i + 1, j, k), blocks[i][j][k].getCost());
                     }
                     if (j > 0) {
-                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i][j - 1][k]);
+                        graph.setConnection(coords, new Vector3(i, j - 1, k), blocks[i][j][k].getCost());
                     }
-                    if(j < blocks[0].length) {
-                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i][j + 1][k]);
+                    if(j < blocks[0].length - 1) {
+
+                        graph.setConnection(coords, new Vector3(i, j + 1, k), blocks[i][j][k].getCost());
                     }
                     //TODO: climbing jumping into k.
 //                    if (k > 0) {
@@ -85,20 +81,18 @@ public class GameWorld {
 //                    if(k < blocks[0].length) {
 //                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i][j][k + 1]);
                     if (i > 0 && j > 0) {
-                        graph.setConnection(blocks[i][j][k].getCost() * (float) Math.sqrt(2),
-                                blocks[i][j][k], blocks[i - 1][j - 1][k]);
+                        graph.setConnection(coords, new Vector3(i - 1, j - 1, k),
+                                blocks[i][j][k].getCost() * (float) Math.sqrt(2));
                     }
-                    if (i > 0 && j < blocks[0].length) {
-                        graph.setConnection(blocks[i][j][k].getCost() * (float) Math.sqrt(2),
-                                blocks[i][j][k], blocks[i - 1][j + 1][k]);
+                    if (i > 0 && j < blocks[0].length - 1) {
+                        graph.setConnection(coords, new Vector3(i - 1, j + 1, k),
+                                blocks[i][j][k].getCost() * (float) Math.sqrt(2));
                     }
-                    if (i < blocks.length && j > 0) {
-                        graph.setConnection(blocks[i][j][k].getCost() * (float) Math.sqrt(2),
-                                blocks[i][j][k], blocks[i + 1][j - 1][k]);
+                    if (i < blocks.length - 1 && j > 0) {
+                        graph.setConnection(coords, new Vector3(i + 1, j - 1, k), blocks[i][j][k].getCost() * (float) Math.sqrt(2));
                     }
-                    if (i < blocks.length && j < blocks[0].length) {
-                        graph.setConnection(blocks[i][j][k].getCost() * (float) Math.sqrt(2),
-                                blocks[i][j][k], blocks[i + 1][j + 1][k]);
+                    if (i < blocks.length  - 1 && j < blocks[0].length - 1) {
+                        graph.setConnection(coords, new Vector3(i + 1, j + 1, k), blocks[i][j][k].getCost() * (float) Math.sqrt(2));
                     }
                 }
             }

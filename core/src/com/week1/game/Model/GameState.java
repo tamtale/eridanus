@@ -7,15 +7,16 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 
 import com.badlogic.gdx.ai.pfa.Heuristic;
 import com.badlogic.gdx.ai.pfa.PathFinder;
+
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
+import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
-import com.week1.game.Model.World.Block;
 
 import static com.week1.game.Model.StatsConfig.*;
 import static com.week1.game.Model.StatsConfig.tempTower2Cost;
@@ -26,7 +27,7 @@ import static com.week1.game.Model.TowerType.*;
 public class GameState {
 
     private GameGraph graph;
-    private PathFinder<Block> pathFinder;
+    private PathFinder<Vector3> pathFinder;
     private Array<Unit> units;
     private int minionCount;
     private Array<Tower> towers;
@@ -49,26 +50,30 @@ public class GameState {
         world = new GameWorld();
         Gdx.app.log("Game State - wab2", "world built");
         graph = world.buildGraph();
-        pathFinder = new IndexedAStarPathFinder<>(graph);
+        pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
         System.out.println("PATHFINDER");
-        Heuristic<Block> heuristic = new Heuristic<Block>() {
+        Heuristic<Vector3> heuristic = new Heuristic<Vector3>() {
             @Override
-            public float estimate(Block node, Block endNode) {
+            public float estimate(Vector3 node, Vector3 endNode) {
                 //TODO: Blocks have there x,y,z? do distance formula
+                //System.out.println(node + " " + endNode);
                 float D = 1f;
                 float D2 = (float) Math.sqrt(2);
-                Vector3 nodeCoords = node.getCoords();
-                Vector3 endNodeCoords = endNode.getCoords();
-                float dx = Math.abs(nodeCoords.x - endNodeCoords.x);
-                float dy = Math.abs(nodeCoords.y - endNodeCoords.y);
-                float dz = Math.abs(nodeCoords.z - endNodeCoords.z);
+                float dx = Math.abs(node.x - endNode.x);
+                float dy = Math.abs(node.y - endNode.y);
+                float dz = Math.abs(node.z - endNode.z);
                 return D * (dx + dy + dz) + (D2 - 2 * D) * Math.min(dx, Math.min(dy, dz));
             }
         };
         OutputPath path = new OutputPath();
-        pathFinder.searchNodePath(world.getBlock(0 , 0, 0), world.getBlock(50, 50, 0),
+        pathFinder.searchNodePath(new Vector3(1, 7, 0),
+                new Vector3(9, 8, 0),
                 heuristic, path);
-        System.out.println("WARREN BIGELOW " + path.getPath());
+        System.out.println(path.getPath());
+        System.out.println(graph.getIndex(new Vector3(0, 0, 0)));
+        System.out.println(graph.getIndex(new Vector3(0, 1, 0)));
+        System.out.println(graph.getIndex(new Vector3(5, 7, 0)));
+        System.out.println(graph.getConnections(new Vector3(0, 0, 0)));
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();

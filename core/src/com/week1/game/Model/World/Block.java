@@ -48,6 +48,7 @@ public interface Block {
             unitPixmap.setColor(Color.GRAY);
             unitPixmap.fillRectangle(3, 3, PIXELS_PER_UNIT - 6, PIXELS_PER_UNIT - 6);
             this.textureRegion = new TextureRegion(new Texture(unitPixmap));
+            this.edges = new Array<>();
 
         }
 
