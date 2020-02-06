@@ -1,4 +1,4 @@
-package com.week1.game.Model;
+package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;

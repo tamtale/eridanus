@@ -13,7 +13,7 @@ public class StatsConfig {
 
     static final double playerBaseInitialHp = 500;
 
-    static final double placementRange = 10;
+    static final double placementRange = 15;
   
     // Basic
     static public final double tempTower1Cost = 75;

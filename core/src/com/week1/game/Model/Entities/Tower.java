@@ -1,11 +1,12 @@
-package com.week1.game.Model;
+package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.week1.game.Model.Damage;
 
-import static com.week1.game.Model.HealthBar.getHealthBar;
-import static com.week1.game.Model.HealthBar.healthBarBackground;
+import static com.week1.game.Model.Entities.HealthBar.getHealthBar;
+import static com.week1.game.Model.Entities.HealthBar.healthBarBackground;
 
 public class Tower implements Damageable, Damaging {
     private static final int SIDELENGTH = 3;
@@ -36,10 +37,9 @@ public class Tower implements Damageable, Damaging {
     }
     
     public void draw(Batch batch) {
-        batch.draw(getSkin(), this.x, this.y, SIDELENGTH, SIDELENGTH);
+        batch.draw(getSkin(), this.x - (SIDELENGTH / 2f) + 0.5f, this.y - (SIDELENGTH / 2f) + 0.5f, SIDELENGTH, SIDELENGTH);
         // TODO draw this in a UI rendering procedure
-        batch.draw(healthBarBackground, this.x, (float) (this.y + 4), 3, .5f);
-        batch.draw(getHealthBar(hp, maxHp), this.x, (float) (this.y + 4), (float) (hp / maxHp) * 3, .5f);
+        drawHealthBar(batch, x, y, 0.5f, SIDELENGTH, hp, maxHp);
     }
 
     public Texture getSkin() {

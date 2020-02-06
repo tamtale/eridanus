@@ -9,9 +9,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.week1.game.Model.Entities.TowerType;
+import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
+import com.week1.game.Renderer.SpawnInfo;
 import com.week1.game.Renderer.TextureUtils;
 
 import java.util.HashMap;
@@ -46,6 +49,10 @@ public class ClickOracle extends InputAdapter {
         cursorBatch.setProjectionMatrix(projection);
     }
 
+
+    private SpriteBatch batch;
+    private SpawnInfo.SpawnType spawnType;
+
     public ClickOracle(IClickOracleToRendererAdapter rendererAdapter, 
                        IClickOracleToEngineAdapter engineAdapter,
                        IClickOracleToNetworkAdapter networkAdapter) {
@@ -77,7 +84,7 @@ public class ClickOracle extends InputAdapter {
         selectionLocationStart.set(screenX, screenY, 0);
         rendererAdapter.unproject(selectionLocationStart);
         Gdx.app.log("ClickOracle - lji1", "Touchdown!");
-        return true;
+        return false;
     }
     
     @Override
@@ -86,27 +93,12 @@ public class ClickOracle extends InputAdapter {
         selectionLocationEnd.set(screenX, screenY, 0);
         rendererAdapter.unproject(selectionLocationEnd);
         Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
-        return true;
+        return false;
     }
     
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         Gdx.app.log("lji1 - ClickOracle", "Click registered, dragging: " + dragging);
-        if (dragging) {
-            dragging = false;
-            
-            // mark the units in the box as selected
-            Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
-            deMultiSelect();
-            multiSelected = new Array<>();
-            unitsToSelect.forEach((unit) -> multiSelect(unit));
-
-            Gdx.app.log("lji1 - ClickOracle", "Cleared selection locations.");
-            return true;
-        }
-
-        touchPos.set(screenX, screenY, 0);
-        rendererAdapter.unproject(touchPos);
 
         // The player must be alive to be able to register any clicks
         if (!engineAdapter.isPlayerAlive()) {
@@ -114,9 +106,27 @@ public class ClickOracle extends InputAdapter {
             return false;
         }
 
+        if (dragging) {
+            dragging = false;
+            
+            // mark the units in the box as selected
+            Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
+            
+            deMultiSelect();
+            unitsToSelect.forEach((unit) -> multiSelect(unit));
+
+            Gdx.app.log("lji1 - ClickOracle", "Cleared selection locations.");
+            return false;
+        }
+
+        touchPos.set(screenX, screenY, 0);
+        rendererAdapter.unproject(touchPos);
+
+
         if (button == Input.Buttons.LEFT) {
 
-            // Create tower with left click and numberkey down
+            // Create tower with left click and numberkey down.
+            // For advanced users, we will keep this as the first check, then defer to the other users
             if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
                 Gdx.app.log("lji1 - ClickOracle", "Spawn basic tower.");
                 networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.BASIC, networkAdapter.getPlayerId()));
@@ -132,27 +142,38 @@ public class ClickOracle extends InputAdapter {
                 if (unit == null) {
                     Gdx.app.log("ttl4 - ClickOracle", "nothing selected!");
                     System.out.println("aaaaa");
-                    networkAdapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, networkAdapter.getPlayerId()));
+                    if (spawnType == SpawnInfo.SpawnType.UNIT) {
+                        networkAdapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, networkAdapter.getPlayerId()));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.BASIC, networkAdapter.getPlayerId()));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn Tower 2 tower via state");
+                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.SNIPER, networkAdapter.getPlayerId()));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.TANK, networkAdapter.getPlayerId()));
+                    }
+
                 } else {
                     System.out.println("bbbbb");
                     Gdx.app.log("ttl4 - ClickOracle", "selected selected!");
                     deMultiSelect();
-                    multiSelected = new Array<>();
                     selectionLocationStart.set(unit.x, unit.y, 0);
                     selectionLocationEnd.set(unit.x, unit.y, 0);
                     multiSelect(unit);
                 }
             }
-            return true;
+            return false;
         }
         // Right click
-        if (multiSelected != null && button == Input.Buttons.RIGHT) {
+        if (multiSelected.notEmpty() && button == Input.Buttons.RIGHT) {
             // TODO: steering agent behavior
             
             System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
             networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y,
                     networkAdapter.getPlayerId(), multiSelected));
-            return true;
+            return false;
 
         }
         
@@ -162,9 +183,9 @@ public class ClickOracle extends InputAdapter {
 
 
     private void deMultiSelect() {
-        if (multiSelected != null) {
+        if (multiSelected.notEmpty()) {
             multiSelected.forEach((u) -> u.clicked = false);
-            multiSelected = null;
+            multiSelected.clear();
         }
     }
     
@@ -174,22 +195,36 @@ public class ClickOracle extends InputAdapter {
             unit.clicked = true;
         }
     }
+
+    public void setSpawnType(SpawnInfo newInfo) {
+        spawnType = newInfo.getType();
+    }
+    
+    public SpriteBatch getBatch() {
+        return batch;
+    }
     
     public void render() {
 
+        cursorBatch.setProjectionMatrix(rendererAdapter.getCamera().combined);
+//        Gdx.app.log("projection matrix ", cursorBatch.getProjectionMatrix().toString());
+        // selectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getHeight(), Gdx.graphics.getWidth());
+        // cursorBatch.setProjectionMatrix(selectionMatrix);
+        
         cursorBatch.setColor(1, 1,1, 0.5f);
         cursorBatch.begin();
+
         
-        int SCALE = 8; //TODO: This is butt ugly and needs to be fixed
         if (dragging) {
-            Texture t = TextureUtils.makeUnfilledRectangle(
-                    Math.abs((int)(selectionLocationEnd.x - selectionLocationStart.x)) * SCALE,
-                    Math.abs((int)(selectionLocationEnd.y - selectionLocationStart.y)) * SCALE, 
-                    Color.YELLOW);
+            System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
+            
+            Texture t = TextureUtils.makeUnfilledRectangle(1,1, Color.YELLOW);
             cursorBatch.draw(
-                    t, 
-                    Math.min(selectionLocationStart.x, selectionLocationEnd.x) * SCALE,
-                    Math.min(selectionLocationStart.y, selectionLocationEnd.y) * SCALE
+                    t,
+                    Math.min(selectionLocationStart.x, selectionLocationEnd.x),
+                    Math.min(selectionLocationStart.y, selectionLocationEnd.y),
+                    Math.abs((selectionLocationEnd.x - selectionLocationStart.x)),
+                    Math.abs((selectionLocationEnd.y - selectionLocationStart.y))
             );
         }
         
