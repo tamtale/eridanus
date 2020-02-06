@@ -10,7 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
-import com.week1.game.Renderer.SpawnInfo.*;
+import com.week1.game.Model.SpawnInfo;
+import com.week1.game.Model.SpawnInfo.*;
 
 public class GameButtonsStage {
 
@@ -30,9 +31,6 @@ public class GameButtonsStage {
     public GameButtonsStage(IRendererToClickOracleAdapter clickOracleAdapter) {
         stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
         this.clickOracleAdapter = clickOracleAdapter;
-
-        // TODO figure out how to actually change the appearance of buttons. Will need to make a json skin file but will probably wait until we are making it pretty
-        // https://github.com/libgdx/libgdx/wiki/Skin#skin-json  https://badlogicgames.com/forum/viewtopic.php?f=11&t=14659
 
         normal = new TextButton.TextButtonStyle(
                 new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"),
