@@ -39,8 +39,6 @@ public class Tower implements Damageable, Damaging {
     public void draw(Batch batch) {
         batch.draw(getSkin(), this.x - (SIDELENGTH / 2f) + 0.5f, this.y - (SIDELENGTH / 2f) + 0.5f, SIDELENGTH, SIDELENGTH);
         // TODO draw this in a UI rendering procedure
-//        batch.draw(healthBarBackground, this.x - (SIDELENGTH / 2f) + 0.5f, this.y + 4 - (SIDELENGTH / 2f) + 0.5f, 3, .5f);
-//        batch.draw(getHealthBar(hp, maxHp), this.x - (SIDELENGTH / 2f) + 0.5f, this.y + 4 - (SIDELENGTH / 2f) + 0.5f, (float) (hp / maxHp) * 3, .5f);
         drawHealthBar(batch, x, y, 0.5f, SIDELENGTH, hp, maxHp);
     }
 
