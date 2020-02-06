@@ -89,8 +89,10 @@ public class GameState {
             //System.out.println("from step " + agent.getSteeringOutput().linear);
             unit.step(delta);
             for(Tower tower: towers) {
-                if (unit.getX() > tower.x && unit.getX() < tower.x + tower.getSidelength() &&
-                        unit.getY() > tower.y && unit.getY() < tower.y + tower.getSidelength()){
+                if ((unit.getX() > tower.x - (tower.getSidelength() / 2f) + 0.5f) && 
+                        (unit.getX() < tower.x + (tower.getSidelength() / 2f) + 0.5f) &&
+                        (unit.getY() > tower.y - (tower.getSidelength() / 2f) + 0.5f) &&
+                        (unit.getY() < tower.y + (tower.getSidelength() / 2f) + 0.5f)) {
                     collide(unit);
                 }
             }
@@ -99,7 +101,7 @@ public class GameState {
                 if ((unit.getX() > base.x - (base.getSidelength() / 2f)) && 
                         (unit.getX() < base.x + (base.getSidelength() / 2f)) &&
                         (unit.getY() > base.y - (base.getSidelength() / 2f)) &&
-                        (unit.getY() < base.y + (base.getSidelength() / 2f))){
+                        (unit.getY() < base.y + (base.getSidelength() / 2f))) {
                     collide(unit);
                 }
             }
