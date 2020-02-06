@@ -1,6 +1,7 @@
 package com.week1.game;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
+import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;
@@ -127,6 +129,11 @@ public class GameScreen implements Screen {
 					public void unproject(Vector3 projected) {
 						renderer.getCamera().unproject(projected);
 					}
+
+					@Override
+					public Camera getCamera() {
+						return renderer.getCamera();
+					}
 				},
 				new IClickOracleToEngineAdapter() {
 					@Override
@@ -214,6 +221,7 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
+		renderer.resize();
 		if (!engine.started()) {
 			connectionStage.getViewport().update(width, height);
 		}

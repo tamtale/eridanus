@@ -16,6 +16,7 @@ public class TextureUtils {
     
     public static Texture makeUnfilledRectangle(int width, int height, Color color) {
         Pixmap map = new Pixmap(width, height, Pixmap.Format.RGB888);
+
         
         map.setColor(Color.argb8888(155,155,0,0));
         map.fill();

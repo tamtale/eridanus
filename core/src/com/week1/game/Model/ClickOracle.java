@@ -4,13 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.week1.game.Model.Entities.TowerType;
+import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
@@ -25,12 +24,12 @@ public class ClickOracle extends InputAdapter {
     private Array<Unit> multiSelected = new Array<>();
     private IClickOracleToNetworkAdapter networkAdapter;
     
-    private Vector3 selectionLocationStart = null;
-    private Vector3 selectionLocationEnd = null;
+    private Vector3 selectionLocationStart = new Vector3();
+    private Vector3 selectionLocationEnd = new Vector3();
     
     private boolean dragging = false;
-    
-    private SpriteBatch batch; // TODO: is it okay that this is a different SpriteBatch than the one used in the GameEngine?
+
+    private SpriteBatch batch;
     private SpawnInfo.SpawnType spawnType;
 
     public ClickOracle(IClickOracleToRendererAdapter rendererAdapter, 
@@ -44,7 +43,7 @@ public class ClickOracle extends InputAdapter {
 
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
-        selectionLocationStart = new Vector3(screenX, screenY, 0);
+        selectionLocationStart.set(screenX, screenY, 0);
         rendererAdapter.unproject(selectionLocationStart);
         Gdx.app.log("ClickOracle - lji1", "Touchdown!");
         return false;
@@ -53,7 +52,7 @@ public class ClickOracle extends InputAdapter {
     @Override
     public boolean touchDragged (int screenX, int screenY, int pointer) {
         dragging = true;
-        selectionLocationEnd = new Vector3(screenX, screenY, 0);
+        selectionLocationEnd.set(screenX, screenY, 0);
         rendererAdapter.unproject(selectionLocationEnd);
         Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
         return false;
@@ -74,8 +73,8 @@ public class ClickOracle extends InputAdapter {
             
             // mark the units in the box as selected
             Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
+            
             deMultiSelect();
-            multiSelected = new Array<>();
             unitsToSelect.forEach((unit) -> multiSelect(unit));
 
             Gdx.app.log("lji1 - ClickOracle", "Cleared selection locations.");
@@ -122,16 +121,15 @@ public class ClickOracle extends InputAdapter {
                     System.out.println("bbbbb");
                     Gdx.app.log("ttl4 - ClickOracle", "selected selected!");
                     deMultiSelect();
-                    multiSelected = new Array<>();
-                    selectionLocationStart = new Vector3(unit.x, unit.y, 0);
-                    selectionLocationEnd = new Vector3(unit.x, unit.y, 0);
+                    selectionLocationStart.set(unit.x, unit.y, 0);
+                    selectionLocationEnd.set(unit.x, unit.y, 0);
                     multiSelect(unit);
                 }
             }
             return false;
         }
         // Right click
-        if (multiSelected != null && button == Input.Buttons.RIGHT) {
+        if (multiSelected.notEmpty() && button == Input.Buttons.RIGHT) {
             // TODO: steering agent behavior
             
             System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
@@ -147,9 +145,9 @@ public class ClickOracle extends InputAdapter {
 
 
     private void deMultiSelect() {
-        if (multiSelected != null) {
+        if (multiSelected.notEmpty()) {
             multiSelected.forEach((u) -> u.clicked = false);
-            multiSelected = null;
+            multiSelected.clear();
         }
     }
     
@@ -164,21 +162,31 @@ public class ClickOracle extends InputAdapter {
         spawnType = newInfo.getType();
     }
     
+    public SpriteBatch getBatch() {
+        return batch;
+    }
+    
     public void render() {
-
+        batch.setProjectionMatrix(rendererAdapter.getCamera().combined);
+//        Gdx.app.log("projection matrix ", batch.getProjectionMatrix().toString());
+        // selectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getHeight(), Gdx.graphics.getWidth());
+        // batch.setProjectionMatrix(selectionMatrix);
+        
         batch.setColor(1, 1,1, 0.5f);
         batch.begin();
         
-        int SCALE = 8; //TODO: This is butt ugly and needs to be fixed
+        
         if (dragging) {
-            Texture t = TextureUtils.makeUnfilledRectangle(
-                    Math.abs((int)(selectionLocationEnd.x - selectionLocationStart.x)) * SCALE,
-                    Math.abs((int)(selectionLocationEnd.y - selectionLocationStart.y)) * SCALE, 
-                    Color.YELLOW);
+
+            System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
+            
+            Texture t = TextureUtils.makeUnfilledRectangle(1,1, Color.YELLOW);
             batch.draw(
                     t, 
-                    Math.min(selectionLocationStart.x, selectionLocationEnd.x) * SCALE,
-                    Math.min(selectionLocationStart.y, selectionLocationEnd.y) * SCALE
+                    Math.min(selectionLocationStart.x, selectionLocationEnd.x),
+                    Math.min(selectionLocationStart.y, selectionLocationEnd.y),
+                    Math.abs((selectionLocationEnd.x - selectionLocationStart.x)),
+                    Math.abs((selectionLocationEnd.y - selectionLocationStart.y))
             );
         }
         

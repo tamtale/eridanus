@@ -1,11 +1,6 @@
-package com.week1.game.Model;
+package com.week1.game.Model.Entities;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-
-import static com.week1.game.Renderer.TextureUtils.makeTexture;
+import com.week1.game.Model.Entities.PlayerBase;
 
 public class DestroyedBase extends PlayerBase {
 //    private static Texture destroyed_skin = makeTexture(PlayerBase.SIDELENGTH, PlayerBase.SIDELENGTH, Color.BLACK);
