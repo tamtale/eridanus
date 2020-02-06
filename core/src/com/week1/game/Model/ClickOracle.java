@@ -29,6 +29,7 @@ public class ClickOracle extends InputAdapter {
     private boolean dragging = false;
     
     private SpriteBatch batch; 
+    private SpawnInfo.SpawnType spawnType;
 
     public ClickOracle(IClickOracleToRendererAdapter rendererAdapter, 
                        IClickOracleToEngineAdapter engineAdapter,
@@ -44,7 +45,7 @@ public class ClickOracle extends InputAdapter {
         selectionLocationStart.set(screenX, screenY, 0);
         rendererAdapter.unproject(selectionLocationStart);
         Gdx.app.log("ClickOracle - lji1", "Touchdown!");
-        return true;
+        return false;
     }
     
     @Override
@@ -53,12 +54,19 @@ public class ClickOracle extends InputAdapter {
         selectionLocationEnd.set(screenX, screenY, 0);
         rendererAdapter.unproject(selectionLocationEnd);
         Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
-        return true;
+        return false;
     }
     
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         Gdx.app.log("lji1 - ClickOracle", "Click registered, dragging: " + dragging);
+
+        // The player must be alive to be able to register any clicks
+        if (!engineAdapter.isPlayerAlive()) {
+            Gdx.app.log("lji1 - ClickOracle", "Player has died.");
+            return false;
+        }
+
         if (dragging) {
             dragging = false;
             
@@ -69,21 +77,17 @@ public class ClickOracle extends InputAdapter {
             unitsToSelect.forEach((unit) -> multiSelect(unit));
 
             Gdx.app.log("lji1 - ClickOracle", "Cleared selection locations.");
-            return true;
+            return false;
         }
 
         touchPos.set(screenX, screenY, 0);
         rendererAdapter.unproject(touchPos);
 
-        // The player must be alive to be able to register any clicks
-        if (!engineAdapter.isPlayerAlive()) {
-            Gdx.app.log("lji1 - ClickOracle", "Player has died.");
-            return false;
-        }
 
         if (button == Input.Buttons.LEFT) {
 
-            // Create tower with left click and numberkey down
+            // Create tower with left click and numberkey down.
+            // For advanced users, we will keep this as the first check, then defer to the other users
             if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
                 Gdx.app.log("lji1 - ClickOracle", "Spawn basic tower.");
                 networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.BASIC, networkAdapter.getPlayerId()));
@@ -99,7 +103,19 @@ public class ClickOracle extends InputAdapter {
                 if (unit == null) {
                     Gdx.app.log("ttl4 - ClickOracle", "nothing selected!");
                     System.out.println("aaaaa");
-                    networkAdapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, networkAdapter.getPlayerId()));
+                    if (spawnType == SpawnInfo.SpawnType.UNIT) {
+                        networkAdapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, networkAdapter.getPlayerId()));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.BASIC, networkAdapter.getPlayerId()));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn Tower 2 tower via state");
+                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.SNIPER, networkAdapter.getPlayerId()));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.TANK, networkAdapter.getPlayerId()));
+                    }
+
                 } else {
                     System.out.println("bbbbb");
                     Gdx.app.log("ttl4 - ClickOracle", "selected selected!");
@@ -109,7 +125,7 @@ public class ClickOracle extends InputAdapter {
                     multiSelect(unit);
                 }
             }
-            return true;
+            return false;
         }
         // Right click
         if (multiSelected.notEmpty() && button == Input.Buttons.RIGHT) {
@@ -118,7 +134,7 @@ public class ClickOracle extends InputAdapter {
             System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
             networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y,
                     networkAdapter.getPlayerId(), multiSelected));
-            return true;
+            return false;
 
         }
         
@@ -139,6 +155,10 @@ public class ClickOracle extends InputAdapter {
             multiSelected.add(unit);
             unit.clicked = true;
         }
+    }
+
+    public void setSpawnType(SpawnInfo newInfo) {
+        spawnType = newInfo.getType();
     }
     
     public SpriteBatch getBatch() {

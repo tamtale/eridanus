@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.World.GameWorld;
-import javafx.util.Pair;
+import com.week1.game.Pair;
 
 
 import static com.week1.game.Model.StatsConfig.*;
@@ -232,8 +232,8 @@ public class GameState {
         // get rid of all the dead entities and gives rewards
         for (int deadIndex = 0; deadIndex < deadEntities.size; deadIndex++) {
             Pair<Damaging, Damageable> deadPair = deadEntities.get(deadIndex);
-            int attackingPlayerId = deadPair.getKey().getPlayerId();
-            Damageable deadEntity = deadPair.getValue();
+            int attackingPlayerId = deadPair.key.getPlayerId();
+            Damageable deadEntity = deadPair.value;
 
             if (deadEntity.getClass() == Unit.class) {
                 units.removeValue((Unit)deadEntity, false);

@@ -20,9 +20,7 @@ import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkUtils;
-import com.week1.game.Renderer.IRendererToEngineAdapter;
-import com.week1.game.Renderer.IRendererToNetworkAdapter;
-import com.week1.game.Renderer.Renderer;
+import com.week1.game.Renderer.*;
 
 import java.util.List;
 
@@ -123,6 +121,11 @@ public class GameScreen implements Screen {
 			public void render() {
 				clickOracle.render();
 			}
+
+			@Override
+			public void setSelectedSpawnState(SpawnInfo type) {
+				clickOracle.setSpawnType(type);
+			}
 		}, util);
 		clickOracle = new ClickOracle(
 				new IClickOracleToRendererAdapter() {
@@ -165,15 +168,12 @@ public class GameScreen implements Screen {
 				});
 
 		ai = new AI();
+
 		makeTempStage();
-
-		
 		Gdx.input.setInputProcessor(connectionStage);
-//		Gdx.input.setInputProcessor(clickOracle);
-		renderer.create();
-		
-	}
 
+		renderer.create();
+	}
 
 
 	@Override
@@ -190,7 +190,11 @@ public class GameScreen implements Screen {
 		}
 
 		if (!pressedStartbtn) {
-			Gdx.input.setInputProcessor(clickOracle);
+			InputMultiplexer multiplexer = new InputMultiplexer();
+			multiplexer.addProcessor(renderer.getButtonStage());
+			multiplexer.addProcessor(clickOracle);
+			Gdx.input.setInputProcessor(multiplexer);
+
 			connectionStage.dispose();
 			pressedStartbtn = true;
 		}
@@ -204,7 +208,6 @@ public class GameScreen implements Screen {
 		}
 		engine.updateState(time);
 		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
-//		clickOracle.getBatch().setProjectionMatrix(renderer.getCamera().combined);
 		renderer.render();
 	}
 
