@@ -1,9 +1,7 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.math.Vector3;
-import com.week1.game.AIMovement.SteeringAgent;
-
-import java.util.UUID;
+import com.week1.game.Model.Entities.Unit;
 
 public interface IEngineToAIAdapter {
     void spawn(Unit unit);

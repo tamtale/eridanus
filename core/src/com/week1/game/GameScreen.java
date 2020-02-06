@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
+import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;

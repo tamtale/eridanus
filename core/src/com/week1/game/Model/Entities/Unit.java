@@ -1,17 +1,15 @@
-package com.week1.game.Model;
+package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.week1.game.AIMovement.SteeringAgent;
+import com.week1.game.Model.Damage;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.week1.game.Model.HealthBar.getHealthBar;
-import static com.week1.game.Model.HealthBar.healthBarBackground;
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
@@ -46,8 +44,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     public void draw(Batch batch) {
         batch.draw(getSkin(), this.x - (SIZE / 2f), this.y - (SIZE / 2f), SIZE, SIZE);
         // TODO draw this in a UI rendering procedure
-        batch.draw(healthBarBackground, this.x - (SIZE / 2f), this.y + 1.5f - (SIZE / 2f), 1, .5f);
-        batch.draw(getHealthBar(hp, maxHp), this.x - (SIZE / 2f), this.y + 1.5f - (SIZE / 2f), (float) (hp / maxHp), .5f);
+        drawHealthBar(batch, this.x, this.y, 0, SIZE, this.hp, this.maxHp);
     }
 
 
@@ -64,13 +61,13 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     private Texture unselectedSkin;
 
 
-    void step(float delta) {
+    public void step(float delta) {
         if (agent != null) {
             agent.update(delta);
         }
     }
 
-    SteeringAgent getAgent(){ return agent;}
+    public SteeringAgent getAgent(){ return agent;}
     public Texture getSelectedSkin(){
         return selectedSkin;
     }

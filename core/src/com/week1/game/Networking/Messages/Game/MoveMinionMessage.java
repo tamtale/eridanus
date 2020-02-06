@@ -2,7 +2,7 @@ package com.week1.game.Networking.Messages.Game;
 
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.GameState;
-import com.week1.game.Model.Unit;
+import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.InfoUtil;
 

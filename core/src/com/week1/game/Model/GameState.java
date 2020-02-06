@@ -2,20 +2,20 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.Texture;
 
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
+import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.World.GameWorld;
 import javafx.util.Pair;
 
 
 import static com.week1.game.Model.StatsConfig.*;
 import static com.week1.game.Model.StatsConfig.tempTower2Cost;
-import static com.week1.game.Model.TowerType.*;
+import static com.week1.game.Model.Entities.TowerType.*;
 
 
 public class GameState {

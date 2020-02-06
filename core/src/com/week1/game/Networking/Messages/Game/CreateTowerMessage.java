@@ -3,9 +3,9 @@ package com.week1.game.Networking.Messages.Game;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.GameState;
-import com.week1.game.Model.Tower;
+import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Networking.Messages.MessageType;
-import com.week1.game.Model.TowerType;
+import com.week1.game.Model.Entities.TowerType;
 import com.week1.game.InfoUtil;
 
 
