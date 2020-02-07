@@ -52,23 +52,7 @@ public class GameState {
         Gdx.app.log("Game State - wab2", "world built");
         graph = world.buildGraph();
         pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
-        Heuristic<Vector3> heuristic = new Heuristic<Vector3>() {
-            @Override
-            public float estimate(Vector3 node, Vector3 endNode) {
-                //TODO: Blocks have there x,y,z? do distance formula
-                //System.out.println(node + " " + endNode);
-                float D = 1f;
-                float D2 = (float) Math.sqrt(2);
-                float dx = Math.abs(node.x - endNode.x);
-                float dy = Math.abs(node.y - endNode.y);
-                float dz = Math.abs(node.z - endNode.z);
-                return D * (dx + dy + dz) + (D2 - 2 * D) * Math.min(dx, Math.min(dy, dz));
-            }
-        };
         OutputPath path = new OutputPath();
-        pathFinder.searchNodePath(new Vector3(1, 7, 0),
-                new Vector3(9, 8, 0),
-                heuristic, path);
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();

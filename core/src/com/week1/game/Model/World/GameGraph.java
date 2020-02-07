@@ -2,16 +2,20 @@ package com.week1.game.Model.World;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.Connection;
+import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
+import com.week1.game.Model.OutputPath;
 
 
 public class GameGraph implements IndexedGraph<Vector3> {
 
     private int nodeCount;
     private GameHeuristic heuristic = new GameHeuristic();
+    private PathFinder<Vector3> pathFinder;
     Array<Vector3> Vector3s = new Array<>();
     Array<Border> borders = new Array<>();
     //Vector3[][][] vecCoords = new Vector3[10][10][3];
@@ -20,17 +24,12 @@ public class GameGraph implements IndexedGraph<Vector3> {
     //TODO: make general
     public GameGraph(){
         super();
+        this.pathFinder = new WarrenIndexedAStarPathFinder<>(this);
         this.nodeCount = 0;
         for (int i = 0; i < edges.length; i++) {
             for (int j = 0; j < edges[0].length; j++) {
                 for (int k = 0; k < edges[0][0].length; k++) {
-//                    System.out.println(i + " " + j + " " + k);
-//                    System.out.println(i + " " + (edges.length - 1));
-//                    System.out.println(edges[0].length);
-//                    System.out.println(edges[0][0].length);
-//                    System.out.println((i < edges.length));
                     edges[i][j][k] = new Array<>();
-                    //vecCoords[i][j][k] = new Vector3();
                 }
             }
         }
@@ -65,6 +64,12 @@ public class GameGraph implements IndexedGraph<Vector3> {
         nodeCount+=1;
         Vector3s.add(Vector3);
         //vecCoords[(int) Vector3.x][(int) Vector3.y][(int) Vector3.z] = Vector3;
+    }
+
+    public OutputPath search(Vector3 startNode, Vector3 endNode) {
+        OutputPath path = new OutputPath();
+        pathFinder.searchNodePath(startNode, endNode, heuristic, path);
+        return path;
     }
 
 //    public Vector3 getVector3(int i, int j, int k) {
