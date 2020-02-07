@@ -52,7 +52,6 @@ public class GameState {
         Gdx.app.log("Game State - wab2", "world built");
         graph = world.buildGraph();
         pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
-        System.out.println("PATHFINDER");
         Heuristic<Vector3> heuristic = new Heuristic<Vector3>() {
             @Override
             public float estimate(Vector3 node, Vector3 endNode) {
