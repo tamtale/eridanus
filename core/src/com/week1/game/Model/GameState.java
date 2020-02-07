@@ -69,11 +69,6 @@ public class GameState {
         pathFinder.searchNodePath(new Vector3(1, 7, 0),
                 new Vector3(9, 8, 0),
                 heuristic, path);
-        System.out.println(path.getPath());
-        System.out.println(graph.getIndex(new Vector3(0, 0, 0)));
-        System.out.println(graph.getIndex(new Vector3(0, 1, 0)));
-        System.out.println(graph.getIndex(new Vector3(5, 7, 0)));
-        System.out.println(graph.getConnections(new Vector3(0, 0, 0)));
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();
