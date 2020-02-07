@@ -33,7 +33,6 @@ public class GameScreen implements Screen {
 	private Client networkClient;
 	private GameEngine engine;
 	private Renderer renderer;
-	private GameButtonsStage gameButtonsStage;
 	private ClickOracle clickOracle;
 	private AI ai;
 	private InfoUtil util;
@@ -122,6 +121,11 @@ public class GameScreen implements Screen {
 			public void render() {
 				clickOracle.render();
 			}
+
+			@Override
+			public void setSelectedSpawnState(SpawnInfo type) {
+				clickOracle.setSpawnType(type);
+			}
 		}, util);
 		clickOracle = new ClickOracle(
 				new IClickOracleToRendererAdapter() {
@@ -173,20 +177,10 @@ public class GameScreen implements Screen {
 				});
 
 		ai = new AI();
-
 		makeTempStage();
-
-		gameButtonsStage = new GameButtonsStage(new IGameButtonsToClickOracleAdapter() {
-			@Override
-			public void setSelectedSpawnState(SpawnInfo type) {
-				clickOracle.setSpawnType(type);
-			}
-		});
-
 		Gdx.input.setInputProcessor(connectionStage);
 
 		renderer.create();
-		
 	}
 
 
@@ -206,7 +200,7 @@ public class GameScreen implements Screen {
 
 		if (!pressedStartbtn) {
 			InputMultiplexer multiplexer = new InputMultiplexer();
-			multiplexer.addProcessor(gameButtonsStage.stage);
+			multiplexer.addProcessor(renderer.getButtonStage());
 			multiplexer.addProcessor(clickOracle);
 			Gdx.input.setInputProcessor(multiplexer);
 
@@ -223,9 +217,7 @@ public class GameScreen implements Screen {
 		}
 		engine.updateState(time);
 		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
-
 		renderer.render();
-		gameButtonsStage.render();
 	}
 
 	@Override

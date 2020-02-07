@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.World.GameWorld;
-import com.week1.game.Model.Pair;
+import com.week1.game.Pair;
 
 
 import static com.week1.game.Model.StatsConfig.*;
@@ -90,7 +90,7 @@ public class GameState {
             //System.out.println("from step " + agent.getSteeringOutput().linear);
             unit.step(delta);
             for(Tower tower: towers) {
-                if ((unit.getX() > tower.x - (tower.getSidelength() / 2f) + 0.5f) && 
+                if ((unit.getX() > tower.x - (tower.getSidelength() / 2f) + 0.5f) &&
                         (unit.getX() < tower.x + (tower.getSidelength() / 2f) + 0.5f) &&
                         (unit.getY() > tower.y - (tower.getSidelength() / 2f) + 0.5f) &&
                         (unit.getY() < tower.y + (tower.getSidelength() / 2f) + 0.5f)) {
@@ -99,7 +99,7 @@ public class GameState {
             }
 
             for(PlayerBase base: playerBases) {
-                if ((unit.getX() > base.x - (base.getSidelength() / 2f)) && 
+                if ((unit.getX() > base.x - (base.getSidelength() / 2f)) &&
                         (unit.getX() < base.x + (base.getSidelength() / 2f)) &&
                         (unit.getY() > base.y - (base.getSidelength() / 2f)) &&
                         (unit.getY() < base.y + (base.getSidelength() / 2f))) {
@@ -199,7 +199,7 @@ public class GameState {
     }
 
     public void dealDamage(float delta) {
-        Array<Pair> deadEntities  = new Array<>();
+        Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
 
         Array<Damaging> everythingDamaging = new Array<>(units);
         everythingDamaging.addAll(towers);
@@ -221,7 +221,7 @@ public class GameState {
                         attacker.getPlayerId() != victim.getPlayerId()) {
 
                     if (victim.takeDamage(attacker.getDamage() * delta)) {
-                        deadEntities.add(new Pair(attacker, victim));
+                        deadEntities.add(new Pair<>(attacker, victim));
                     }
                     // the attacker can only damage one opponent per attack cycle
                     break;
@@ -231,9 +231,9 @@ public class GameState {
 
         // get rid of all the dead entities and gives rewards
         for (int deadIndex = 0; deadIndex < deadEntities.size; deadIndex++) {
-            Pair deadPair = deadEntities.get(deadIndex);
-            int attackingPlayerId = deadPair.getFirst().getPlayerId();
-            Damageable deadEntity = deadPair.getSecond();
+            Pair<Damaging, Damageable> deadPair = deadEntities.get(deadIndex);
+            int attackingPlayerId = deadPair.key.getPlayerId();
+            Damageable deadEntity = deadPair.value;
 
             if (deadEntity.getClass() == Unit.class) {
                 units.removeValue((Unit)deadEntity, false);

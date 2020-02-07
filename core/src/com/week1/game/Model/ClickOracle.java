@@ -14,7 +14,6 @@ import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
-import com.week1.game.Renderer.SpawnInfo;
 import com.week1.game.Renderer.TextureUtils;
 
 import java.util.HashMap;
@@ -50,10 +49,10 @@ public class ClickOracle extends InputAdapter {
     }
 
 
-    private SpriteBatch batch;
+    private SpriteBatch batch = new SpriteBatch();
     private SpawnInfo.SpawnType spawnType;
 
-    public ClickOracle(IClickOracleToRendererAdapter rendererAdapter, 
+    public ClickOracle(IClickOracleToRendererAdapter rendererAdapter,
                        IClickOracleToEngineAdapter engineAdapter,
                        IClickOracleToNetworkAdapter networkAdapter) {
         this.rendererAdapter = rendererAdapter;
@@ -111,7 +110,7 @@ public class ClickOracle extends InputAdapter {
             
             // mark the units in the box as selected
             Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
-            
+
             deMultiSelect();
             unitsToSelect.forEach((unit) -> multiSelect(unit));
 
@@ -199,27 +198,27 @@ public class ClickOracle extends InputAdapter {
     public void setSpawnType(SpawnInfo newInfo) {
         spawnType = newInfo.getType();
     }
-    
+
     public SpriteBatch getBatch() {
         return batch;
     }
-    
+
     public void render() {
-
-        cursorBatch.setProjectionMatrix(rendererAdapter.getCamera().combined);
-//        Gdx.app.log("projection matrix ", cursorBatch.getProjectionMatrix().toString());
+        batch.setProjectionMatrix(rendererAdapter.getCamera().combined);
+//        Gdx.app.log("projection matrix ", batch.getProjectionMatrix().toString());
         // selectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getHeight(), Gdx.graphics.getWidth());
-        // cursorBatch.setProjectionMatrix(selectionMatrix);
-        
-        cursorBatch.setColor(1, 1,1, 0.5f);
-        cursorBatch.begin();
+        // batch.setProjectionMatrix(selectionMatrix);
 
+        batch.setColor(1, 1,1, 0.5f);
+        batch.begin();
         
+
         if (dragging) {
+
             System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
-            
+
             Texture t = TextureUtils.makeUnfilledRectangle(1,1, Color.YELLOW);
-            cursorBatch.draw(
+            batch.draw(
                     t,
                     Math.min(selectionLocationStart.x, selectionLocationEnd.x),
                     Math.min(selectionLocationStart.y, selectionLocationEnd.y),
@@ -228,8 +227,8 @@ public class ClickOracle extends InputAdapter {
             );
         }
         
-        cursorBatch.end();
-        cursorBatch.setColor(1, 1,1, 1);
+        batch.end();
+        batch.setColor(1, 1,1, 1);
     }
 
     @Override
@@ -238,4 +237,3 @@ public class ClickOracle extends InputAdapter {
         return true;
     }
 }
-

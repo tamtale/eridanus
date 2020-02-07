@@ -1,6 +1,7 @@
 package com.week1.game.Renderer;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -9,7 +10,6 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 
 import com.week1.game.Model.Direction;
-import com.week1.game.Model.IRendererToClickOracleAdapter;
 import com.week1.game.InfoUtil;
 
 
@@ -21,6 +21,7 @@ import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
 public class Renderer {
     private Batch batch;
     private OrthographicCamera camera;
+    private GameButtonsStage gameButtonsStage;
     private Vector3 touchPos = new Vector3();
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
@@ -56,6 +57,7 @@ public class Renderer {
         camera = new OrthographicCamera();
         mapRenderer = new OrthogonalTiledMapRenderer(map, 1f / PIXELS_PER_UNIT);
         batch = mapRenderer.getBatch();
+        gameButtonsStage = new GameButtonsStage(clickOracleAdapter);
         camera.setToOrtho(false, 100, 100);
         camera.update();
     }
@@ -98,7 +100,6 @@ public class Renderer {
     }
 
     public void drawPlayerUI() {
-        // TODO use a separate batch here.
         startBatch();
         font.getData().setScale(1f);
         font.setColor(Color.BLUE);
@@ -131,5 +132,11 @@ public class Renderer {
         clickOracleAdapter.render();
         drawPlayerUI();
         util.drawMessages(batch);
+
+        gameButtonsStage.render();
+    }
+
+    public InputProcessor getButtonStage() {
+        return gameButtonsStage.stage;
     }
 }

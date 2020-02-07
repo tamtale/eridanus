@@ -7,15 +7,15 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
-import com.week1.game.Renderer.SpawnInfo.*;
+import com.week1.game.Model.SpawnInfo;
+import com.week1.game.Model.SpawnInfo.*;
 
 public class GameButtonsStage {
 
-    private IGameButtonsToClickOracleAdapter clickOracleAdapter;
+    private IRendererToClickOracleAdapter clickOracleAdapter;
     public Stage stage;
     private TextButton unitButton;
     private TextButton tower1Button;
@@ -28,15 +28,18 @@ public class GameButtonsStage {
     private Button.ButtonStyle normal;
 
 
-    public GameButtonsStage(IGameButtonsToClickOracleAdapter clickOracleAdapter) {
+    public GameButtonsStage(IRendererToClickOracleAdapter clickOracleAdapter) {
         stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
         this.clickOracleAdapter = clickOracleAdapter;
 
-        // TODO figure out how to actually change the appearance of buttons. Will need to make a json skin file but will probably wait until we are making it pretty
-        // https://github.com/libgdx/libgdx/wiki/Skin#skin-json  https://badlogicgames.com/forum/viewtopic.php?f=11&t=14659
-
-        normal = new TextButton.TextButtonStyle(new ButtonStyle().up, new Button.ButtonStyle().down, new ButtonStyle().checked, new BitmapFont());
-        pressed = new TextButton.TextButtonStyle(new Button.ButtonStyle().down, new Button.ButtonStyle().down, new Button.ButtonStyle().down, new BitmapFont());
+        normal = new TextButton.TextButtonStyle(
+                new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"),
+                new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"),
+                new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"), new BitmapFont());
+        pressed = new TextButton.TextButtonStyle(
+                new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round-down"),
+                new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round-down"),
+                new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round-down"), new BitmapFont());
 
         setWidgets();
         configureWidgets();
@@ -65,9 +68,9 @@ public class GameButtonsStage {
         tower3Button.setSize(128, 48);
 
         unitButton.setPosition(64,  20);
-        tower1Button.setPosition(192, 20);
-        tower2Button.setPosition(320, 20);
-        tower3Button.setPosition(448, 20);
+        tower1Button.setPosition(202, 20);
+        tower2Button.setPosition(340, 20);
+        tower3Button.setPosition(478, 20);
 
         stage.addActor(unitButton);
         stage.addActor(tower1Button);
