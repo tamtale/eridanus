@@ -17,7 +17,7 @@ public class MoveMinionMessage extends GameMessage {
         super(playerID, MESSAGE_TYPE);
         this.x = x;
         this.y = y;
-        
+
         this.minionIDs = new Array<>();
         minions.forEach((minion) -> minionIDs.add(minion.ID));
 
@@ -36,7 +36,7 @@ public class MoveMinionMessage extends GameMessage {
                 centerY += minion.y;
             }
         }
-        
+
         if (goodMinions > 0) {
             centerX = centerX / goodMinions;
             centerY = centerY / goodMinions;

@@ -1,14 +1,15 @@
 package com.week1.game.Model.World;
 
 import com.badlogic.gdx.ai.pfa.Connection;
+import com.badlogic.gdx.math.Vector3;
 
-public class WeightedBlockEdge implements Connection<Block> {
+public class Border implements Connection<Vector3> {
 
     private float cost;
-    private Block fromNode;
-    private Block toNode;
+    private Vector3 fromNode;
+    private Vector3 toNode;
 
-    public WeightedBlockEdge(float cost, Block fromNode, Block toNode){
+    public Border(float cost, Vector3 fromNode, Vector3 toNode){
         this.cost = cost;
         this.fromNode = fromNode;
         this.toNode = toNode;
@@ -20,12 +21,12 @@ public class WeightedBlockEdge implements Connection<Block> {
     }
 
     @Override
-    public Block getFromNode() {
+    public Vector3 getFromNode() {
         return fromNode;
     }
 
     @Override
-    public Block getToNode() {
+    public Vector3 getToNode() {
         return toNode;
     }
 }

@@ -5,19 +5,41 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
 
-interface Block {
+public interface Block {
 
     TextureRegion getTextureRegion();
+
     Array<Connection<Block>> getConnections();
     void setConnection(Connection<Block> neighbor);
     int getIndex();
+    float getCost();
+    Vector3 getCoords();
+    void setCoords(Vector3 coords);
+    void setIndex(int nodeCount);
+
     class TerrainBlock implements Block {
+        private Vector3 coords;
         private TextureRegion textureRegion;
         private int index;
+        public static TerrainBlock AIR = new TerrainBlock(Color.GOLD) {
+            @Override
+            public float getCost(){
+                return 0;
+            }
+
+        };
+        public static TerrainBlock STONE = new TerrainBlock(Color.BLACK) {
+            @Override
+            public float getCost(){
+                return 1;
+            }
+        };
+
         private Array<Connection<Block>> edges;
         TerrainBlock(Color color) {
             Pixmap unitPixmap = new Pixmap(PIXELS_PER_UNIT, PIXELS_PER_UNIT, Pixmap.Format.RGB888);
@@ -26,17 +48,34 @@ interface Block {
             unitPixmap.setColor(Color.GRAY);
             unitPixmap.fillRectangle(3, 3, PIXELS_PER_UNIT - 6, PIXELS_PER_UNIT - 6);
             this.textureRegion = new TextureRegion(new Texture(unitPixmap));
-        }
-        public static TerrainBlock AIR = new TerrainBlock(Color.GOLD);
-        public static TerrainBlock STONE = new TerrainBlock(Color.BLACK);
-            ;
+            this.edges = new Array<>();
 
+        }
 
 
 
         @Override
         public TextureRegion getTextureRegion() {
             return textureRegion;
+        }
+
+        public float getCost(){
+            return 1;
+        }
+
+        @Override
+        public Vector3 getCoords() {
+            return coords;
+        }
+
+        @Override
+        public void setCoords(Vector3 coords) {
+            this.coords = coords;
+        }
+
+        @Override
+        public void setIndex(int nodeCount) {
+            this.index = nodeCount;
         }
 
         public int getIndex() {
@@ -57,6 +96,10 @@ interface Block {
     class TowerBlock implements Block {
         private Array<Connection<Block>> edges;
         private int index;
+        private Vector3 coords;
+        public TowerBlock(Vector3 coords) {
+            this.coords = coords;
+        }
         @Override
         public TextureRegion getTextureRegion() {
             return null;
@@ -75,6 +118,26 @@ interface Block {
         @Override
         public int getIndex() {
             return index;
+        }
+
+        @Override
+        public float getCost() {
+            return Float.POSITIVE_INFINITY;
+        }
+
+        @Override
+        public Vector3 getCoords() {
+            return coords;
+        }
+
+        @Override
+        public void setCoords(Vector3 coords) {
+            this.coords = coords;
+        }
+
+        @Override
+        public void setIndex(int nodeCount) {
+            this.index = nodeCount;
         }
     }
 }

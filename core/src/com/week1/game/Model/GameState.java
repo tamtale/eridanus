@@ -1,14 +1,22 @@
 package com.week1.game.Model;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.graphics.g2d.Batch;
 
+import com.badlogic.gdx.ai.pfa.Heuristic;
+import com.badlogic.gdx.ai.pfa.PathFinder;
+
+import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Entities.*;
+import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
+import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Pair;
 
@@ -20,6 +28,8 @@ import static com.week1.game.Model.Entities.TowerType.*;
 
 public class GameState {
 
+    private GameGraph graph;
+    private PathFinder<Vector3> pathFinder;
     private Array<Unit> units;
     private int minionCount;
     private Array<Tower> towers;
@@ -37,7 +47,33 @@ public class GameState {
         // TODO tower types in memory after exchange
         towers = new Array<>();
         units = new Array<>();
+        Gdx.app.log("Game State - wab2", "units set");
         world = new GameWorld();
+        Gdx.app.log("Game State - wab2", "world built");
+        graph = world.buildGraph();
+        pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
+        Heuristic<Vector3> heuristic = new Heuristic<Vector3>() {
+            @Override
+            public float estimate(Vector3 node, Vector3 endNode) {
+                //TODO: Blocks have there x,y,z? do distance formula
+                //System.out.println(node + " " + endNode);
+                float D = 1f;
+                float D2 = (float) Math.sqrt(2);
+                float dx = Math.abs(node.x - endNode.x);
+                float dy = Math.abs(node.y - endNode.y);
+                float dz = Math.abs(node.z - endNode.z);
+                return D * (dx + dy + dz) + (D2 - 2 * D) * Math.min(dx, Math.min(dy, dz));
+            }
+        };
+        OutputPath path = new OutputPath();
+        pathFinder.searchNodePath(new Vector3(1, 7, 0),
+                new Vector3(9, 8, 0),
+                heuristic, path);
+        System.out.println(path.getPath());
+        System.out.println(graph.getIndex(new Vector3(0, 0, 0)));
+        System.out.println(graph.getIndex(new Vector3(0, 1, 0)));
+        System.out.println(graph.getIndex(new Vector3(5, 7, 0)));
+        System.out.println(graph.getConnections(new Vector3(0, 0, 0)));
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();
@@ -90,20 +126,22 @@ public class GameState {
             //System.out.println("from step " + agent.getSteeringOutput().linear);
             unit.step(delta);
             for(Tower tower: towers) {
-                if ((unit.getX() > tower.x - (tower.getSidelength() / 2f) + 0.5f) && 
+                if ((unit.getX() > tower.x - (tower.getSidelength() / 2f) + 0.5f) &&
                         (unit.getX() < tower.x + (tower.getSidelength() / 2f) + 0.5f) &&
                         (unit.getY() > tower.y - (tower.getSidelength() / 2f) + 0.5f) &&
                         (unit.getY() < tower.y + (tower.getSidelength() / 2f) + 0.5f)) {
                     collide(unit);
+                    Gdx.app.log("stepUnits - wab2", "Unit " + unit.ID + " collided with " + tower);
                 }
             }
 
             for(PlayerBase base: playerBases) {
-                if ((unit.getX() > base.x - (base.getSidelength() / 2f)) && 
+                if ((unit.getX() > base.x - (base.getSidelength() / 2f)) &&
                         (unit.getX() < base.x + (base.getSidelength() / 2f)) &&
                         (unit.getY() > base.y - (base.getSidelength() / 2f)) &&
                         (unit.getY() < base.y + (base.getSidelength() / 2f))) {
                     collide(unit);
+                    Gdx.app.log("stepUnits - wab2", "Unit " + unit.ID + " collided with " + base);
                 }
             }
         }
@@ -169,7 +207,7 @@ public class GameState {
         }
         return null;
     }
-    
+
     public Array<Unit> findUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
         Array<Unit> unitsToSelect = new Array<>();
         for (Unit u : units) {
@@ -181,7 +219,7 @@ public class GameState {
         return unitsToSelect;
     }
 
-    
+
     public Unit getMinionById(int minionId) {
 
         for (int i = 0; i < units.size; i++) {
@@ -189,7 +227,7 @@ public class GameState {
                 return units.get(i);
             }
         }
-        
+
 //        Gdx.app.error("getMinionById - lji1", "Unable to find minion by given ID, returning null.");
         return null;
     }

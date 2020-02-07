@@ -119,7 +119,12 @@ public class Host {
                         e.printStackTrace();
                     }
                 }
-
+                try {
+                    Thread.sleep(2000);
+                }  catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                ;
                 // TODO: this gets sent first so that the game engine does any initialization before the game starts (but udp doesn't guarantee order)
                 broadcastToRegisteredPlayers(MessageFormatter.packageMessage(
                         new Update(Arrays.asList(new String[] {MessageFormatter.packageMessage(new InitMessage(registry.size(), -1))}))));

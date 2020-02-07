@@ -26,7 +26,9 @@ public class GameEngine {
 
     public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, InfoUtil util) {
         messageQueue = new ConcurrentLinkedQueue<>();
+        Gdx.app.log("wab2- GameEngine", "messageQueue built");
         gameState = new GameState();
+        Gdx.app.log("wab2- GameEngine", "gameState built");
         batch = new SpriteBatch();
         engineToRenderer = engineToRendererAdapter;
         this.util = util;
@@ -55,7 +57,7 @@ public class GameEngine {
 
     public void processMessages() {
         if (messageQueue.isEmpty()) {
-            // Gdx.app.log("ttl4 - message processing", "queue empty!");
+            Gdx.app.log("ttl4 - message processing", "queue empty!");
             return;
         } else {
             Gdx.app.log("GameEngine: processMessages()", "queue nonempty!");
