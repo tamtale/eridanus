@@ -80,6 +80,7 @@ public class ClickOracle extends InputAdapter {
 
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
+        if (button != Input.Buttons.LEFT) return false;
         selectionLocationStart.set(screenX, screenY, 0);
         rendererAdapter.unproject(selectionLocationStart);
         Gdx.app.log("ClickOracle - lji1", "Touchdown!");
@@ -88,6 +89,7 @@ public class ClickOracle extends InputAdapter {
     
     @Override
     public boolean touchDragged (int screenX, int screenY, int pointer) {
+        if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) return false;
         dragging = true;
         selectionLocationEnd.set(screenX, screenY, 0);
         rendererAdapter.unproject(selectionLocationEnd);
