@@ -1,7 +1,7 @@
 package com.week1.game.Networking.Messages.Game;
 
 import com.week1.game.Model.GameState;
-import com.week1.game.Model.Unit;
+import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.InfoUtil;
 
@@ -35,9 +35,10 @@ public class CreateMinionMessage extends GameMessage {
 
         // Test to see if it is in the proximity of a tower or a home base
         if (!inputState.findNearbyStructure(x, y, playerID)) {
-            util.log("pjb3 - CreateMinionMessage", "Not close enough to an existing tower");
-            return false;
+            util.log("pjb3 - CreateMinionMessage", "Not close enough to an existing tower or home base");
+             return false;
         }
+
 
         util.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
         inputState.getPlayerStats(playerID).useMana(tempMinion1Cost);

@@ -82,7 +82,7 @@ public class Host {
                     outgoingMessages.add(incomingMessages.poll());
                 }
 
-                Gdx.app.log(TAG, "Host is about to broadcast update message to registered clients.");
+                Gdx.app.debug(TAG, "Host is about to broadcast update message to registered clients.");
                 broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(outgoingMessages)));
                 
                 // Take a break before the next update
