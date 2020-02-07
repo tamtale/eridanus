@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Entities.TowerType;
@@ -15,33 +16,71 @@ import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 import com.week1.game.Renderer.TextureUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ClickOracle extends InputAdapter {
 
-    private Vector3 touchPos = new Vector3();
+    private static final String TAG = "ClickOracle";
+
     private IClickOracleToRendererAdapter rendererAdapter;
     private IClickOracleToEngineAdapter engineAdapter;
-    private Array<Unit> multiSelected = new Array<>();
     private IClickOracleToNetworkAdapter networkAdapter;
-    
+
+    private Vector3 touchPos = new Vector3();
+    private Array<Unit> multiSelected = new Array<>();
+
     private Vector3 selectionLocationStart = new Vector3();
     private Vector3 selectionLocationEnd = new Vector3();
-    
     private boolean dragging = false;
-    
-    private SpriteBatch batch; 
+    private Map<Integer, Direction> keycodeToDirection = new HashMap<>();
+    {
+        keycodeToDirection.put(Input.Keys.UP, Direction.UP);
+        keycodeToDirection.put(Input.Keys.DOWN, Direction.DOWN);
+        keycodeToDirection.put(Input.Keys.LEFT, Direction.LEFT);
+        keycodeToDirection.put(Input.Keys.RIGHT, Direction.RIGHT);
+    }
+
+    private SpriteBatch cursorBatch = new SpriteBatch(); // TODO: is it okay that this is a different SpriteBatch than the one used in the GameEngine?
+    {
+        Matrix4 projection = new Matrix4();
+        projection.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cursorBatch.setProjectionMatrix(projection);
+    }
+
+
+    private SpriteBatch batch = new SpriteBatch();
     private SpawnInfo.SpawnType spawnType;
 
-    public ClickOracle(IClickOracleToRendererAdapter rendererAdapter, 
+    public ClickOracle(IClickOracleToRendererAdapter rendererAdapter,
                        IClickOracleToEngineAdapter engineAdapter,
                        IClickOracleToNetworkAdapter networkAdapter) {
         this.rendererAdapter = rendererAdapter;
         this.engineAdapter = engineAdapter;
         this.networkAdapter = networkAdapter;
-        this.batch = new SpriteBatch();
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        if (keycodeToDirection.containsKey(keycode)) {
+            rendererAdapter.setTranslationDirection(keycodeToDirection.get(keycode));
+            return true;
+        }
+        return true;
+    }
+
+
+    @Override
+    public boolean keyUp(int keycode) {
+        if (keycodeToDirection.containsKey(keycode)) {
+            rendererAdapter.setTranslationDirection(Direction.NONE);
+        }
+        return true;
     }
 
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
+        if (button != Input.Buttons.LEFT) return false;
         selectionLocationStart.set(screenX, screenY, 0);
         rendererAdapter.unproject(selectionLocationStart);
         Gdx.app.log("ClickOracle - lji1", "Touchdown!");
@@ -50,6 +89,7 @@ public class ClickOracle extends InputAdapter {
     
     @Override
     public boolean touchDragged (int screenX, int screenY, int pointer) {
+        if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) return false;
         dragging = true;
         selectionLocationEnd.set(screenX, screenY, 0);
         rendererAdapter.unproject(selectionLocationEnd);
@@ -72,7 +112,7 @@ public class ClickOracle extends InputAdapter {
             
             // mark the units in the box as selected
             Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
-            
+
             deMultiSelect();
             unitsToSelect.forEach((unit) -> multiSelect(unit));
 
@@ -160,28 +200,28 @@ public class ClickOracle extends InputAdapter {
     public void setSpawnType(SpawnInfo newInfo) {
         spawnType = newInfo.getType();
     }
-    
+
     public SpriteBatch getBatch() {
         return batch;
     }
-    
+
     public void render() {
         batch.setProjectionMatrix(rendererAdapter.getCamera().combined);
 //        Gdx.app.log("projection matrix ", batch.getProjectionMatrix().toString());
         // selectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getHeight(), Gdx.graphics.getWidth());
         // batch.setProjectionMatrix(selectionMatrix);
-        
+
         batch.setColor(1, 1,1, 0.5f);
         batch.begin();
         
-        
+
         if (dragging) {
 
             System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
-            
+
             Texture t = TextureUtils.makeUnfilledRectangle(1,1, Color.YELLOW);
             batch.draw(
-                    t, 
+                    t,
                     Math.min(selectionLocationStart.x, selectionLocationEnd.x),
                     Math.min(selectionLocationStart.y, selectionLocationEnd.y),
                     Math.abs((selectionLocationEnd.x - selectionLocationStart.x)),
@@ -191,5 +231,11 @@ public class ClickOracle extends InputAdapter {
         
         batch.end();
         batch.setColor(1, 1,1, 1);
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        rendererAdapter.zoom(amount);
+        return true;
     }
 }

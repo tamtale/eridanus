@@ -135,6 +135,15 @@ public class GameScreen implements Screen {
 					}
 
 					@Override
+					public void zoom(int amount) {
+					    renderer.zoom(amount);
+					}
+
+                    @Override
+                    public void setTranslationDirection(Direction direction) {
+					    renderer.setPanning(direction);
+                    }
+
 					public Camera getCamera() {
 						return renderer.getCamera();
 					}
@@ -168,12 +177,12 @@ public class GameScreen implements Screen {
 				});
 
 		ai = new AI();
-
 		makeTempStage();
 		Gdx.input.setInputProcessor(connectionStage);
 
 		renderer.create();
 	}
+
 
 
 	@Override
