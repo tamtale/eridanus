@@ -14,8 +14,8 @@ public class GameGraph implements IndexedGraph<Vector3> {
     private GameHeuristic heuristic = new GameHeuristic();
     Array<Vector3> Vector3s = new Array<>();
     Array<Border> borders = new Array<>();
-    ObjectMap<Vector3, Vector3> Vector3Map = new ObjectMap<>();
-    Array<Connection<Vector3>>[][][] edges = new Array[10][10][3];
+    //Vector3[][][] vecCoords = new Vector3[10][10][3];
+    Array<Connection<Vector3>>[][][] edges = new Array[100][100][3];
 
     //TODO: make general
     public GameGraph(){
@@ -30,6 +30,7 @@ public class GameGraph implements IndexedGraph<Vector3> {
 //                    System.out.println(edges[0][0].length);
 //                    System.out.println((i < edges.length));
                     edges[i][j][k] = new Array<>();
+                    //vecCoords[i][j][k] = new Vector3();
                 }
             }
         }
@@ -63,6 +64,11 @@ public class GameGraph implements IndexedGraph<Vector3> {
     public void addVector3(Vector3 Vector3) {
         nodeCount+=1;
         Vector3s.add(Vector3);
+        //vecCoords[(int) Vector3.x][(int) Vector3.y][(int) Vector3.z] = Vector3;
     }
+
+//    public Vector3 getVector3(int i, int j, int k) {
+//        return vecCoords[i][j][k];
+//    }
 
 }

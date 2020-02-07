@@ -15,7 +15,7 @@ public class GameWorld {
     private GameGraph graph;
     public GameWorld() {
         // For now, we'll make a preset 100x100x10 world.
-        blocks = new Block[10][10][3];
+        blocks = new Block[100][100][3];
         this.graph = new GameGraph();
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
