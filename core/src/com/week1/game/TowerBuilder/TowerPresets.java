@@ -9,15 +9,15 @@ public class TowerPresets {
 
     TowerLogic tg;
 
-    private Array<ModelInstance> tower1 = new Array<ModelInstance>();
-    private Array<ModelInstance> tower2 = new Array<ModelInstance>();
-    private Array<ModelInstance> tower3 = new Array<ModelInstance>();
-    private Array<ModelInstance> tower4 = new Array<ModelInstance>();
-    private Array<ModelInstance> tower5 = new Array<ModelInstance>();
-    private Array<ModelInstance> tower6 = new Array<ModelInstance>();
+    private Tower tower1;
+    private Tower tower2;
+    private Tower tower3;
+    private Tower tower4;
+    private Tower tower5;
+    private Tower tower6;
 
-    Array<ModelInstance> logoT = new Array<>();
-    Array<ModelInstance> logoC = new Array<>();
+    private Tower logoT;
+    private Tower logoC;
 
 
     private void initLogo() {
@@ -169,27 +169,27 @@ public class TowerPresets {
 
     }
 
-    public Array<ModelInstance> getTower1() {
+    public Tower getTower1() {
         return tower1;
     }
 
-    public Array<ModelInstance> getTower2() {
+    public Tower getTower2() {
         return tower2;
     }
 
-    public Array<ModelInstance> getTower3() {
+    public Tower getTower3() {
         return tower3;
     }
 
-    public Array<ModelInstance> getTower4() {
+    public Tower getTower4() {
         return tower4;
     }
 
-    public Array<ModelInstance> getTower5() {
+    public Tower getTower5() {
         return tower5;
     }
 
-    public Array<ModelInstance> getTower6() {
+    public Tower getTower6() {
         return tower6;
     }
 

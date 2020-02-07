@@ -33,7 +33,7 @@ public class TowerBuilderCamera {
     public CameraInputController camController;
     public TowerPresets presets;
     AssetManager assets;
-    public Array<ModelInstance> currTower;
+    public Tower currTower;
 
 
     TowerBuilderStage towerStage;
@@ -108,32 +108,34 @@ public class TowerBuilderCamera {
         //Number keys toggle presests
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
             currTower = presets.getTower1();
-            towerStage.sw.setLabelStyle(1);
+//            towerStage.sw.setLabelStyle(1);
+            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
             currTower = presets.getTower2();
-            towerStage.sw.setLabelStyle(2);
+//            towerStage.sw.setLabelStyle(2);
+            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
 
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
             currTower = presets.getTower3();
-            towerStage.sw.setLabelStyle(3);
-
+//            towerStage.sw.setLabelStyle(3);
+            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_4)) {
             currTower = presets.getTower4();
-            towerStage.sw.setLabelStyle(4);
-
+//            towerStage.sw.setLabelStyle(4);
+            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_5)) {
             currTower = presets.getTower5();
-            towerStage.sw.setLabelStyle(5);
-
+//            towerStage.sw.setLabelStyle(5);
+            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_6)) {
             currTower = presets.getTower6();
-            towerStage.sw.setLabelStyle(6);
-
+//            towerStage.sw.setLabelStyle(6);
+            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
         }
 
 
@@ -145,7 +147,7 @@ public class TowerBuilderCamera {
         if (space != null) {
             modelBatch.render(space);
         }
-        modelBatch.render(currTower, environment);
+        modelBatch.render(currTower.getModel(), environment);
         modelBatch.end();
 
 //        gameUI.stage.draw();

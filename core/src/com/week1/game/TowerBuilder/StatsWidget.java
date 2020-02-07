@@ -1,10 +1,12 @@
 package com.week1.game.TowerBuilder;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import java.util.ArrayList;
@@ -53,14 +55,14 @@ public class StatsWidget extends Actor {
         styles.add(tower6);
 
         label = new Label("",
-                tower1);
+                new Skin(Gdx.files.internal("uiskin.json")));
+
 
     }
 
     @Override
     public void act(float delta) {
 //        label.act(delta);
-        label.setText("Stats");
     }
 
     @Override
@@ -83,6 +85,10 @@ public class StatsWidget extends Actor {
      public void setLabelStyle(int towerNumber) {
         Label.LabelStyle currstyle = styles.get(towerNumber - 1);
         label.setStyle(currstyle);
+     }
+
+     public void setLblTxt(Integer hp, Integer atk, Integer range) {
+        this.label.setText("HP: " + Integer.toString(hp)+"\n Atk: " + Integer.toString(atk) + " \n Range: " + Integer.toString(range));
      }
 
 
