@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 
 import java.util.ArrayList;
 
@@ -17,8 +18,16 @@ public class StatsWidget extends Actor {
 
     public StatsWidget() {
 
+        Label.LabelStyle panelstyle = new Label.LabelStyle();
+        TextureRegionDrawable td2 = new TextureRegionDrawable(new Texture("stats_panel.png"));
+        panelstyle.background = td2;
+        panelstyle.font = new BitmapFont();
+
         label = new Label("",
-                new Skin(Gdx.files.internal("uiskin.json")));
+//                new Skin(Gdx.files.internal("uiskin.json")));
+                panelstyle);
+        label.setAlignment(Align.left);
+        label.setFontScale(1.5f, 1.5f);
 
 
     }
