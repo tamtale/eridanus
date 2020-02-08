@@ -1,18 +1,36 @@
 package com.week1.game.Model;
 
 public class TowerFootprint {
-    private final static int MAXFOOTPRINTSIZE = 5;
+    private final static int MAXFOOTPRINTSIZE = 8;
     
-    boolean[][] fp = {
-            {false, false, false, false, false}, 
-            {false, true, true, true, false}, 
-            {false, true, true, true, false}, 
-            {false, true, true, true, false}, 
-            {false, false, false, false, false}
-    }; // TODO: allow for initialization by constructor
+    final static boolean[][] fpForBasic = {
+            {false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false},
+            {false, false, false, true, true, true, false, false, false},
+            {false, false, false, true, true, true, false, false, false},
+            {false, false, false, true, true, true, false, false, false},
+            {false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false},
+            {false, false, false, false, false, false, false, false, false}
+    }; 
     
-    public TowerFootprint() {
-        
+    final static boolean[][] fpForBase = {
+            {true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true, true, true}
+    }; 
+    
+    private boolean[][] fp;
+    
+    public TowerFootprint(boolean[][] fp) {
+        this.fp = fp;
     }
     
     public static boolean overlap(TowerFootprint footprint1, int x1, int y1, TowerFootprint footprint2, int x2, int y2) {

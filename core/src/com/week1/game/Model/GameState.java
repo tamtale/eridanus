@@ -355,6 +355,13 @@ public class GameState {
             }
         }
         
+        for (PlayerBase pb: playerBases) {
+            // use -1 as towerType for the player base
+            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerFootprint(-1), (int)pb.x, (int)pb.y)) {
+                return true;
+            }
+        }
+        
         return false;
     }
 

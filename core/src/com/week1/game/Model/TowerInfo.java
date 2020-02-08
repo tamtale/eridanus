@@ -8,9 +8,10 @@ import java.util.Map;
 public class TowerInfo {
     
     Map<Integer, TowerFootprint> footprints = new HashMap<Integer, TowerFootprint>(){{ // TODO: dynamically loaded from an initialization message
-        this.put(TowerType.BASIC.ordinal(), new TowerFootprint());
-        this.put(TowerType.SNIPER.ordinal(), new TowerFootprint());
-        this.put(TowerType.TANK.ordinal(), new TowerFootprint());
+        this.put(-1, new TowerFootprint(TowerFootprint.fpForBase));
+        this.put(TowerType.BASIC.ordinal(), new TowerFootprint(TowerFootprint.fpForBasic));
+        this.put(TowerType.SNIPER.ordinal(), new TowerFootprint(TowerFootprint.fpForBasic));
+        this.put(TowerType.TANK.ordinal(), new TowerFootprint(TowerFootprint.fpForBasic));
     }};
    
     public TowerInfo() {
