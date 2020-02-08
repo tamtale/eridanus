@@ -52,14 +52,14 @@ public class Tower {
         int base_blocks = 0;
 
         for (BlockSpec block : layout) {
-            ModelInstance blockInstance = new ModelInstance(TowerLogic.modelMap.get(block.getBlockCode()));
+            ModelInstance blockInstance = new ModelInstance(TowerMaterials.modelMap.get(block.getBlockCode()));
             blockInstance.transform.setToTranslation(block.getX() * 5f, block.getY() * 5f, block.getZ() * 5f);
 
             this.model.add(blockInstance);
 
 //            //Generate the tower stats
-            rawHp += TowerLogic.blockHp.get(block.getBlockCode());
-            rawAtk += TowerLogic.blockAtk.get(block.getBlockCode());
+            rawHp += TowerMaterials.blockHp.get(block.getBlockCode());
+            rawAtk += TowerMaterials.blockAtk.get(block.getBlockCode());
             range = max(range, block.getY() + 1);
         }
 

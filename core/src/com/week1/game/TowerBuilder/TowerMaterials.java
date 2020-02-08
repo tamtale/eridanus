@@ -16,7 +16,7 @@ import java.util.Map;
 import static java.lang.Integer.max;
 
 
-public class TowerLogic {
+public class TowerMaterials {
 
     ModelBuilder modelBuilder = new ModelBuilder();
 
@@ -30,7 +30,7 @@ public class TowerLogic {
     public static Map<Integer, Integer> blockPrice = new HashMap<>();
 
 
-    public TowerLogic() {
+    public TowerMaterials() {
         //Make the block types
         addBlockType("core_block.png", "coreBlock", 1, 0, 0, 0);
 

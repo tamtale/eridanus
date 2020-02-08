@@ -26,8 +26,7 @@ public class StatsWidget extends Actor {
         label = new Label("",
 //                new Skin(Gdx.files.internal("uiskin.json")));
                 panelstyle);
-        label.setAlignment(Align.left);
-        label.setFontScale(1.5f, 1.5f);
+        label.setAlignment(Align.center);
 
 
     }

@@ -1,13 +1,14 @@
 package com.week1.game.TowerBuilder;
 
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.Gdx;
 
 import java.util.ArrayList;
 
 public class TowerPresets {
 
-    TowerLogic tg;
+    TowerMaterials twrMat;
+
+    public static final Integer NUM_PRESETS = 6;
 
     private Tower tower1;
     private Tower tower2;
@@ -15,6 +16,7 @@ public class TowerPresets {
     private Tower tower4;
     private Tower tower5;
     private Tower tower6;
+    private ArrayList<Tower> presets = new ArrayList<>();
 
     private Tower logoT;
     private Tower logoC;
@@ -35,7 +37,7 @@ public class TowerPresets {
         logoTlayout.add(new BlockSpec(4, 0, 4, 2));
         logoTlayout.add(new BlockSpec(4, 0, 4, -2));
 
-        logoT = tg.getTower(logoTlayout);
+        logoT = twrMat.getTower(logoTlayout);
 
         logoClayout.add(new BlockSpec(2, 0,0,0));
         logoClayout.add(new BlockSpec(3, 0,1,0));
@@ -47,7 +49,7 @@ public class TowerPresets {
         logoClayout.add(new BlockSpec(2, 0,0,-1));
         logoClayout.add(new BlockSpec(4, 0,0,-2));
 
-        logoC = tg.getTower(logoClayout);
+        logoC = twrMat.getTower(logoClayout);
     }
 
     private void initPresets() {
@@ -62,7 +64,7 @@ public class TowerPresets {
         layout2.add(new BlockSpec(5, 0, 2, 0));
 //        layout1.add(new BlockSpec(69, 0, 2, 0));
 
-        tower1 =  tg.getTower(layout2);
+        tower1 =  twrMat.getTower(layout2);
 
 
         //Tower 2
@@ -75,7 +77,7 @@ public class TowerPresets {
         layout2.add(new BlockSpec(6, 0,5,0));
         layout2.add(new BlockSpec(5, 0,6,0));
 
-        tower2 =  tg.getTower(layout2);
+        tower2 =  twrMat.getTower(layout2);
 
         //Tower 3
         layout2 = new ArrayList<>();
@@ -93,7 +95,7 @@ public class TowerPresets {
         layout2.add(new BlockSpec(2, 2, 0, 1));
 
 
-        tower3 = tg.getTower(layout2);
+        tower3 = twrMat.getTower(layout2);
 
         //Tower 4
         layout2 = new ArrayList<>();
@@ -114,7 +116,7 @@ public class TowerPresets {
         layout2.add(new BlockSpec(2, 1, 2, -1));
 
 
-        tower4 = tg.getTower(layout2);
+        tower4 = twrMat.getTower(layout2);
 
         //Tower 5
         layout2 = new ArrayList<>();
@@ -133,7 +135,7 @@ public class TowerPresets {
         layout2.add(new BlockSpec(5, 0, 4, 0));
 
 
-        tower5 = tg.getTower(layout2);
+        tower5 = twrMat.getTower(layout2);
 
         //Tower 6
         layout2 = new ArrayList<>();
@@ -157,40 +159,54 @@ public class TowerPresets {
         layout2.add(new BlockSpec(3, -1, 2, 1));
 
 
-        tower6 = tg.getTower(layout2);
+        tower6 = twrMat.getTower(layout2);
 
 
+        presets.add(tower1);
+        presets.add(tower2);
+        presets.add(tower3);
+        presets.add(tower4);
+        presets.add(tower5);
+        presets.add(tower6);
     }
 
     public TowerPresets() {
-        tg = new TowerLogic();
+        twrMat = new TowerMaterials();
         initPresets();
         initLogo();
 
     }
 
-    public Tower getTower1() {
-        return tower1;
+    public Tower getTower(int towernum) {
+        if (towernum < 0 || towernum > NUM_PRESETS - 1) {
+            Gdx.app.log("skv2", "Bad tower preset number"+ towernum);
+            return tower1;
+        }
+        return presets.get(towernum);
     }
 
-    public Tower getTower2() {
-        return tower2;
-    }
-
-    public Tower getTower3() {
-        return tower3;
-    }
-
-    public Tower getTower4() {
-        return tower4;
-    }
-
-    public Tower getTower5() {
-        return tower5;
-    }
-
-    public Tower getTower6() {
-        return tower6;
-    }
+//    public Tower getTower1() {
+//        return tower1;
+//    }
+//
+//    public Tower getTower2() {
+//        return tower2;
+//    }
+//
+//    public Tower getTower3() {
+//        return tower3;
+//    }
+//
+//    public Tower getTower4() {
+//        return tower4;
+//    }
+//
+//    public Tower getTower5() {
+//        return tower5;
+//    }
+//
+//    public Tower getTower6() {
+//        return tower6;
+//    }
 
 }

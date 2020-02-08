@@ -34,7 +34,7 @@ public class TowerBuilderCamera {
     public CameraInputController camController;
     public TowerPresets presets;
     AssetManager assets;
-    public Tower currTower;
+    private Tower currTower;
 
 
     TowerBuilderStage towerStage;
@@ -86,7 +86,7 @@ public class TowerBuilderCamera {
         loading = true;
 
 
-        currTower = presets.getTower1();
+        currTower = presets.getTower(1);
     }
 
 
@@ -107,31 +107,31 @@ public class TowerBuilderCamera {
         camController.update();
 
         //Number keys toggle presests
-        if(Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
-            currTower = presets.getTower1();
-            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
-            currTower = presets.getTower2();
-            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
-
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
-            currTower = presets.getTower3();
-            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.NUM_4)) {
-            currTower = presets.getTower4();
-            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.NUM_5)) {
-            currTower = presets.getTower5();
-            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
-        }
-        if(Gdx.input.isKeyPressed(Input.Keys.NUM_6)) {
-            currTower = presets.getTower6();
-            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
-        }
+//        if(Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
+//            currTower = presets.getTower1();
+//            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
+//        }
+//        if(Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
+//            currTower = presets.getTower2();
+//            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
+//
+//        }
+//        if(Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
+//            currTower = presets.getTower3();
+//            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
+//        }
+//        if(Gdx.input.isKeyPressed(Input.Keys.NUM_4)) {
+//            currTower = presets.getTower4();
+//            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
+//        }
+//        if(Gdx.input.isKeyPressed(Input.Keys.NUM_5)) {
+//            currTower = presets.getTower5();
+//            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
+//        }
+//        if(Gdx.input.isKeyPressed(Input.Keys.NUM_6)) {
+//            currTower = presets.getTower6();
+//            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
+//        }
 
         modelBatch.begin(cam);
 
@@ -156,5 +156,9 @@ public class TowerBuilderCamera {
 
     public void dispose() {
 
+    }
+
+    public void setCurrTower(Tower currTower) {
+        this.currTower = currTower;
     }
 }
