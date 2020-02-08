@@ -18,7 +18,6 @@ public class GameGraph implements IndexedGraph<Vector3> {
     private PathFinder<Vector3> pathFinder;
     Array<Vector3> Vector3s = new Array<>();
     Array<Border> borders = new Array<>();
-    //Vector3[][][] vecCoords = new Vector3[10][10][3];
     Array<Connection<Vector3>>[][][] edges = new Array[100][100][3];
 
     //TODO: make general
