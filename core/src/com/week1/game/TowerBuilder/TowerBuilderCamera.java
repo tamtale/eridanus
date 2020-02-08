@@ -21,7 +21,8 @@ import com.badlogic.gdx.utils.Array;
 // Programmatic generation of tower stats for gameplay--
     //top down view (static of all presets)
     //generation of tower stats
-    //tower footprint on ground and in all dimension
+    //tower footprint on ground -> 5 x 5,  and in all dimension
+//mainmenu and lobby screen
 // Fill out ui -> need to assets, stage, etc classes
 // tower building
 
@@ -108,49 +109,40 @@ public class TowerBuilderCamera {
         //Number keys toggle presests
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
             currTower = presets.getTower1();
-//            towerStage.sw.setLabelStyle(1);
             towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
             currTower = presets.getTower2();
-//            towerStage.sw.setLabelStyle(2);
             towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
 
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
             currTower = presets.getTower3();
-//            towerStage.sw.setLabelStyle(3);
             towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_4)) {
             currTower = presets.getTower4();
-//            towerStage.sw.setLabelStyle(4);
             towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_5)) {
             currTower = presets.getTower5();
-//            towerStage.sw.setLabelStyle(5);
             towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
         }
         if(Gdx.input.isKeyPressed(Input.Keys.NUM_6)) {
             currTower = presets.getTower6();
-//            towerStage.sw.setLabelStyle(6);
             towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
         }
 
-
-        Gdx.gl.glClearColor(135/255f, 206/255f, 235/255f, 1);
-
-
         modelBatch.begin(cam);
 
+        //Render the space background
         if (space != null) {
             modelBatch.render(space);
         }
+
         modelBatch.render(currTower.getModel(), environment);
         modelBatch.end();
 
-//        gameUI.stage.draw();
 
     }
 
