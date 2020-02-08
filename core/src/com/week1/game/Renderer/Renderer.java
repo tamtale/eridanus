@@ -79,8 +79,9 @@ public class Renderer {
         batch.draw(t, x, y);
     }
 
-    public void resize() {
+    public void resize(int x, int y) {
         camera.update();
+        gameButtonsStage.stage.getViewport().update(x, y);
     }
 
     public void endBatch() {
