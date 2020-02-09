@@ -346,18 +346,17 @@ public class GameState {
         return false;
     }
 
-    public boolean overlapsExistingStructure(int towerType, int x, int y) {
-        TowerFootprint footprint = towerInfo.getTowerFootprint(towerType);
-        // TODO: check for overlaps with base also
+    public boolean overlapsExistingStructure(int playerId, int towerType, int x, int y) {
+        TowerFootprint footprint = towerInfo.getTowerFootprint(playerId, towerType);
         for (Tower t: towers) {
-            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerFootprint(t.getTowerType()), (int)t.x, (int)t.y)) {
+            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerFootprint(t.getPlayerId(), t.getTowerType()), (int)t.x, (int)t.y)) {
                 return true;
             }
         }
         
         for (PlayerBase pb: playerBases) {
             // use -1 as towerType for the player base
-            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerFootprint(-1), (int)pb.x, (int)pb.y)) {
+            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerFootprint(-1, -1), (int)pb.x, (int)pb.y)) {
                 return true;
             }
         }
@@ -398,5 +397,9 @@ public class GameState {
             }
         }
         return true;
+    }
+    
+    public void setTowerInfo(TowerInfo info) {
+        this.towerInfo = info;
     }
 }

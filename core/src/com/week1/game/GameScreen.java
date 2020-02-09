@@ -63,9 +63,10 @@ public class GameScreen implements Screen {
 		// Set the logging level
 		Gdx.app.setLogLevel(Application.LOG_INFO);
 
-
-
 		util = new InfoUtil(true);
+		
+		
+		
 		networkClient = NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
 			@Override
 			public void deliverUpdate(List<? extends GameMessage> messages) {
@@ -76,7 +77,7 @@ public class GameScreen implements Screen {
 			public void setPlayerId(int playerId) {
 				engine.setEnginePlayerId(playerId);
 			}
-		});
+		}, new Array<>());
 
 
 		engine = new GameEngine(new IEngineToRendererAdapter() {

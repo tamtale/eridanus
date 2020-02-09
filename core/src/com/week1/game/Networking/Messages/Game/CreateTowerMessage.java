@@ -47,7 +47,7 @@ public class CreateTowerMessage extends GameMessage {
             return false;
         }
         
-        if(inputState.overlapsExistingStructure(towerType.ordinal(), (int)x, (int)y)) {
+        if(inputState.overlapsExistingStructure(this.playerID, towerType.ordinal(), (int)x, (int)y)) {
             util.log("lji1 - CreateTowerMessage", "Overlapping with existing structure.");
             return false;
         }

@@ -1,6 +1,8 @@
 package com.week1.game.Networking;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.Array;
+import com.week1.game.Model.TowerDetails;
 
 import java.net.*;
 import java.nio.channels.SocketChannel;
@@ -60,7 +62,7 @@ public class NetworkUtils {
      * @param args - Either "host" or "client <ip address> <port number> <optional - start>"
      * @return The client object
      */
-    public static Client initNetworkObjects(String[] args, INetworkClientToEngineAdapter adapter) {
+    public static Client initNetworkObjects(String[] args, INetworkClientToEngineAdapter adapter, Array<TowerDetails> details) {
         final String TAG = "initNetworkObjects - lji1";
         Gdx.app.log(TAG, "Local host address: " + getLocalHostAddr());
         
@@ -90,13 +92,7 @@ public class NetworkUtils {
 
                 // Now make the client stuff
                 c = new Client(localIpAddr, h.getPort(), adapter);
-
-//                if (args.length == 3 && args[2].equals("start")) {
-                    // Time to start the game
-//                    c.sendStringMessage("start");
-//                    c.sendStartMessage();
-//                }
-                
+                c.sendJoinMessage(details);
 
             } else if  (args[0].equals("client")) {
                 Gdx.app.log(TAG, "Client option chosen.");
@@ -106,12 +102,8 @@ public class NetworkUtils {
                     String hostIpAddr = args[1];
                     int hostPort = Integer.parseInt(args[2]);
                     c = new Client(hostIpAddr, hostPort, adapter);
+                    c.sendJoinMessage(details);
 
-//                    if (args.length == 4 && args[3].equals("start")) {
-                        // Time to start the game
-//                        c.sendStartMessage();
-//                        c.sendStringMessage("start");
-//                    }
                 }
                 catch (Exception e) {
                     throw new IndexOutOfBoundsException("Expected arguments in format: client <ip address> <portnumber> <start (optional)>");
