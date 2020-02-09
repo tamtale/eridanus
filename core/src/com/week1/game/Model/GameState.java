@@ -1,14 +1,10 @@
 package com.week1.game.Model;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 
-import com.badlogic.gdx.ai.pfa.Heuristic;
 import com.badlogic.gdx.ai.pfa.PathFinder;
-
-import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
@@ -37,12 +33,16 @@ public class GameState {
     private Array<PlayerStat> playerStats;
     private Array<SteeringAgent> agents;
     private GameWorld world;
+    /*
+     * Runnable to execute immediately after the game state has been initialized.
+     */
+    private Runnable postInit;
     
     private TowerInfo towerInfo = new TowerInfo(); // TODO: should be set by an initialization message with tower info for foreign player towers
 
     private boolean fullyInitialized = false;
 
-    public GameState(){
+    public GameState(Runnable postInit){
         // TODO board
         // TODO player data
         // TODO towers
@@ -58,6 +58,7 @@ public class GameState {
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();
+        this.postInit = postInit;
     }
 
     /*
@@ -92,6 +93,7 @@ public class GameState {
         }
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
         fullyInitialized = true;
+        postInit.run();
     }
 
     public PlayerStat getPlayerStats(int playerNum) {
@@ -398,5 +400,9 @@ public class GameState {
             }
         }
         return true;
+    }
+
+    Array<PlayerBase> getPlayerBases() {
+        return playerBases;
     }
 }
