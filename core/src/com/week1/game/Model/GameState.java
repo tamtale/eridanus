@@ -1,14 +1,10 @@
 package com.week1.game.Model;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 
-import com.badlogic.gdx.ai.pfa.Heuristic;
 import com.badlogic.gdx.ai.pfa.PathFinder;
-
-import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
@@ -17,7 +13,6 @@ import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.World.GameGraph;
-import com.week1.game.Model.World.GameHeuristic;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Pair;
 
@@ -76,23 +71,28 @@ public class GameState {
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
         if (numPlayers == 1) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
-            for(int i = 48; i <= 52; i++){
-                for (int j = 48; j <= 52; j++){
-                    graph.removeAllConnections(new Vector3(i, j, 0));
-                }
-            }
+            removePlayerBase(50, 50);
         } else if (numPlayers == 2) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+            removePlayerBase(15, 15);
             playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
+            removePlayerBase(85, 85);
         } else if (numPlayers == 3) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+            removePlayerBase(15, 15);
             playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 85, 1));
+            removePlayerBase(50, 85);
             playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
+            removePlayerBase(15, 85);
         } else {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+            removePlayerBase(15, 15);
             playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
+            removePlayerBase(85, 85);
             playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
+            removePlayerBase(15, 85);
             playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 15, 3));
+            removePlayerBase(85, 15);
         }
 
 
@@ -104,6 +104,13 @@ public class GameState {
         fullyInitialized = true;
     }
 
+    public void removePlayerBase(int startX, int startY){
+        for(int i = startX - 4; i <= startX + 3; i++){
+            for (int j = startY - 4; j <= startY + 4; j++){
+                graph.removeAllConnections(new Vector3(i, j, 0));
+            }
+        }
+    }
     public PlayerStat getPlayerStats(int playerNum) {
         if (isInitialized()) {
             return playerStats.get(playerNum);
@@ -164,7 +171,21 @@ public class GameState {
 
     public void addTower(Tower t) {
         towers.add(t);
-
+        int startX = (int) t.x - 4;
+        int startY = (int) t.y - 4;
+        TowerFootprint footprint = towerInfo.getTowerFootprint(t.getTowerType());
+        boolean[][] fp = footprint.getFp();
+        int i = 0;
+        for(boolean[] bool: fp){
+            int j = 0;
+            for(boolean boo: bool){
+                if(boo){
+                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0));
+                }
+                j++;
+            }
+            i++;
+        }
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
@@ -418,5 +439,12 @@ public class GameState {
             }
         }
         return true;
+    }
+
+    public Array<Building> getBuildings() {
+        Array<Building> buildings = new Array<>();
+        buildings.addAll(playerBases);
+        buildings.addAll(towers);
+        return buildings;
     }
 }

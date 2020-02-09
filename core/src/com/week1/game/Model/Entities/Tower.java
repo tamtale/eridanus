@@ -8,7 +8,7 @@ import com.week1.game.Model.Damage;
 import static com.week1.game.Model.Entities.HealthBar.getHealthBar;
 import static com.week1.game.Model.Entities.HealthBar.healthBarBackground;
 
-public class Tower implements Damageable, Damaging {
+public class Tower extends Building implements Damaging {
     private static final int SIDELENGTH = 3;
     public float x, y;
     private Texture skin;

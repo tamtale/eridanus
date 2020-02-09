@@ -2,6 +2,8 @@ package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Array;
+import com.week1.game.Model.Entities.Building;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 
 import com.badlogic.gdx.math.Vector3;
@@ -102,4 +104,8 @@ public class GameEngine {
     }
 
     public void setEnginePlayerId(int playerId) { this.enginePlayerId = playerId; }
+
+    public Array<Building> getBuildings() {
+        return gameState.getBuildings();
+    }
 }

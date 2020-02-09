@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.week1.game.Model.Entities.Damageable;
 import com.week1.game.Model.Entities.TowerType;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
@@ -172,6 +173,7 @@ public class ClickOracle extends InputAdapter {
             // TODO: steering agent behavior
             
             System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
+            Array<Damageable> buildings = engineAdapter.getBuildings();
             networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y,
                     networkAdapter.getPlayerId(), multiSelected));
             return false;

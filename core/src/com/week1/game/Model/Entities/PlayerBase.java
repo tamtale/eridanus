@@ -10,12 +10,12 @@ import static com.week1.game.Model.Entities.HealthBar.getHealthBar;
 import static com.week1.game.Model.Entities.HealthBar.healthBarBackground;
 
 
-public class PlayerBase implements Damageable {
+public class PlayerBase extends Building {
     public float x, y;
     private double hp, maxHp;
     private int playerID;
     private static Texture skin;
-    protected static final int SIDELENGTH = 5;
+    protected static final int SIDELENGTH = 8;
 
     static {
         Pixmap towerUnscaled = new Pixmap(Gdx.files.internal("basetop.png"));
