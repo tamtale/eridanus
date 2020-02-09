@@ -16,20 +16,18 @@ public class TowerBuilderStage {
     public Stage stage;
     public StatsWidget sw;
     private ArrayList<TextButton> towerButtons = new ArrayList<>();
-    private TextButton tower2Button;
     public TowerBuilderCamera builder;
     private TextButton startGame;
 
     public TowerBuilderStage(TowerBuilderScreen towerscreen) {
         this.towerscreen =towerscreen;
         stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
-
-
-
     }
 
     public void setTowerBuilder(TowerBuilderCamera builder) {
+        //Once the towerBuilder field is populated by the TowerScreen, we can access the towers' info
         this.builder = builder;
+
         setWidgets();
         configureWidgets();
         setListeners();
@@ -37,6 +35,7 @@ public class TowerBuilderStage {
 
     private void setWidgets() {
         sw = new StatsWidget();
+        sw.setLblTxt(builder.getCurrTower().getHp(), builder.getCurrTower().getAtk(), builder.getCurrTower().getRange());
 
 
         for (Integer i = 0; i < builder.presets.NUM_PRESETS; i ++) {
@@ -44,7 +43,6 @@ public class TowerBuilderStage {
                     new Skin(Gdx.files.internal("uiskin.json"))));
         }
 
-//        tower2Button = new TextButton("Tower 2", new Skin(Gdx.files.internal("uiskin.json")));
         startGame = new TextButton("Start Game", new Skin(Gdx.files.internal("uiskin.json")));
     }
 
@@ -52,8 +50,9 @@ public class TowerBuilderStage {
         //Stats widget things
         sw.setSize(200,150);
         sw.setPosition(GameController.VIRTUAL_WIDTH - 250, GameController.VIRTUAL_HEIGHT - 200);
+        stage.addActor(sw);
 
-
+        //Toggle presets buttons
         for (int i = 0; i < builder.presets.NUM_PRESETS; i ++) {
             towerButtons.get(i).setSize(128, 48);
             towerButtons.get(i).setPosition(i * 128, 0);
@@ -61,11 +60,9 @@ public class TowerBuilderStage {
         }
 
 
-
+        //Start Game button
         startGame.setSize(128, 48);
         startGame.setPosition(64, GameController.VIRTUAL_HEIGHT - 200);
-
-        stage.addActor(sw);
         stage.addActor(startGame);
 
     }
@@ -75,10 +72,11 @@ public class TowerBuilderStage {
 
             //copying i to effectively final temp variable so that reference in the click listener works
             int finalI = i;
+
             towerButtons.get(i).addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    Tower currTower = builder.presets.getTower(finalI);
+                    Tower currTower = builder.presets.getTower(finalI + 1);
                     builder.setCurrTower(currTower);
                     sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
                 }

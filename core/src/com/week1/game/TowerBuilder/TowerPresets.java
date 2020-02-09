@@ -178,35 +178,11 @@ public class TowerPresets {
     }
 
     public Tower getTower(int towernum) {
-        if (towernum < 0 || towernum > NUM_PRESETS - 1) {
+        if (towernum < 1 || towernum > NUM_PRESETS) {
             Gdx.app.log("skv2", "Bad tower preset number"+ towernum);
             return tower1;
         }
-        return presets.get(towernum);
+        return presets.get(towernum - 1);
     }
-
-//    public Tower getTower1() {
-//        return tower1;
-//    }
-//
-//    public Tower getTower2() {
-//        return tower2;
-//    }
-//
-//    public Tower getTower3() {
-//        return tower3;
-//    }
-//
-//    public Tower getTower4() {
-//        return tower4;
-//    }
-//
-//    public Tower getTower5() {
-//        return tower5;
-//    }
-//
-//    public Tower getTower6() {
-//        return tower6;
-//    }
 
 }

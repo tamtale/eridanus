@@ -51,7 +51,19 @@ public class Tower {
     private void populateFields() {
         int base_blocks = 0;
 
+        //Max footprint for tower if 5 x 5. The origin is at 3 x 3
+        //row represents x coord and column represents y coord
+        ArrayList<ArrayList<Integer>> footprint = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            footprint.add(new ArrayList<>());
+            for (int j = 0; j < 5; j++) {
+                footprint.get(i).add(-1);
+            }
+        }
+
         for (BlockSpec block : layout) {
+            
+
             ModelInstance blockInstance = new ModelInstance(TowerMaterials.modelMap.get(block.getBlockCode()));
             blockInstance.transform.setToTranslation(block.getX() * 5f, block.getY() * 5f, block.getZ() * 5f);
 

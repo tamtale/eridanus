@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.utils.Array;
+import jdk.jfr.internal.cmd.PrettyWriter;
 
 // Need a class, or something, to convert a tower layout into stats
 
@@ -87,6 +88,7 @@ public class TowerBuilderCamera {
 
 
         currTower = presets.getTower(1);
+
     }
 
 
@@ -106,32 +108,6 @@ public class TowerBuilderCamera {
 
         camController.update();
 
-        //Number keys toggle presests
-//        if(Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
-//            currTower = presets.getTower1();
-//            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
-//        }
-//        if(Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
-//            currTower = presets.getTower2();
-//            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
-//
-//        }
-//        if(Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
-//            currTower = presets.getTower3();
-//            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
-//        }
-//        if(Gdx.input.isKeyPressed(Input.Keys.NUM_4)) {
-//            currTower = presets.getTower4();
-//            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
-//        }
-//        if(Gdx.input.isKeyPressed(Input.Keys.NUM_5)) {
-//            currTower = presets.getTower5();
-//            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
-//        }
-//        if(Gdx.input.isKeyPressed(Input.Keys.NUM_6)) {
-//            currTower = presets.getTower6();
-//            towerStage.sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
-//        }
 
         modelBatch.begin(cam);
 
@@ -160,5 +136,9 @@ public class TowerBuilderCamera {
 
     public void setCurrTower(Tower currTower) {
         this.currTower = currTower;
+    }
+
+    public Tower getCurrTower() {
+        return this.currTower;
     }
 }
