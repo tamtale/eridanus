@@ -60,8 +60,7 @@ public class StartMessage extends HostControlMessage {
             }
         }
         h.broadcastToRegisteredPlayers(MessageFormatter.packageMessage(
-                new TowerDetailsMessage(-1, towerDetailsArray)
-        ));
+                new Update(Arrays.asList(new String[] {MessageFormatter.packageMessage(new TowerDetailsMessage(-1, towerDetailsArray))}))));
 
         h.runUpdateLoop();
 

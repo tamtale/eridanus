@@ -7,7 +7,6 @@ import com.week1.game.Model.TowerDetails;
 import com.week1.game.Model.TowerInfo;
 import com.week1.game.Networking.Messages.MessageType;
 
-import java.util.Map;
 
 public class TowerDetailsMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.TOWERDETAILS;
@@ -23,6 +22,7 @@ public class TowerDetailsMessage extends GameMessage {
 
     @Override
     public boolean process(GameState inputState, InfoUtil util){
+        System.out.println("Processing TowerDetailsMessage!");
         inputState.setTowerInfo(new TowerInfo(details));
         return true;
     }

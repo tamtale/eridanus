@@ -80,9 +80,9 @@ public class GameScreen implements Screen {
 				engine.setEnginePlayerId(playerId);
 			}
 		}, Arrays.asList(
-				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10),
-				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10),
-				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10)
+				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10, 1),
+				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10, 1),
+				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10, 1)
 		)); // TODO: actually pass the towers
 
 

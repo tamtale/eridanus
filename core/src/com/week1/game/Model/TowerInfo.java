@@ -34,7 +34,7 @@ public class TowerInfo {
     
     public TowerDetails getTowerDetails(int playerId, int towerType) {
         if (playerId == -1 && towerType == -1) {
-            return new TowerDetails(new TowerFootprint(TowerFootprint.fpForBase), 500, -1, -1);
+            return new TowerDetails(new TowerFootprint(TowerFootprint.fpForBase), 500, -1, -1, 0);
         }
         return details[playerId][towerType];
     }

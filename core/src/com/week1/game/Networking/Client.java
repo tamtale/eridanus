@@ -69,7 +69,7 @@ public class Client {
                     udpSocket.receive(packet);
                     String messages = new String(packet.getData()).trim();
                     
-                    Gdx.app.debug(TAG, "About to try parsing message: " + messages);
+                    Gdx.app.log(TAG, "About to try parsing message: " + messages);
                     // try parsing as a control message first
                     ClientControlMessage controlMsg = MessageFormatter.parseClientControlMessage(messages);
                     if (controlMsg != null) {
@@ -101,6 +101,7 @@ public class Client {
     }
     
     public void sendStartMessage() {
+        System.out.println("Trying to send start message.");
         // the client doesn't know its player id until later, so just use -1
         this.sendStringMessage(MessageFormatter.packageMessage(new StartMessage(-1)));
     }

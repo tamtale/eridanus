@@ -36,7 +36,7 @@ public class MessageFormatter {
             } else if (prototypeMessage.messageTypeID == MessageType.INIT){
                 parsedMsg = g.fromJson(msg, InitMessage.class);
             } else if (prototypeMessage.messageTypeID == MessageType.TOWERDETAILS){
-                parsedMsg = g.fromJson(msg, InitMessage.class);
+                parsedMsg = g.fromJson(msg, TowerDetailsMessage.class);
             }
             if (parsedMsg == null) {
                 Gdx.app.error(TAG, "The following message had an unrecognized MessageType: " + msg);

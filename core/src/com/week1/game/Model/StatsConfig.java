@@ -44,7 +44,7 @@ public class StatsConfig {
     static public final double tempTowerRange = 20;
     
     static public final double tempDamage = 1;
-    static public final double tempTowerDamage = 2;
+//    static public final double tempTowerDamage = 2;
 
     public enum attackType {
         BASIC_DMG,

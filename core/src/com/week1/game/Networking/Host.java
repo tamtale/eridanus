@@ -112,6 +112,7 @@ public class Host {
     
     public void broadcastToRegisteredPlayers(String msg) {
         registry.values().forEach((player) -> {
+            System.out.println("Sending message: " + msg + " to player: " + player.address);
             DatagramPacket p = new DatagramPacket(msg.getBytes(), msg.getBytes().length, player.address, player.port);
             try {
                 this.udpSocket.send(p);
