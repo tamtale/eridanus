@@ -30,7 +30,7 @@ public class Host {
     
     private ConcurrentLinkedQueue<String> incomingMessages = new ConcurrentLinkedQueue<>();
     
-    public Array<Array<TowerDetails>> towerDetails = new Array<>(); // first index is implicitly the player id
+    public List<List<TowerDetails>> towerDetails = new ArrayList<>(); // first index is implicitly the player id
     public int runningPlayerId = 0;
     
     

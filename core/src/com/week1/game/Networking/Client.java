@@ -105,7 +105,7 @@ public class Client {
         this.sendStringMessage(MessageFormatter.packageMessage(new StartMessage(-1)));
     }
     
-    public void sendJoinMessage(Array<TowerDetails> details) {
+    public void sendJoinMessage(List<TowerDetails> details) {
         Gdx.app.log(TAG, "Sending join message.");
         // the client doesn't know its player id until later, so just use -1
         sendStringMessage(MessageFormatter.packageMessage(new JoinMessage(-1, details)));

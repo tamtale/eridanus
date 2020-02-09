@@ -22,7 +22,6 @@ import com.week1.game.Pair;
 
 
 import static com.week1.game.Model.StatsConfig.*;
-import static com.week1.game.Model.StatsConfig.tempTower2Cost;
 import static com.week1.game.Model.Entities.TowerType.*;
 
 
@@ -38,7 +37,7 @@ public class GameState {
     private Array<SteeringAgent> agents;
     private GameWorld world;
     
-    private TowerInfo towerInfo = new TowerInfo(); // TODO: should be set by an initialization message with tower info for foreign player towers
+    private TowerInfo towerInfo; 
 
     private boolean fullyInitialized = false;
 
@@ -273,49 +272,49 @@ public class GameState {
         }
     }
 
-    public double getTowerHp(TowerType towerType) {
-        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
-        if (towerType == BASIC) {
-            return tempTower1Health;
-        } else if (towerType == SNIPER) {
-            return tempTower2Health;
-        } else {
-            return tempTower3Health;
-        }
-    }
+//    public double getTowerHp(int playerId, int towerId) {
+//        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
+////        if (towerType == BASIC) {
+////            return tempTower1Health;
+////        } else if (towerType == SNIPER) {
+////            return tempTower2Health;
+////        } else {
+////            return tempTower3Health;
+////        }
+//    }
 
-    public double getTowerCost(TowerType towerType) {
-        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
-        if (towerType == BASIC) {
-            return tempTower1Cost;
-        } else if (towerType == SNIPER) {
-            return tempTower2Cost;
-        } else {
-            return tempTower3Cost;
-        }
-    }
+//    public double getTowerCost(TowerType towerType) {
+//        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
+//        if (towerType == BASIC) {
+//            return tempTower1Cost;
+//        } else if (towerType == SNIPER) {
+//            return tempTower2Cost;
+//        } else {
+//            return tempTower3Cost;
+//        }
+//    }
 
-    public double getTowerDmg(TowerType towerType) {
-        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
-        if (towerType == BASIC) {
-            return tempTower1Damage;
-        } else if (towerType == SNIPER) {
-            return tempTower2Damage;
-        } else {
-            return tempTower3Damage;
-        }
-    }
+//    public double getTowerDmg(TowerType towerType) {
+//        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
+//        if (towerType == BASIC) {
+//            return tempTower1Damage;
+//        } else if (towerType == SNIPER) {
+//            return tempTower2Damage;
+//        } else {
+//            return tempTower3Damage;
+//        }
+//    }
 
-    public double getTowerRange(TowerType towerType) {
-        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
-        if (towerType == BASIC) {
-            return tempTower1Range;
-        } else if (towerType == SNIPER) {
-            return tempTower2Range;
-        } else {
-            return tempTower3Range;
-        }
-    }
+//    public double getTowerRange(TowerType towerType) {
+//        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
+//        if (towerType == BASIC) {
+//            return tempTower1Range;
+//        } else if (towerType == SNIPER) {
+//            return tempTower2Range;
+//        } else {
+//            return tempTower3Range;
+//        }
+//    }
 
     public Pixmap getTowerPixmap(TowerType towerType) {
         // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
@@ -347,16 +346,16 @@ public class GameState {
     }
 
     public boolean overlapsExistingStructure(int playerId, int towerType, int x, int y) {
-        TowerFootprint footprint = towerInfo.getTowerFootprint(playerId, towerType);
+        TowerFootprint footprint = towerInfo.getTowerDetails(playerId, towerType).footprint;
         for (Tower t: towers) {
-            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerFootprint(t.getPlayerId(), t.getTowerType()), (int)t.x, (int)t.y)) {
+            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerDetails(t.getPlayerId(), t.getTowerType()).footprint, (int)t.x, (int)t.y)) {
                 return true;
             }
         }
         
         for (PlayerBase pb: playerBases) {
             // use -1 as towerType for the player base
-            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerFootprint(-1, -1), (int)pb.x, (int)pb.y)) {
+            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerDetails(-1, -1).footprint, (int)pb.x, (int)pb.y)) {
                 return true;
             }
         }
@@ -401,5 +400,8 @@ public class GameState {
     
     public void setTowerInfo(TowerInfo info) {
         this.towerInfo = info;
+    }
+    public TowerDetails getTowerDetails(int playerId, int towerId) {
+        return this.towerInfo.getTowerDetails(playerId, towerId);
     }
 }

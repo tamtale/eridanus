@@ -3,7 +3,7 @@ package com.week1.game.Model;
 public class TowerFootprint {
     private final static int MAXFOOTPRINTSIZE = 8;
     
-    final static boolean[][] fpForBasic = {
+    public final static boolean[][] fpForBasic = {
             {false, false, false, false, false, false, false, false, false},
             {false, false, false, false, false, false, false, false, false},
             {false, false, false, false, false, false, false, false, false},
@@ -15,7 +15,7 @@ public class TowerFootprint {
             {false, false, false, false, false, false, false, false, false}
     }; 
     
-    final static boolean[][] fpForBase = {
+    public final static boolean[][] fpForBase = {
             {true, true, true, true, true, true, true, true, true},
             {true, true, true, true, true, true, true, true, true},
             {true, true, true, true, true, true, true, true, true},

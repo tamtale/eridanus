@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Entities.Tower;
+import com.week1.game.Model.TowerDetails;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Model.Entities.TowerType;
 import com.week1.game.InfoUtil;
@@ -26,14 +27,13 @@ public class CreateTowerMessage extends GameMessage {
 
     @Override
     public boolean process(GameState inputState, InfoUtil util){
-        // First, check if it is able to be built.
-        // TODO do lookup of the cost based on towerType, do not use hardcoded number [tempTower1Cost]
+        TowerDetails towerDetails = inputState.getTowerDetails(this.playerID, this.towerType.ordinal());
         double towerCost, towerHealth, towerDmg, towerRange;
-        towerCost = inputState.getTowerCost(towerType);
-        towerHealth = inputState.getTowerHp(towerType);
-        towerDmg = inputState.getTowerDmg(towerType);
-        towerRange = inputState.getTowerRange(towerType);
-        Pixmap towerPixmap = inputState.getTowerPixmap(towerType);
+        towerCost = towerDetails.price;
+        towerHealth = towerDetails.health;
+        towerDmg = towerDetails.damage;
+        towerRange = towerDetails.range;
+        Pixmap towerPixmap = inputState.getTowerPixmap(towerType); // TOOD: tower image should come from TowerDetails too
 
         if (towerCost > inputState.getPlayerStats(playerID).getMana()) {
             // Do not have enough mana!

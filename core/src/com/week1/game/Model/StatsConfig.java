@@ -16,25 +16,25 @@ public class StatsConfig {
     static final double placementRange = 15;
   
     // Basic
-    static public final double tempTower1Cost = 75;
-    static public final double tempTower1Health = 100;
-    static public final double tempTower1Damage = 1.5;
-    static public final double tempTower1Range = 6;
+//    static public final double tempTower1Cost = 75;
+//    static public final double tempTower1Health = 100;
+//    static public final double tempTower1Damage = 1.5;
+//    static public final double tempTower1Range = 6;
     static public final Pixmap basicTexture = new Pixmap(Gdx.files.internal("towertransparent.png"));
 
 
     // Sniper
-    static public final double tempTower2Cost = 150;
-    static public final double tempTower2Health = 10;
-    static public final double tempTower2Damage = 4;
-    static public final double tempTower2Range = 12;
+//    static public final double tempTower2Cost = 150;
+//    static public final double tempTower2Health = 10;
+//    static public final double tempTower2Damage = 4;
+//    static public final double tempTower2Range = 12;
     static public final Pixmap sniperTexture = new Pixmap(Gdx.files.internal("tower3.png"));
 
     // Tank
-    static public final double tempTower3Cost = 100;
-    static public final double tempTower3Health = 100;
-    static public final double tempTower3Damage = 1;
-    static public final double tempTower3Range = 4;
+//    static public final double tempTower3Cost = 100;
+//    static public final double tempTower3Health = 100;
+//    static public final double tempTower3Damage = 1;
+//    static public final double tempTower3Range = 4;
     static public final Pixmap tankTexture = new Pixmap(Gdx.files.internal("tower3.png"));
 
     static public final double tempMinion1Cost = 10;

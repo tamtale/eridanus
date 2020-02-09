@@ -7,6 +7,7 @@ import com.week1.game.Model.TowerDetails;
 import java.net.*;
 import java.nio.channels.SocketChannel;
 import java.util.Enumeration;
+import java.util.List;
 
 public class NetworkUtils {
     private static final String TAG = "NetworkUtils - lji1";
@@ -62,7 +63,7 @@ public class NetworkUtils {
      * @param args - Either "host" or "client <ip address> <port number> <optional - start>"
      * @return The client object
      */
-    public static Client initNetworkObjects(String[] args, INetworkClientToEngineAdapter adapter, Array<TowerDetails> details) {
+    public static Client initNetworkObjects(String[] args, INetworkClientToEngineAdapter adapter, List<TowerDetails> details) {
         final String TAG = "initNetworkObjects - lji1";
         Gdx.app.log(TAG, "Local host address: " + getLocalHostAddr());
         

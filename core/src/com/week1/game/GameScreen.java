@@ -22,6 +22,8 @@ import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkUtils;
 import com.week1.game.Renderer.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -77,7 +79,11 @@ public class GameScreen implements Screen {
 			public void setPlayerId(int playerId) {
 				engine.setEnginePlayerId(playerId);
 			}
-		}, new Array<>());
+		}, Arrays.asList(
+				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10),
+				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10),
+				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10)
+		)); // TODO: actually pass the towers
 
 
 		engine = new GameEngine(new IEngineToRendererAdapter() {

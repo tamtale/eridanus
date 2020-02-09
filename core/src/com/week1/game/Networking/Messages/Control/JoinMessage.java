@@ -8,14 +8,15 @@ import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Networking.Player;
 
 import java.net.DatagramPacket;
+import java.util.List;
 
 public class JoinMessage extends HostControlMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.JOIN;
     private final static String TAG = "JoinMessage";
     
-    private Array<TowerDetails> details;
+    private List<TowerDetails> details;
 
-    public JoinMessage(int playerID, Array<TowerDetails> details){
+    public JoinMessage(int playerID, List<TowerDetails> details){
         super(playerID, MESSAGE_TYPE);
         this.details = details;
     }
