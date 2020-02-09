@@ -1,9 +1,11 @@
 package com.week1.game.Model.Entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
@@ -25,12 +27,14 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     public void setClicked(boolean clicked) {
         this.clicked = clicked;
     }
-
+    private static int turn = 4;
     private double hp;
+    private Vector3 vel;
     private double maxHp;
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
+    public static double speed = 15;
     public  static int SIZE = 1;
     
     private static Texture selectedSkin = makeTexture(SIZE, SIZE, Color.YELLOW);
@@ -41,6 +45,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         this.playerID = playerID;
         this.hp = hp;
         this.maxHp = hp;
+        this.vel = new Vector3(0, 0, 0);
     }
 
     public void draw(Batch batch) {
@@ -64,9 +69,65 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
 
     public void step(float delta) {
-        if (agent != null) {
-            agent.update(delta);
+//        if (path != null) {
+//            System.out.println(path.get(0));
+//            System.out.println(this.x);
+//            System.out.println(this.y);
+//            if (this.x > path.get(0).x && this.y > path.get(0).y) {
+//                Gdx.app.log("Unit - wab2", "Updating goal");
+//                agent.setGoal(path.get(1));
+//                path.setPath(path.getPath().removeIndex(0));
+//            }
+//        }
+        if (path != null) {
+            if (path.getPath().size != 1) {
+                System.out.println((int) this.x + " " + (int) this.y);
+                System.out.println((int) path.get(0).x + " " + (int) path.get(0).y);
+                if ((int) this.x == (int) path.get(0).x &&
+                    (int) this.y == (int) path.get(0).y) {
+                    Gdx.app.log("Unit - Move wab2", path.getPath().toString());
+                    System.out.println(vel);
+                    float dx = path.get(1).x - (int) this.x;
+                    float dy = path.get(1).y - (int) this.y;
+                    double angle = Math.atan(dy/dx);
+                    System.out.println(angle);
+                    if (dx < 0) {
+                        angle += Math.PI;
+                    } else if (dy < 0) {
+                        angle += 2 * Math.PI;
+                    }
+
+                    System.out.println(dx + " " + dy);
+                    vel.x = (float) speed * (float) Math.cos(angle);
+                    vel.y = (float) speed * (float) Math.sin(angle);
+                    path.removeIndex(0);
+                }
+                move(delta);
+//                if (turn == 0){
+//                    System.out.println(this.x + " " + this.y);
+//                    System.out.println(path.getPath());
+//                    path.removeIndex(0);
+//                    turn = 4;
+//                } else {
+//                    turn--;
+//                }
+
+            }
+            if(path.getPath().size == 0) {
+                vel.x = 0;
+                vel.y = 0;
+            }
         }
+//        float dx = path.get(0).x - this.x;
+//        float dy = path.get(0).y - this.y;
+//
+//        if (agent != null) {
+//            agent.update(delta);
+//        }
+    }
+
+    private void move(float delta) {
+        this.setPosition(this.x + (vel.x * delta), this.y + (vel.y * delta));
     }
 
     public SteeringAgent getAgent(){ return agent;}
@@ -117,6 +178,10 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
     public void setPath(OutputPath path) {
         this.path = path;
+        float dx = path.get(0).x - this.x;
+        float dy = path.get(0).y - this.y;
+        vel.x = dx * .333f;
+        vel.y = dy * .333f;
     }
 }
 

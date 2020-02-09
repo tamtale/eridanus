@@ -44,4 +44,8 @@ public class OutputPath implements GraphPath<Vector3> {
     public Iterator<Vector3> iterator() {
         return path.iterator();
     }
+
+    public void removeIndex(int index){
+        path.removeIndex(index);
+    }
 }

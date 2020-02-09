@@ -74,7 +74,7 @@ public class SteeringAgent implements Steerable<Vector3> {
         public Location<Vector3> newLocation() {
             return this;
         }
-    }).setArrivalTolerance(0).setDecelerationRadius(50).setTimeToTarget(10);
+    }).setArrivalTolerance(0).setDecelerationRadius(10).setTimeToTarget(10);
     public Vector3 getGoal() {
         return goal;
     }
