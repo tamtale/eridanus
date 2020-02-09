@@ -15,7 +15,7 @@ public class PlayerBase implements Damageable {
     private double hp, maxHp;
     private int playerID;
     private static Texture skin;
-    protected static final int SIDELENGTH = 8;
+    protected static final int SIDELENGTH = 5;
 
     static {
         Pixmap towerUnscaled = new Pixmap(Gdx.files.internal("basetop.png"));
@@ -30,6 +30,7 @@ public class PlayerBase implements Damageable {
         this.playerID = playerID;
         this.x = x;
         this.y = y;
+
     }
 
     public void draw(Batch batch) {

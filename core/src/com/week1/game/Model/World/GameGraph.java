@@ -60,6 +60,10 @@ public class GameGraph implements IndexedGraph<Vector3> {
         edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z].add(border);
     }
 
+    public void removeAllConnections(Vector3 fromNode){
+        edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = new Array<>();
+    }
+
     public void addVector3(Vector3 Vector3) {
         nodeCount+=1;
         Vector3s.add(Vector3);

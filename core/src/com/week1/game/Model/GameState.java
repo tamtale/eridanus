@@ -74,6 +74,11 @@ public class GameState {
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
         if (numPlayers == 1) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
+            for(int i = 48; i <= 52; i++){
+                for (int j = 48; j <= 52; j++){
+                    graph.removeAllConnections(new Vector3(i, j, 0));
+                }
+            }
         } else if (numPlayers == 2) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
             playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
@@ -157,6 +162,7 @@ public class GameState {
 
     public void addTower(Tower t) {
         towers.add(t);
+
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
