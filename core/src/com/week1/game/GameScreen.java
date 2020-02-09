@@ -57,7 +57,7 @@ public class GameScreen implements Screen {
 			}
 		});
 	}
-	
+
 	public GameScreen(String[] args) {
 		this.args = args;
 		// Set the logging level
@@ -135,6 +135,15 @@ public class GameScreen implements Screen {
 					}
 
 					@Override
+					public void zoom(int amount) {
+					    renderer.zoom(amount);
+					}
+
+                    @Override
+                    public void setTranslationDirection(Direction direction) {
+					    renderer.setPanning(direction);
+                    }
+
 					public Camera getCamera() {
 						return renderer.getCamera();
 					}
@@ -149,7 +158,7 @@ public class GameScreen implements Screen {
 					public boolean isPlayerAlive() {
 						return engine.isPlayerAlive();
 					}
-					
+
 					@Override
 					public Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
 						return engine.getGameState().findUnitsInBox(cornerA, cornerB);
@@ -168,12 +177,12 @@ public class GameScreen implements Screen {
 				});
 
 		ai = new AI();
-
 		makeTempStage();
 		Gdx.input.setInputProcessor(connectionStage);
 
 		renderer.create();
 	}
+
 
 
 	@Override

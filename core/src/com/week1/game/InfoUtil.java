@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
 
 public class InfoUtil {
@@ -11,6 +12,8 @@ public class InfoUtil {
     private boolean messagesOnScreen;
     private Array<DisplayMessage> messages = new Array<>();
     private Array<DisplayMessage> toDelete = new Array<>();
+    private Matrix4 projectionMatrix = new Matrix4();
+    private BitmapFont font = new BitmapFont();
 
     public InfoUtil(boolean messagesOnScreen) {
         this.messagesOnScreen = messagesOnScreen;
@@ -23,13 +26,16 @@ public class InfoUtil {
         }
     }
 
-    public void drawMessages(Batch batch, BitmapFont font) {
+    public void drawMessages(Batch batch) {
+        float w = Gdx.graphics.getWidth();
+        float h = Gdx.graphics.getHeight();
+        projectionMatrix.setToOrtho2D(0, 0, w, h);
+        batch.setProjectionMatrix(projectionMatrix);
         batch.begin();
         font.setColor(Color.ORANGE);
-        font.getData().setScale(.25f);
         for (int i = 0; i < messages.size; i++) {
             DisplayMessage message = messages.get(i);
-            font.draw(batch, message.text, 5f, 100 - (float) i * 3.0f);
+            font.draw(batch, message.text, 5f, h - (float) i * font.getCapHeight() * 2);
             message.decay();
             if (message.finished()) {
                 toDelete.add(message);

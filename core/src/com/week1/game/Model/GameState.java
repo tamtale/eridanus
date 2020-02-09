@@ -1,14 +1,22 @@
 package com.week1.game.Model;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.graphics.g2d.Batch;
 
+import com.badlogic.gdx.ai.pfa.Heuristic;
+import com.badlogic.gdx.ai.pfa.PathFinder;
+
+import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Entities.*;
+import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
+import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Pair;
 
@@ -20,6 +28,8 @@ import static com.week1.game.Model.Entities.TowerType.*;
 
 public class GameState {
 
+    private GameGraph graph;
+    private PathFinder<Vector3> pathFinder;
     private Array<Unit> units;
     private int minionCount;
     private Array<Tower> towers;
@@ -27,6 +37,8 @@ public class GameState {
     private Array<PlayerStat> playerStats;
     private Array<SteeringAgent> agents;
     private GameWorld world;
+    
+    private TowerInfo towerInfo = new TowerInfo(); // TODO: should be set by an initialization message with tower info for foreign player towers
 
     private boolean fullyInitialized = false;
 
@@ -37,7 +49,12 @@ public class GameState {
         // TODO tower types in memory after exchange
         towers = new Array<>();
         units = new Array<>();
+        Gdx.app.log("Game State - wab2", "units set");
         world = new GameWorld();
+        Gdx.app.log("Game State - wab2", "world built");
+        graph = world.buildGraph();
+        pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
+        OutputPath path = new OutputPath();
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();
@@ -90,20 +107,22 @@ public class GameState {
             //System.out.println("from step " + agent.getSteeringOutput().linear);
             unit.step(delta);
             for(Tower tower: towers) {
-                if ((unit.getX() > tower.x - (tower.getSidelength() / 2f) + 0.5f) && 
+                if ((unit.getX() > tower.x - (tower.getSidelength() / 2f) + 0.5f) &&
                         (unit.getX() < tower.x + (tower.getSidelength() / 2f) + 0.5f) &&
                         (unit.getY() > tower.y - (tower.getSidelength() / 2f) + 0.5f) &&
                         (unit.getY() < tower.y + (tower.getSidelength() / 2f) + 0.5f)) {
                     collide(unit);
+                    Gdx.app.log("stepUnits - wab2", "Unit " + unit.ID + " collided with " + tower);
                 }
             }
 
             for(PlayerBase base: playerBases) {
-                if ((unit.getX() > base.x - (base.getSidelength() / 2f)) && 
+                if ((unit.getX() > base.x - (base.getSidelength() / 2f)) &&
                         (unit.getX() < base.x + (base.getSidelength() / 2f)) &&
                         (unit.getY() > base.y - (base.getSidelength() / 2f)) &&
                         (unit.getY() < base.y + (base.getSidelength() / 2f))) {
                     collide(unit);
+                    Gdx.app.log("stepUnits - wab2", "Unit " + unit.ID + " collided with " + base);
                 }
             }
         }
@@ -169,7 +188,7 @@ public class GameState {
         }
         return null;
     }
-    
+
     public Array<Unit> findUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
         Array<Unit> unitsToSelect = new Array<>();
         for (Unit u : units) {
@@ -181,7 +200,7 @@ public class GameState {
         return unitsToSelect;
     }
 
-    
+
     public Unit getMinionById(int minionId) {
 
         for (int i = 0; i < units.size; i++) {
@@ -189,7 +208,7 @@ public class GameState {
                 return units.get(i);
             }
         }
-        
+
 //        Gdx.app.error("getMinionById - lji1", "Unable to find minion by given ID, returning null.");
         return null;
     }
@@ -324,6 +343,25 @@ public class GameState {
             }
         }
 
+        return false;
+    }
+
+    public boolean overlapsExistingStructure(int towerType, int x, int y) {
+        TowerFootprint footprint = towerInfo.getTowerFootprint(towerType);
+        // TODO: check for overlaps with base also
+        for (Tower t: towers) {
+            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerFootprint(t.getTowerType()), (int)t.x, (int)t.y)) {
+                return true;
+            }
+        }
+        
+        for (PlayerBase pb: playerBases) {
+            // use -1 as towerType for the player base
+            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerFootprint(-1), (int)pb.x, (int)pb.y)) {
+                return true;
+            }
+        }
+        
         return false;
     }
 

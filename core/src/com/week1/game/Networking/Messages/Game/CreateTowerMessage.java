@@ -15,7 +15,7 @@ public class CreateTowerMessage extends GameMessage {
 
     private float x, y;
     private TowerType towerType;
-    
+
 
     public CreateTowerMessage(float x, float y, TowerType towerType, int playerID){
         super(playerID, MESSAGE_TYPE);
@@ -46,13 +46,18 @@ public class CreateTowerMessage extends GameMessage {
             util.log("pjb3 - CreateTowerMessage", "Not close enough to an existing tower or home base");
             return false;
         }
+        
+        if(inputState.overlapsExistingStructure(towerType.ordinal(), (int)x, (int)y)) {
+            util.log("lji1 - CreateTowerMessage", "Overlapping with existing structure.");
+            return false;
+        }
 
         util.log("pjb3 - CreateTowerMessage", "Used " + towerCost + " mana to create tower.");
         inputState.getPlayerStats(playerID).useMana(towerCost);
 
 
         util.log("lji1 - CreateTowerMessage", "Creating tower!");
-        Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerCost, towerPixmap, playerID);
+        Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerCost, towerPixmap, playerID, towerType.ordinal());
 
         inputState.addTower(tower);
         return true;
