@@ -2,7 +2,6 @@ package com.week1.game.Renderer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -13,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.week1.game.GameController;
 import com.week1.game.Model.SpawnInfo;
 import com.week1.game.Model.SpawnInfo.*;
@@ -45,7 +45,7 @@ public class GameButtonsStage {
 
 
     public GameButtonsStage(IRendererToClickOracleAdapter clickOracleAdapter) {
-        stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
+        stage = new Stage(new ScreenViewport());
         this.clickOracleAdapter = clickOracleAdapter;
 
         setWidgets();

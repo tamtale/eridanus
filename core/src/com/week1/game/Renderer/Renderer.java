@@ -31,6 +31,7 @@ public class Renderer {
     private BitmapFont font = new BitmapFont();
     private Vector3 panning = new Vector3();
     private Map<Direction, Vector3> directionToVector;
+    private static int DEFAULT_WIDTH = 30;
 
     {
         directionToVector = new HashMap<Direction, Vector3>() {{
@@ -58,7 +59,7 @@ public class Renderer {
         mapRenderer = new OrthogonalTiledMapRenderer(map, 1f / PIXELS_PER_UNIT);
         batch = mapRenderer.getBatch();
         gameButtonsStage = new GameButtonsStage(clickOracleAdapter);
-        camera.setToOrtho(false, 100, 100);
+        camera.setToOrtho(false, DEFAULT_WIDTH, Gdx.graphics.getHeight() * (float) DEFAULT_WIDTH / Gdx.graphics.getWidth());
         camera.update();
     }
 
@@ -80,6 +81,8 @@ public class Renderer {
     }
 
     public void resize(int x, int y) {
+        // camera.setToOrtho(false, 30, y / x * 30);
+        camera.setToOrtho(false, DEFAULT_WIDTH, Gdx.graphics.getHeight() * (float) DEFAULT_WIDTH / Gdx.graphics.getWidth());
         camera.update();
         gameButtonsStage.stage.getViewport().update(x, y);
     }
