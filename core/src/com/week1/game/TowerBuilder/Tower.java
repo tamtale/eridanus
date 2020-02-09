@@ -15,6 +15,14 @@ public class Tower {
     private Integer rawHp = 0;
     private Integer rawAtk = 0;
     private Integer armour = 1;
+    private Integer price = 0;
+    private Array<ModelInstance> model = new Array<>();
+    private ArrayList<BlockSpec> layout;
+    private ArrayList<ArrayList<Integer>> footprint = new ArrayList<>();
+
+    public Integer getPrice() {
+        return price;
+    }
 
     public Integer getHp() {
         return hp;
@@ -31,10 +39,6 @@ public class Tower {
     public Array<ModelInstance> getModel() {
         return model;
     }
-
-    private Array<ModelInstance> model = new Array<>();
-    private ArrayList<BlockSpec> layout;
-    private ArrayList<ArrayList<Integer>> footprint = new ArrayList<>();
 
     //want to also generate dimensions, footprint, other multipliers
     //prog generated view
@@ -60,22 +64,28 @@ public class Tower {
         }
 
         for (BlockSpec block : layout) {
-            ModelInstance blockInstance = new ModelInstance(TowerMaterials.modelMap.get(block.getBlockCode()));
-            blockInstance.transform.setToTranslation(block.getX() * 5f, block.getY() * 5f, block.getZ() * 5f);
+            Integer code = block.getBlockCode();
+            Integer x = block.getX();
+            Integer y = block.getY();
+            Integer z = block.getZ();
+
+            ModelInstance blockInstance = new ModelInstance(TowerMaterials.modelMap.get(code));
+            blockInstance.transform.setToTranslation(x * 5f, y * 5f, z * 5f);
             this.model.add(blockInstance);
 
 
-            Integer curFootPrint = footprint.get(block.getX() + 2).get(block.getZ() + 2);
+            Integer curFootPrint = footprint.get(x + 2).get(z + 2);
             if (curFootPrint == -1) {
-                footprint.get(block.getX() + 2).set(block.getZ() + 2, block.getY());
+                footprint.get(x + 2).set(z + 2, y);
             } else {
-                footprint.get(block.getX() + 2).set(block.getZ() + 2, min(curFootPrint, block.getY()));
+                footprint.get(x + 2).set(z + 2, min(curFootPrint, y));
             }
 
             //Generate the tower stats
-            rawHp += TowerMaterials.blockHp.get(block.getBlockCode());
-            rawAtk += TowerMaterials.blockAtk.get(block.getBlockCode());
-            range = max(range, block.getY() + 1);
+            rawHp += TowerMaterials.blockHp.get(code);
+            rawAtk += TowerMaterials.blockAtk.get(code);
+            range = max(range, y + 1);
+            price += TowerMaterials.blockPrice.get(code);
         }
 
         //We aren't calculating armour multipliers, etc

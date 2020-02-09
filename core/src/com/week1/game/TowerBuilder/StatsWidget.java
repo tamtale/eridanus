@@ -49,8 +49,8 @@ public class StatsWidget extends Actor {
         label.setSize(width, height);
     }
 
-     public void setLblTxt(Integer hp, Integer atk, Integer range) {
-        this.label.setText("HP: " + hp +"\n Atk: " + atk + " \n Range: " + range);
+     public void setLblTxt(Integer hp, Integer atk, Integer range, Integer price) {
+        this.label.setText("HP: " + hp +"\n Atk: " + atk + " \n Range: " + range + "\n Price: " + price);
      }
 
 

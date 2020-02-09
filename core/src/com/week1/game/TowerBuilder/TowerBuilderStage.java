@@ -35,7 +35,8 @@ public class TowerBuilderStage {
 
     private void setWidgets() {
         sw = new StatsWidget();
-        sw.setLblTxt(builder.getCurrTower().getHp(), builder.getCurrTower().getAtk(), builder.getCurrTower().getRange());
+        sw.setLblTxt(builder.getCurrTower().getHp(), builder.getCurrTower().getAtk(),
+                builder.getCurrTower().getRange(), builder.getCurrTower().getPrice());
 
 
         for (Integer i = 0; i < builder.presets.NUM_PRESETS; i ++) {
@@ -78,7 +79,7 @@ public class TowerBuilderStage {
                 public void clicked(InputEvent event, float x, float y) {
                     Tower currTower = builder.presets.getTower(finalI + 1);
                     builder.setCurrTower(currTower);
-                    sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange());
+                    sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange(), currTower.getPrice());
                 }
             });
 
