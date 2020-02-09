@@ -12,14 +12,14 @@ public class Tower implements Damageable, Damaging {
     private static final int SIDELENGTH = 3;
     public float x, y;
     private Texture skin;
-    private int playerID;
+    private int playerID, towerType;
 
     private double hp, maxHp, dmg, range, cost;
     
     private Damage.type attackType;
 
 
-    public Tower(float x, float y, double hp, double dmg, double range, Damage.type attackType, double cost, Pixmap towerUnscaled, int playerID) {
+    public Tower(float x, float y, double hp, double dmg, double range, Damage.type attackType, double cost, Pixmap towerUnscaled, int playerID, int towerType) {
         this.x = x;
         this.y = y;
         this.hp = hp;
@@ -29,6 +29,7 @@ public class Tower implements Damageable, Damaging {
         this.range = range;
         this.playerID = playerID;
         this.attackType = attackType;
+        this.towerType = towerType;
 
         Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, towerUnscaled.getFormat());
         towerScaled.drawPixmap(towerUnscaled, 0, 0, towerUnscaled.getWidth(), towerUnscaled.getHeight(),
@@ -48,6 +49,10 @@ public class Tower implements Damageable, Damaging {
 
     public double getCost() {
         return cost;
+    }
+    
+    public int getTowerType() {
+        return towerType;
     }
 
     @Override

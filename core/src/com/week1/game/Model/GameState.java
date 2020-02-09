@@ -38,6 +38,8 @@ public class GameState {
     private Array<PlayerStat> playerStats;
     private Array<SteeringAgent> agents;
     private GameWorld world;
+    
+    private TowerInfo towerInfo = new TowerInfo(); // TODO: should be set by an initialization message with tower info for foreign player towers
 
     private boolean fullyInitialized = false;
 
@@ -361,6 +363,25 @@ public class GameState {
             }
         }
 
+        return false;
+    }
+
+    public boolean overlapsExistingStructure(int towerType, int x, int y) {
+        TowerFootprint footprint = towerInfo.getTowerFootprint(towerType);
+        // TODO: check for overlaps with base also
+        for (Tower t: towers) {
+            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerFootprint(t.getTowerType()), (int)t.x, (int)t.y)) {
+                return true;
+            }
+        }
+        
+        for (PlayerBase pb: playerBases) {
+            // use -1 as towerType for the player base
+            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerFootprint(-1), (int)pb.x, (int)pb.y)) {
+                return true;
+            }
+        }
+        
         return false;
     }
 
