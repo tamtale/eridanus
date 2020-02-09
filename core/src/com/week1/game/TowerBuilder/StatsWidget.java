@@ -6,61 +6,30 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-
-import java.util.ArrayList;
+import com.badlogic.gdx.utils.Align;
 
 public class StatsWidget extends Actor {
     private Label label;
-    Label.LabelStyle tower1 = new Label.LabelStyle();
-    Label.LabelStyle tower2= new Label.LabelStyle();
-    Label.LabelStyle tower3= new Label.LabelStyle();
-    Label.LabelStyle tower4= new Label.LabelStyle();
-    Label.LabelStyle tower5= new Label.LabelStyle();
-    Label.LabelStyle tower6= new Label.LabelStyle();
-    private ArrayList<Label.LabelStyle> styles = new ArrayList<>();
 
 
     public StatsWidget() {
-        TextureRegionDrawable td = new TextureRegionDrawable(new Texture("Tower1stats.png"));
-        tower1.background = td;
-        tower1.font = new BitmapFont();
-        styles.add(tower1);
 
-//        style.fontColor  = Color.BLACK;
-        TextureRegionDrawable td2 = new TextureRegionDrawable(new Texture("Tower2stats.png"));
-        tower2.background = td2;
-        tower2.font = new BitmapFont();
-        styles.add(tower2);
-
-        TextureRegionDrawable td3 = new TextureRegionDrawable(new Texture("Tower3stats.png"));
-        tower3.background = td3;
-        tower3.font = new BitmapFont();
-        styles.add(tower3);
-
-        TextureRegionDrawable td4 = new TextureRegionDrawable(new Texture("Tower4stats.png"));
-        tower4.background = td4;
-        tower4.font = new BitmapFont();
-        styles.add(tower4);
-
-        TextureRegionDrawable td5 = new TextureRegionDrawable(new Texture("Tower5stats.png"));
-        tower5.background = td5;
-        tower5.font = new BitmapFont();
-        styles.add(tower5);
-
-        TextureRegionDrawable td6 = new TextureRegionDrawable(new Texture("Tower6stats.png"));
-        tower6.background = td6;
-        tower6.font = new BitmapFont();
-        styles.add(tower6);
+        Label.LabelStyle panelstyle = new Label.LabelStyle();
+        TextureRegionDrawable td2 = new TextureRegionDrawable(new Texture("stats_panel.png"));
+        panelstyle.background = td2;
+        panelstyle.font = new BitmapFont();
 
         label = new Label("",
-                tower1);
+//                new Skin(Gdx.files.internal("uiskin.json")));
+                panelstyle);
+        label.setAlignment(Align.center);
+
 
     }
 
     @Override
     public void act(float delta) {
 //        label.act(delta);
-        label.setText("Stats");
     }
 
     @Override
@@ -80,9 +49,8 @@ public class StatsWidget extends Actor {
         label.setSize(width, height);
     }
 
-     public void setLabelStyle(int towerNumber) {
-        Label.LabelStyle currstyle = styles.get(towerNumber - 1);
-        label.setStyle(currstyle);
+     public void setLblTxt(Integer hp, Integer atk, Integer range, Integer price) {
+        this.label.setText("HP: " + hp +"\n Atk: " + atk + " \n Range: " + range + "\n Price: " + price);
      }
 
 

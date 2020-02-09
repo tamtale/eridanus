@@ -23,6 +23,7 @@ public class Renderer {
     private OrthographicCamera camera;
     private GameButtonsStage gameButtonsStage;
     private Vector3 touchPos = new Vector3();
+    private Vector3 defaultPosition = new Vector3(50, 50, 0);
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
     private IRendererToEngineAdapter engineAdapter;
@@ -31,6 +32,7 @@ public class Renderer {
     private BitmapFont font = new BitmapFont();
     private Vector3 panning = new Vector3();
     private Map<Direction, Vector3> directionToVector;
+    private static int DEFAULT_WIDTH = 30;
 
     {
         directionToVector = new HashMap<Direction, Vector3>() {{
@@ -58,7 +60,7 @@ public class Renderer {
         mapRenderer = new OrthogonalTiledMapRenderer(map, 1f / PIXELS_PER_UNIT);
         batch = mapRenderer.getBatch();
         gameButtonsStage = new GameButtonsStage(clickOracleAdapter);
-        camera.setToOrtho(false, 100, 100);
+        camera.setToOrtho(false, DEFAULT_WIDTH, Gdx.graphics.getHeight() * (float) DEFAULT_WIDTH / Gdx.graphics.getWidth());
         camera.update();
     }
 
@@ -79,15 +81,25 @@ public class Renderer {
         batch.draw(t, x, y);
     }
 
-    public void resize() {
+    public void resize(int x, int y) {
+        float oldX = camera.position.x;
+        float oldY = camera.position.y;
+        camera.setToOrtho(false, DEFAULT_WIDTH, Gdx.graphics.getHeight() * (float) DEFAULT_WIDTH / Gdx.graphics.getWidth());
+        camera.position.x = oldX;
+        camera.position.y = oldY;
         camera.update();
+        gameButtonsStage.stage.getViewport().update(x, y);
     }
 
     public void endBatch() {
         batch.end();
     }
 
-    public void endGame(int winOrLoss) { winState = winOrLoss; }
+    public void endGame(int winOrLoss) {
+        winState = winOrLoss;
+
+        gameButtonsStage.endGame(winState);
+    }
 
     public void renderInfo() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
@@ -100,14 +112,7 @@ public class Renderer {
 
     public void drawPlayerUI() {
         startBatch();
-        font.getData().setScale(1f);
-        font.setColor(Color.BLUE);
-        font.draw(batch, String.format("Mana: %d", (int)engineAdapter.getPlayerMana(networkAdapter.getPlayerId())), 20, 14);
-        if (winState == 1) {
-            font.draw(batch, "YOU WIN!!", 20, 50);
-        } else if (winState == 0) {
-            font.draw(batch, "YOU LOST", 20, 50);
-        }
+        gameButtonsStage.renderUI((int)engineAdapter.getPlayerMana(networkAdapter.getPlayerId()));
         endBatch();
     }
 
@@ -131,11 +136,17 @@ public class Renderer {
         clickOracleAdapter.render();
         drawPlayerUI();
         util.drawMessages(batch);
-
-        gameButtonsStage.render();
     }
 
     public InputProcessor getButtonStage() {
         return gameButtonsStage.stage;
+    }
+
+    public void setDefaultPosition(Vector3 position) {
+        this.defaultPosition.set(position);
+    }
+
+    public void setCameraToDefaultPosition() {
+        camera.position.set(defaultPosition);
     }
 }

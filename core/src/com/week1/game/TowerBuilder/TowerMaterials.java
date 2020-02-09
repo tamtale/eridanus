@@ -13,50 +13,63 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Integer.max;
 
-public class TowerLogic {
+
+public class TowerMaterials {
 
     ModelBuilder modelBuilder = new ModelBuilder();
 
-    private Map<Integer, Model> modelMap = new HashMap<Integer, Model>();
+    public static final Map<Integer, Model> modelMap = new HashMap<Integer, Model>();
 
     //Just for sanity -- so we can see what codes correspond to what blocks
-    private Map<String, Integer> blocknamekey = new HashMap<>();
+    public static final Map<String, Integer> blocknamekey = new HashMap<>();
 
-    public TowerLogic() {
-        //Make the textures
-        addTexture("core_block.png", "coreBlock", 1);
-        addTexture("space_obsidian.png", "obsidian", 2);
-        addTexture("moonstone.png", "moonstone", 3);
-        addTexture("gold_wip_6.png", "space gold", 4);
-        addTexture("fire_wip2.png", "fire", 5);
-        addTexture("water_wip.png", "water", 6);
-        addTexture("earth_wip4.png", "earth", 7);
-        addTexture("cat_boi.png", "easter egg", 8);
+    public static Map<Integer, Integer> blockHp = new HashMap<>();
+    public static Map<Integer, Integer> blockAtk = new HashMap<>();
+    public static Map<Integer, Integer> blockPrice = new HashMap<>();
+
+
+    public TowerMaterials() {
+        //Make the block types
+        addBlockType("core_block.png", "coreBlock", 1, 0, 0, 0);
+
+        //Materials
+        addBlockType("space_obsidian.png", "obsidian", 2, 50,5,10);
+        addBlockType("moonstone.png", "moonstone", 3, 25, 15,20);
+        addBlockType("gold_wip_6.png", "space gold", 4, 15, 40,40);
+
+        //Guns
+        addBlockType("fire_wip2.png", "fire", 5, 15, 40, 35);
+        addBlockType("water_wip.png", "water", 6, 15,40, 35);
+        addBlockType("earth_wip4.png", "earth", 7, 15,40, 35);
+
+        //Easter egg
+        addBlockType("cat_boi.png", "easter egg", 69, 10, 10,0);
 
     }
 
-    private void addTexture(String filename, String blockname, Integer code) {
+    private void addBlockType(String filename, String blockname, Integer code, Integer hp, Integer atk, Integer price) {
         blocknamekey.put(blockname, code);
 
         modelMap.put(code, modelBuilder.createBox(5f, 5f, 5f,
                 new Material(TextureAttribute.createDiffuse(new Texture(filename))),
                 VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal));
+
+        blockHp.put(code, hp);
+        blockAtk.put(code, atk);
+        blockPrice.put(code, price);
+
     }
 
 
 
-    public Array<ModelInstance> getTower(ArrayList<BlockSpec> layout) {
+    public Tower getTower(ArrayList<BlockSpec> layout) {
         //TODO - the edge length is hardcoded as 5f right now
 
-        Array<ModelInstance> tower = new Array<>();
+        Array<ModelInstance> towerLayout = new Array<>();
 
-        for (BlockSpec block : layout) {
-            ModelInstance blockInstance = new ModelInstance(modelMap.get(block.getBlockCode()));
-            blockInstance.transform.setToTranslation(block.getX() * 5f, block.getY() * 5f, block.getZ() * 5f);
-
-            tower.add(blockInstance);
-        }
+        Tower tower = new Tower(layout);
 
         return tower;
     }
