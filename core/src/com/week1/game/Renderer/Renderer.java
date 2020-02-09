@@ -23,6 +23,7 @@ public class Renderer {
     private OrthographicCamera camera;
     private GameButtonsStage gameButtonsStage;
     private Vector3 touchPos = new Vector3();
+    private Vector3 defaultPosition = new Vector3(50, 50, 0);
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
     private IRendererToEngineAdapter engineAdapter;
@@ -81,8 +82,11 @@ public class Renderer {
     }
 
     public void resize(int x, int y) {
-        // camera.setToOrtho(false, 30, y / x * 30);
+        float oldX = camera.position.x;
+        float oldY = camera.position.y;
         camera.setToOrtho(false, DEFAULT_WIDTH, Gdx.graphics.getHeight() * (float) DEFAULT_WIDTH / Gdx.graphics.getWidth());
+        camera.position.x = oldX;
+        camera.position.y = oldY;
         camera.update();
         gameButtonsStage.stage.getViewport().update(x, y);
     }
@@ -136,5 +140,13 @@ public class Renderer {
 
     public InputProcessor getButtonStage() {
         return gameButtonsStage.stage;
+    }
+
+    public void setDefaultPosition(Vector3 position) {
+        this.defaultPosition.set(position);
+    }
+
+    public void setCameraToDefaultPosition() {
+        camera.position.set(defaultPosition);
     }
 }

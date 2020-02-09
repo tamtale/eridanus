@@ -81,6 +81,12 @@ public class GameScreen implements Screen {
 
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override
+			public void setDefaultLocation(Vector3 location) {
+			    renderer.setDefaultPosition(location);
+			    renderer.setCameraToDefaultPosition();
+			}
+
+			@Override
 			public void endGame(int winOrLoss) {
 				renderer.endGame(winOrLoss);
 			}

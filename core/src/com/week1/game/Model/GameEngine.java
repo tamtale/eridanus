@@ -2,6 +2,7 @@ package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.week1.game.Model.Entities.PlayerBase;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 
 import com.badlogic.gdx.math.Vector3;
@@ -27,7 +28,17 @@ public class GameEngine {
     public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, InfoUtil util) {
         messageQueue = new ConcurrentLinkedQueue<>();
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
-        gameState = new GameState();
+        gameState = new GameState(() -> {
+            Vector3 position = new Vector3();
+            PlayerBase myBase = null;
+            for (PlayerBase playerBase: gameState.getPlayerBases()) {
+                if (playerBase.getPlayerId() == enginePlayerId) {
+                    myBase = playerBase;
+                }
+            }
+            position.set(myBase.getX(), myBase.getY(), 0);
+            engineToRenderer.setDefaultLocation(position);
+        });
         Gdx.app.log("wab2- GameEngine", "gameState built");
         batch = new SpriteBatch();
         engineToRenderer = engineToRendererAdapter;
