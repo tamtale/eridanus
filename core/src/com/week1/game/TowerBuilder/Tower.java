@@ -9,30 +9,30 @@ import static java.lang.Integer.max;
 import static java.lang.Math.min;
 
 public class Tower {
-    private Integer hp = 0;
-    private Integer atk = 0;
-    private Integer range = 0;
-    private Integer rawHp = 0;
-    private Integer rawAtk = 0;
-    private Integer armour = 1;
-    private Integer price = 0;
+    private int hp = 0;
+    private int atk = 0;
+    private int range = 0;
+    private int rawHp = 0;
+    private int rawAtk = 0;
+    private int armour = 1;
+    private int price = 0;
     private Array<ModelInstance> model = new Array<>();
     private ArrayList<BlockSpec> layout;
     private ArrayList<ArrayList<Integer>> footprint = new ArrayList<>();
 
-    public Integer getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public Integer getHp() {
+    public int getHp() {
         return hp;
     }
 
-    public Integer getAtk() {
+    public int getAtk() {
         return atk;
     }
 
-    public Integer getRange() {
+    public int getRange() {
         return range;
     }
 
@@ -64,17 +64,17 @@ public class Tower {
         }
 
         for (BlockSpec block : layout) {
-            Integer code = block.getBlockCode();
-            Integer x = block.getX();
-            Integer y = block.getY();
-            Integer z = block.getZ();
+            int code = block.getBlockCode();
+            int x = block.getX();
+            int y = block.getY();
+            int z = block.getZ();
 
             ModelInstance blockInstance = new ModelInstance(TowerMaterials.modelMap.get(code));
             blockInstance.transform.setToTranslation(x * 5f, y * 5f, z * 5f);
             this.model.add(blockInstance);
 
 
-            Integer curFootPrint = footprint.get(x + 2).get(z + 2);
+            int curFootPrint = footprint.get(x + 2).get(z + 2);
             if (curFootPrint == -1) {
                 footprint.get(x + 2).set(z + 2, y);
             } else {

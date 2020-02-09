@@ -15,15 +15,10 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.utils.Array;
 import jdk.jfr.internal.cmd.PrettyWriter;
 
-// Need a class, or something, to convert a tower layout into stats
-
 //Next things
-// Color scheme
 // Programmatic generation of tower stats for gameplay--
     //top down view (static of all presets)
-    //generation of tower stats
     //tower footprint on ground -> 5 x 5,  and in all dimension
-//mainmenu and lobby screen
 // Fill out ui -> need to assets, stage, etc classes
 // tower building
 

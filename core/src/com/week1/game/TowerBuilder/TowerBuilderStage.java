@@ -39,7 +39,7 @@ public class TowerBuilderStage {
                 builder.getCurrTower().getRange(), builder.getCurrTower().getPrice());
 
 
-        for (Integer i = 0; i < builder.presets.NUM_PRESETS; i ++) {
+        for (int i = 0; i < builder.presets.NUM_PRESETS; i ++) {
             towerButtons.add(new TextButton("Tower" + Integer.toString(i + 1),
                     new Skin(Gdx.files.internal("uiskin.json"))));
         }
