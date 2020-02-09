@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.math.Path;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -67,8 +68,17 @@ public class GameGraph implements IndexedGraph<Vector3> {
 
     public OutputPath search(Vector3 startNode, Vector3 endNode) {
         OutputPath path = new OutputPath();
+
         pathFinder.searchNodePath(startNode, endNode, heuristic, path);
         return path;
+    }
+
+    public PathFinder<Vector3> getPathFinder() {
+        return pathFinder;
+    }
+
+    public void setPathFinder(PathFinder<Vector3> pathFinder) {
+        this.pathFinder = pathFinder;
     }
 
 //    public Vector3 getVector3(int i, int j, int k) {

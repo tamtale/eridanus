@@ -17,6 +17,7 @@ import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.World.GameGraph;
+import com.week1.game.Model.World.GameHeuristic;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Pair;
 
@@ -51,8 +52,12 @@ public class GameState {
         world = new GameWorld();
         Gdx.app.log("Game State - wab2", "world built");
         graph = world.buildGraph();
-        pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
+        graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
+//        graph.search(new Vector3(0, 0, 0), new Vector3(1, 1, 0));
+//        pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
         OutputPath path = new OutputPath();
+
+        //graph.getPathFinder().searchNodePath(new Vector3(0, 0, 0), new Vector3(1, 1, 0), new GameHeuristic(), path);
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();
@@ -158,8 +163,17 @@ public class GameState {
 //        Vector2 vec2 = new Vector2(goal.x, goal.y);
         SteeringAgent agent = unit.getAgent();
 //        System.out.println(agent);
+        Vector3 unitPos = new Vector3((int) unit.x, (int) unit.y, 0); //TODO: make acutal z;
+        Vector3 goalPos = new Vector3((int) goal.x, (int) goal.y, (int) goal.z);
+        OutputPath path = new OutputPath();
+//        System.out.println("unitPos" + unitPos);
+//        System.out.println("goalPos" + goalPos);
+//        System.out.println("UnitPosIndex " + graph.getIndex(unitPos));
+        path = graph.search(unitPos, goalPos);
+        unit.setPath(path);
         agent.setGoal(goal);
     }
+
     public void addAgent(SteeringAgent a){
         agents.add(a);
     }

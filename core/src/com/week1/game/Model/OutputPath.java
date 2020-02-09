@@ -27,7 +27,6 @@ public class OutputPath implements GraphPath<Vector3> {
 
     @Override
     public void add(Vector3 node) {
-        System.out.println("OutputPath" + node);
         path.add(node);
     }
 

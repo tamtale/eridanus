@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Damage;
+import com.week1.game.Model.OutputPath;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,7 @@ import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
 public class Unit extends Rectangle implements Damageable, Damaging {
     private final int playerID;
+    public OutputPath path;
     public boolean isClicked() {
         return clicked;
     }
@@ -111,6 +113,10 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         return (this.x - (SIZE / 2f) < x) && (x < this.x + (SIZE / 2f)) &&
                 (this.y - (SIZE / 2f) < y) && (y < this.y + (SIZE / 2f));
                 
+    }
+
+    public void setPath(OutputPath path) {
+        this.path = path;
     }
 }
 
