@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.Damage;
 
 import static com.week1.game.Model.Entities.HealthBar.getHealthBar;
@@ -77,4 +78,46 @@ public class PlayerBase extends Building {
     }
 
     public double getHp() { return hp; }
+
+    @Override
+    public boolean overlap(float x, float y) {
+        int startX = (int) this.x - getSidelength()/2;
+        int startY = (int) this.y - getSidelength()/2;
+        int endX = startX + getSidelength();
+        int endY = startY + getSidelength();
+        return (x > startX && x < endX && y > startY && y < endY);
+    }
+
+    @Override
+    public Vector3 closestPoint(float x, float y) {
+        int startX = (int) this.x - getSidelength()/2;
+        int startY = (int) this.y - getSidelength()/2;
+        int endX = startX + getSidelength();
+        int endY = startY + getSidelength();
+
+        if (x < startX && y < startY) {
+            return new Vector3(startX, startY, 0);
+        }
+        else if (x < startX && y > startY && y < endY){
+            return new Vector3(startX, y, 0);
+        }
+        else if (x < startX && y > endY) {
+            return new Vector3(startX, endY, 0);
+        }
+        else if (x > startX && x < endX && y > endY) {
+            return new Vector3(x, endY, 0);
+        }
+        else if (x > endX && y > endY) {
+            return new Vector3(endX, endY, 0);
+        }
+        else if (x > endX && y > startY && y < endY) {
+            return new Vector3(endX, y, 0);
+        }
+        else if (x > endX && y < startY) {
+            return new Vector3(endX, startY, 0);
+        }
+        else{
+            return new Vector3(x, startY, 0);
+        }
+    }
 }

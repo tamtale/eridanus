@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.Damageable;
 import com.week1.game.Model.Entities.TowerType;
 import com.week1.game.Model.Entities.Unit;
@@ -173,9 +174,21 @@ public class ClickOracle extends InputAdapter {
             // TODO: steering agent behavior
             
             System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
-            Array<Damageable> buildings = engineAdapter.getBuildings();
-            networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y,
-                    networkAdapter.getPlayerId(), multiSelected));
+            Array<Building> buildings = engineAdapter.getBuildings();
+            boolean overlapped = false;
+            for(Building building: buildings) {
+                if(building.overlap(touchPos.x, touchPos.y)) {
+                    Unit unit = multiSelected.get(0);
+                    Vector3 point = building.closestPoint(unit.x, unit.y);
+                    networkAdapter.sendMessage(new MoveMinionMessage(point.x, point.y, networkAdapter.getPlayerId(), multiSelected));
+                    overlapped = true;
+                    break;
+                }
+            }
+            if (!overlapped) {
+                networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y,
+                        networkAdapter.getPlayerId(), multiSelected));
+            }
             return false;
 
         }
