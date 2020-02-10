@@ -2,6 +2,7 @@ package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
@@ -38,6 +39,15 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     public  static int SIZE = 1;
     
     private static Texture selectedSkin = makeTexture(SIZE, SIZE, Color.YELLOW);
+    private static Texture rangeCircle;
+
+    static {
+        Pixmap circlePixmap = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
+        circlePixmap.setBlending(Pixmap.Blending.None);
+        circlePixmap.setColor(1, 1, 1, .5f);
+        circlePixmap.drawCircle(50, 50, 50);
+        rangeCircle = new Texture(circlePixmap);
+    }
 
     public Unit(float x, float y, Texture t, double hp, int playerID) {
         super(x, y, 1, 1); // TODO make the x and y the center points of it for getX() and getY() which is used in range calculations
@@ -48,7 +58,10 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         this.vel = new Vector3(0, 0, 0);
     }
 
-    public void draw(Batch batch) {
+    public void draw(Batch batch, boolean showAttackRadius) {
+        if (showAttackRadius) {
+            batch.draw(rangeCircle, this.x - ((float)tempMinionRange), this.y - ((float)tempMinionRange), (float)tempMinionRange * 2, (float)tempMinionRange * 2);
+        }
         batch.draw(getSkin(), this.x - (SIZE / 2f), this.y - (SIZE / 2f), SIZE, SIZE);
         // TODO draw this in a UI rendering procedure
         drawHealthBar(batch, this.x, this.y, 0, SIZE, this.hp, this.maxHp);

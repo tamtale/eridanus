@@ -16,6 +16,7 @@ import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Pair;
+import com.week1.game.Renderer.RenderConfig;
 
 
 import static com.week1.game.Model.StatsConfig.*;
@@ -34,12 +35,16 @@ public class GameState {
     private Array<PlayerStat> playerStats;
     private Array<SteeringAgent> agents;
     private GameWorld world;
-    
+    /*
+     * Runnable to execute immediately after the game state has been initialized.
+     */
+    private Runnable postInit;
+
     private TowerInfo towerInfo = new TowerInfo(); // TODO: should be set by an initialization message with tower info for foreign player towers
 
     private boolean fullyInitialized = false;
 
-    public GameState(){
+    public GameState(Runnable postInit){
         // TODO board
         // TODO player data
         // TODO towers
@@ -59,6 +64,7 @@ public class GameState {
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();
+        this.postInit = postInit;
     }
 
     /*
@@ -103,6 +109,7 @@ public class GameState {
         }
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
         fullyInitialized = true;
+        postInit.run();
     }
 
     public void removePlayerBase(int startX, int startY){
@@ -212,22 +219,34 @@ public class GameState {
         unit.setPath(path);
         agent.setGoal(goal);
     }
-
     public void addAgent(SteeringAgent a){
         agents.add(a);
     }
 
-    public void render(Batch batch){
-        for (Unit unit : units){
-            unit.draw(batch);
+    public void render(Batch batch, RenderConfig renderConfig, int renderPlayerId){
+        boolean showAttackRadius = renderConfig.isShowAttackRadius();
+        boolean showSpawnRadius = renderConfig.isShowSpawnRadius();
+
+        for (Unit unit : units) {
+            unit.draw(batch, showAttackRadius);
         }
 
         for (Tower tower : towers) {
-            tower.draw(batch);
+            if (tower.getPlayerId() == renderPlayerId) {
+                // Only show the spawn radius for your own tower.
+                tower.draw(batch, showAttackRadius, showSpawnRadius);
+            } else {
+                tower.draw(batch, showAttackRadius, false);
+            }
         }
 
         for (PlayerBase playerBase : playerBases) {
-            playerBase.draw(batch);
+            if (playerBase.getPlayerId() == renderPlayerId) {
+                // only show the spawn radius for your own base
+                playerBase.draw(batch, showSpawnRadius);
+            } else {
+                playerBase.draw(batch, false);
+            }
         }
     }
 
@@ -449,6 +468,10 @@ public class GameState {
             }
         }
         return true;
+    }
+
+    Array<PlayerBase> getPlayerBases() {
+        return playerBases;
     }
 
     public Array<Building> getBuildings() {
