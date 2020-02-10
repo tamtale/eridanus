@@ -168,6 +168,8 @@ public class GameState {
     }
 
     public void addUnit(Unit u){
+
+        
         SteeringAgent agent = new SteeringAgent(u);
         u.agent = agent;
         u.ID = minionCount;
