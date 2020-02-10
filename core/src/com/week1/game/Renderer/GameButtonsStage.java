@@ -22,11 +22,10 @@ public class GameButtonsStage {
     private TextButton tower1Button;
     private TextButton tower2Button;
     private TextButton tower3Button;
-    private CheckBox showSpawnRadiusCheckBox;
-    private CheckBox showAttackRadiusCheckBox;
+    private TextButton showSpawnRadiusCheckBox;
+    private TextButton showAttackRadiusCheckBox;
     private Label manaLabel;
     private Label winLabel;
-
 
     private Button previouslySelected;
     private boolean showAttack;
@@ -37,17 +36,19 @@ public class GameButtonsStage {
             new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"),
             new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"), new BitmapFont());
 
+    // TODO refactor to use isChecked()
     private static TextButton.TextButtonStyle pressedStyle = new TextButton.TextButtonStyle(
             new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round-down"),
             new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round-down"),
             new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round-down"), new BitmapFont());
 
-    private static Label.LabelStyle clearStyle = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
+    private static TextButton.TextButtonStyle pressedBlueStyle = new TextButton.TextButtonStyle(
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLUE),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLUE),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLUE), new BitmapFont());
 
-    private static CheckBox.CheckBoxStyle checked = new CheckBox.CheckBoxStyle(
-            new Skin(Gdx.files.internal("uiskin.json")).getDrawable("check-on"),
-            new Skin(Gdx.files.internal("uiskin.json")).getDrawable("check-off"),
-            new BitmapFont(), Color.WHITE);
+
+    private static Label.LabelStyle clearStyle = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
 
     public GameButtonsStage(IRendererToClickOracleAdapter clickOracleAdapter) {
         stage = new Stage(new ScreenViewport());
@@ -77,9 +78,10 @@ public class GameButtonsStage {
         winLabel = new Label("", new Skin(Gdx.files.internal("uiskin.json")));
         winLabel.setFontScale(4);
 
-        showAttackRadiusCheckBox = new CheckBox("Show Attack Radius", new Skin(Gdx.files.internal("uiskin.json")));
-        showSpawnRadiusCheckBox = new CheckBox("Show Spawn Radius", new Skin(Gdx.files.internal("uiskin.json")));
-        showSpawnRadiusCheckBox.setStyle(checked);
+        showSpawnRadiusCheckBox = new TextButton("Show Spawn Area", new Skin(Gdx.files.internal("uiskin.json")));
+        showSpawnRadiusCheckBox.setStyle(pressedBlueStyle);
+        showAttackRadiusCheckBox = new TextButton("Show Attack Radii", new Skin(Gdx.files.internal("uiskin.json")));
+        showAttackRadiusCheckBox.setStyle(normalStyle);
     }
 
     private void configureWidgets() {
@@ -89,8 +91,8 @@ public class GameButtonsStage {
         tower3Button.setSize(128, 48);
         manaLabel.setSize(128, 48);
         winLabel.setSize(128,128);
-        showSpawnRadiusCheckBox.setSize(104, 32);
-        showAttackRadiusCheckBox.setSize(104, 32);
+        showSpawnRadiusCheckBox.setSize(124, 50);
+        showAttackRadiusCheckBox.setSize(124, 50);
 
         unitButton.setPosition(34,  20);
         tower1Button.setPosition(172, 20);
@@ -100,8 +102,8 @@ public class GameButtonsStage {
         winLabel.setPosition(250, 100);
         showAttack = false;
         showSpawn = true;
-        showSpawnRadiusCheckBox.setPosition(704, 10);
-        showAttackRadiusCheckBox.setPosition(704, 50);
+        showSpawnRadiusCheckBox.setPosition(674, 5);
+        showAttackRadiusCheckBox.setPosition(674, 60);
 
         stage.addActor(unitButton);
         stage.addActor(tower1Button);
@@ -154,6 +156,11 @@ public class GameButtonsStage {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("pjb3 - GameButtonsStage", "Clicked the ShowAttackRadius toggle. Now: " + !showAttack);
                 showAttack = !showAttack;
+                if (showAttack) {
+                    showAttackRadiusCheckBox.setStyle(pressedBlueStyle);
+                } else {
+                    showAttackRadiusCheckBox.setStyle(normalStyle);
+                }
             }
         });
 
@@ -162,6 +169,12 @@ public class GameButtonsStage {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("pjb3 - GameButtonsStage", "Clicked the ShowSpawnRadius toggle. Now: " + !showSpawn);
                 showSpawn = !showSpawn;
+                if (showSpawn) {
+                    showSpawnRadiusCheckBox.setStyle(pressedBlueStyle);
+                } else {
+                    showSpawnRadiusCheckBox.setStyle(normalStyle);
+                }
+
             }
         });
     }

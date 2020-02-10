@@ -49,6 +49,7 @@ public class PlayerBase implements Damageable {
         circlePixmap.setColor(0.6f, 0.05f, 0.35f, .1f);
         circlePixmap.fillCircle(50, 50, 50);
         colorMap.put(4, new Texture(circlePixmap));
+        circlePixmap.dispose();
     }
 
     public PlayerBase(double initialHp, float x, float y, int playerID) {

@@ -54,6 +54,7 @@ public class Tower implements Damageable, Damaging {
         circlePixmap.setColor(1, 1, 1, .5f);
         circlePixmap.drawCircle(50, 50, 50);
         rangeCircle = new Texture(circlePixmap);
+        circlePixmap.dispose();
     }
 
     public Tower(float x, float y, double hp, double dmg, double range, Damage.type attackType, double cost, Pixmap towerUnscaled, int playerID, int towerType) {

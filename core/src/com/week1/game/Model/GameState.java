@@ -15,6 +15,7 @@ import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Pair;
+import com.week1.game.Renderer.RenderConfig;
 
 
 import static com.week1.game.Model.StatsConfig.*;
@@ -168,7 +169,10 @@ public class GameState {
         agents.add(a);
     }
 
-    public void render(Batch batch, boolean showAttackRadius, boolean showSpawnRadius, int renderPlayerId){
+    public void render(Batch batch, RenderConfig renderConfig, int renderPlayerId){
+        boolean showAttackRadius = renderConfig.isShowAttackRadius();
+        boolean showSpawnRadius = renderConfig.isShowSpawnRadius();
+
         for (Unit unit : units) {
             unit.draw(batch, showAttackRadius);
         }
