@@ -2,11 +2,14 @@ package com.week1.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.TowerBuilder.TowerBuilderScreen;
 
@@ -35,9 +38,11 @@ public class MainMenuScreen implements Screen {
 
     private void configureWidgets() {
         playButton.setSize(128,64);
-        playButton.setPosition(GameController.VIRTUAL_WIDTH/2 - playButton.getWidth(), GameController.VIRTUAL_HEIGHT/2 - playButton.getHeight());
-
+        playButton.setPosition(GameController.VIRTUAL_WIDTH/2 - playButton.getWidth()/2 - 10, 24);
+        //Set the background image
+        stage.addActor(new Image(new TextureRegionDrawable(new Texture("main_menu.png"))));
         stage.addActor(playButton);
+
     }
 
     private void setListeners() {
