@@ -51,8 +51,8 @@ public class GameGraph implements IndexedGraph<Vector3> {
 
     @Override
     public Array<Connection<Vector3>> getConnections(Vector3 fromNode) {
-        if (fromNode.x < 0 || fromNode.x > edges.length || fromNode.y < 0 || fromNode.y > edges[0].length
-         || fromNode.z < 0 || fromNode.z > edges[0][0].length){
+        if (fromNode.x < 0 || fromNode.x > edges.length - 1 || fromNode.y < 0 || fromNode.y > edges[0].length - 1
+         || fromNode.z < 0 || fromNode.z > edges[0][0].length - 1){
             return null;
         }
         return edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z];

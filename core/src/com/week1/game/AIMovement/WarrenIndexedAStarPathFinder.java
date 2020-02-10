@@ -131,6 +131,7 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
     protected void visitChildren(N endNode, Heuristic<N> heuristic) {
         Array<Connection<N>> connections = this.graph.getConnections(this.current.node);
         if (connections == null){
+            Gdx.app.error("wab2 - connections", "Connections are null meaning someones out of bounds");
             return;
         }
         for(int i = 0; i < connections.size; ++i) {
