@@ -35,7 +35,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
-    public static double speed = 15;
+    public static double speed = 5;
     public  static int SIZE = 1;
     
     private static Texture selectedSkin = makeTexture(SIZE, SIZE, Color.YELLOW);
@@ -95,7 +95,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         if (path != null) {
             if (path.getPath().size != 1) {
                 if (((int) this.x == (int) path.get(0).x &&
-                    (int) this.y == (int) path.get(0).y) || turn == 6) {
+                    (int) this.y == (int) path.get(0).y)) {
                     turn = 0;
                     float dx = path.get(1).x - (int) this.x;
                     float dy = path.get(1).y - (int) this.y;
