@@ -218,7 +218,11 @@ public class GameState {
 //        System.out.println("goalPos" + goalPos);
 //        System.out.println("UnitPosIndex " + graph.getIndex(unitPos));
         path = graph.search(unitPos, goalPos);
-        unit.setPath(path);
+        if (path != null) {
+            unit.setPath(path);
+        }else{
+            Gdx.app.error("wab2 - ASTAR", "Astar broke");
+        }
         agent.setGoal(goal);
     }
     public void addAgent(SteeringAgent a){
