@@ -14,6 +14,7 @@ import com.week1.game.Model.Entities.*;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
+import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
 
@@ -38,7 +39,7 @@ public class GameState {
      * Runnable to execute immediately after the game state has been initialized.
      */
     private Runnable postInit;
-    
+
     private TowerInfo towerInfo = new TowerInfo(); // TODO: should be set by an initialization message with tower info for foreign player towers
 
     private boolean fullyInitialized = false;
@@ -54,8 +55,12 @@ public class GameState {
         world = new GameWorld();
         Gdx.app.log("Game State - wab2", "world built");
         graph = world.buildGraph();
-        pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
+        graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
+//        graph.search(new Vector3(0, 0, 0), new Vector3(1, 1, 0));
+//        pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
         OutputPath path = new OutputPath();
+
+        //graph.getPathFinder().searchNodePath(new Vector3(0, 0, 0), new Vector3(1, 1, 0), new GameHeuristic(), path);
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();
@@ -73,18 +78,28 @@ public class GameState {
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
         if (numPlayers == 1) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
+            removePlayerBase(50, 50);
         } else if (numPlayers == 2) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+            removePlayerBase(15, 15);
             playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
+            removePlayerBase(85, 85);
         } else if (numPlayers == 3) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+            removePlayerBase(15, 15);
             playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 85, 1));
+            removePlayerBase(50, 85);
             playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
+            removePlayerBase(15, 85);
         } else {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+            removePlayerBase(15, 15);
             playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
+            removePlayerBase(85, 85);
             playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
+            removePlayerBase(15, 85);
             playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 15, 3));
+            removePlayerBase(85, 15);
         }
 
 
@@ -97,6 +112,13 @@ public class GameState {
         postInit.run();
     }
 
+    public void removePlayerBase(int startX, int startY){
+        for(int i = startX - 4; i <= startX + 3; i++){
+            for (int j = startY - 4; j <= startY + 4; j++){
+                graph.removeAllConnections(new Vector3(i, j, 0));
+            }
+        }
+    }
     public PlayerStat getPlayerStats(int playerNum) {
         if (isInitialized()) {
             return playerStats.get(playerNum);
@@ -146,6 +168,8 @@ public class GameState {
     }
 
     public void addUnit(Unit u){
+
+        
         SteeringAgent agent = new SteeringAgent(u);
         u.agent = agent;
         u.ID = minionCount;
@@ -157,12 +181,44 @@ public class GameState {
 
     public void addTower(Tower t) {
         towers.add(t);
+        int startX = (int) t.x - 4;
+        int startY = (int) t.y - 4;
+        TowerFootprint footprint = towerInfo.getTowerFootprint(t.getTowerType());
+        boolean[][] fp = footprint.getFp();
+        int i = 0;
+        for(boolean[] bool: fp){
+            int j = 0;
+            for(boolean boo: bool){
+                if(boo){
+                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0));
+                }
+                j++;
+            }
+            i++;
+        }
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
 //        Vector2 vec2 = new Vector2(goal.x, goal.y);
         SteeringAgent agent = unit.getAgent();
 //        System.out.println(agent);
+        Vector3 unitPos = new Vector3((int) unit.x, (int) unit.y, 0); //TODO: make acutal z;
+
+        OutputPath path = new OutputPath();
+        Array<Building> buildings = this.getBuildings();
+
+        for(Building building: buildings) {
+            if(building.overlap(goal.x, goal.y)) {
+                goal = building.closestPoint(unit.x, unit.y);
+                break;
+            }
+        }
+        Vector3 goalPos = new Vector3((int) goal.x, (int) goal.y, (int) goal.z);
+//        System.out.println("unitPos" + unitPos);
+//        System.out.println("goalPos" + goalPos);
+//        System.out.println("UnitPosIndex " + graph.getIndex(unitPos));
+        path = graph.search(unitPos, goalPos);
+        unit.setPath(path);
         agent.setGoal(goal);
     }
     public void addAgent(SteeringAgent a){
@@ -418,5 +474,12 @@ public class GameState {
 
     Array<PlayerBase> getPlayerBases() {
         return playerBases;
+    }
+
+    public Array<Building> getBuildings() {
+        Array<Building> buildings = new Array<>();
+        buildings.addAll(playerBases);
+        buildings.addAll(towers);
+        return buildings;
     }
 }
