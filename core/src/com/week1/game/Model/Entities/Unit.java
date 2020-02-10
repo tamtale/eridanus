@@ -27,7 +27,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     public void setClicked(boolean clicked) {
         this.clicked = clicked;
     }
-    private static int turn = 4;
+    private int turn = 0;
     private double hp;
     private Vector3 vel;
     private double maxHp;
@@ -81,28 +81,24 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 //        }
         if (path != null) {
             if (path.getPath().size != 1) {
-                System.out.println((int) this.x + " " + (int) this.y);
-                System.out.println((int) path.get(0).x + " " + (int) path.get(0).y);
-                if ((int) this.x == (int) path.get(0).x &&
-                    (int) this.y == (int) path.get(0).y) {
-                    Gdx.app.log("Unit - Move wab2", path.getPath().toString());
-                    System.out.println(vel);
+                if (((int) this.x == (int) path.get(0).x &&
+                    (int) this.y == (int) path.get(0).y) || turn == 6) {
+                    turn = 0;
                     float dx = path.get(1).x - (int) this.x;
                     float dy = path.get(1).y - (int) this.y;
                     double angle = Math.atan(dy/dx);
-                    System.out.println(angle);
                     if (dx < 0) {
                         angle += Math.PI;
                     } else if (dy < 0) {
                         angle += 2 * Math.PI;
                     }
 
-                    System.out.println(dx + " " + dy);
                     vel.x = (float) speed * (float) Math.cos(angle);
                     vel.y = (float) speed * (float) Math.sin(angle);
                     path.removeIndex(0);
                 }
                 move(delta);
+                turn ++;
 //                if (turn == 0){
 //                    System.out.println(this.x + " " + this.y);
 //                    System.out.println(path.getPath());

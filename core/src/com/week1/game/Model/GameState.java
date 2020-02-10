@@ -14,6 +14,7 @@ import com.week1.game.Model.Entities.*;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
+import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Pair;
 
 
@@ -193,8 +194,17 @@ public class GameState {
         SteeringAgent agent = unit.getAgent();
 //        System.out.println(agent);
         Vector3 unitPos = new Vector3((int) unit.x, (int) unit.y, 0); //TODO: make acutal z;
-        Vector3 goalPos = new Vector3((int) goal.x, (int) goal.y, (int) goal.z);
+
         OutputPath path = new OutputPath();
+        Array<Building> buildings = this.getBuildings();
+
+        for(Building building: buildings) {
+            if(building.overlap(goal.x, goal.y)) {
+                goal = building.closestPoint(unit.x, unit.y);
+                break;
+            }
+        }
+        Vector3 goalPos = new Vector3((int) goal.x, (int) goal.y, (int) goal.z);
 //        System.out.println("unitPos" + unitPos);
 //        System.out.println("goalPos" + goalPos);
 //        System.out.println("UnitPosIndex " + graph.getIndex(unitPos));

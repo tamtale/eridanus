@@ -69,7 +69,6 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
         do {
             this.current = (WarrenIndexedAStarPathFinder.NodeRecord)this.openList.pop();
             this.current.category = 2;
-            System.out.println("Current Node" + this.current.node + "EndNode " + endNode);
             if (this.current.node.toString().equals(endNode.toString())) {
                 return true;
             }

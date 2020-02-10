@@ -174,21 +174,21 @@ public class ClickOracle extends InputAdapter {
             // TODO: steering agent behavior
             
             System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
-            Array<Building> buildings = engineAdapter.getBuildings();
-            boolean overlapped = false;
-            for(Building building: buildings) {
-                if(building.overlap(touchPos.x, touchPos.y)) {
-                    Unit unit = multiSelected.get(0);
-                    Vector3 point = building.closestPoint(unit.x, unit.y);
-                    networkAdapter.sendMessage(new MoveMinionMessage(point.x, point.y, networkAdapter.getPlayerId(), multiSelected));
-                    overlapped = true;
-                    break;
-                }
-            }
-            if (!overlapped) {
+//            Array<Building> buildings = engineAdapter.getBuildings();
+//            boolean overlapped = false;
+//            for(Building building: buildings) {
+//                if(building.overlap(touchPos.x, touchPos.y)) {
+//                    Unit unit = multiSelected.get(0);
+//                    Vector3 point = building.closestPoint(unit.x, unit.y);
+//                    networkAdapter.sendMessage(new MoveMinionMessage(point.x, point.y, networkAdapter.getPlayerId(), multiSelected));
+//                    overlapped = true;
+//                    break;
+//                }
+//            }
+//            if (!overlapped) {
                 networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y,
                         networkAdapter.getPlayerId(), multiSelected));
-            }
+//            }
             return false;
 
         }
