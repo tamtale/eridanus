@@ -87,7 +87,7 @@ public class GameState {
         } else if (numPlayers == 3) {
             playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
             removePlayerBase(15, 15);
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 85, 1));
+            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 50, 1));
             removePlayerBase(50, 85);
             playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
             removePlayerBase(15, 85);
