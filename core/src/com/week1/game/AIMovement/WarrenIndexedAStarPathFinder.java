@@ -130,6 +130,9 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
 
     protected void visitChildren(N endNode, Heuristic<N> heuristic) {
         Array<Connection<N>> connections = this.graph.getConnections(this.current.node);
+        if (connections == null){
+            return;
+        }
         for(int i = 0; i < connections.size; ++i) {
             if (this.metrics != null) {
                 ++this.metrics.visitedNodes;
