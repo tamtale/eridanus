@@ -12,8 +12,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.utils.Array;
-import jdk.jfr.internal.cmd.PrettyWriter;
+
 
 //Next things
 // Programmatic generation of tower stats for gameplay--

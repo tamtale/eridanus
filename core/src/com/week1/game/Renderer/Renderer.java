@@ -29,6 +29,7 @@ public class Renderer {
     private IRendererToEngineAdapter engineAdapter;
     private IRendererToNetworkAdapter networkAdapter;
     private IRendererToClickOracleAdapter clickOracleAdapter;
+    private RenderConfig renderConfig;
     private BitmapFont font = new BitmapFont();
     private Vector3 panning = new Vector3();
     private Map<Direction, Vector3> directionToVector;
@@ -132,7 +133,8 @@ public class Renderer {
         updateCamera();
         mapRenderer.setView(camera);
         mapRenderer.render();
-        engineAdapter.render();
+        renderConfig = new RenderConfig(getShowAttackRadius(), getShowSpawnRadius());
+        engineAdapter.render(renderConfig);
         clickOracleAdapter.render();
         drawPlayerUI();
         util.drawMessages(batch);
@@ -148,5 +150,13 @@ public class Renderer {
 
     public void setCameraToDefaultPosition() {
         camera.position.set(defaultPosition);
+    }
+
+    public boolean getShowAttackRadius() {
+        return gameButtonsStage.getShowAttackRadius();
+    }
+
+    public boolean getShowSpawnRadius() {
+        return gameButtonsStage.getShowSpawnRadius();
     }
 }

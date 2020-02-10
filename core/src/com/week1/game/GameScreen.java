@@ -94,8 +94,8 @@ public class GameScreen implements Screen {
 
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
-			public void render() {
-				engine.render();
+			public void render(RenderConfig renderConfig) {
+				engine.render(renderConfig);
 			}
 
 			@Override

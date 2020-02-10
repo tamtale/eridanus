@@ -7,6 +7,7 @@ import com.week1.game.Networking.Messages.Game.GameMessage;
 
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.InfoUtil;
+import com.week1.game.Renderer.RenderConfig;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -84,9 +85,10 @@ public class GameEngine {
         gameState.stepUnits(delta);
     }
 
-    public void render(){
+    public void render(RenderConfig renderConfig){
         batch.begin();
-        gameState.render(batch);
+
+        gameState.render(batch, renderConfig, enginePlayerId);
         batch.end();
     }
 
