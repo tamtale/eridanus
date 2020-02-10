@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
+import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
@@ -168,6 +169,11 @@ public class GameScreen implements Screen {
 					@Override
 					public Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
 						return engine.getGameState().findUnitsInBox(cornerA, cornerB);
+					}
+
+					@Override
+					public Array<Building> getBuildings() {
+						return engine.getBuildings();
 					}
 
 				},

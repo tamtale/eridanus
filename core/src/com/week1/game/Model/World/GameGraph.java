@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.math.Path;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -18,7 +19,6 @@ public class GameGraph implements IndexedGraph<Vector3> {
     private PathFinder<Vector3> pathFinder;
     Array<Vector3> Vector3s = new Array<>();
     Array<Border> borders = new Array<>();
-    //Vector3[][][] vecCoords = new Vector3[10][10][3];
     Array<Connection<Vector3>>[][][] edges = new Array[100][100][3];
 
     //TODO: make general
@@ -60,6 +60,10 @@ public class GameGraph implements IndexedGraph<Vector3> {
         edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z].add(border);
     }
 
+    public void removeAllConnections(Vector3 fromNode){
+        edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = new Array<>();
+    }
+
     public void addVector3(Vector3 Vector3) {
         nodeCount+=1;
         Vector3s.add(Vector3);
@@ -68,8 +72,17 @@ public class GameGraph implements IndexedGraph<Vector3> {
 
     public OutputPath search(Vector3 startNode, Vector3 endNode) {
         OutputPath path = new OutputPath();
+
         pathFinder.searchNodePath(startNode, endNode, heuristic, path);
         return path;
+    }
+
+    public PathFinder<Vector3> getPathFinder() {
+        return pathFinder;
+    }
+
+    public void setPathFinder(PathFinder<Vector3> pathFinder) {
+        this.pathFinder = pathFinder;
     }
 
 //    public Vector3 getVector3(int i, int j, int k) {

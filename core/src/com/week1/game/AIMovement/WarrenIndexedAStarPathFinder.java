@@ -12,10 +12,12 @@ import com.badlogic.gdx.ai.pfa.Heuristic;
 import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.ai.pfa.PathFinderRequest;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BinaryHeap;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.BinaryHeap.Node;
+import com.week1.game.Model.OutputPath;
 
 public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
     IndexedGraph<N> graph;
@@ -128,12 +130,6 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
 
     protected void visitChildren(N endNode, Heuristic<N> heuristic) {
         Array<Connection<N>> connections = this.graph.getConnections(this.current.node);
-        System.out.println("Current Node: " + this.current.node);
-        System.out.print("Neighbors: ");
-        for (Connection<N> connection: connections) {
-            System.out.print(connection.getToNode().toString());
-        }
-        System.out.println();
         for(int i = 0; i < connections.size; ++i) {
             if (this.metrics != null) {
                 ++this.metrics.visitedNodes;
@@ -182,7 +178,6 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
             outPath.add(this.current.node);
             this.current = this.nodeRecords[this.graph.getIndex(this.current.connection.getFromNode())];
         }
-
         outPath.add(startNode);
         outPath.reverse();
     }
