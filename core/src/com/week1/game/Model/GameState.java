@@ -168,17 +168,27 @@ public class GameState {
         agents.add(a);
     }
 
-    public void render(Batch batch){
-        for (Unit unit : units){
-            unit.draw(batch);
+    public void render(Batch batch, boolean showAttackRadius, boolean showSpawnRadius, int renderPlayerId){
+        for (Unit unit : units) {
+            unit.draw(batch, showAttackRadius);
         }
 
         for (Tower tower : towers) {
-            tower.draw(batch);
+            if (tower.getPlayerId() == renderPlayerId) {
+                // Only show the spawn radius for your own tower.
+                tower.draw(batch, showAttackRadius, showSpawnRadius);
+            } else {
+                tower.draw(batch, showAttackRadius, false);
+            }
         }
 
         for (PlayerBase playerBase : playerBases) {
-            playerBase.draw(batch);
+            if (playerBase.getPlayerId() == renderPlayerId) {
+                // only show the spawn radius for your own base
+                playerBase.draw(batch, showSpawnRadius);
+            } else {
+                playerBase.draw(batch, false);
+            }
         }
     }
 

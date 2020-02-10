@@ -6,10 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -25,24 +22,32 @@ public class GameButtonsStage {
     private TextButton tower1Button;
     private TextButton tower2Button;
     private TextButton tower3Button;
+    private CheckBox showSpawnRadiusCheckBox;
+    private CheckBox showAttackRadiusCheckBox;
     private Label manaLabel;
     private Label winLabel;
 
 
     private Button previouslySelected;
+    private boolean showAttack;
+    private boolean showSpawn;
 
     private static TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
             new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"),
-                new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"),
-                new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"), new BitmapFont());
+            new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"),
+            new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"), new BitmapFont());
 
     private static TextButton.TextButtonStyle pressedStyle = new TextButton.TextButtonStyle(
             new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round-down"),
-                new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round-down"),
-                new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round-down"), new BitmapFont());
+            new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round-down"),
+            new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round-down"), new BitmapFont());
 
     private static Label.LabelStyle clearStyle = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
 
+    private static CheckBox.CheckBoxStyle checked = new CheckBox.CheckBoxStyle(
+            new Skin(Gdx.files.internal("uiskin.json")).getDrawable("check-on"),
+            new Skin(Gdx.files.internal("uiskin.json")).getDrawable("check-off"),
+            new BitmapFont(), Color.WHITE);
 
     public GameButtonsStage(IRendererToClickOracleAdapter clickOracleAdapter) {
         stage = new Stage(new ScreenViewport());
@@ -72,6 +77,9 @@ public class GameButtonsStage {
         winLabel = new Label("", new Skin(Gdx.files.internal("uiskin.json")));
         winLabel.setFontScale(4);
 
+        showAttackRadiusCheckBox = new CheckBox("Show Attack Radius", new Skin(Gdx.files.internal("uiskin.json")));
+        showSpawnRadiusCheckBox = new CheckBox("Show Spawn Radius", new Skin(Gdx.files.internal("uiskin.json")));
+        showSpawnRadiusCheckBox.setStyle(checked);
     }
 
     private void configureWidgets() {
@@ -81,19 +89,27 @@ public class GameButtonsStage {
         tower3Button.setSize(128, 48);
         manaLabel.setSize(128, 48);
         winLabel.setSize(128,128);
+        showSpawnRadiusCheckBox.setSize(104, 32);
+        showAttackRadiusCheckBox.setSize(104, 32);
 
-        unitButton.setPosition(64,  20);
-        tower1Button.setPosition(202, 20);
-        tower2Button.setPosition(340, 20);
-        tower3Button.setPosition(478, 20);
-        manaLabel.setPosition(616, 20);
+        unitButton.setPosition(34,  20);
+        tower1Button.setPosition(172, 20);
+        tower2Button.setPosition(310, 20);
+        tower3Button.setPosition(448, 20);
+        manaLabel.setPosition(586, 20);
         winLabel.setPosition(250, 100);
+        showAttack = false;
+        showSpawn = true;
+        showSpawnRadiusCheckBox.setPosition(704, 10);
+        showAttackRadiusCheckBox.setPosition(704, 50);
 
         stage.addActor(unitButton);
         stage.addActor(tower1Button);
         stage.addActor(tower2Button);
         stage.addActor(tower3Button);
         stage.addActor(manaLabel);
+        stage.addActor(showAttackRadiusCheckBox);
+        stage.addActor(showSpawnRadiusCheckBox);
     }
 
     public void setListeners() {
@@ -133,14 +149,27 @@ public class GameButtonsStage {
             }
         });
 
+        showAttackRadiusCheckBox.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("pjb3 - GameButtonsStage", "Clicked the ShowAttackRadius toggle. Now: " + !showAttack);
+                showAttack = !showAttack;
+            }
+        });
+
+        showSpawnRadiusCheckBox.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("pjb3 - GameButtonsStage", "Clicked the ShowSpawnRadius toggle. Now: " + !showSpawn);
+                showSpawn = !showSpawn;
+            }
+        });
     }
 
     public void renderUI(int mana) {
         stage.draw();
         manaLabel.setText(String.format("Mana: %d", mana));
-
-        Gdx.app.log("pjb3 - GameButtonStage - renderUI", "We are calling renderUI. Mana is " + mana);
-
+//        Gdx.app.log("pjb3 - GameButtonStage - renderUI", "We are calling renderUI. Mana is " + mana);
     }
 
     /**
@@ -165,5 +194,12 @@ public class GameButtonsStage {
             winLabel.setText("YOU LOST");
         }
         stage.addActor(winLabel);
+    }
+
+    public boolean getShowAttackRadius() {
+        return showAttack;
+    }
+    public boolean getShowSpawnRadius() {
+        return showSpawn;
     }
 }

@@ -5,19 +5,56 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.week1.game.Model.Damage;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.week1.game.Model.Entities.HealthBar.getHealthBar;
 import static com.week1.game.Model.Entities.HealthBar.healthBarBackground;
+import static com.week1.game.Model.StatsConfig.placementRange;
 
 public class Tower implements Damageable, Damaging {
     private static final int SIDELENGTH = 3;
     public float x, y;
     private Texture skin;
     private int playerID, towerType;
-
+    private final static Map<Integer, Texture> colorMap = new HashMap<>();
+    private static Texture rangeCircle;
     private double hp, maxHp, dmg, range, cost;
-    
+
     private Damage.type attackType;
 
+    static {
+        // Make the textures for the circles surrounding the tower
+        Pixmap circlePixmap = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
+        circlePixmap.setBlending(Pixmap.Blending.None);
+
+        circlePixmap.setColor(0, 0, 1, .1f);
+        circlePixmap.fillCircle(50, 50, 50);
+        colorMap.put(0, new Texture(circlePixmap));
+
+        circlePixmap.setColor(1, 0, 0, .1f);
+        circlePixmap.fillCircle(50, 50, 50);
+        colorMap.put(1, new Texture(circlePixmap));
+
+        circlePixmap.setColor(0, 0, 0, .1f);
+        circlePixmap.fillCircle(50, 50, 50);
+        colorMap.put(2, new Texture(circlePixmap));
+
+        circlePixmap.setColor(0.5f, 0, 0.5f, .1f);
+        circlePixmap.fillCircle(50, 50, 50);
+        colorMap.put(3, new Texture(circlePixmap));
+
+        circlePixmap.setColor(0.6f, 0.05f, 0.35f, .1f);
+        circlePixmap.fillCircle(50, 50, 50);
+        colorMap.put(4, new Texture(circlePixmap));
+
+        // Make the radius that towers can attack;
+        circlePixmap = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
+        circlePixmap.setBlending(Pixmap.Blending.None);
+        circlePixmap.setColor(1, 1, 1, .5f);
+        circlePixmap.drawCircle(50, 50, 50);
+        rangeCircle = new Texture(circlePixmap);
+    }
 
     public Tower(float x, float y, double hp, double dmg, double range, Damage.type attackType, double cost, Pixmap towerUnscaled, int playerID, int towerType) {
         this.x = x;
@@ -37,7 +74,13 @@ public class Tower implements Damageable, Damaging {
         this.skin = new Texture(towerScaled);
     }
     
-    public void draw(Batch batch) {
+    public void draw(Batch batch, boolean showAttackRadius, boolean showSpawnRadius) {
+        if (showSpawnRadius) {
+            batch.draw(colorMap.get(playerID), x - (float)placementRange, y - (float)placementRange, (float)placementRange * 2, (float)placementRange * 2);
+        }
+        if (showAttackRadius) {
+            batch.draw(rangeCircle, x - (float)range, y - (float)range, (float)range * 2, (float)range * 2);
+        }
         batch.draw(getSkin(), this.x - (SIDELENGTH / 2f) + 0.5f, this.y - (SIDELENGTH / 2f) + 0.5f, SIDELENGTH, SIDELENGTH);
         // TODO draw this in a UI rendering procedure
         drawHealthBar(batch, x, y, 0.5f, SIDELENGTH, hp, maxHp);

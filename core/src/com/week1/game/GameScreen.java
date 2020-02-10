@@ -94,8 +94,8 @@ public class GameScreen implements Screen {
 
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
-			public void render() {
-				engine.render();
+			public void render(boolean showAttackRadius, boolean showSpawnRadius) {
+				engine.render(showAttackRadius, showSpawnRadius);
 			}
 
 			@Override

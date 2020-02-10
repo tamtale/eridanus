@@ -132,7 +132,7 @@ public class Renderer {
         updateCamera();
         mapRenderer.setView(camera);
         mapRenderer.render();
-        engineAdapter.render();
+        engineAdapter.render(getShowAttackRadius(), getShowSpawnRadius());
         clickOracleAdapter.render();
         drawPlayerUI();
         util.drawMessages(batch);
@@ -148,5 +148,13 @@ public class Renderer {
 
     public void setCameraToDefaultPosition() {
         camera.position.set(defaultPosition);
+    }
+
+    public boolean getShowAttackRadius() {
+        return gameButtonsStage.getShowAttackRadius();
+    }
+
+    public boolean getShowSpawnRadius() {
+        return gameButtonsStage.getShowSpawnRadius();
     }
 }

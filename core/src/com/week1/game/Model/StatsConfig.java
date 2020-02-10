@@ -13,7 +13,7 @@ public class StatsConfig {
 
     static final double playerBaseInitialHp = 500;
 
-    static final double placementRange = 15;
+    static public final double placementRange = 15;
   
     // Basic
     static public final double tempTower1Cost = 75;
@@ -41,10 +41,8 @@ public class StatsConfig {
     static public final double tempMinion1Health = 50;
     
     static public final double tempMinionRange = 5;
-    static public final double tempTowerRange = 20;
-    
+
     static public final double tempDamage = 1;
-    static public final double tempTowerDamage = 2;
 
     public enum attackType {
         BASIC_DMG,

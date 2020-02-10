@@ -84,9 +84,9 @@ public class GameEngine {
         gameState.stepUnits(delta);
     }
 
-    public void render(){
+    public void render(boolean showAttackRadius, boolean showSpawnRadius){
         batch.begin();
-        gameState.render(batch);
+        gameState.render(batch, showAttackRadius, showSpawnRadius, enginePlayerId);
         batch.end();
     }
 
