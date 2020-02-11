@@ -10,7 +10,7 @@ import com.week1.game.Model.Damage;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.week1.game.Model.StatsConfig.placementRange;
+import static com.week1.game.Model.StatsConfig.*;
 
 
 public class PlayerBase extends Building {
@@ -82,6 +82,18 @@ public class PlayerBase extends Building {
             return false;
         }
     }
+
+    @Override
+    public float getReward() {
+        return (float) playerBaseBonus;
+    }
+
+    @Override
+    public <T> T accept(DamageableVisitor<T> visitor) {
+        return visitor.acceptBase(this);
+    }
+
+
 
     @Override
     public float getX() { return this.x; }

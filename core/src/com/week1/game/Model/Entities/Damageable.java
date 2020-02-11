@@ -8,6 +8,12 @@ import static com.week1.game.Model.Entities.HealthBar.healthBarBackground;
 
 public interface Damageable {
 
+    interface DamageableVisitor<T> {
+        T acceptTower(Tower tower);
+        T acceptUnit(Unit u);
+        T acceptBase(PlayerBase base);
+    }
+
     /* This is a short-hand version for taking normal damage as default */
     default boolean takeDamage(double dmg) {
         return takeDamage(dmg, Damage.type.BASIC);
@@ -23,18 +29,27 @@ public interface Damageable {
     float getY();
     boolean isDead();
     int getPlayerId();
-    
+
+    /*
+     * Mana reward for destroying the unit.
+     */
+    float getReward();
+
+
     default void drawHealthBar(Batch batch, float x, float y, float offset, int sideLength, double currentHp, double maxHp) {
-       
+
         float xPosition = x - (sideLength / 2f) + offset;
         float yPosition = y + ((sideLength / 2f) + 0.5f) + offset;
-        
-        batch.draw(healthBarBackground, 
+
+        batch.draw(healthBarBackground,
                 xPosition, yPosition,
                 sideLength, .5f);
-        batch.draw(getHealthBar(currentHp, maxHp), 
+        batch.draw(getHealthBar(currentHp, maxHp),
                 xPosition, yPosition,
                 (float)((currentHp / maxHp) * sideLength), .5f);
-        
+
     }
+
+    <T> T accept(DamageableVisitor<T> visitor);
+
 }

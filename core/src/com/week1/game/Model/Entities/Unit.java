@@ -80,18 +80,20 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
     private Texture unselectedSkin;
 
+    @Override
+    public float getReward() {
+        return 0;
+    }
+
+    @Override
+    public <T> T accept(DamageableVisitor<T> visitor) {
+        return visitor.acceptUnit(this);
+    }
+
+
+
 
     public void step(float delta) {
-//        if (path != null) {
-//            System.out.println(path.get(0));
-//            System.out.println(this.x);
-//            System.out.println(this.y);
-//            if (this.x > path.get(0).x && this.y > path.get(0).y) {
-//                Gdx.app.log("Unit - wab2", "Updating goal");
-//                agent.setGoal(path.get(1));
-//                path.setPath(path.getPath().removeIndex(0));
-//            }
-//        }
         if (path != null) {
             if (path.getPath().size != 1) {
                 if (((int) this.x == (int) path.get(0).x &&

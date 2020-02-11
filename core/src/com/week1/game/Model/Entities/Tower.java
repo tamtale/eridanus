@@ -11,7 +11,7 @@ import java.util.Map;
 
 import static com.week1.game.Model.Entities.HealthBar.getHealthBar;
 import static com.week1.game.Model.Entities.HealthBar.healthBarBackground;
-import static com.week1.game.Model.StatsConfig.placementRange;
+import static com.week1.game.Model.StatsConfig.*;
 
 public class Tower extends Building implements Damaging {
     private static final int SIDELENGTH = 3;
@@ -138,6 +138,17 @@ public class Tower extends Building implements Damaging {
 
     @Override
     public int getPlayerId(){return playerID;}
+
+    @Override
+    public float getReward() {
+        return (float) cost * (float) towerDestructionBonus;
+    }
+
+    @Override
+    public <T> T accept(DamageableVisitor<T> visitor) {
+        return visitor.acceptTower(this);
+    }
+
     public int getSidelength(){
         return SIDELENGTH;
     }

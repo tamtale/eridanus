@@ -301,16 +301,21 @@ public class GameState {
         updateGoal(u, new Vector3(u.x + dx, u.y + dy, 0));
     }
 
+    private Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
+    private Array<Damaging> everythingDamaging = new Array<>();
+    private Array<Damageable> everythingDamageable = new Array<>();
     public void dealDamage(float delta) {
-        Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
 
-        Array<Damaging> everythingDamaging = new Array<>(units);
+        everythingDamaging.clear();
+        everythingDamaging.addAll(units);
         everythingDamaging.addAll(towers);
 
-        Array<Damageable> everythingDamageable = new Array<>(units);
+        everythingDamageable.clear();
+        everythingDamageable.addAll(units);
         everythingDamageable.addAll(towers);
         everythingDamageable.addAll(playerBases);
 
+        deadEntities.clear();
         // Loop through all entities (units and towers) that can attack
         for (int attackerIdx = 0; attackerIdx < everythingDamaging.size; attackerIdx++) {
             Damaging attacker = everythingDamaging.get(attackerIdx);
@@ -338,24 +343,37 @@ public class GameState {
             int attackingPlayerId = deadPair.key.getPlayerId();
             Damageable deadEntity = deadPair.value;
 
-            if (deadEntity.getClass() == Unit.class) {
-                units.removeValue((Unit)deadEntity, false);
-
-            } else if (deadEntity.getClass() == Tower.class) {
-                towers.removeValue((Tower)deadEntity, false);
-                // Reward the player who destroyed the tower the mana.
-                playerStats.get(attackingPlayerId).giveMana(((Tower)deadEntity).getCost() * towerDestructionBonus);
-
-            } else {
-                int deadPlayer = deadEntity.getPlayerId();
-                playerBases.removeIndex(deadPlayer);
-
-                playerBases.insert(deadPlayer, new DestroyedBase(0, deadEntity.getX(), deadEntity.getY(), deadPlayer));
-                // Reward the player who destroyed the base a lump sum
-                playerStats.get(attackingPlayerId).giveMana((playerBaseBonus));
-            }
-        }
+            // Reward mana.
+            playerStats.get(attackingPlayerId).giveMana(deadEntity.getReward());
+            // Do other bookkeeping related to death.
+            deadEntity.accept(deathVisitor);        }
     }
+
+    /**
+     * Visitor handling when a damageable is killed.
+     */
+    private Damageable.DamageableVisitor<Void> deathVisitor = new Damageable.DamageableVisitor<Void>() {
+        @Override
+        public Void acceptTower(Tower tower) {
+            towers.removeValue(tower, false);
+            return null;
+        }
+
+        @Override
+        public Void acceptUnit(Unit unit) {
+            units.removeValue(unit, false);
+            return null;
+        }
+
+        @Override
+        public Void acceptBase(PlayerBase base) {
+            int deadPlayer = base.getPlayerId();
+            playerBases.removeIndex(deadPlayer);
+
+            playerBases.insert(deadPlayer, new DestroyedBase(0, base.getX(), base.getY(), deadPlayer));
+            return null;
+        }
+    };
 
     public double getTowerHp(TowerType towerType) {
         // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
