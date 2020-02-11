@@ -159,4 +159,8 @@ public class Renderer {
     public boolean getShowSpawnRadius() {
         return gameButtonsStage.getShowSpawnRadius();
     }
+
+    public void showGameOver() {
+        gameButtonsStage.setGameOver();
+    }
 }

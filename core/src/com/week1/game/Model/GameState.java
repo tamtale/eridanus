@@ -12,15 +12,12 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
-import com.week1.game.Model.World.GameGraph;
-import com.week1.game.Model.World.GameWorld;
-import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
+import com.week1.game.Model.World.*;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
 
 
 import static com.week1.game.Model.StatsConfig.*;
-import static com.week1.game.Model.StatsConfig.tempTower2Cost;
 import static com.week1.game.Model.Entities.TowerType.*;
 
 
@@ -474,6 +471,18 @@ public class GameState {
             }
         }
         return true;
+    }
+
+    public boolean getGameOver() {
+        int numPlayersAlive = 0;
+        // Check if you are the last base alive
+        for (int playerIndex = 0; playerIndex < playerBases.size; playerIndex += 1) {
+            if (!playerBases.get(playerIndex).isDead()) {
+                // Since there is another placers base that is not dead yet, you have not won.
+                numPlayersAlive += 1;
+            }
+        }
+        return numPlayersAlive == 1;
     }
 
     Array<PlayerBase> getPlayerBases() {

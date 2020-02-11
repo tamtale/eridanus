@@ -3,16 +3,16 @@ package com.week1.game.Renderer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.week1.game.GameController;
 import com.week1.game.Model.SpawnInfo;
-import com.week1.game.Model.SpawnInfo.*;
+import com.week1.game.Model.SpawnInfo.SpawnType;
 
 public class GameButtonsStage {
 
@@ -24,6 +24,7 @@ public class GameButtonsStage {
     private TextButton tower3Button;
     private TextButton showSpawnRadiusCheckBox;
     private TextButton showAttackRadiusCheckBox;
+    private TextButton restartGame;
     private Label manaLabel;
     private Label winLabel;
 
@@ -82,6 +83,9 @@ public class GameButtonsStage {
         showSpawnRadiusCheckBox.setStyle(pressedBlueStyle);
         showAttackRadiusCheckBox = new TextButton("Show Attack Radii", new Skin(Gdx.files.internal("uiskin.json")));
         showAttackRadiusCheckBox.setStyle(normalStyle);
+
+        restartGame = new TextButton("Restart Match", new Skin(Gdx.files.internal("uiskin.json")));
+        restartGame.setStyle(normalStyle);
     }
 
     private void configureWidgets() {
@@ -93,6 +97,7 @@ public class GameButtonsStage {
         winLabel.setSize(128,128);
         showSpawnRadiusCheckBox.setSize(124, 50);
         showAttackRadiusCheckBox.setSize(124, 50);
+        restartGame.setSize(128, 48);
 
         unitButton.setPosition(34,  20);
         tower1Button.setPosition(172, 20);
@@ -100,6 +105,7 @@ public class GameButtonsStage {
         tower3Button.setPosition(448, 20);
         manaLabel.setPosition(586, 20);
         winLabel.setPosition(250, 100);
+        restartGame.setPosition(300, 75);
         showAttack = false;
         showSpawn = true;
         showSpawnRadiusCheckBox.setPosition(674, 5);
@@ -208,6 +214,11 @@ public class GameButtonsStage {
         }
         stage.addActor(winLabel);
     }
+
+    public void setGameOver() {
+        stage.addActor(restartGame);
+    }
+
 
     public boolean getShowAttackRadius() {
         return showAttack;

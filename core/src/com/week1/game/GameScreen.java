@@ -91,6 +91,11 @@ public class GameScreen implements Screen {
 			public void endGame(int winOrLoss) {
 				renderer.endGame(winOrLoss);
 			}
+
+			@Override
+			public void gameOver() {
+				renderer.showGameOver();
+			}
 		}, util);
 
 		renderer = new Renderer(new IRendererToEngineAdapter() {
