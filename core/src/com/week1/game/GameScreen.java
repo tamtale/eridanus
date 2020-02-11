@@ -39,7 +39,7 @@ public class GameScreen implements Screen {
 	private InfoUtil util;
 	//This is a temporary stage that is displayed before connection of clients
 	private Stage connectionStage;
-	private boolean pressedStartbtn = false;
+	private boolean pressedStartbtn;
 
 	private void makeTempStage() {
 		connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
@@ -64,7 +64,7 @@ public class GameScreen implements Screen {
 		// Set the logging level
 		Gdx.app.setLogLevel(Application.LOG_INFO);
 
-
+		pressedStartbtn = false;
 
 		util = new InfoUtil(true);
 		networkClient = NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
@@ -79,12 +79,19 @@ public class GameScreen implements Screen {
 			}
 		});
 
+		createNewGame();
+	}
 
+	/**
+	 * This function is called to [re]initialize the game-specific classes not
+	 * related to the network. It will be called every time you want to restart a game
+	 */
+	public void createNewGame() {
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override
 			public void setDefaultLocation(Vector3 location) {
-			    renderer.setDefaultPosition(location);
-			    renderer.setCameraToDefaultPosition();
+				renderer.setDefaultPosition(location);
+				renderer.setCameraToDefaultPosition();
 			}
 
 			@Override
@@ -128,17 +135,17 @@ public class GameScreen implements Screen {
 				return null;
 			}
 		},
-		new IRendererToClickOracleAdapter() {
-			@Override
-			public void render() {
-				clickOracle.render();
-			}
+			new IRendererToClickOracleAdapter() {
+				@Override
+				public void render() {
+					clickOracle.render();
+				}
 
-			@Override
-			public void setSelectedSpawnState(SpawnInfo type) {
-				clickOracle.setSpawnType(type);
-			}
-		}, util);
+				@Override
+				public void setSelectedSpawnState(SpawnInfo type) {
+					clickOracle.setSpawnType(type);
+				}
+			}, util);
 		clickOracle = new ClickOracle(
 				new IClickOracleToRendererAdapter() {
 					@Override
@@ -148,13 +155,13 @@ public class GameScreen implements Screen {
 
 					@Override
 					public void zoom(int amount) {
-					    renderer.zoom(amount);
+						renderer.zoom(amount);
 					}
 
-                    @Override
-                    public void setTranslationDirection(Direction direction) {
-					    renderer.setPanning(direction);
-                    }
+					@Override
+					public void setTranslationDirection(Direction direction) {
+						renderer.setPanning(direction);
+					}
 
 					public Camera getCamera() {
 						return renderer.getCamera();
@@ -199,8 +206,6 @@ public class GameScreen implements Screen {
 
 		renderer.create();
 	}
-
-
 
 	@Override
 	public void show() {

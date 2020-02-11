@@ -28,6 +28,8 @@ public class GameButtonsStage {
     private Label manaLabel;
     private Label winLabel;
 
+    private IRendererToGameScreenAdapter gameScreenAdapter;
+
     private Button previouslySelected;
     private boolean showAttack;
     private boolean showSpawn;
@@ -51,9 +53,10 @@ public class GameButtonsStage {
 
     private static Label.LabelStyle clearStyle = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
 
-    public GameButtonsStage(IRendererToClickOracleAdapter clickOracleAdapter) {
+    public GameButtonsStage(IRendererToClickOracleAdapter clickOracleAdapter, IRendererToGameScreenAdapter gameScreenAdapter) {
         stage = new Stage(new ScreenViewport());
         this.clickOracleAdapter = clickOracleAdapter;
+        this.gameScreenAdapter = gameScreenAdapter;
 
         setWidgets();
         configureWidgets();
@@ -180,6 +183,15 @@ public class GameButtonsStage {
                 } else {
                     showSpawnRadiusCheckBox.setStyle(normalStyle);
                 }
+
+            }
+        });
+
+        restartGame.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("pjb3 - RestartButton", "We are restarting the game now");
+                gameScreenAdapter.restartGame();
 
             }
         });
