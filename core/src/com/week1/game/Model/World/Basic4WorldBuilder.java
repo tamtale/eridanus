@@ -33,7 +33,7 @@ public class Basic4WorldBuilder implements IWorldBuilder {
     private void makePlateau(Block[][][] blocks, int startX, int endX, int startY, int endY) {
         for (int i = startX; i <= endX; i++) {
             for (int j = startY; j <= endY; j++) {
-                blocks[i][j][1] = Block.TerrainBlock.DIRT;
+                blocks[i][j][0] = Block.TerrainBlock.DIRT;
             }
         }
     }
@@ -45,6 +45,13 @@ public class Basic4WorldBuilder implements IWorldBuilder {
                 new Vector3(25, 175, 0),
                 new Vector3(175, 25, 0),
                 new Vector3(175, 175, 0)
+        };
+    }
+
+    @Override
+    public Vector3[] crystalLocations() {
+        return new Vector3[] {
+                new Vector3(100, 100, 0),
         };
     }
 }

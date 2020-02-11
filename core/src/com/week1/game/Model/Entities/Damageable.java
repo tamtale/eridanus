@@ -12,6 +12,7 @@ public interface Damageable {
         T acceptTower(Tower tower);
         T acceptUnit(Unit u);
         T acceptBase(PlayerBase base);
+        T acceptCrystal(Crystal crystal);
     }
 
     /* This is a short-hand version for taking normal damage as default */

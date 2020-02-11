@@ -30,12 +30,12 @@ public class GameState {
 
     private GameGraph graph;
     private PathFinder<Vector3> pathFinder;
-    private Array<Unit> units;
+    private Array<Unit> units = new Array<>();
     private int minionCount;
-    private Array<Tower> towers;
-    private Array<PlayerBase> playerBases;
-    private Array<PlayerStat> playerStats;
-    private Array<SteeringAgent> agents;
+    private Array<Crystal> crystals = new Array<>();
+    private Array<Tower> towers = new Array<>();
+    private Array<PlayerBase> playerBases = new Array<>();
+    private Array<PlayerStat> playerStats = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
     /*
@@ -53,21 +53,12 @@ public class GameState {
         // TODO towers
         // TODO tower types in memory after exchange
         this.worldBuilder = worldBuilder;
-        towers = new Array<>();
-        units = new Array<>();
-        Gdx.app.log("Game State - wab2", "units set");
         world = new GameWorld(worldBuilder);
-        Gdx.app.log("Game State - wab2", "world built");
         graph = world.buildGraph();
+        for (Vector3 loc: worldBuilder.crystalLocations()) {
+            crystals.add(new Crystal(loc.x, loc.y));
+        }
         graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
-//        graph.search(new Vector3(0, 0, 0), new Vector3(1, 1, 0));
-//        pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
-        OutputPath path = new OutputPath();
-
-        //graph.getPathFinder().searchNodePath(new Vector3(0, 0, 0), new Vector3(1, 1, 0), new GameHeuristic(), path);
-        playerBases = new Array<>();
-        playerStats = new Array<>();
-        agents = new Array<>();
         this.postInit = postInit;
     }
 
@@ -80,32 +71,6 @@ public class GameState {
     public void initializeGame(int numPlayers) {
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
-//        if (numPlayers == 1) {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
-//            removePlayerBase(50, 50);
-//        } else if (numPlayers == 2) {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-//            removePlayerBase(15, 15);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
-//            removePlayerBase(85, 85);
-//        } else if (numPlayers == 3) {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-//            removePlayerBase(15, 15);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 50, 1));
-//            removePlayerBase(50, 85);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
-//            removePlayerBase(15, 85);
-//        } else {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-//            removePlayerBase(15, 15);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
-//            removePlayerBase(85, 85);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
-//            removePlayerBase(15, 85);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 15, 3));
-//            removePlayerBase(85, 15);
-//        }
-
 
         // Create the correct amount of actual players
         Vector3[] startLocs = worldBuilder.startLocations();
@@ -233,9 +198,6 @@ public class GameState {
         }
         agent.setGoal(goal);
     }
-    public void addAgent(SteeringAgent a){
-        agents.add(a);
-    }
 
     public void render(Batch batch, RenderConfig renderConfig, int renderPlayerId){
         boolean showAttackRadius = renderConfig.isShowAttackRadius();
@@ -261,6 +223,10 @@ public class GameState {
             } else {
                 playerBase.draw(batch, false);
             }
+        }
+
+        for (Crystal crystal : crystals) {
+            crystal.draw(batch);
         }
     }
 
@@ -314,6 +280,7 @@ public class GameState {
         everythingDamageable.addAll(units);
         everythingDamageable.addAll(towers);
         everythingDamageable.addAll(playerBases);
+        everythingDamageable.addAll(crystals);
 
         deadEntities.clear();
         // Loop through all entities (units and towers) that can attack
@@ -369,8 +336,13 @@ public class GameState {
         public Void acceptBase(PlayerBase base) {
             int deadPlayer = base.getPlayerId();
             playerBases.removeIndex(deadPlayer);
-
             playerBases.insert(deadPlayer, new DestroyedBase(0, base.getX(), base.getY(), deadPlayer));
+            return null;
+        }
+
+        @Override
+        public Void acceptCrystal(Crystal crystal) {
+            // crystals don't die :^)
             return null;
         }
     };
