@@ -155,11 +155,16 @@ public class GameState {
     }
 
     public void collide(Unit unit){
-        Vector3 linVel = unit.agent.getLinearVelocity();
-        unit.setX(unit.getX() - 2 * linVel.x);
-        unit.setY(unit.getY() - 2 * linVel.y);
-        unit.agent.setLinearVelocity(new Vector3(0, 0, 0));
-        unit.agent.setSteeringBehavior(null);
+//        unit.setPosition(unit.x - 2 * unit.getVelocityX(), unit.y - 2 * unit.getVelocityY());
+//        System.out.println("changing position");
+//        OutputPath path = unit.getPath();
+//        Array<Vector3> pathArray = path.getPath();
+//        Vector3 goal = pathArray.get(pathArray.size - 1);
+//        System.out.println("SEARCHING");
+//        OutputPath newPath = graph.search(new Vector3(unit.x, unit.y, 0), goal);
+//        System.out.println("SEARCHED");
+//        System.out.println(newPath);
+//        unit.setPath(newPath);
     }
     public void updateMana(float amount){
         for (PlayerStat player : playerStats) {

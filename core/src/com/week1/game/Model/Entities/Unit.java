@@ -185,12 +185,33 @@ public class Unit extends Rectangle implements Damageable, Damaging {
                 
     }
 
+    public OutputPath getPath(){
+        return path;
+    }
+
+    public float getVelocityX(){
+        return vel.x;
+    }
+
+    public float getVelocityY(){
+        return vel.y;
+    }
+
     public void setPath(OutputPath path) {
         this.path = path;
         float dx = path.get(0).x - this.x;
         float dy = path.get(0).y - this.y;
-        vel.x = dx * .333f;
-        vel.y = dy * .333f;
+//        vel.x = dx * .333f;
+//        vel.y = dy * .333f;
+        double angle = Math.atan(dy/dx);
+        if (dx < 0) {
+            angle += Math.PI;
+        } else if (dy < 0) {
+            angle += 2 * Math.PI;
+        }
+
+        vel.x = (float) speed * (float) Math.cos(angle);
+        vel.y = (float) speed * (float) Math.sin(angle);
     }
 }
 
