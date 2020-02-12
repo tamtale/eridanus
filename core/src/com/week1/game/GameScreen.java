@@ -85,6 +85,7 @@ public class GameScreen implements Screen {
 	/**
 	 * This function is called to [re]initialize the game-specific classes not
 	 * related to the network. It will be called every time you want to restart a game
+	 * TODO Need to make this reset anything within the network client that needs revision.
 	 */
 	public void createNewGame() {
 		engine = new GameEngine(new IEngineToRendererAdapter() {
@@ -135,17 +136,22 @@ public class GameScreen implements Screen {
 				return null;
 			}
 		},
-			new IRendererToClickOracleAdapter() {
-				@Override
-				public void render() {
-					clickOracle.render();
-				}
+				new IRendererToClickOracleAdapter() {
+					@Override
+					public void render() {
+						clickOracle.render();
+					}
 
-				@Override
-				public void setSelectedSpawnState(SpawnInfo type) {
-					clickOracle.setSpawnType(type);
-				}
-			}, util);
+					@Override
+					public void setSelectedSpawnState(SpawnInfo type) {
+						clickOracle.setSpawnType(type);
+					}
+				}, new IRendererToGameScreenAdapter() {
+			@Override
+			public void restartGame() {
+				createNewGame();
+			}
+		}, util);
 		clickOracle = new ClickOracle(
 				new IClickOracleToRendererAdapter() {
 					@Override
