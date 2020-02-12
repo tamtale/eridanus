@@ -482,7 +482,7 @@ public class GameState {
                 numPlayersAlive += 1;
             }
         }
-        return numPlayersAlive == 1;
+        return numPlayersAlive <= 1;
     }
 
     Array<PlayerBase> getPlayerBases() {
