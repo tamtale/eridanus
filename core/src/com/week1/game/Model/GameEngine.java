@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.PlayerBase;
+import com.week1.game.Model.World.Basic4WorldBuilder;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 
 import com.badlogic.gdx.math.Vector3;
@@ -31,17 +32,19 @@ public class GameEngine {
     public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, InfoUtil util) {
         messageQueue = new ConcurrentLinkedQueue<>();
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
-        gameState = new GameState(() -> {
-            Vector3 position = new Vector3();
-            PlayerBase myBase = null;
-            for (PlayerBase playerBase: gameState.getPlayerBases()) {
-                if (playerBase.getPlayerId() == enginePlayerId) {
-                    myBase = playerBase;
-                }
-            }
-            position.set(myBase.getX(), myBase.getY(), 0);
-            engineToRenderer.setDefaultLocation(position);
-        });
+        gameState = new GameState(
+                Basic4WorldBuilder.ONLY,
+                () -> {
+                    Vector3 position = new Vector3();
+                    PlayerBase myBase = null;
+                    for (PlayerBase playerBase: gameState.getPlayerBases()) {
+                        if (playerBase.getPlayerId() == enginePlayerId) {
+                            myBase = playerBase;
+                        }
+                    }
+                    position.set(myBase.getX(), myBase.getY(), 0);
+                    engineToRenderer.setDefaultLocation(position);
+                });
         Gdx.app.log("wab2- GameEngine", "gameState built");
         batch = new SpriteBatch();
         engineToRenderer = engineToRendererAdapter;

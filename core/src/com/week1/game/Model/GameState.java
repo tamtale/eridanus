@@ -12,8 +12,10 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
+import com.week1.game.Model.World.Basic4WorldBuilder;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
+import com.week1.game.Model.World.IWorldBuilder;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
@@ -34,6 +36,7 @@ public class GameState {
     private Array<PlayerBase> playerBases;
     private Array<PlayerStat> playerStats;
     private Array<SteeringAgent> agents;
+    private IWorldBuilder worldBuilder;
     private GameWorld world;
     /*
      * Runnable to execute immediately after the game state has been initialized.
@@ -44,15 +47,16 @@ public class GameState {
 
     private boolean fullyInitialized = false;
 
-    public GameState(Runnable postInit){
+    public GameState(IWorldBuilder worldBuilder, Runnable postInit){
         // TODO board
         // TODO player data
         // TODO towers
         // TODO tower types in memory after exchange
+        this.worldBuilder = worldBuilder;
         towers = new Array<>();
         units = new Array<>();
         Gdx.app.log("Game State - wab2", "units set");
-        world = new GameWorld();
+        world = new GameWorld(worldBuilder);
         Gdx.app.log("Game State - wab2", "world built");
         graph = world.buildGraph();
         graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
@@ -76,36 +80,40 @@ public class GameState {
     public void initializeGame(int numPlayers) {
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
-        if (numPlayers == 1) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
-            removePlayerBase(50, 50);
-        } else if (numPlayers == 2) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-            removePlayerBase(15, 15);
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
-            removePlayerBase(85, 85);
-        } else if (numPlayers == 3) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-            removePlayerBase(15, 15);
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 50, 1));
-            removePlayerBase(50, 85);
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
-            removePlayerBase(15, 85);
-        } else {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-            removePlayerBase(15, 15);
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
-            removePlayerBase(85, 85);
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
-            removePlayerBase(15, 85);
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 15, 3));
-            removePlayerBase(85, 15);
-        }
+//        if (numPlayers == 1) {
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
+//            removePlayerBase(50, 50);
+//        } else if (numPlayers == 2) {
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+//            removePlayerBase(15, 15);
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
+//            removePlayerBase(85, 85);
+//        } else if (numPlayers == 3) {
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+//            removePlayerBase(15, 15);
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 50, 1));
+//            removePlayerBase(50, 85);
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
+//            removePlayerBase(15, 85);
+//        } else {
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+//            removePlayerBase(15, 15);
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
+//            removePlayerBase(85, 85);
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
+//            removePlayerBase(15, 85);
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 15, 3));
+//            removePlayerBase(85, 15);
+//        }
 
 
         // Create the correct amount of actual players
+        Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
             playerStats.add(new PlayerStat());
+
+            playerBases.add(new PlayerBase(playerBaseInitialHp, (int) startLocs[i].x, (int) startLocs[i].y, i));
+            removePlayerBase((int) startLocs[i].x, (int) startLocs[i].y);
         }
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
         fullyInitialized = true;

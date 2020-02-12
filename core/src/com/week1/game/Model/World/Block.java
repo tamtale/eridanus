@@ -33,19 +33,25 @@ public interface Block {
             }
 
         };
-        public static TerrainBlock STONE = new TerrainBlock(Color.BLACK) {
+        public static TerrainBlock STONE = new TerrainBlock(Color.GRAY) {
             @Override
             public float getCost(){
                 return 1;
+            }
+        };
+        public static TerrainBlock DIRT = new TerrainBlock(Color.BROWN) {
+            @Override
+            public float getCost(){
+                return 1.5f;
             }
         };
 
         private Array<Connection<Block>> edges;
         TerrainBlock(Color color) {
             Pixmap unitPixmap = new Pixmap(PIXELS_PER_UNIT, PIXELS_PER_UNIT, Pixmap.Format.RGB888);
-            unitPixmap.setColor(color);
+            unitPixmap.setColor(Color.BLACK);
             unitPixmap.fill();
-            unitPixmap.setColor(Color.GRAY);
+            unitPixmap.setColor(color);
             unitPixmap.fillRectangle(3, 3, PIXELS_PER_UNIT - 6, PIXELS_PER_UNIT - 6);
             this.textureRegion = new TextureRegion(new Texture(unitPixmap));
             this.edges = new Array<>();
