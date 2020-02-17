@@ -24,6 +24,7 @@ public class GameEngine {
     private IEngineToRendererAdapter engineToRenderer;
     private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
     private InfoUtil util;
+    private boolean sentWinLoss = false, sentGameOver = false;
 
     public Batch getBatch() {
         return batch;
@@ -65,11 +66,22 @@ public class GameEngine {
     public void synchronousUpdateState() {
         gameState.updateMana(1);
         gameState.dealDamage(1);
-        if (!gameState.isPlayerAlive(enginePlayerId)) {
-            engineToRenderer.endGame(0); // TODO make an enum probably im tired
-        } else if (gameState.checkIfWon(enginePlayerId)) {
-            engineToRenderer.endGame(1); // TODO same as above
+
+        if (!sentWinLoss) {
+            if (!gameState.isPlayerAlive(enginePlayerId)) {
+//            Gdx.app.log("pjb3 - receiveMessages", "");
+                engineToRenderer.endGame(0); // TODO make an enum probably im tired
+                sentWinLoss = true;
+            } else if (gameState.checkIfWon(enginePlayerId)) {
+                engineToRenderer.endGame(1); // TODO same as above
+                sentWinLoss = true;
+            }
         }
+        if (!sentGameOver && gameState.getGameOver()) {
+            engineToRenderer.gameOver();
+        }
+
+        gameState.getGameOver();
     }
 
     public void processMessages() {

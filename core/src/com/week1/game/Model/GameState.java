@@ -1,29 +1,23 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
-
-import com.badlogic.gdx.graphics.g2d.Batch;
-
 import com.badlogic.gdx.ai.pfa.PathFinder;
-
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
-import com.week1.game.Model.Entities.*;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
-import com.week1.game.Model.World.Basic4WorldBuilder;
+import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Model.World.IWorldBuilder;
-import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
 
-
+import static com.week1.game.Model.Entities.TowerType.BASIC;
+import static com.week1.game.Model.Entities.TowerType.SNIPER;
 import static com.week1.game.Model.StatsConfig.*;
-import static com.week1.game.Model.StatsConfig.tempTower2Cost;
-import static com.week1.game.Model.Entities.TowerType.*;
 
 
 public class GameState {
@@ -482,6 +476,22 @@ public class GameState {
             }
         }
         return true;
+    }
+
+    public boolean getGameOver() {
+        if (!isInitialized()){
+            return false; // Can't win if you're dead lol or if the game has not started
+        }
+
+        int numPlayersAlive = 0;
+        // Check if you are the last base alive
+        for (int playerIndex = 0; playerIndex < playerBases.size; playerIndex += 1) {
+            if (!playerBases.get(playerIndex).isDead()) {
+                // Since there is another placers base that is not dead yet, you have not won.
+                numPlayersAlive += 1;
+            }
+        }
+        return numPlayersAlive <= 1;
     }
 
     Array<PlayerBase> getPlayerBases() {
