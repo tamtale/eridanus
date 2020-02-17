@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.Integer.max;
@@ -64,7 +65,7 @@ public class TowerMaterials {
 
 
 
-    public Tower getTower(ArrayList<BlockSpec> layout) {
+    public Tower getTower(List<BlockSpec> layout) {
         //TODO - the edge length is hardcoded as 5f right now
 
         Array<ModelInstance> towerLayout = new Array<>();

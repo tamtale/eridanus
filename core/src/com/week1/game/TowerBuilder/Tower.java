@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.utils.Array;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.Integer.max;
 import static java.lang.Math.min;
@@ -17,8 +18,8 @@ public class Tower {
     private int armour = 1;
     private int price = 0;
     private Array<ModelInstance> model = new Array<>();
-    private ArrayList<BlockSpec> layout;
-    private ArrayList<ArrayList<Integer>> footprint = new ArrayList<>();
+    private List<BlockSpec> layout;
+    private List<List<Integer>> footprint = new ArrayList<>();
 
     public int getPrice() {
         return price;
@@ -43,7 +44,7 @@ public class Tower {
     //want to also generate dimensions, footprint, other multipliers
     //prog generated view
 
-    public Tower(ArrayList<BlockSpec> layout) {
+    public Tower(List<BlockSpec> layout) {
         this.layout = layout;
 
         //generate model and stats
@@ -94,7 +95,7 @@ public class Tower {
 
     }
 
-    public ArrayList<ArrayList<Integer>> getFootprint() {
+    public List<List<Integer>> getFootprint() {
         return this.footprint;
     }
 }
