@@ -134,13 +134,13 @@ public class Renderer {
         camera.update();
     }
 
-    public void render() {
+    public void render(float deltaTime) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         updateCamera();
         mapRenderer.setView(camera);
         mapRenderer.render();
-        renderConfig = new RenderConfig(getShowAttackRadius(), getShowSpawnRadius());
+        renderConfig = new RenderConfig(getShowAttackRadius(), getShowSpawnRadius(), deltaTime);
         engineAdapter.render(renderConfig);
         clickOracleAdapter.render();
         drawPlayerUI();

@@ -235,8 +235,10 @@ public class GameState {
         boolean showAttackRadius = renderConfig.isShowAttackRadius();
         boolean showSpawnRadius = renderConfig.isShowSpawnRadius();
 
-        for (Unit unit : units) {
-            unit.draw(batch, showAttackRadius);
+        Unit unit;
+        for (int indx = 0; indx < units.size; indx ++) {
+            unit = units.get(indx);
+            unit.draw(batch, renderConfig.getDelta(), showAttackRadius);
         }
 
         for (Tower tower : towers) {
@@ -503,5 +505,14 @@ public class GameState {
         buildings.addAll(playerBases);
         buildings.addAll(towers);
         return buildings;
+    }
+
+    public void moveUnits(float movementAmount) {
+        for (Unit u: units) {
+//            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous step. Real x, y before (" + u.x + " " + u.y + ")");
+            u.step(movementAmount);
+//            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous after. Real x y after (" + u.x + " " + u.y + ")");
+//            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous after. display x y after (" + u.getDisplayX() + " " + u.getDisplayY() + ")");
+        }
     }
 }
