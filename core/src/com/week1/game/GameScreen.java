@@ -2,6 +2,12 @@ package com.week1.game;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.Renderable;
+import com.badlogic.gdx.graphics.g3d.RenderableProvider;
+import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -28,14 +34,11 @@ import java.util.List;
 
 public class GameScreen implements Screen {
 	public static float THRESHOLD = .2f;
-	public static int PIXELS_PER_UNIT = 64;
-	private String[] args;
 	private float curTime = 0f;
 	private Client networkClient;
 	private GameEngine engine;
 	private Renderer renderer;
 	private ClickOracle clickOracle;
-	private AI ai;
 	private InfoUtil util;
 	//This is a temporary stage that is displayed before connection of clients
 	private Stage connectionStage;
@@ -60,7 +63,6 @@ public class GameScreen implements Screen {
 	}
 
 	public GameScreen(String[] args) {
-		this.args = args;
 		// Set the logging level
 		Gdx.app.setLogLevel(Application.LOG_INFO);
 
@@ -90,6 +92,11 @@ public class GameScreen implements Screen {
 	public void createNewGame() {
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override
+			public void sendToModelBatch(RenderableProvider provider) {
+			    renderer.render3D(provider);
+			}
+
+			@Override
 			public void setDefaultLocation(Vector3 location) {
 				renderer.setDefaultPosition(location);
 				renderer.setCameraToDefaultPosition();
@@ -109,12 +116,7 @@ public class GameScreen implements Screen {
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
 			public void render(RenderConfig renderConfig) {
-				engine.render(renderConfig);
-			}
-
-			@Override
-			public TiledMap getMap() {
-				return engine.getGameState().getWorld().toTiledMap();
+				engine.render(renderConfig, renderer.getModelBatch(), renderer.getCam(), renderer.getEnv());
 			}
 
 			public double getPlayerMana(int playerId) {
@@ -160,11 +162,6 @@ public class GameScreen implements Screen {
 					}
 
 					@Override
-					public void zoom(int amount) {
-						renderer.zoom(amount);
-					}
-
-					@Override
 					public void setTranslationDirection(Direction direction) {
 						renderer.setPanning(direction);
 					}
@@ -206,7 +203,6 @@ public class GameScreen implements Screen {
 					}
 				});
 
-		ai = new AI();
 		makeTempStage();
 		Gdx.input.setInputProcessor(connectionStage);
 
@@ -228,7 +224,8 @@ public class GameScreen implements Screen {
 
 		if (!pressedStartbtn) {
 			InputMultiplexer multiplexer = new InputMultiplexer();
-			multiplexer.addProcessor(renderer.getButtonStage());
+			multiplexer.addProcessor(new CameraInputController(renderer.getCamera()));
+			// multiplexer.addProcessor(renderer.getButtonStage());
 			multiplexer.addProcessor(clickOracle);
 			Gdx.input.setInputProcessor(multiplexer);
 
@@ -243,7 +240,7 @@ public class GameScreen implements Screen {
 			curTime = 0;
 			engine.processMessages();
 		}
-		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
+		engine.getSpriteBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
 		renderer.render((curTime > THRESHOLD) ? 0 : time); // Only move the units from their state position
 														   // if the threshold was not passed.
 	}

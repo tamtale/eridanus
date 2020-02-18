@@ -2,19 +2,30 @@ package com.week1.game.Model.World;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 
-import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
-
-public class GameWorld {
+public class GameWorld implements RenderableProvider {
     private Block[][][] blocks;
     private int[][] heightMap;
     private boolean refreshHeight = true; // whether or not the map has changed, warranting a new height map.
     private GameGraph graph;
+    private Array<ModelInstance> instances = new Array<>();
+    private Model model;
+    private ModelBuilder modelBuilder = new ModelBuilder();
+    AssetManager assets;
+
     public GameWorld(IWorldBuilder worldBuilder) {
         // For now, we'll make a preset 100x100x10 world.
         blocks = worldBuilder.terrain();
@@ -31,6 +42,17 @@ public class GameWorld {
             }
         }
         Gdx.app.log("Game World - wab2", "Block array built");
+        model = modelBuilder.createBox(5f, 5f, 5f,
+                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+        // Build the modelinstances!
+        for (int i = 0; i < blocks.length; i++) {
+            for (int j = 0; j < blocks[0].length; j++) {
+                for (int k = 0; k < blocks[0][0].length; k++) {
+                    blocks[i][j][k].modelInstance(i, j, k).ifPresent(modelInstance -> instances.add(modelInstance));
+                }
+            }
+        }
     }
 
 
@@ -41,23 +63,6 @@ public class GameWorld {
         blocks[i][j][k] = block;
         refreshHeight = true;
     }
-
-    public TiledMap toTiledMap() {
-        TiledMap map = new TiledMap();
-        MapLayers layers = map.getLayers();
-        TiledMapTileLayer layer = new TiledMapTileLayer(blocks.length, blocks[0].length, PIXELS_PER_UNIT, PIXELS_PER_UNIT);
-        int[][] heightMap = getHeightMap();
-        for (int i = 0; i < blocks.length; i++) {
-            for (int j = 0; j < blocks[0].length; j++) {
-                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                cell.setTile(new StaticTiledMapTile(blocks[i][j][heightMap[i][j]].getTextureRegion()));
-                layer.setCell(i, j, cell);
-            }
-        }
-        layers.add(layer);
-        return map;
-    }
-
 
     public GameGraph buildGraph(){
 
@@ -124,5 +129,10 @@ public class GameWorld {
         }
 
         return heightMap;
+    }
+
+    @Override
+    public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
+        instances.forEach(instance -> instance.getRenderables(renderables, pool));
     }
 }

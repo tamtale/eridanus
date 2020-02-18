@@ -246,9 +246,4 @@ public class ClickOracle extends InputAdapter {
         batch.setColor(1, 1,1, 1);
     }
 
-    @Override
-    public boolean scrolled(int amount) {
-        rendererAdapter.zoom(amount);
-        return true;
-    }
 }
