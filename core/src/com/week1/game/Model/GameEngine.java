@@ -60,7 +60,7 @@ public class GameEngine {
         // TODO unit movement should be 'reverted' and then stepped here in the long term so state is consistent.
         synchronousUpdateState();
 
-        Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn);
+        Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn + " hash is: " + getGameStateHash() + " and string version is " + getGameStateString());
 
         messageQueue.addAll(messages);
     }
@@ -138,9 +138,15 @@ public class GameEngine {
      * Gets the hash associated with the current state of the game.
      * @return
      */
-    public byte[] getGameStateHash() {
+    public int getGameStateHash() {
         GameState.PackagedGameState wrapped = gameState.packState();
-        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
+//        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
         return wrapped.getHash();
+    }
+
+    public String getGameStateString() {
+        GameState.PackagedGameState wrapped = gameState.packState();
+//        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
+        return wrapped.getGameString();
     }
 }

@@ -48,6 +48,8 @@ public class MessageFormatter {
             parsedMsg = g.fromJson(msg, CreateTowerMessage.class);
         } else if (prototypeMessage.messageTypeID == MessageType.INIT){
             parsedMsg = g.fromJson(msg, InitMessage.class);
+        } else if (prototypeMessage.messageTypeID == MessageType.SYNCERR){
+            parsedMsg = g.fromJson(msg, SyncIssueMessage.class);
         }
         return parsedMsg;
     }

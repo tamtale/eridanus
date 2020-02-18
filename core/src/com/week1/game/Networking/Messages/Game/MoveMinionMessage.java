@@ -13,7 +13,7 @@ public class MoveMinionMessage extends GameMessage {
     private float y;
     private Array<Integer> minionIDs;
 
-    public MoveMinionMessage(float x, float y, int playerID, Array<Unit> minions, byte[] byteHash) {
+    public MoveMinionMessage(float x, float y, int playerID, Array<Unit> minions, int byteHash) {
         super(playerID, MESSAGE_TYPE, byteHash);
         this.x = x;
         this.y = y;

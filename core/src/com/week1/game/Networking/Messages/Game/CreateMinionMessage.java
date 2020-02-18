@@ -16,7 +16,7 @@ public class CreateMinionMessage extends GameMessage {
     private float x, y;
     private int unitType;
 
-    public CreateMinionMessage(float x, float y, int unitType, int playerID, byte[] byteHash){
+    public CreateMinionMessage(float x, float y, int unitType, int playerID, int byteHash){
         super(playerID, MESSAGE_TYPE, byteHash);
         this.x = x;
         this.y = y;

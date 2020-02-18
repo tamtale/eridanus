@@ -123,7 +123,9 @@ public class ClickOracle extends InputAdapter {
         touchPos.set(screenX, screenY, 0);
         rendererAdapter.unproject(touchPos);
 
-        byte[] currentGameState = engineAdapter.getGameStateHash();
+        int currentGameState = engineAdapter.getGameStateHash();
+        Gdx.app.log("pjb3 - ClickOracle", "hash int is " + currentGameState);
+        Gdx.app.log("pjb3 - ClickOracle", "the human readable is: " + engineAdapter.getGameStateString());
 
         if (button == Input.Buttons.LEFT) {
 
@@ -199,7 +201,7 @@ public class ClickOracle extends InputAdapter {
 
     private void deMultiSelect() {
         if (multiSelected.notEmpty()) {
-            multiSelected.forEach((u) -> u.clicked = false);
+            multiSelected.forEach((u) -> u.setClicked(false));
             multiSelected.clear();
         }
     }
@@ -207,7 +209,7 @@ public class ClickOracle extends InputAdapter {
     private void multiSelect(Unit unit) {
         if (unit.getPlayerId() == networkAdapter.getPlayerId()) {
             multiSelected.add(unit);
-            unit.clicked = true;
+            unit.setClicked(true);
         }
     }
 

@@ -17,23 +17,17 @@ import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
 import static java.lang.Math.abs;
+import static java.lang.Math.random;
 
 public class Unit extends Rectangle implements Damageable, Damaging {
     private final int playerID;
     public OutputPath path;
-    public boolean isClicked() {
-        return clicked;
-    }
-
-    public void setClicked(boolean clicked) {
-        this.clicked = clicked;
-    }
     private int turn = 0;
     private double hp;
     private Vector3 vel;
     private float displayX, displayY;
     private double maxHp;
-    public boolean clicked = false;
+    private boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
     public static double speed = 5;
@@ -67,7 +61,8 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         this.unselectedSkin = colorMap.get(playerID);
         this.playerID = playerID;
         this.hp = hp;
-        this.maxHp = hp;
+        double removeMe = random();
+        this.maxHp = hp + removeMe;
         this.displayX = x;
         this.displayY = y;
         this.vel = new Vector3(0, 0, 0);
@@ -167,6 +162,10 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
     private Texture getSkin() {
         return clicked ? selectedSkin : unselectedSkin;
+    }
+
+    public void setClicked(boolean clicked) {
+        this.clicked = clicked;
     }
     
     @Override

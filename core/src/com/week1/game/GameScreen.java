@@ -195,8 +195,13 @@ public class GameScreen implements Screen {
 					}
 
 					@Override
-					public byte[] getGameStateHash() {
+					public int getGameStateHash() {
 						return engine.getGameStateHash();
+					}
+
+					@Override
+					public String getGameStateString() {
+						return engine.getGameStateString();
 					}
 
 				},

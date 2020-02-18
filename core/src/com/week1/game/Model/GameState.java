@@ -15,10 +15,6 @@ import com.week1.game.Model.World.IWorldBuilder;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import static com.week1.game.Model.Entities.TowerType.BASIC;
 import static com.week1.game.Model.Entities.TowerType.SNIPER;
 import static com.week1.game.Model.StatsConfig.*;
@@ -528,38 +524,36 @@ public class GameState {
      * of everything concatenated together.
       */
     public static class PackagedGameState {
-        private static MessageDigest digest;
 
-        static {
-            try {
-                digest = MessageDigest.getInstance("SHA-256");
-            } catch (NoSuchAlgorithmException e) {
-                digest = null;
-                e.printStackTrace();
-            }
-        }
-
-        byte[] encodedhash;
+        int encodedhash;
         private String gameString;
 
         public PackagedGameState (Array<Unit> units, Array<Tower> towers, Array<PlayerBase> bases) {
             gameString = "";
-            for (Unit u: units) {
+            Unit u;
+            for (int i = 0; i < units.size; i++) {
+                u = units.get(i);
                 gameString += u.toString() + "\n";
             }
             gameString += "\n";
-            for (Tower t: towers) {
+
+            Tower t;
+            for (int i = 0 ; i < towers.size; i++) {
+                t = towers.get(i);
                 gameString += t.toString() + "\n";
             }
             gameString += "\n";
-            for (PlayerBase pb: bases) {
+
+            PlayerBase pb;
+            for (int i = 0; i < bases.size; i ++) {
+                pb = bases.get(i);
                 gameString += pb.toString() + "\n";
             }
 
-            encodedhash = digest.digest(gameString.getBytes(StandardCharsets.UTF_8));
+            encodedhash = gameString.hashCode();
         }
 
-        public byte[] getHash() {
+        public int getHash() {
             return this.encodedhash;
         }
 
