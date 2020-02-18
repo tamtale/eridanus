@@ -10,8 +10,8 @@ public class TestMessage extends GameMessage {
     private int coolValue;
     private String wow;
 
-    public TestMessage(int coolValue, String wow, int playerID) {
-        super(playerID, MESSAGE_TYPE);
+    public TestMessage(int coolValue, String wow, int playerID, byte[] byteHash) {
+        super(playerID, MESSAGE_TYPE, byteHash);
         this.coolValue = coolValue;
         this.wow = wow;
     }

@@ -6,8 +6,10 @@ import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.InfoUtil;
 
 public abstract class GameMessage extends AMessage {
-    public GameMessage(int playerID, MessageType messageTypeID) {
+    private byte[] byteHash;
+    public GameMessage(int playerID, MessageType messageTypeID, byte[] byteHash) {
         super(playerID, messageTypeID);
+        this.byteHash = byteHash;
     }
     
     public abstract boolean process(GameState gameState, InfoUtil util);

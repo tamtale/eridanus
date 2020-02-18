@@ -150,4 +150,15 @@ public class PlayerBase extends Building {
             return new Vector3(x, startY, 0);
         }
     }
+
+    @Override
+    public String toString() {
+        return "PlayerBase{" +
+                "x=" + x +
+                ", y=" + y +
+                ", hp=" + hp +
+                ", maxHp=" + maxHp +
+                ", playerID=" + playerID +
+                '}';
+    }
 }

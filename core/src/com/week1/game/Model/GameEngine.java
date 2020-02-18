@@ -133,4 +133,14 @@ public class GameEngine {
     public Array<Building> getBuildings() {
         return gameState.getBuildings();
     }
+
+    /**
+     * Gets the hash associated with the current state of the game.
+     * @return
+     */
+    public byte[] getGameStateHash() {
+        GameState.PackagedGameState wrapped = gameState.packState();
+        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
+        return wrapped.getHash();
+    }
 }

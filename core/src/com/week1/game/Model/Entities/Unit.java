@@ -220,5 +220,17 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     public float getDisplayY() {
         return displayY;
     }
+
+    @Override
+    public String toString() {
+        return "Unit{" +
+                "playerID=" + playerID +
+                ", turn=" + turn +
+                ", hp=" + hp +
+                ", vel=" + vel +
+                ", maxHp=" + maxHp +
+                ", ID=" + ID +
+                '}';
+    }
 }
 

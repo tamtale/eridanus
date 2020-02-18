@@ -15,6 +15,10 @@ import com.week1.game.Model.World.IWorldBuilder;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 import static com.week1.game.Model.Entities.TowerType.BASIC;
 import static com.week1.game.Model.Entities.TowerType.SNIPER;
 import static com.week1.game.Model.StatsConfig.*;
@@ -513,6 +517,57 @@ public class GameState {
             u.step(movementAmount);
 //            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous after. Real x y after (" + u.x + " " + u.y + ")");
 //            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous after. display x y after (" + u.getDisplayX() + " " + u.getDisplayY() + ")");
+        }
+    }
+
+    public PackagedGameState packState() {
+        return new PackagedGameState(units, towers, playerBases);
+    }
+
+
+    /**
+     * This inner class maintains the wrapper information for creating the wrapped version of the gamestate
+     * that is used to create and verify the hashes. It contains the encoded hash and the human readable string version
+     * of everything concatenated together.
+      */
+    public static class PackagedGameState {
+        private static MessageDigest digest;
+
+        static {
+            try {
+                digest = MessageDigest.getInstance("SHA-256");
+            } catch (NoSuchAlgorithmException e) {
+                digest = null;
+                e.printStackTrace();
+            }
+        }
+
+        byte[] encodedhash;
+        private String gameString;
+
+        public PackagedGameState (Array<Unit> units, Array<Tower> towers, Array<PlayerBase> bases) {
+            gameString = "";
+            for (Unit u: units) {
+                gameString += u.toString() + "\n";
+            }
+            gameString += "\n";
+            for (Tower t: towers) {
+                gameString += t.toString() + "\n";
+            }
+            gameString += "\n";
+            for (PlayerBase pb: bases) {
+                gameString += pb.toString() + "\n";
+            }
+
+            encodedhash = digest.digest(gameString.getBytes(StandardCharsets.UTF_8));
+        }
+
+        public byte[] getHash() {
+            return this.encodedhash;
+        }
+
+        public String getGameString() {
+            return this.gameString;
         }
     }
 }

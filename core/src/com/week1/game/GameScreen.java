@@ -194,6 +194,11 @@ public class GameScreen implements Screen {
 						return engine.getBuildings();
 					}
 
+					@Override
+					public byte[] getGameStateHash() {
+						return engine.getGameStateHash();
+					}
+
 				},
 				new IClickOracleToNetworkAdapter() {
 					@Override
