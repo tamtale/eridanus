@@ -27,7 +27,7 @@ import java.util.List;
 
 
 public class GameScreen implements Screen {
-	private static float THRESHOLD = .2f;
+	public static float THRESHOLD = .2f;
 	public static int PIXELS_PER_UNIT = 64;
 	private String[] args;
 	private float curTime = 0f;
@@ -243,9 +243,9 @@ public class GameScreen implements Screen {
 			curTime = 0;
 			engine.processMessages();
 		}
-		engine.updateState(time);
 		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
-		renderer.render();
+		renderer.render((curTime > THRESHOLD) ? 0 : time); // Only move the units from their state position
+														   // if the threshold was not passed.
 	}
 
 	@Override
