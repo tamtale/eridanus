@@ -2,10 +2,15 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.PathFinder;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.Renderable;
+import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Entities.*;
@@ -20,7 +25,7 @@ import static com.week1.game.Model.Entities.TowerType.SNIPER;
 import static com.week1.game.Model.StatsConfig.*;
 
 
-public class GameState {
+public class GameState implements RenderableProvider {
 
     private GameGraph graph;
     private PathFinder<Vector3> pathFinder;
@@ -29,7 +34,6 @@ public class GameState {
     private Array<Tower> towers;
     private Array<PlayerBase> playerBases;
     private Array<PlayerStat> playerStats;
-    private Array<SteeringAgent> agents;
     private IWorldBuilder worldBuilder;
     private GameWorld world;
     /*
@@ -61,7 +65,6 @@ public class GameState {
         //graph.getPathFinder().searchNodePath(new Vector3(0, 0, 0), new Vector3(1, 1, 0), new GameHeuristic(), path);
         playerBases = new Array<>();
         playerStats = new Array<>();
-        agents = new Array<>();
         this.postInit = postInit;
     }
 
@@ -74,32 +77,6 @@ public class GameState {
     public void initializeGame(int numPlayers) {
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
-//        if (numPlayers == 1) {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
-//            removePlayerBase(50, 50);
-//        } else if (numPlayers == 2) {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-//            removePlayerBase(15, 15);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
-//            removePlayerBase(85, 85);
-//        } else if (numPlayers == 3) {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-//            removePlayerBase(15, 15);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 50, 1));
-//            removePlayerBase(50, 85);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
-//            removePlayerBase(15, 85);
-//        } else {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-//            removePlayerBase(15, 15);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
-//            removePlayerBase(85, 85);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
-//            removePlayerBase(15, 85);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 15, 3));
-//            removePlayerBase(85, 15);
-//        }
-
 
         // Create the correct amount of actual players
         Vector3[] startLocs = worldBuilder.startLocations();
@@ -227,37 +204,11 @@ public class GameState {
         }
         agent.setGoal(goal);
     }
-    public void addAgent(SteeringAgent a){
-        agents.add(a);
-    }
 
-    public void render(Batch batch, RenderConfig renderConfig, int renderPlayerId){
-        boolean showAttackRadius = renderConfig.isShowAttackRadius();
-        boolean showSpawnRadius = renderConfig.isShowSpawnRadius();
-
-        Unit unit;
-        for (int indx = 0; indx < units.size; indx ++) {
-            unit = units.get(indx);
-            unit.draw(batch, renderConfig.getDelta(), showAttackRadius);
-        }
-
-        for (Tower tower : towers) {
-            if (tower.getPlayerId() == renderPlayerId) {
-                // Only show the spawn radius for your own tower.
-                tower.draw(batch, showAttackRadius, showSpawnRadius);
-            } else {
-                tower.draw(batch, showAttackRadius, false);
-            }
-        }
-
-        for (PlayerBase playerBase : playerBases) {
-            if (playerBase.getPlayerId() == renderPlayerId) {
-                // only show the spawn radius for your own base
-                playerBase.draw(batch, showSpawnRadius);
-            } else {
-                playerBase.draw(batch, false);
-            }
-        }
+    public void render(ModelBatch modelBatch, Camera cam, RenderConfig renderConfig, int renderPlayerId){
+        modelBatch.begin(cam);
+        modelBatch.render(world);
+        modelBatch.end();
     }
 
     public Unit findUnit(Vector3 position) {
@@ -514,5 +465,11 @@ public class GameState {
 //            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous after. Real x y after (" + u.x + " " + u.y + ")");
 //            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous after. display x y after (" + u.getDisplayX() + " " + u.getDisplayY() + ")");
         }
+    }
+
+    @Override
+    public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
+        Renderable renderable = pool.obtain();
+
     }
 }

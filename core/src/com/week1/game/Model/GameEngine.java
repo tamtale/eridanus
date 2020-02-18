@@ -1,7 +1,9 @@
 package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.PlayerBase;
@@ -22,14 +24,14 @@ public class GameEngine {
     private GameState gameState;
     private ConcurrentLinkedQueue<GameMessage> messageQueue;
     private int communicationTurn = 0;
-    private SpriteBatch batch;
+    private SpriteBatch spriteBatch;
     private IEngineToRendererAdapter engineToRenderer;
     private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
     private InfoUtil util;
     private boolean sentWinLoss = false, sentGameOver = false;
 
-    public Batch getBatch() {
-        return batch;
+    public Batch getSpriteBatch() {
+        return spriteBatch;
     }
 
     public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, InfoUtil util) {
@@ -49,7 +51,7 @@ public class GameEngine {
                     engineToRenderer.setDefaultLocation(position);
                 });
         Gdx.app.log("wab2- GameEngine", "gameState built");
-        batch = new SpriteBatch();
+        spriteBatch = new SpriteBatch();
         engineToRenderer = engineToRendererAdapter;
         this.util = util;
     }
@@ -99,11 +101,8 @@ public class GameEngine {
         }
     }
 
-    public void render(RenderConfig renderConfig){
-        batch.begin();
-
-        gameState.render(batch, renderConfig, enginePlayerId);
-        batch.end();
+    public void render(RenderConfig renderConfig, ModelBatch modelBatch, Camera cam){
+        gameState.render(modelBatch, cam, renderConfig, enginePlayerId);
     }
 
     public GameState getGameState() {

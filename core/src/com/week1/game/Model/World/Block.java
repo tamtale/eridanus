@@ -8,8 +8,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
-
 public interface Block {
 
     TextureRegion getTextureRegion();
@@ -48,14 +46,7 @@ public interface Block {
 
         private Array<Connection<Block>> edges;
         TerrainBlock(Color color) {
-            Pixmap unitPixmap = new Pixmap(PIXELS_PER_UNIT, PIXELS_PER_UNIT, Pixmap.Format.RGB888);
-            unitPixmap.setColor(Color.BLACK);
-            unitPixmap.fill();
-            unitPixmap.setColor(color);
-            unitPixmap.fillRectangle(3, 3, PIXELS_PER_UNIT - 6, PIXELS_PER_UNIT - 6);
-            this.textureRegion = new TextureRegion(new Texture(unitPixmap));
             this.edges = new Array<>();
-
         }
 
 
