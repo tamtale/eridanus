@@ -81,6 +81,7 @@ public class Tower {
 //                footprint.get(i).add(-1);
 //            }
 //        }
+        this.footprint = new TowerFootprint();
 
         for (BlockSpec block : layout) {
             int code = block.getBlockCode();
@@ -99,7 +100,7 @@ public class Tower {
 //            } else {
 //                footprint.get(x + 2).set(z + 2, min(curFootPrint, y));
 //            }
-            this.footprint.setFootPrint(x, y, true);
+            this.footprint.setFootPrint(x + 2, z + 2, true);
 
             //Generate the tower stats
             rawHp += TowerMaterials.blockHp.get(code);
