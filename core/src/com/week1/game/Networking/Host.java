@@ -3,7 +3,9 @@ package com.week1.game.Networking;
 import com.badlogic.gdx.Gdx;
 import com.week1.game.Networking.Messages.*;
 import com.week1.game.Networking.Messages.Control.PlayerIdMessage;
+import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.Game.InitMessage;
+import com.week1.game.Networking.Messages.Game.SyncIssueMessage;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -11,6 +13,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import static com.week1.game.Networking.Messages.MessageType.SYNCERR;
 
 public class Host {
 
@@ -79,6 +83,26 @@ public class Host {
                     outgoingMessages.add(incomingMessages.poll());
                 }
 
+                // Verify game state on any messages sent this game turn
+                if (outgoingMessages.size() > 0) {
+                    GameMessage firstMsg = MessageFormatter.parseMessage(outgoingMessages.get(0));
+                    // Make sure that this is a valid GameMessage
+                    if (firstMsg != null) {
+                        byte[] firstHash = firstMsg.getByteHash();
+                        for (int i = 1; i < outgoingMessages.size(); i++) {
+                            GameMessage parsedMsg = MessageFormatter.parseMessage(outgoingMessages.get(i));
+                            if (parsedMsg == null) {
+                                continue; // this wasnt a valid GameMessage, ignore it and dont compare hashes.
+                            }
+                            if (firstHash != MessageFormatter.parseMessage(outgoingMessages.get(i)).getByteHash()) {
+                                Gdx.app.log("pjb3 - Host ERROR", " The hashes do not match for two messages!!!!! Yikes.");
+                                // Create a SyncIssue message to send to all clients so they can know there is an issue
+                                outgoingMessages.add(0, MessageFormatter.packageMessage(new SyncIssueMessage(-1, SYNCERR, firstHash)));
+                            }
+                        }
+                    }
+                }
+
                 Gdx.app.debug(TAG, "Host is about to broadcast update message to registered clients.");
                 broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(outgoingMessages)));
                 
@@ -124,7 +148,7 @@ public class Host {
                 ;
                 // TODO: this gets sent first so that the game engine does any initialization before the game starts (but udp doesn't guarantee order)
                 broadcastToRegisteredPlayers(MessageFormatter.packageMessage(
-                        new Update(Arrays.asList(new String[] {MessageFormatter.packageMessage(new InitMessage(registry.size(), -1))}))));
+                        new Update(Arrays.asList(new String[] {MessageFormatter.packageMessage(new InitMessage(registry.size(), -1, null))}))));
                 
                 runUpdateLoop();
                 
@@ -136,8 +160,6 @@ public class Host {
             Gdx.app.log(TAG, "Host received an update message from: " + packet.getAddress().getHostAddress());
             incomingMessages.add(msg);
         }
-        
-        
     }
     
     private void broadcastToRegisteredPlayers(String msg) {

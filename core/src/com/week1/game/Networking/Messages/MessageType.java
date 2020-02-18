@@ -7,6 +7,7 @@ public enum MessageType {
     MOVE,
     CREATETOWER,
     INIT,
+    SYNCERR,
     
     // Control Messages
     PLAYERID

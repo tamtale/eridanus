@@ -78,7 +78,7 @@ public class Client {
                     }
                     
                     Gdx.app.debug(TAG, "Received update: " + messages);
-                    List<GameMessage> msgList = MessageFormatter.parseMessage(messages);
+                    List<GameMessage> msgList = MessageFormatter.parseMessages(messages);
                     adapter.deliverUpdate(msgList); 
 
                 } catch (IOException e) {

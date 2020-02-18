@@ -513,10 +513,7 @@ public class GameState {
 
     public void moveUnits(float movementAmount) {
         for (Unit u: units) {
-//            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous step. Real x, y before (" + u.x + " " + u.y + ")");
             u.step(movementAmount);
-//            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous after. Real x y after (" + u.x + " " + u.y + ")");
-//            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous after. display x y after (" + u.getDisplayX() + " " + u.getDisplayY() + ")");
         }
     }
 
