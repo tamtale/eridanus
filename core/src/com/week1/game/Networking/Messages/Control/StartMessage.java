@@ -9,6 +9,7 @@ import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Networking.Messages.Update;
 import com.week1.game.Networking.Player;
+import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -52,15 +53,15 @@ public class StartMessage extends HostControlMessage {
         // need to convert the tower details map into 2d array
 //        TowerDetails[h.][] towerDetailsArray = h.towerDetails.
 //        h.towerDetails.to
-        
-        TowerDetails[][] towerDetailsArray = new TowerDetails[h.towerDetails.size()][h.towerDetails.get(0).size()];
-        for (int i = 0; i < h.towerDetails.size(); i++) {
-            for (int j = 0; j < h.towerDetails.get(0).size(); j++) {
-                towerDetailsArray[i][j] = h.towerDetails.get(i).get(j);
-            }
-        }
+//        BlockSpec[][][] towerDetailsArray = new TowerDetails[h.towerDetails.size()][h.towerDetails.get(0).size()];
+//        for (int i = 0; i < h.towerDetails.size(); i++) {
+//            for (int j = 0; j < h.towerDetails.get(0).size(); j++) {
+//                for(int k = 0; k < ; k++) {
+//                towerDetailsArray[i][j][k] = h.towerDetails.get(i).get(j);
+//            }
+//        }
         h.broadcastToRegisteredPlayers(MessageFormatter.packageMessage(
-                new Update(Arrays.asList(new String[] {MessageFormatter.packageMessage(new TowerDetailsMessage(-1, towerDetailsArray))}))));
+                new Update(Arrays.asList(new String[] {MessageFormatter.packageMessage(new TowerDetailsMessage(-1, h.towerDetails))}))));
 
         h.runUpdateLoop();
 

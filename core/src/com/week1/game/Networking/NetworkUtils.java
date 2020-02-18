@@ -3,6 +3,7 @@ package com.week1.game.Networking;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerDetails;
+import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.net.*;
 import java.nio.channels.SocketChannel;
@@ -63,7 +64,7 @@ public class NetworkUtils {
      * @param args - Either "host" or "client <ip address> <port number> <optional - start>"
      * @return The client object
      */
-    public static Client initNetworkObjects(String[] args, INetworkClientToEngineAdapter adapter, List<TowerDetails> details) {
+    public static Client initNetworkObjects(String[] args, INetworkClientToEngineAdapter adapter, List<List<BlockSpec>> details) {
         final String TAG = "initNetworkObjects - lji1";
         Gdx.app.log(TAG, "Local host address: " + getLocalHostAddr());
         

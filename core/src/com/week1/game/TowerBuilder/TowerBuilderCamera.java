@@ -75,7 +75,9 @@ public class TowerBuilderCamera {
         initPersCamera();
         setInputProc();
 
+        System.out.println("lkjsdflkjsdflkjsdflkjsdf");
         presets = new TowerPresets();
+        System.out.println("qwerqwerqwerwer");
 
         assets = new AssetManager();
         assets.load("spacesphere.obj", Model.class);

@@ -65,7 +65,7 @@ public class TowerMaterials {
 
 
 
-    public Tower getTower(List<BlockSpec> layout) {
+    public static Tower getTower(List<BlockSpec> layout) {
         //TODO - the edge length is hardcoded as 5f right now
 
         Array<ModelInstance> towerLayout = new Array<>();

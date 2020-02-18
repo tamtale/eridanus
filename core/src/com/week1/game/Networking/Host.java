@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerDetails;
 import com.week1.game.Networking.Messages.*;
 import com.week1.game.Networking.Messages.Control.HostControlMessage;
+import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -30,7 +31,7 @@ public class Host {
     
     private ConcurrentLinkedQueue<String> incomingMessages = new ConcurrentLinkedQueue<>();
     
-    public List<List<TowerDetails>> towerDetails = new ArrayList<>(); // first index is implicitly the player id
+    public List<List<List<BlockSpec>>> towerDetails = new ArrayList<>(); // first index is implicitly the player id
     public int runningPlayerId = 0;
     
     

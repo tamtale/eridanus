@@ -348,16 +348,16 @@ public class GameState {
     }
 
     public boolean overlapsExistingStructure(int playerId, int towerType, int x, int y) {
-        TowerFootprint footprint = towerInfo.getTowerDetails(playerId, towerType).footprint;
+        TowerFootprint footprint = towerInfo.getTowerDetails(playerId, towerType).getFootprint();
         for (Tower t: towers) {
-            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerDetails(t.getPlayerId(), t.getTowerType()).footprint, (int)t.x, (int)t.y)) {
+            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerDetails(t.getPlayerId(), t.getTowerType()).getFootprint(), (int)t.x, (int)t.y)) {
                 return true;
             }
         }
         
         for (PlayerBase pb: playerBases) {
             // use -1 as towerType for the player base
-            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerDetails(-1, -1).footprint, (int)pb.x, (int)pb.y)) {
+            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerDetails(-1, -1).getFootprint(), (int)pb.x, (int)pb.y)) {
                 return true;
             }
         }
@@ -404,7 +404,8 @@ public class GameState {
         this.towerInfo = info;
     }
     public TowerDetails getTowerDetails(int playerId, int towerId) {
-        return this.towerInfo.getTowerDetails(playerId, towerId);
+        // TODO: should really just all in one class, instead of converting here
+        return new TowerDetails(this.towerInfo.getTowerDetails(playerId, towerId));
     }
 
     Array<PlayerBase> getPlayerBases() {

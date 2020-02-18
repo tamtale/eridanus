@@ -8,6 +8,7 @@ import com.week1.game.Networking.Messages.Control.ClientControlMessage;
 import com.week1.game.Networking.Messages.Control.JoinMessage;
 import com.week1.game.Networking.Messages.Control.StartMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
+import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -106,7 +107,7 @@ public class Client {
         this.sendStringMessage(MessageFormatter.packageMessage(new StartMessage(-1)));
     }
     
-    public void sendJoinMessage(List<TowerDetails> details) {
+    public void sendJoinMessage(List<List<BlockSpec>> details) {
         Gdx.app.log(TAG, "Sending join message.");
         // the client doesn't know its player id until later, so just use -1
         sendStringMessage(MessageFormatter.packageMessage(new JoinMessage(-1, details)));

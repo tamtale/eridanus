@@ -6,11 +6,11 @@ import java.util.List;
 
 public class TowerPresets {
 
-    private static TowerMaterials twrMat = new TowerMaterials();
+//    private static TowerMaterials twrMat = new TowerMaterials();
 
     public static final Integer NUM_PRESETS = 6;
 
-    private static Tower tower1 = twrMat.getTower(Arrays.asList(new BlockSpec(2, 0,0,0),
+    private static Tower tower1 = new Tower(Arrays.asList(new BlockSpec(2, 0,0,0),
                 new BlockSpec(2, 0, 0, 1),
                 new BlockSpec(2, 0, 0, -1),
                 new BlockSpec(2, -1, 0, 0),
@@ -18,78 +18,79 @@ public class TowerPresets {
                 new BlockSpec(3, 0, 1, 0),
                 new BlockSpec(5, 0, 2, 0)));
 
-    private static Tower tower2 =  twrMat.getTower(Arrays.asList(new BlockSpec(4, 0,0,0),
-            new BlockSpec(4, 0,1,0),
-            new BlockSpec(4, 0,2,0),
-            new BlockSpec(4, 0,3,0),
-            new BlockSpec(7, 0,4,0),
-            new BlockSpec(6, 0,5,0),
-            new BlockSpec(5, 0,6,0)));
+//    private static Tower tower2 =  twrMat.getTower(Arrays.asList(new BlockSpec(4, 0,0,0),
+//            new BlockSpec(4, 0,1,0),
+//            new BlockSpec(4, 0,2,0),
+//            new BlockSpec(4, 0,3,0),
+//            new BlockSpec(7, 0,4,0),
+//            new BlockSpec(6, 0,5,0),
+//            new BlockSpec(5, 0,6,0)));
+//
+//    private static Tower tower3 = twrMat.getTower(Arrays.asList(new BlockSpec(2, 0, 0, -1),
+//        new BlockSpec(2, 0, 0, 0),
+//        new BlockSpec(7, 0, 0, 1),
+//        new BlockSpec(2, -1, 0, -1),
+//        new BlockSpec(7, -1, 0, 0),
+//        new BlockSpec(2, -1, 0, 1),
+//        new BlockSpec(7, 1, 0, -1),
+//        new BlockSpec(2, 1, 0, 0),
+//        new BlockSpec(2, 1, 0, 1),
+//        new BlockSpec(2, 2, 0, -1),
+//        new BlockSpec(7, 2, 0, 0),
+//        new BlockSpec(2, 2, 0, 1)));
+//
+//    private static Tower tower4 = twrMat.getTower(Arrays.asList(new BlockSpec(2, 0, 0, 0),
+//        new BlockSpec(2, 0, 1, 0),
+//        new BlockSpec(2, 1, 1, 0),
+//        new BlockSpec(2, -1, 1, 0),
+//        new BlockSpec(2, 0, 1, -1),
+//        new BlockSpec(2, 0, 1, 1),
+//        new BlockSpec(6, -1, 2, 0),
+//        new BlockSpec(4, 0, 2, 0),
+//        new BlockSpec(6, 1, 2, 0),
+//        new BlockSpec(2, -1, 2, 1),
+//        new BlockSpec(6, 0, 2, 1),
+//        new BlockSpec(2, 1, 2, 1),
+//        new BlockSpec(2, -1, 2, -1),
+//        new BlockSpec(6, 0, 2, -1),
+//        new BlockSpec(2, 1, 2, -1)));
+//
+//    private static Tower tower5 = twrMat.getTower(Arrays.asList(new BlockSpec(3, -1, 0, 0),
+//        new BlockSpec(3, 0, 0, 0),
+//        new BlockSpec(3, 1, 0, 0),
+//        new BlockSpec(2, -1, 0, 1),
+//        new BlockSpec(3, 0, 0, 1),
+//        new BlockSpec(2, 1, 0, 1),
+//        new BlockSpec(2, -1, 0, -1),
+//        new BlockSpec(3, 0, 0, -1),
+//        new BlockSpec(2, 1, 0, -1),
+//        new BlockSpec(4, 0, 1, 0),
+//        new BlockSpec(4, 0, 2, 0),
+//        new BlockSpec(5, 0, 3, 0),
+//        new BlockSpec(5, 0, 4, 0)));
+//
+//    private static Tower tower6 = twrMat.getTower(Arrays.asList(new BlockSpec(2, 0, 0, -1),
+//        new BlockSpec(2, -1, 0, -1),
+//        new BlockSpec(2, 0, 0, 0),
+//        new BlockSpec(2, -1, 0, 0),
+//        new BlockSpec(2, 0, 0, 1),
+//        new BlockSpec(2, -1, 0, 1),
+//        new BlockSpec(5, 0, 1, -1),
+//        new BlockSpec(4, -1, 1, -1),
+//        new BlockSpec(6, 0, 1, 0),
+//        new BlockSpec(6, -1, 1, 0),
+//        new BlockSpec(4, 0, 1, 1),
+//        new BlockSpec(5, -1, 1, 1),
+//        new BlockSpec(3, 0, 2, -1),
+//        new BlockSpec(3, -1, 2, -1),
+//        new BlockSpec(3, 0, 2, 0),
+//        new BlockSpec(3, -1, 2, 0),
+//        new BlockSpec(3, 0, 2, 1),
+//        new BlockSpec(3, -1, 2, 1)));
 
-    private static Tower tower3 = twrMat.getTower(Arrays.asList(new BlockSpec(2, 0, 0, -1),
-        new BlockSpec(2, 0, 0, 0),
-        new BlockSpec(7, 0, 0, 1),
-        new BlockSpec(2, -1, 0, -1),
-        new BlockSpec(7, -1, 0, 0),
-        new BlockSpec(2, -1, 0, 1),
-        new BlockSpec(7, 1, 0, -1),
-        new BlockSpec(2, 1, 0, 0),
-        new BlockSpec(2, 1, 0, 1),
-        new BlockSpec(2, 2, 0, -1),
-        new BlockSpec(7, 2, 0, 0),
-        new BlockSpec(2, 2, 0, 1)));
 
-    private static Tower tower4 = twrMat.getTower(Arrays.asList(new BlockSpec(2, 0, 0, 0),
-        new BlockSpec(2, 0, 1, 0),
-        new BlockSpec(2, 1, 1, 0),
-        new BlockSpec(2, -1, 1, 0),
-        new BlockSpec(2, 0, 1, -1),
-        new BlockSpec(2, 0, 1, 1),
-        new BlockSpec(6, -1, 2, 0),
-        new BlockSpec(4, 0, 2, 0),
-        new BlockSpec(6, 1, 2, 0),
-        new BlockSpec(2, -1, 2, 1),
-        new BlockSpec(6, 0, 2, 1),
-        new BlockSpec(2, 1, 2, 1),
-        new BlockSpec(2, -1, 2, -1),
-        new BlockSpec(6, 0, 2, -1),
-        new BlockSpec(2, 1, 2, -1)));
-
-    private static Tower tower5 = twrMat.getTower(Arrays.asList(new BlockSpec(3, -1, 0, 0),
-        new BlockSpec(3, 0, 0, 0),
-        new BlockSpec(3, 1, 0, 0),
-        new BlockSpec(2, -1, 0, 1),
-        new BlockSpec(3, 0, 0, 1),
-        new BlockSpec(2, 1, 0, 1),
-        new BlockSpec(2, -1, 0, -1),
-        new BlockSpec(3, 0, 0, -1),
-        new BlockSpec(2, 1, 0, -1),
-        new BlockSpec(4, 0, 1, 0),
-        new BlockSpec(4, 0, 2, 0),
-        new BlockSpec(5, 0, 3, 0),
-        new BlockSpec(5, 0, 4, 0)));
-
-    private static Tower tower6 = twrMat.getTower(Arrays.asList(new BlockSpec(2, 0, 0, -1),
-        new BlockSpec(2, -1, 0, -1),
-        new BlockSpec(2, 0, 0, 0),
-        new BlockSpec(2, -1, 0, 0),
-        new BlockSpec(2, 0, 0, 1),
-        new BlockSpec(2, -1, 0, 1),
-        new BlockSpec(5, 0, 1, -1),
-        new BlockSpec(4, -1, 1, -1),
-        new BlockSpec(6, 0, 1, 0),
-        new BlockSpec(6, -1, 1, 0),
-        new BlockSpec(4, 0, 1, 1),
-        new BlockSpec(5, -1, 1, 1),
-        new BlockSpec(3, 0, 2, -1),
-        new BlockSpec(3, -1, 2, -1),
-        new BlockSpec(3, 0, 2, 0),
-        new BlockSpec(3, -1, 2, 0),
-        new BlockSpec(3, 0, 2, 1),
-        new BlockSpec(3, -1, 2, 1)));
-
-
-    public static List<Tower> presets = Arrays.asList(tower1, tower2, tower3, tower4, tower5, tower6);
+//    public static List<Tower> presets = Arrays.asList(tower1, tower2, tower3, tower4, tower5, tower6);
+    public static List<Tower> presets = Arrays.asList();
 
 
     public static Tower getTower(int towernum) {

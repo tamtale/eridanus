@@ -21,6 +21,7 @@ import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkUtils;
 import com.week1.game.Renderer.*;
+import com.week1.game.TowerBuilder.TowerPresets;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,11 +80,19 @@ public class GameScreen implements Screen {
 			public void setPlayerId(int playerId) {
 				engine.setEnginePlayerId(playerId);
 			}
-		}, Arrays.asList(
-				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10, 1),
-				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10, 1),
-				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10, 1)
-		)); // TODO: actually pass the towers
+		}, 
+//				Arrays.asList(
+//				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10, 1),
+//				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10, 1),
+//				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10, 1)
+//		)
+//				TowerPresets.presets
+				Arrays.asList(
+						TowerPresets.getTower(1).getLayout(),
+						TowerPresets.getTower(3).getLayout(),
+						TowerPresets.getTower(5).getLayout()
+						)
+	); // TODO: actually pass the towers
 
 
 		engine = new GameEngine(new IEngineToRendererAdapter() {

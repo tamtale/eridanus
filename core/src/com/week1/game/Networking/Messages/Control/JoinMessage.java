@@ -6,6 +6,7 @@ import com.week1.game.Model.TowerDetails;
 import com.week1.game.Networking.Host;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Networking.Player;
+import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.net.DatagramPacket;
 import java.util.List;
@@ -14,9 +15,9 @@ public class JoinMessage extends HostControlMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.JOIN;
     private final static String TAG = "JoinMessage";
     
-    private List<TowerDetails> details;
+    private List<List<BlockSpec>> details;
 
-    public JoinMessage(int playerID, List<TowerDetails> details){
+    public JoinMessage(int playerID, List<List<BlockSpec>> details){
         super(playerID, MESSAGE_TYPE);
         this.details = details;
     }
