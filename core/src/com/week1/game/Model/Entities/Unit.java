@@ -1,5 +1,6 @@
 package com.week1.game.Model.Entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -23,7 +24,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     public boolean isClicked() {
         return clicked;
     }
-
+    public Vector3 curNode;
     public void setClicked(boolean clicked) {
         this.clicked = clicked;
     }
@@ -81,23 +82,15 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
 
     public void step(float delta) {
-//        if (path != null) {
-//            System.out.println(path.get(0));
-//            System.out.println(this.x);
-//            System.out.println(this.y);
-//            if (this.x > path.get(0).x && this.y > path.get(0).y) {
-//                Gdx.app.log("Unit - wab2", "Updating goal");
-//                agent.setGoal(path.get(1));
-//                path.setPath(path.getPath().removeIndex(0));
-//            }
-//        }
         if (path != null) {
             if (path.getPath().size != 1) {
-                if (((int) this.x == (int) path.get(0).x &&
-                    (int) this.y == (int) path.get(0).y)) {
+                if ((int) this.x == (int) path.get(0).x &&
+                        (int) this.y == (int) path.get(0).y) {
+                    Gdx.app.log("wab2 - changing Path", "x: " + this.x + " y: " + this.y +
+                            " curNode x: " + curNode.x + " curNode y: " + curNode.y ) ;
                     turn = 0;
-                    float dx = path.get(1).x - (int) this.x;
-                    float dy = path.get(1).y - (int) this.y;
+                    float dx = (float) path.get(1).x - (int) this.x;
+                    float dy = (float) path.get(1).y  - (int) this.y;
                     double angle = Math.atan(dy/dx);
                     if (dx < 0) {
                         angle += Math.PI;
@@ -107,31 +100,18 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
                     vel.x = (float) speed * (float) Math.cos(angle);
                     vel.y = (float) speed * (float) Math.sin(angle);
+                    curNode = new Vector3(this.x, this.y, 0);
                     path.removeIndex(0);
                 }
                 move(delta);
                 turn ++;
-//                if (turn == 0){
-//                    System.out.println(this.x + " " + this.y);
-//                    System.out.println(path.getPath());
-//                    path.removeIndex(0);
-//                    turn = 4;
-//                } else {
-//                    turn--;
-//                }
 
             }
-            if(path.getPath().size == 0) {
+            if(path.getPath().size == 1) {
                 vel.x = 0;
                 vel.y = 0;
             }
         }
-//        float dx = path.get(0).x - this.x;
-//        float dy = path.get(0).y - this.y;
-//
-//        if (agent != null) {
-//            agent.update(delta);
-//        }
     }
 
     private void move(float delta) {
@@ -186,10 +166,19 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
     public void setPath(OutputPath path) {
         this.path = path;
-        float dx = path.get(0).x - this.x;
-        float dy = path.get(0).y - this.y;
-        vel.x = dx * .333f;
-        vel.y = dy * .333f;
+
+        float dx = path.get(1).x - this.x;
+        float dy = path.get(1).y - this.y;
+        double angle = Math.atan(dy/dx);
+        if (dx < 0) {
+            angle += Math.PI;
+        } else if (dy < 0) {
+            angle += 2 * Math.PI;
+        }
+
+        vel.x = (float) speed * (float) Math.cos(angle);
+        vel.y = (float) speed * (float) Math.sin(angle);
+        curNode = path.get(0);
     }
 }
 

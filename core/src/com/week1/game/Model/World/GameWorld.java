@@ -76,7 +76,7 @@ public class GameWorld {
             for (int j = 0; j < blocks[0].length; j++) {
                 for (int k = 0; k < blocks[0][0].length; k++) {
                     Vector3 coords = new Vector3(i, j, k);
-                    if (i > 0) {
+                    if (i > 0){// && Math.abs(heightMap[i][j] - heightMap[i - 1][j]) <= 1) {
                         graph.setConnection(coords, new Vector3(i - 1, j, k), blocks[i][j][k].getCost());
                     }
                     if(i < blocks.length - 1) {
@@ -90,11 +90,6 @@ public class GameWorld {
                         graph.setConnection(coords, new Vector3(i, j + 1, k), blocks[i][j][k].getCost());
                     }
                     //TODO: climbing jumping into k.
-//                    if (k > 0) {
-//                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i][j][k - 1]);
-//                    }
-//                    if(k < blocks[0].length) {
-//                        graph.setConnection(blocks[i][j][k].getCost(), blocks[i][j][k], blocks[i][j][k + 1]);
                     if (i > 0 && j > 0) {
                         graph.setConnection(coords, new Vector3(i - 1, j - 1, k),
                                 blocks[i][j][k].getCost() * (float) Math.sqrt(2));

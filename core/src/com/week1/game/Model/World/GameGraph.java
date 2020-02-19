@@ -3,7 +3,12 @@ package com.week1.game.Model.World;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.PathFinder;
+import com.badlogic.gdx.ai.pfa.PathSmoother;
+import com.badlogic.gdx.ai.pfa.SmoothableGraphPath;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.ai.utils.Collision;
+import com.badlogic.gdx.ai.utils.Ray;
+import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
@@ -11,6 +16,7 @@ import com.week1.game.Model.OutputPath;
 
 
 public class GameGraph implements IndexedGraph<Vector3> {
+
 
     private int nodeCount;
     private GameHeuristic heuristic = new GameHeuristic();
@@ -31,6 +37,7 @@ public class GameGraph implements IndexedGraph<Vector3> {
                 }
             }
         }
+
         Gdx.app.log("GameGraph - wab2", "Building GameGraph");
     }
 
