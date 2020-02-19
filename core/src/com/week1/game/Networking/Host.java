@@ -106,9 +106,7 @@ public class Host {
                             }
                         }
                         if (didFail) {
-                            Gdx.app.log("pjb3 - Host", "failed. before, the outgoing messages are: " + outgoingMessages);
                             outgoingMessages.add(0, MessageFormatter.packageMessage(new SyncIssueMessage(-1, SYNCERR, firstHash)));
-                            Gdx.app.log("pjb3 - Host", "failed. after, the outgoing messages are: " + outgoingMessages);
                         }
                     }
                 }

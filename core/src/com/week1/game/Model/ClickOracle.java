@@ -147,6 +147,7 @@ public class ClickOracle extends InputAdapter {
                     Gdx.app.log("ttl4 - ClickOracle", "nothing selected!");
                     System.out.println("aaaaa");
                     if (spawnType == SpawnInfo.SpawnType.UNIT) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn unit");
                         networkAdapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, networkAdapter.getPlayerId(), currentGameState));
                     } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
                         Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");

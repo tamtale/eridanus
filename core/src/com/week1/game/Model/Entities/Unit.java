@@ -17,7 +17,6 @@ import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
 import static java.lang.Math.abs;
-import static java.lang.Math.random;
 
 public class Unit extends Rectangle implements Damageable, Damaging {
     private final int playerID;
@@ -61,8 +60,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         this.unselectedSkin = colorMap.get(playerID);
         this.playerID = playerID;
         this.hp = hp;
-        double removeMe = random();
-        this.maxHp = hp + removeMe;
+        this.maxHp = hp;
         this.displayX = x;
         this.displayY = y;
         this.vel = new Vector3(0, 0, 0);
@@ -101,8 +99,8 @@ public class Unit extends Rectangle implements Damageable, Damaging {
                 if ((abs((int) this.x - (int) path.get(0).x) <= 1 &&
                         abs((int) this.y - (int) path.get(0).y) <= 1)) {
                     turn = 0;
-                    float dx = path.get(1).x - (int) this.x;
-                    float dy = path.get(1).y - (int) this.y;
+                    float dx = path.get(1).x - this.x;
+                    float dy = path.get(1).y - this.y;
                     double angle = Math.atan(dy/dx);
                     if (dx < 0) {
                         angle += Math.PI;
@@ -229,6 +227,8 @@ public class Unit extends Rectangle implements Damageable, Damaging {
                 ", vel=" + vel +
                 ", maxHp=" + maxHp +
                 ", ID=" + ID +
+                ", x=" + x +
+                ", y=" + y +
                 '}';
     }
 }

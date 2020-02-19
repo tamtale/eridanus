@@ -514,7 +514,7 @@ public class GameState {
     }
 
     public PackagedGameState packState() {
-        return new PackagedGameState(units, towers, playerBases);
+        return new PackagedGameState(units, towers, playerBases, playerStats);
     }
 
 
@@ -528,7 +528,7 @@ public class GameState {
         int encodedhash;
         private String gameString;
 
-        public PackagedGameState (Array<Unit> units, Array<Tower> towers, Array<PlayerBase> bases) {
+        public PackagedGameState (Array<Unit> units, Array<Tower> towers, Array<PlayerBase> bases, Array<PlayerStat> stats) {
             gameString = "";
             Unit u;
             for (int i = 0; i < units.size; i++) {
@@ -549,6 +549,14 @@ public class GameState {
                 pb = bases.get(i);
                 gameString += pb.toString() + "\n";
             }
+            gameString += "\n";
+
+            PlayerStat s;
+            for (int i = 0; i < stats.size; i++) {
+                s = stats.get(i);
+                gameString += s.toString();
+            }
+
 
             encodedhash = gameString.hashCode();
         }
