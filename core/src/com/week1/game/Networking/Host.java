@@ -2,6 +2,7 @@ package com.week1.game.Networking;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.Networking.Messages.Control.PlayerIdMessage;
+import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.Game.InitMessage;
 import com.week1.game.Networking.Messages.Game.SyncIssueMessage;
@@ -85,31 +86,32 @@ public class Host {
                 }
 
                 // Verify game state on any messages sent this game turn
-                if (outgoingMessages.size() > 0) {
-                    GameMessage firstMsg = MessageFormatter.parseMessage(outgoingMessages.get(0));
-                    // Make sure that this is a valid GameMessage
-                    if (firstMsg != null) {
-                        int firstHash = firstMsg.getHashCode();
-                        boolean didFail = false;
-                        for (int i = 1; i < outgoingMessages.size(); i++) {
-                            GameMessage parsedMsg = MessageFormatter.parseMessage(outgoingMessages.get(i));
-                            if (parsedMsg == null) {
-                                continue; // this wasn't a valid GameMessage, ignore it and don't compare hashes.
-                            }
-
-                            if (firstHash != MessageFormatter.parseMessage(outgoingMessages.get(i)).getHashCode()) {
+                int prevHash = 0; // This will be the hash that everything is compared to
+                boolean didFail = false;
+                for (int i = 0; i < outgoingMessages.size(); i++) {
+                    GameMessage msg = MessageFormatter.parseMessage(outgoingMessages.get(i));
+                    if (msg != null && msg instanceof CheckSyncMessage) {
+                        int hash = msg.getHashCode();
+                        if (prevHash == 0) {
+                            // if it has not been set, set the standard to this one.
+                            prevHash = hash;
+                            continue;
+                        } else {
+                            if (prevHash != hash) {
                                 Gdx.app.log("pjb3 - Host", "ERROR: The hashes do not match for two messages!!!!! Yikes.");
                                 // Create a SyncIssue message to send to all clients so they can know there is an issue
                                 didFail = true;
-                            } else {
-                                Gdx.app.log("pjb3 - Host", "CONFIRM SUCCESS. The hashes do match for two messages.");
                             }
                         }
-                        if (didFail) {
-                            outgoingMessages.add(0, MessageFormatter.packageMessage(new SyncIssueMessage(-1, SYNCERR, firstHash)));
-                        }
+
                     }
                 }
+                if (didFail) {
+                    outgoingMessages.add(0, MessageFormatter.packageMessage(new SyncIssueMessage(-1, SYNCERR, prevHash)));
+                } else {
+                    Gdx.app.log("pjb3 - Host", "Nice. The hashes match up.");
+                }
+
 
                 Gdx.app.debug(TAG, "Host is about to broadcast update message to registered clients.");
                 broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(outgoingMessages)));

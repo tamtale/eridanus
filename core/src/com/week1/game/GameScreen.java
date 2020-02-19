@@ -104,6 +104,11 @@ public class GameScreen implements Screen {
 			public void gameOver() {
 				renderer.showGameOver();
 			}
+		}, new IEngineToNetworkAdapter() {
+			@Override
+			public void sendMessage(AMessage msg) {
+				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
+			}
 		}, util);
 
 		renderer = new Renderer(new IRendererToEngineAdapter() {

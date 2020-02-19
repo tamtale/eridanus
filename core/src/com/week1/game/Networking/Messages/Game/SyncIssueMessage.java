@@ -7,8 +7,8 @@ import com.week1.game.Networking.Messages.MessageType;
 
 public class SyncIssueMessage extends GameMessage {
 
-    public SyncIssueMessage(int playerID, MessageType messageTypeID, int byteHash) {
-        super(playerID, messageTypeID, byteHash);
+    public SyncIssueMessage(int playerID, MessageType messageTypeID, int intHash) {
+        super(playerID, messageTypeID, intHash);
     }
 
     @Override

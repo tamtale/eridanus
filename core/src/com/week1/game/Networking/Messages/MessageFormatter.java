@@ -50,6 +50,8 @@ public class MessageFormatter {
             parsedMsg = g.fromJson(msg, InitMessage.class);
         } else if (prototypeMessage.messageTypeID == MessageType.SYNCERR){
             parsedMsg = g.fromJson(msg, SyncIssueMessage.class);
+        } else if (prototypeMessage.messageTypeID == MessageType.CHECKSYNC){
+            parsedMsg = g.fromJson(msg, CheckSyncMessage.class);
         }
         return parsedMsg;
     }

@@ -7,6 +7,7 @@ public enum MessageType {
     MOVE,
     CREATETOWER,
     INIT,
+    CHECKSYNC,
     SYNCERR,
     
     // Control Messages

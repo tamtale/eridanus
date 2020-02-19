@@ -17,8 +17,8 @@ public class CreateTowerMessage extends GameMessage {
     private TowerType towerType;
 
 
-    public CreateTowerMessage(float x, float y, TowerType towerType, int playerID, int bytehash) {
-        super(playerID, MESSAGE_TYPE, bytehash);
+    public CreateTowerMessage(float x, float y, TowerType towerType, int playerID, int intHash) {
+        super(playerID, MESSAGE_TYPE, intHash);
         this.x = x;
         this.y = y;
         this.towerType = towerType;

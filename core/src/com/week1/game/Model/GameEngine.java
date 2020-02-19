@@ -6,10 +6,12 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.PlayerBase;
 import com.week1.game.Model.World.Basic4WorldBuilder;
+import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.InfoUtil;
+import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Renderer.RenderConfig;
 
 import java.util.List;
@@ -24,6 +26,7 @@ public class GameEngine {
     private int communicationTurn = 0;
     private SpriteBatch batch;
     private IEngineToRendererAdapter engineToRenderer;
+    private IEngineToNetworkAdapter engineToNetwork;
     private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
     private InfoUtil util;
     private boolean sentWinLoss = false, sentGameOver = false;
@@ -32,7 +35,7 @@ public class GameEngine {
         return batch;
     }
 
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, InfoUtil util) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter,IEngineToNetworkAdapter engineToNetworkAdapter, InfoUtil util) {
         messageQueue = new ConcurrentLinkedQueue<>();
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
         gameState = new GameState(
@@ -51,16 +54,18 @@ public class GameEngine {
         Gdx.app.log("wab2- GameEngine", "gameState built");
         batch = new SpriteBatch();
         engineToRenderer = engineToRendererAdapter;
+        engineToNetwork =engineToNetworkAdapter;
         this.util = util;
     }
 
     public void receiveMessages(List<? extends GameMessage> messages) {
         communicationTurn += 1;
-
-        // TODO unit movement should be 'reverted' and then stepped here in the long term so state is consistent.
         synchronousUpdateState();
-
-        Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn + " hash is: " + getGameStateHash() + " and string version is " + getGameStateString());
+        if (communicationTurn % 10 == 0) {
+            // Time to sync up!
+            engineToNetwork.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash()));
+        }
+        Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn + " hash is: " + getGameStateHash());
 
         messageQueue.addAll(messages);
     }
