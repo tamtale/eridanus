@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
+import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
@@ -115,7 +116,7 @@ public class GameScreen implements Screen {
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
 			public void render(RenderConfig renderConfig) {
-				engine.render(renderConfig, renderer.getModelBatch(), renderer.getCam());
+				engine.render(renderConfig, renderer.getModelBatch(), renderer.getCam(), renderer.getEnv());
 			}
 
 			public double getPlayerMana(int playerId) {
@@ -158,11 +159,6 @@ public class GameScreen implements Screen {
 					@Override
 					public void unproject(Vector3 projected) {
 						renderer.getCamera().unproject(projected);
-					}
-
-					@Override
-					public void zoom(int amount) {
-						renderer.zoom(amount);
 					}
 
 					@Override
@@ -228,9 +224,9 @@ public class GameScreen implements Screen {
 
 		if (!pressedStartbtn) {
 			InputMultiplexer multiplexer = new InputMultiplexer();
-			multiplexer.addProcessor(renderer.getButtonStage());
+			multiplexer.addProcessor(new CameraInputController(renderer.getCamera()));
+			// multiplexer.addProcessor(renderer.getButtonStage());
 			multiplexer.addProcessor(clickOracle);
-			multiplexer.addProcessor(new FirstPersonCameraController(renderer.getCamera()));
 			Gdx.input.setInputProcessor(multiplexer);
 
 			connectionStage.dispose();

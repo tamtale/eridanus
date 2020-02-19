@@ -21,7 +21,7 @@ public class GameWorld implements RenderableProvider {
     private int[][] heightMap;
     private boolean refreshHeight = true; // whether or not the map has changed, warranting a new height map.
     private GameGraph graph;
-    private ModelInstance instance;
+    private Array<ModelInstance> instances = new Array<>();
     private Model model;
     private ModelBuilder modelBuilder = new ModelBuilder();
     AssetManager assets;
@@ -45,7 +45,14 @@ public class GameWorld implements RenderableProvider {
         model = modelBuilder.createBox(5f, 5f, 5f,
                 new Material(ColorAttribute.createDiffuse(Color.GREEN)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
-        instance = new ModelInstance(model);
+        // Build the modelinstances!
+        for (int i = 0; i < blocks.length; i++) {
+            for (int j = 0; j < blocks[0].length; j++) {
+                for (int k = 0; k < blocks[0][0].length; k++) {
+                    blocks[i][j][k].modelInstance(i, j, k).ifPresent(modelInstance -> instances.add(modelInstance));
+                }
+            }
+        }
     }
 
 
@@ -126,6 +133,6 @@ public class GameWorld implements RenderableProvider {
 
     @Override
     public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
-        instance.getRenderables(renderables, pool);
+        instances.forEach(instance -> instance.getRenderables(renderables, pool));
     }
 }

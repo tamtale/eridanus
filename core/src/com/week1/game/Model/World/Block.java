@@ -4,9 +4,17 @@ import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+
+import java.util.Optional;
 
 public interface Block {
 
@@ -19,15 +27,25 @@ public interface Block {
     Vector3 getCoords();
     void setCoords(Vector3 coords);
     void setIndex(int nodeCount);
+    Optional<ModelInstance> modelInstance(float x, float y, float z);
 
-    class TerrainBlock implements Block {
+    abstract class TerrainBlock implements Block {
         private Vector3 coords;
         private TextureRegion textureRegion;
         private int index;
+        private Color color;
+        Model model;
+
+        private static ModelBuilder BUILDER = new ModelBuilder();
         public static TerrainBlock AIR = new TerrainBlock(Color.GOLD) {
             @Override
             public float getCost(){
                 return 0;
+            }
+
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                return Optional.empty();
             }
 
         };
@@ -36,17 +54,35 @@ public interface Block {
             public float getCost(){
                 return 1;
             }
+
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                ModelInstance instance = new ModelInstance(model);
+                instance.transform.translate(x, y, z);
+                return Optional.of(instance);
+            }
         };
         public static TerrainBlock DIRT = new TerrainBlock(Color.BROWN) {
             @Override
             public float getCost(){
                 return 1.5f;
             }
+
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                ModelInstance instance = new ModelInstance(model);
+                instance.transform.setToTranslation(x, y, z);
+                return Optional.of(instance);
+            }
         };
 
         private Array<Connection<Block>> edges;
         TerrainBlock(Color color) {
             this.edges = new Array<>();
+            this.model = BUILDER.createBox(1f, 1f, 1f,
+                    new Material(ColorAttribute.createDiffuse(color)),
+                    VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+
         }
 
 
@@ -135,6 +171,12 @@ public interface Block {
         @Override
         public void setIndex(int nodeCount) {
             this.index = nodeCount;
+        }
+
+        @Override
+        public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+            // TODO this
+            return Optional.empty();
         }
     }
 }

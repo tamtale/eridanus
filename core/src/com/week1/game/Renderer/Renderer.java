@@ -67,6 +67,8 @@ public class Renderer {
         return modelBatch;
     }
 
+    public Environment getEnv() { return env; }
+
     public PerspectiveCamera getCam() {
         return cam;
     }
@@ -77,8 +79,8 @@ public class Renderer {
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         env.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(10f, 10f, 10f);
-        cam.lookAt(0,0,0);
+        cam.position.set(5, 0, 15);
+        cam.lookAt(5,10,0);
         cam.near = 1f;
         cam.far = 300f;
         cam.update();
@@ -90,12 +92,6 @@ public class Renderer {
         modelBatch.begin(cam);
         modelBatch.render(provider, env);
         modelBatch.end();
-    }
-
-    public void zoom(int amount) {
-        // camera. += amount * .05;
-        // TODO zoom this bitch
-        cam.update();
     }
 
     public Camera getCamera() {
@@ -112,6 +108,8 @@ public class Renderer {
 
     public void resize(int x, int y) {
         // TODO this
+        cam.viewportWidth = x;
+        cam.viewportHeight = y;
         cam.update();
         gameButtonsStage.stage.getViewport().update(x, y);
     }
@@ -152,8 +150,9 @@ public class Renderer {
     }
 
     public void render(float deltaTime) {
-        Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        // Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         updateCamera();
         renderConfig = new RenderConfig(getShowAttackRadius(), getShowSpawnRadius(), deltaTime);
         engineAdapter.render(renderConfig);

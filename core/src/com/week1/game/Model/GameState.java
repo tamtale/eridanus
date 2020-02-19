@@ -469,7 +469,7 @@ public class GameState implements RenderableProvider {
 
     @Override
     public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
-        Renderable renderable = pool.obtain();
-
+        world.getRenderables(renderables, pool);
+        Gdx.app.log("Renderables length: ", "" + renderables.size);
     }
 }
