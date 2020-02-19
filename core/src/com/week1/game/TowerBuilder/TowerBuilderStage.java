@@ -1,11 +1,14 @@
 package com.week1.game.TowerBuilder;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
 
@@ -48,6 +51,8 @@ public class TowerBuilderStage {
     }
 
     private void configureWidgets() {
+        stage.addActor(new Image(new TextureRegionDrawable(new Texture("fuzzy_galaxy.png"))));
+
         //Stats widget things
         sw.setSize(200,150);
         sw.setPosition(GameController.VIRTUAL_WIDTH - 250, GameController.VIRTUAL_HEIGHT - 200);
@@ -65,6 +70,9 @@ public class TowerBuilderStage {
         startGame.setSize(128, 48);
         startGame.setPosition(64, GameController.VIRTUAL_HEIGHT - 200);
         stage.addActor(startGame);
+
+
+
 
     }
 

@@ -16,6 +16,7 @@ public class TowerBuilderScreen implements Screen {
         towerStage = new TowerBuilderStage(this);
         towerCam = new TowerBuilderCamera(towerStage);
         towerStage.setTowerBuilder(towerCam);
+
     }
 
     @Override
@@ -26,8 +27,8 @@ public class TowerBuilderScreen implements Screen {
     @Override
     public void render(float delta) {
         //Delegate render to the camera (3d cam) and the stage (buttons and widgets)
-        towerCam.render();
         towerStage.render();
+        towerCam.render();
 
     }
 

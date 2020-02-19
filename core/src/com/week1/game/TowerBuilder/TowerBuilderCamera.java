@@ -105,9 +105,9 @@ public class TowerBuilderCamera {
         modelBatch.begin(cam);
 
         //Render the space background
-        if (space != null) {
-            modelBatch.render(space);
-        }
+//        if (space != null) {
+//            modelBatch.render(space);
+//        }
 
         modelBatch.render(currTower.getModel(), environment);
         modelBatch.end();
