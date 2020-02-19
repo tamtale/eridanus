@@ -15,10 +15,10 @@ public class GameWorld {
     private int[][] heightMap;
     private boolean refreshHeight = true; // whether or not the map has changed, warranting a new height map.
     private GameGraph graph;
-    public GameWorld() {
+    public GameWorld(IWorldBuilder worldBuilder) {
         // For now, we'll make a preset 100x100x10 world.
-        blocks = makeEmptyWorld();
-        this.graph = new GameGraph();
+        blocks = worldBuilder.terrain();
+        this.graph = new GameGraph(blocks);
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 graph.addVector3(new Vector3(i, j, 0));
@@ -33,18 +33,6 @@ public class GameWorld {
         Gdx.app.log("Game World - wab2", "Block array built");
     }
 
-    private static Block[][][] makeEmptyWorld() {
-        Block[][][] blocks = new Block[100][100][3];
-        for (int i = 0; i < blocks.length; i++) {
-            for (int j = 0; j < blocks[0].length; j++) {
-                blocks[i][j][0] = Block.TerrainBlock.STONE;
-                for (int k = 1; k < blocks[0][0].length; k++) {
-                    blocks[i][j][k] = Block.TerrainBlock.AIR;
-                }
-            }
-        }
-        return blocks;
-    }
 
     public Block getBlock(int i, int j, int k) {
         return blocks[i][j][k];
@@ -58,10 +46,11 @@ public class GameWorld {
         TiledMap map = new TiledMap();
         MapLayers layers = map.getLayers();
         TiledMapTileLayer layer = new TiledMapTileLayer(blocks.length, blocks[0].length, PIXELS_PER_UNIT, PIXELS_PER_UNIT);
+        int[][] heightMap = getHeightMap();
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                cell.setTile(new StaticTiledMapTile(blocks[i][j][0].getTextureRegion()));
+                cell.setTile(new StaticTiledMapTile(blocks[i][j][heightMap[i][j]].getTextureRegion()));
                 layer.setCell(i, j, cell);
             }
         }
