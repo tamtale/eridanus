@@ -53,6 +53,7 @@ public class GameState {
         Gdx.app.log("Game State - wab2", "units set");
         world = new GameWorld(worldBuilder);
         Gdx.app.log("Game State - wab2", "world built");
+        world.getHeightMap();
         graph = world.buildGraph();
         graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
 //        graph.search(new Vector3(0, 0, 0), new Vector3(1, 1, 0));

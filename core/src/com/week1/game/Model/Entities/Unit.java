@@ -96,18 +96,19 @@ public class Unit extends Rectangle implements Damageable, Damaging {
                 if ((abs((int) this.x - (int) path.get(0).x) <= 1 &&
                         abs((int) this.y - (int) path.get(0).y) <= 1)) {
                     turn = 0;
-                    float dx = path.get(1).x - (int) this.x;
-                    float dy = path.get(1).y - (int) this.y;
+                    turn = 0;
+                    float dx = path.get(1).x - this.x;
+                    float dy = path.get(1).y - this.y;
                     double angle = Math.atan(dy/dx);
                     if (dx < 0) {
                         angle += Math.PI;
                     } else if (dy < 0) {
                         angle += 2 * Math.PI;
                     }
-
                     vel.x = (float) speed * (float) Math.cos(angle);
                     vel.y = (float) speed * (float) Math.sin(angle);
                     path.removeIndex(0);
+
                 }
                 move(delta);
                 turn ++;
@@ -115,6 +116,8 @@ public class Unit extends Rectangle implements Damageable, Damaging {
             }
             if (path.getPath().size <= 1) {
 //                Gdx.app.log("Unit - pjb3", "Killing VELOCITY");
+//                path.removeIndex(0);
+                path = null;
                 vel.x = 0;
                 vel.y = 0;
             } else {
