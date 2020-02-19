@@ -1,6 +1,5 @@
 package com.week1.game.Model.Entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,6 +16,7 @@ import java.util.Map;
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
+import static java.lang.Math.abs;
 
 public class Unit extends Rectangle implements Damageable, Damaging {
     private final int playerID;
@@ -31,13 +31,15 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     private int turn = 0;
     private double hp;
     private Vector3 vel;
+    private float displayX, displayY;
     private double maxHp;
     public boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
     public static double speed = 5;
     public  static int SIZE = 1;
-    
+
+    private Texture unselectedSkin;
     private static Texture selectedSkin = makeTexture(SIZE, SIZE, Color.YELLOW);
     private static Texture rangeCircle;
 
@@ -48,26 +50,6 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         circlePixmap.drawCircle(50, 50, 50);
         rangeCircle = new Texture(circlePixmap);
     }
-
-    public Unit(float x, float y, Texture t, double hp, int playerID) {
-        super(x, y, 1, 1); // TODO make the x and y the center points of it for getX() and getY() which is used in range calculations
-        this.unselectedSkin = colorMap.get(playerID);
-        this.playerID = playerID;
-        this.hp = hp;
-        this.maxHp = hp;
-        this.vel = new Vector3(0, 0, 0);
-    }
-
-    public void draw(Batch batch, boolean showAttackRadius) {
-        if (showAttackRadius) {
-            batch.draw(rangeCircle, this.x - ((float)tempMinionRange), this.y - ((float)tempMinionRange), (float)tempMinionRange * 2, (float)tempMinionRange * 2);
-        }
-        batch.draw(getSkin(), this.x - (SIZE / 2f), this.y - (SIZE / 2f), SIZE, SIZE);
-        // TODO draw this in a UI rendering procedure
-        drawHealthBar(batch, this.x, this.y, 0, SIZE, this.hp, this.maxHp);
-    }
-
-
     private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {
         {
             put(0, makeTexture(SIZE, SIZE, Color.BLUE));
@@ -78,8 +60,35 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         }
     };
 
-    private Texture unselectedSkin;
 
+
+    public Unit(float x, float y, Texture t, double hp, int playerID) {
+        super(x, y, 1, 1); // TODO make the x and y the center points of it for getX() and getY() which is used in range calculations
+        this.unselectedSkin = colorMap.get(playerID);
+        this.playerID = playerID;
+        this.hp = hp;
+        this.maxHp = hp;
+        this.displayX = x;
+        this.displayY = y;
+        this.vel = new Vector3(0, 0, 0);
+    }
+
+    public void draw(Batch batch, float delta, boolean showAttackRadius) {
+        if (delta == 0) {
+            // Sync the state of units by not projecting anything
+            displayX = x;
+            displayY = y;
+        } else {
+            moveRender(delta);
+        }
+
+        if (showAttackRadius) {
+            batch.draw(rangeCircle, displayX - ((float)tempMinionRange), displayY - ((float)tempMinionRange), (float)tempMinionRange * 2, (float)tempMinionRange * 2);
+        }
+        batch.draw(getSkin(), displayX - (SIZE / 2f), displayY - (SIZE / 2f), SIZE, SIZE);
+        // TODO draw this in a UI rendering procedure
+        drawHealthBar(batch, displayX, displayY, 0, SIZE, this.hp, this.maxHp);
+    }
 
     public void step(float delta) {
 //        if (path != null) {
@@ -94,8 +103,8 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 //        }
         if (path != null) {
             if (path.getPath().size != 1) {
-                if (((int) this.x == (int) path.get(0).x &&
-                    (int) this.y == (int) path.get(0).y)) {
+                if ((abs((int) this.x - (int) path.get(0).x) <= 1 &&
+                        abs((int) this.y - (int) path.get(0).y) <= 1)) {
                     turn = 0;
                     float dx = path.get(1).x - (int) this.x;
                     float dy = path.get(1).y - (int) this.y;
@@ -122,11 +131,18 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 //                }
 
             }
-            if(path.getPath().size == 0) {
+            if (path.getPath().size <= 1) {
+//                Gdx.app.log("Unit - pjb3", "Killing VELOCITY");
                 vel.x = 0;
                 vel.y = 0;
+            } else {
+//                Gdx.app.log("Unit - pjb3", "Not Killing VELOCITY. Path len is " + path.getPath().size + " and the 0th is " + path.get(0));
             }
         }
+//        Gdx.app.log("Unit - pjb3", "Checking velocity (" + vel.x + " " + vel.y + ")" + " goal (?,?) and pos (" + x + "," + y + ")");
+        this.displayX = this.x; // Sync the unit's display to the next 'real' location
+        this.displayY = this.y;
+
 //        float dx = path.get(0).x - this.x;
 //        float dy = path.get(0).y - this.y;
 //
@@ -137,6 +153,11 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
     private void move(float delta) {
         this.setPosition(this.x + (vel.x * delta), this.y + (vel.y * delta));
+    }
+
+    private void moveRender(float delta) {
+        this.displayX = this.displayX + (vel.x * delta);
+        this.displayY = this.displayY + (vel.y * delta);
     }
 
     public SteeringAgent getAgent(){ return agent;}
@@ -212,6 +233,13 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
         vel.x = (float) speed * (float) Math.cos(angle);
         vel.y = (float) speed * (float) Math.sin(angle);
+    }
+
+    public float getDisplayX() {
+        return displayX;
+    }
+    public float getDisplayY() {
+        return displayY;
     }
 }
 

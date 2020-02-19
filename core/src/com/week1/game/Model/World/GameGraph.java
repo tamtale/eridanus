@@ -4,10 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
-import com.badlogic.gdx.math.Path;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.OutputPath;
 
@@ -19,11 +17,12 @@ public class GameGraph implements IndexedGraph<Vector3> {
     private PathFinder<Vector3> pathFinder;
     Array<Vector3> Vector3s = new Array<>();
     Array<Border> borders = new Array<>();
-    Array<Connection<Vector3>>[][][] edges = new Array[100][100][3];
+    private Array<Connection<Vector3>>[][][] edges;
 
     //TODO: make general
-    public GameGraph(){
+    public GameGraph(Block[][][] blocks){
         super();
+        edges = new Array[blocks.length][blocks[0].length][blocks[0][0].length];
         this.pathFinder = new WarrenIndexedAStarPathFinder<>(this);
         this.nodeCount = 0;
         for (int i = 0; i < edges.length; i++) {

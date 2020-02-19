@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.PlayerBase;
+import com.week1.game.Model.World.Basic4WorldBuilder;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 
 import com.badlogic.gdx.math.Vector3;
@@ -13,6 +14,8 @@ import com.week1.game.Renderer.RenderConfig;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import static com.week1.game.GameScreen.THRESHOLD;
 
 public class GameEngine {
 
@@ -23,6 +26,7 @@ public class GameEngine {
     private IEngineToRendererAdapter engineToRenderer;
     private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
     private InfoUtil util;
+    private boolean sentWinLoss = false, sentGameOver = false;
 
     public Batch getBatch() {
         return batch;
@@ -31,17 +35,19 @@ public class GameEngine {
     public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, InfoUtil util) {
         messageQueue = new ConcurrentLinkedQueue<>();
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
-        gameState = new GameState(() -> {
-            Vector3 position = new Vector3();
-            PlayerBase myBase = null;
-            for (PlayerBase playerBase: gameState.getPlayerBases()) {
-                if (playerBase.getPlayerId() == enginePlayerId) {
-                    myBase = playerBase;
-                }
-            }
-            position.set(myBase.getX(), myBase.getY(), 0);
-            engineToRenderer.setDefaultLocation(position);
-        });
+        gameState = new GameState(
+                Basic4WorldBuilder.ONLY,
+                () -> {
+                    Vector3 position = new Vector3();
+                    PlayerBase myBase = null;
+                    for (PlayerBase playerBase: gameState.getPlayerBases()) {
+                        if (playerBase.getPlayerId() == enginePlayerId) {
+                            myBase = playerBase;
+                        }
+                    }
+                    position.set(myBase.getX(), myBase.getY(), 0);
+                    engineToRenderer.setDefaultLocation(position);
+                });
         Gdx.app.log("wab2- GameEngine", "gameState built");
         batch = new SpriteBatch();
         engineToRenderer = engineToRendererAdapter;
@@ -62,10 +68,20 @@ public class GameEngine {
     public void synchronousUpdateState() {
         gameState.updateMana(1);
         gameState.dealDamage(1);
-        if (!gameState.isPlayerAlive(enginePlayerId)) {
-            engineToRenderer.endGame(0); // TODO make an enum probably im tired
-        } else if (gameState.checkIfWon(enginePlayerId)) {
-            engineToRenderer.endGame(1); // TODO same as above
+        gameState.moveUnits(THRESHOLD);
+
+        // Check the win/loss/restart conditions
+        if (!sentWinLoss) {
+            if (!gameState.isPlayerAlive(enginePlayerId)) {
+                engineToRenderer.endGame(0); // TODO make an enum probably im tired
+                sentWinLoss = true;
+            } else if (gameState.checkIfWon(enginePlayerId)) {
+                engineToRenderer.endGame(1); // TODO same as above
+                sentWinLoss = true;
+            }
+        }
+        if (!sentGameOver && gameState.getGameOver()) {
+            engineToRenderer.gameOver();
         }
     }
 
@@ -81,10 +97,6 @@ public class GameEngine {
             message.process(gameState, util);
             Gdx.app.log("GameEngine: processMessages()", "done processing message");
         }
-    }
-
-    public void updateState(float delta) {
-        gameState.stepUnits(delta);
     }
 
     public void render(RenderConfig renderConfig){

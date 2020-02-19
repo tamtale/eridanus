@@ -12,12 +12,10 @@ import com.badlogic.gdx.ai.pfa.Heuristic;
 import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.ai.pfa.PathFinderRequest;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.BinaryHeap;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.BinaryHeap.Node;
-import com.week1.game.Model.OutputPath;
 
 public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
     IndexedGraph<N> graph;

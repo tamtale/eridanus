@@ -9,8 +9,6 @@ import com.week1.game.Model.Damage;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.week1.game.Model.Entities.HealthBar.getHealthBar;
-import static com.week1.game.Model.Entities.HealthBar.healthBarBackground;
 import static com.week1.game.Model.StatsConfig.placementRange;
 
 public class Tower extends Building implements Damaging {
