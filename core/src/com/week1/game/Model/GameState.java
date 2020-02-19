@@ -1,24 +1,23 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
-
-import com.badlogic.gdx.graphics.g2d.Batch;
-
 import com.badlogic.gdx.ai.pfa.PathFinder;
-
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
-import com.week1.game.Model.Entities.*;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
+import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
+import com.week1.game.Model.World.IWorldBuilder;
 import com.week1.game.Pair;
+import com.week1.game.Renderer.RenderConfig;
 
-
+import static com.week1.game.Model.Entities.TowerType.BASIC;
+import static com.week1.game.Model.Entities.TowerType.SNIPER;
 import static com.week1.game.Model.StatsConfig.*;
-import static com.week1.game.Model.Entities.TowerType.*;
 
 
 public class GameState {
@@ -31,6 +30,7 @@ public class GameState {
     private Array<PlayerBase> playerBases;
     private Array<PlayerStat> playerStats;
     private Array<SteeringAgent> agents;
+    private IWorldBuilder worldBuilder;
     private GameWorld world;
     
     private TowerInfo towerInfo; 
@@ -38,22 +38,26 @@ public class GameState {
      * Runnable to execute immediately after the game state has been initialized.
      */
     private Runnable postInit;
-    
     private boolean fullyInitialized = false;
 
-    public GameState(Runnable postInit){
+    public GameState(IWorldBuilder worldBuilder, Runnable postInit){
         // TODO board
         // TODO player data
         // TODO towers
         // TODO tower types in memory after exchange
+        this.worldBuilder = worldBuilder;
         towers = new Array<>();
         units = new Array<>();
         Gdx.app.log("Game State - wab2", "units set");
-        world = new GameWorld();
+        world = new GameWorld(worldBuilder);
         Gdx.app.log("Game State - wab2", "world built");
         graph = world.buildGraph();
-        pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
+        graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
+//        graph.search(new Vector3(0, 0, 0), new Vector3(1, 1, 0));
+//        pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
         OutputPath path = new OutputPath();
+
+        //graph.getPathFinder().searchNodePath(new Vector3(0, 0, 0), new Vector3(1, 1, 0), new GameHeuristic(), path);
         playerBases = new Array<>();
         playerStats = new Array<>();
         agents = new Array<>();
@@ -69,32 +73,53 @@ public class GameState {
     public void initializeGame(int numPlayers) {
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
-        if (numPlayers == 1) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
-        } else if (numPlayers == 2) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
-        } else if (numPlayers == 3) {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 85, 1));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
-        } else {
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
-            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 15, 3));
-        }
+//        if (numPlayers == 1) {
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
+//            removePlayerBase(50, 50);
+//        } else if (numPlayers == 2) {
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+//            removePlayerBase(15, 15);
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
+//            removePlayerBase(85, 85);
+//        } else if (numPlayers == 3) {
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+//            removePlayerBase(15, 15);
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 50, 1));
+//            removePlayerBase(50, 85);
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
+//            removePlayerBase(15, 85);
+//        } else {
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
+//            removePlayerBase(15, 15);
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
+//            removePlayerBase(85, 85);
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
+//            removePlayerBase(15, 85);
+//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 15, 3));
+//            removePlayerBase(85, 15);
+//        }
 
 
         // Create the correct amount of actual players
+        Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
             playerStats.add(new PlayerStat());
+
+            playerBases.add(new PlayerBase(playerBaseInitialHp, (int) startLocs[i].x, (int) startLocs[i].y, i));
+            removePlayerBase((int) startLocs[i].x, (int) startLocs[i].y);
         }
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
         fullyInitialized = true;
         postInit.run();
     }
 
+    public void removePlayerBase(int startX, int startY){
+        for(int i = startX - 4; i <= startX + 3; i++){
+            for (int j = startY - 4; j <= startY + 4; j++){
+                graph.removeAllConnections(new Vector3(i, j, 0));
+            }
+        }
+    }
     public PlayerStat getPlayerStats(int playerNum) {
         if (isInitialized()) {
             return playerStats.get(playerNum);
@@ -144,6 +169,8 @@ public class GameState {
     }
 
     public void addUnit(Unit u){
+
+        
         SteeringAgent agent = new SteeringAgent(u);
         u.agent = agent;
         u.ID = minionCount;
@@ -153,31 +180,82 @@ public class GameState {
         minionCount += 1;
     }
 
-    public void addTower(Tower t) {
+    public void addTower(Tower t, int playerID) {
         towers.add(t);
+        int startX = (int) t.x - 4;
+        int startY = (int) t.y - 4;
+        TowerFootprint footprint = towerInfo.getTowerDetails(playerID, t.getTowerType()).getFootprint();
+        boolean[][] fp = footprint.getFp();
+        int i = 0;
+        for(boolean[] bool: fp){
+            int j = 0;
+            for(boolean boo: bool){
+                if(boo){
+                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0));
+                }
+                j++;
+            }
+            i++;
+        }
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
 //        Vector2 vec2 = new Vector2(goal.x, goal.y);
         SteeringAgent agent = unit.getAgent();
 //        System.out.println(agent);
+        Vector3 unitPos = new Vector3((int) unit.x, (int) unit.y, 0); //TODO: make acutal z;
+
+        OutputPath path = new OutputPath();
+        Array<Building> buildings = this.getBuildings();
+
+        for(Building building: buildings) {
+            if(building.overlap(goal.x, goal.y)) {
+                goal = building.closestPoint(unit.x, unit.y);
+                break;
+            }
+        }
+        Vector3 goalPos = new Vector3((int) goal.x, (int) goal.y, (int) goal.z);
+//        System.out.println("unitPos" + unitPos);
+//        System.out.println("goalPos" + goalPos);
+//        System.out.println("UnitPosIndex " + graph.getIndex(unitPos));
+        path = graph.search(unitPos, goalPos);
+        if (path != null) {
+            unit.setPath(path);
+        }else{
+            Gdx.app.error("wab2 - ASTAR", "Astar broke");
+        }
         agent.setGoal(goal);
     }
     public void addAgent(SteeringAgent a){
         agents.add(a);
     }
 
-    public void render(Batch batch){
-        for (Unit unit : units){
-            unit.draw(batch);
+    public void render(Batch batch, RenderConfig renderConfig, int renderPlayerId){
+        boolean showAttackRadius = renderConfig.isShowAttackRadius();
+        boolean showSpawnRadius = renderConfig.isShowSpawnRadius();
+
+        Unit unit;
+        for (int indx = 0; indx < units.size; indx ++) {
+            unit = units.get(indx);
+            unit.draw(batch, renderConfig.getDelta(), showAttackRadius);
         }
 
         for (Tower tower : towers) {
-            tower.draw(batch);
+            if (tower.getPlayerId() == renderPlayerId) {
+                // Only show the spawn radius for your own tower.
+                tower.draw(batch, showAttackRadius, showSpawnRadius);
+            } else {
+                tower.draw(batch, showAttackRadius, false);
+            }
         }
 
         for (PlayerBase playerBase : playerBases) {
-            playerBase.draw(batch);
+            if (playerBase.getPlayerId() == renderPlayerId) {
+                // only show the spawn radius for your own base
+                playerBase.draw(batch, showSpawnRadius);
+            } else {
+                playerBase.draw(batch, false);
+            }
         }
     }
 
@@ -408,7 +486,39 @@ public class GameState {
         return new TowerDetails(this.towerInfo.getTowerDetails(playerId, towerId));
     }
 
+    public boolean getGameOver() {
+        if (!isInitialized()){
+            return false; // Can't win if you're dead lol or if the game has not started
+        }
+
+        int numPlayersAlive = 0;
+        // Check if you are the last base alive
+        for (int playerIndex = 0; playerIndex < playerBases.size; playerIndex += 1) {
+            if (!playerBases.get(playerIndex).isDead()) {
+                // Since there is another placers base that is not dead yet, you have not won.
+                numPlayersAlive += 1;
+            }
+        }
+        return numPlayersAlive <= 1;
+    }
+
     Array<PlayerBase> getPlayerBases() {
         return playerBases;
+    }
+
+    public Array<Building> getBuildings() {
+        Array<Building> buildings = new Array<>();
+        buildings.addAll(playerBases);
+        buildings.addAll(towers);
+        return buildings;
+    }
+
+    public void moveUnits(float movementAmount) {
+        for (Unit u: units) {
+//            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous step. Real x, y before (" + u.x + " " + u.y + ")");
+            u.step(movementAmount);
+//            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous after. Real x y after (" + u.x + " " + u.y + ")");
+//            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous after. display x y after (" + u.getDisplayX() + " " + u.getDisplayY() + ")");
+        }
     }
 }

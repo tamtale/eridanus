@@ -59,7 +59,7 @@ public class CreateTowerMessage extends GameMessage {
         util.log("lji1 - CreateTowerMessage", "Creating tower!");
         Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerCost, towerPixmap, playerID, towerType.ordinal());
 
-        inputState.addTower(tower);
+        inputState.addTower(tower, playerID);
         return true;
     }
 

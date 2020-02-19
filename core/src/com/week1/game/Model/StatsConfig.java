@@ -13,7 +13,7 @@ public class StatsConfig {
 
     static final double playerBaseInitialHp = 500;
 
-    static final double placementRange = 15;
+    static public final double placementRange = 15;
   
     // Basic
 //    static public final double tempTower1Cost = 75;
@@ -37,13 +37,13 @@ public class StatsConfig {
 //    static public final double tempTower3Range = 4;
     static public final Pixmap tankTexture = new Pixmap(Gdx.files.internal("tower3.png"));
 
-    static public final double tempMinion1Cost = 10;
+    static public final double tempMinion1Cost = 20;
     static public final double tempMinion1Health = 50;
     
-    static public final double tempMinionRange = 5;
-    static public final double tempTowerRange = 20;
-    
+    static public final double tempMinionRange = 8;
+
     static public final double tempDamage = 1;
+    
 //    static public final double tempTowerDamage = 2;
 
     public enum attackType {

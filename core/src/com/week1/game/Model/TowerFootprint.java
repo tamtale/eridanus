@@ -35,6 +35,11 @@ public class TowerFootprint {
         };
     }
     
+
+    public boolean[][] getFp(){
+        return this.fp;
+    }
+    
     public static boolean overlap(TowerFootprint footprint1, int x1, int y1, TowerFootprint footprint2, int x2, int y2) {
         
         // assumes that maximum footprint is 5 x 5, so if further than that, just return immediately

@@ -128,12 +128,9 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
 
     protected void visitChildren(N endNode, Heuristic<N> heuristic) {
         Array<Connection<N>> connections = this.graph.getConnections(this.current.node);
-        System.out.println("Current Node: " + this.current.node);
-        System.out.print("Neighbors: ");
-        for (Connection<N> connection: connections) {
-            System.out.print(connection.getToNode().toString());
+        if (connections == null){
+            return;
         }
-        System.out.println();
         for(int i = 0; i < connections.size; ++i) {
             if (this.metrics != null) {
                 ++this.metrics.visitedNodes;
@@ -182,7 +179,6 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
             outPath.add(this.current.node);
             this.current = this.nodeRecords[this.graph.getIndex(this.current.connection.getFromNode())];
         }
-
         outPath.add(startNode);
         outPath.reverse();
     }

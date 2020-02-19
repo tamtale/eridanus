@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.Integer.max;
-
 
 public class TowerMaterials {
 
@@ -36,15 +34,16 @@ public class TowerMaterials {
     //Make the block types
     addBlockType("core_block.png", "coreBlock", 1, 0, 0, 0);
 
-    //Materials
-    addBlockType("space_obsidian.png", "obsidian", 2, 50,5,10);
-    addBlockType("moonstone.png", "moonstone", 3, 25, 15,20);
-    addBlockType("gold_wip_6.png", "space gold", 4, 15, 40,40);
+        //Materials
+        addBlockType("space_obsidian2.png", "obsidian", 2, 50,5,10);
+        addBlockType("moonstone3.png", "moonstone", 3, 25, 15,20);
+        addBlockType("gold2.png", "space gold", 4, 15, 40,40);
 
-    //Guns
-    addBlockType("fire_wip2.png", "fire", 5, 15, 40, 35);
-    addBlockType("water_wip.png", "water", 6, 15,40, 35);
-    addBlockType("earth_wip4.png", "earth", 7, 15,40, 35);
+        //Guns
+        addBlockType("water2.png", "water", 6, 15,40, 35);
+        addBlockType("fire2.png", "fire", 5, 15, 40, 35);
+        addBlockType("earth3.png", "earth", 7, 15,40, 35);
+
 
     //Easter egg
     addBlockType("cat_boi.png", "easter egg", 69, 10, 10,0);

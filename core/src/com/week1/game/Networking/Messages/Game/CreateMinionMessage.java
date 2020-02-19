@@ -1,5 +1,6 @@
 package com.week1.game.Networking.Messages.Game;
 
+import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.MessageType;
@@ -37,6 +38,14 @@ public class CreateMinionMessage extends GameMessage {
         if (!inputState.findNearbyStructure(x, y, playerID)) {
             util.log("pjb3 - CreateMinionMessage", "Not close enough to an existing tower or home base");
              return false;
+        }
+        
+        // Test to see if the minion is going to be placed on top of a tower or base
+        for (Building building : inputState.getBuildings()) {
+            if (building.overlap(this.x, this.y)) {
+                util.log("lji1 - CreateMinionMessage", "Overlapping with base or tower.");
+                return false;
+            }
         }
 
 

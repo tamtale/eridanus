@@ -4,5 +4,6 @@ import com.week1.game.Model.SpawnInfo;
 
 public interface IRendererToClickOracleAdapter {
     void render();
+
     void setSelectedSpawnState(SpawnInfo type);
 }

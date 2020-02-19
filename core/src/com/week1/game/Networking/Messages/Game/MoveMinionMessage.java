@@ -44,6 +44,7 @@ public class MoveMinionMessage extends GameMessage {
             for (Integer id : minionIDs) {
                 Unit minion = inputState.getMinionById(id);
                 if (minion != null) {
+
                     inputState.moveMinion(x - centerX, y - centerY, minion);
                 }
             }

@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
+import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
@@ -29,7 +30,7 @@ import java.util.List;
 
 
 public class GameScreen implements Screen {
-	private static float THRESHOLD = .2f;
+	public static float THRESHOLD = .2f;
 	public static int PIXELS_PER_UNIT = 64;
 	private String[] args;
 	private float curTime = 0f;
@@ -41,7 +42,7 @@ public class GameScreen implements Screen {
 	private InfoUtil util;
 	//This is a temporary stage that is displayed before connection of clients
 	private Stage connectionStage;
-	private boolean pressedStartbtn = false;
+	private boolean pressedStartbtn;
 
 	private void makeTempStage() {
 		connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
@@ -65,6 +66,8 @@ public class GameScreen implements Screen {
 		this.args = args;
 		// Set the logging level
 		Gdx.app.setLogLevel(Application.LOG_INFO);
+
+		pressedStartbtn = false;
 
 		util = new InfoUtil(true);
 		
@@ -94,24 +97,37 @@ public class GameScreen implements Screen {
 						)
 	); // TODO: actually pass the towers
 
+		createNewGame();
+	}
 
+	/**
+	 * This function is called to [re]initialize the game-specific classes not
+	 * related to the network. It will be called every time you want to restart a game
+	 * TODO Need to make this reset anything within the network client that needs revision.
+	 */
+	public void createNewGame() {
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override
 			public void setDefaultLocation(Vector3 location) {
-			    renderer.setDefaultPosition(location);
-			    renderer.setCameraToDefaultPosition();
+				renderer.setDefaultPosition(location);
+				renderer.setCameraToDefaultPosition();
 			}
 
 			@Override
 			public void endGame(int winOrLoss) {
 				renderer.endGame(winOrLoss);
 			}
+
+			@Override
+			public void gameOver() {
+				renderer.showGameOver();
+			}
 		}, util);
 
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
-			public void render() {
-				engine.render();
+			public void render(RenderConfig renderConfig) {
+				engine.render(renderConfig);
 			}
 
 			@Override
@@ -138,15 +154,20 @@ public class GameScreen implements Screen {
 				return null;
 			}
 		},
-		new IRendererToClickOracleAdapter() {
-			@Override
-			public void render() {
-				clickOracle.render();
-			}
+				new IRendererToClickOracleAdapter() {
+					@Override
+					public void render() {
+						clickOracle.render();
+					}
 
+					@Override
+					public void setSelectedSpawnState(SpawnInfo type) {
+						clickOracle.setSpawnType(type);
+					}
+				}, new IRendererToGameScreenAdapter() {
 			@Override
-			public void setSelectedSpawnState(SpawnInfo type) {
-				clickOracle.setSpawnType(type);
+			public void restartGame() {
+				createNewGame();
 			}
 		}, util);
 		clickOracle = new ClickOracle(
@@ -158,13 +179,13 @@ public class GameScreen implements Screen {
 
 					@Override
 					public void zoom(int amount) {
-					    renderer.zoom(amount);
+						renderer.zoom(amount);
 					}
 
-                    @Override
-                    public void setTranslationDirection(Direction direction) {
-					    renderer.setPanning(direction);
-                    }
+					@Override
+					public void setTranslationDirection(Direction direction) {
+						renderer.setPanning(direction);
+					}
 
 					public Camera getCamera() {
 						return renderer.getCamera();
@@ -186,6 +207,11 @@ public class GameScreen implements Screen {
 						return engine.getGameState().findUnitsInBox(cornerA, cornerB);
 					}
 
+					@Override
+					public Array<Building> getBuildings() {
+						return engine.getBuildings();
+					}
+
 				},
 				new IClickOracleToNetworkAdapter() {
 					@Override
@@ -204,8 +230,6 @@ public class GameScreen implements Screen {
 
 		renderer.create();
 	}
-
-
 
 	@Override
 	public void show() {
@@ -237,9 +261,9 @@ public class GameScreen implements Screen {
 			curTime = 0;
 			engine.processMessages();
 		}
-		engine.updateState(time);
 		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
-		renderer.render();
+		renderer.render((curTime > THRESHOLD) ? 0 : time); // Only move the units from their state position
+														   // if the threshold was not passed.
 	}
 
 	@Override

@@ -29,6 +29,8 @@ public class Renderer {
     private IRendererToEngineAdapter engineAdapter;
     private IRendererToNetworkAdapter networkAdapter;
     private IRendererToClickOracleAdapter clickOracleAdapter;
+    private IRendererToGameScreenAdapter gameScreenAdapter;
+    private RenderConfig renderConfig;
     private BitmapFont font = new BitmapFont();
     private Vector3 panning = new Vector3();
     private Map<Direction, Vector3> directionToVector;
@@ -47,11 +49,17 @@ public class Renderer {
     private int winState = -1;
     private InfoUtil util;
 
-    public Renderer(IRendererToEngineAdapter engineAdapter, IRendererToNetworkAdapter networkAdapter, IRendererToClickOracleAdapter clickOracleAdapter, InfoUtil util) {
+    public Renderer(IRendererToEngineAdapter engineAdapter,
+                    IRendererToNetworkAdapter networkAdapter,
+                    IRendererToClickOracleAdapter clickOracleAdapter,
+                    IRendererToGameScreenAdapter gameScreenAdapter,
+                    InfoUtil util) {
         this.engineAdapter = engineAdapter;
         this.networkAdapter = networkAdapter;
         this.clickOracleAdapter = clickOracleAdapter;
         this.util = util;
+        this.gameScreenAdapter = gameScreenAdapter;
+
     }
 
     public void create() {
@@ -59,7 +67,7 @@ public class Renderer {
         camera = new OrthographicCamera();
         mapRenderer = new OrthogonalTiledMapRenderer(map, 1f / PIXELS_PER_UNIT);
         batch = mapRenderer.getBatch();
-        gameButtonsStage = new GameButtonsStage(clickOracleAdapter);
+        gameButtonsStage = new GameButtonsStage(clickOracleAdapter, gameScreenAdapter);
         camera.setToOrtho(false, DEFAULT_WIDTH, Gdx.graphics.getHeight() * (float) DEFAULT_WIDTH / Gdx.graphics.getWidth());
         camera.update();
     }
@@ -126,13 +134,14 @@ public class Renderer {
         camera.update();
     }
 
-    public void render() {
+    public void render(float deltaTime) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         updateCamera();
         mapRenderer.setView(camera);
         mapRenderer.render();
-        engineAdapter.render();
+        renderConfig = new RenderConfig(getShowAttackRadius(), getShowSpawnRadius(), deltaTime);
+        engineAdapter.render(renderConfig);
         clickOracleAdapter.render();
         drawPlayerUI();
         util.drawMessages(batch);
@@ -148,5 +157,17 @@ public class Renderer {
 
     public void setCameraToDefaultPosition() {
         camera.position.set(defaultPosition);
+    }
+
+    public boolean getShowAttackRadius() {
+        return gameButtonsStage.getShowAttackRadius();
+    }
+
+    public boolean getShowSpawnRadius() {
+        return gameButtonsStage.getShowSpawnRadius();
+    }
+
+    public void showGameOver() {
+        gameButtonsStage.setGameOver();
     }
 }
