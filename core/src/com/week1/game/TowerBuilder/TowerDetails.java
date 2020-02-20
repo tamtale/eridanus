@@ -94,7 +94,7 @@ public class TowerDetails {
         }
 
         //We aren't calculating armour multipliers, etc
-        atk = rawAtk * 0.1;
+        atk = rawAtk * 0.05;
         hp = rawHp * armour;
         range = range * 3;
 
