@@ -483,7 +483,6 @@ public class GameState {
         this.towerLoadouts = info;
     }
     public TowerDetails getTowerDetails(int playerId, int towerId) {
-        // TODO: should really just all in one class, instead of converting here
         return this.towerLoadouts.getTowerDetails(playerId, towerId);
     }
 

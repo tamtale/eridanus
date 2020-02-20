@@ -37,7 +37,7 @@ public class NetworkUtils {
                     if (addr instanceof Inet6Address) continue;
 
                     // try all the ports from 8000 to 9000, in case some of them are being used
-                    for (int i = 8000; i < 9000; i++) {
+                    for (int i = 8000; i < 8050; i++) {
                         try (SocketChannel socket = SocketChannel.open()) {
                             socket.socket().setSoTimeout(3000);
                             socket.bind(new InetSocketAddress(addr, i));
@@ -49,7 +49,7 @@ public class NetworkUtils {
                             NetworkUtils.addr = addr.getHostAddress();
                             return NetworkUtils.addr;
                         } catch (Exception e) {
-                            Gdx.app.log(TAG, "Port failed: " + i);
+                            Gdx.app.log(TAG, "Port failed on: " + addr + ": " + i);
 //                            e.printStackTrace();
                         }
                     }
