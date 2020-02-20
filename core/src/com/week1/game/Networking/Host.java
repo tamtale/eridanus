@@ -88,14 +88,13 @@ public class Host {
                 // Verify game state on any messages sent this game turn
                 int prevHash = 0; // This will be the hash that everything is compared to
                 boolean didFail = false;
-                for (int i = 0; i < outgoingMessages.size(); i++) {
-                    GameMessage msg = MessageFormatter.parseMessage(outgoingMessages.get(i));
-                    if (msg != null && msg instanceof CheckSyncMessage) {
+                for (String outgoingMessage : outgoingMessages) {
+                    GameMessage msg = MessageFormatter.parseMessage(outgoingMessage);
+                    if (msg instanceof CheckSyncMessage) {
                         int hash = msg.getHashCode();
                         if (prevHash == 0) {
                             // if it has not been set, set the standard to this one.
                             prevHash = hash;
-                            continue;
                         } else {
                             if (prevHash != hash) {
                                 Gdx.app.log("pjb3 - Host", "ERROR: The hashes do not match for two messages!!!!! Yikes.");
@@ -103,7 +102,6 @@ public class Host {
                                 didFail = true;
                             }
                         }
-
                     }
                 }
                 if (didFail) {

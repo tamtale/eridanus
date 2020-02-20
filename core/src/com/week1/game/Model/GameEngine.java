@@ -63,6 +63,7 @@ public class GameEngine {
         synchronousUpdateState();
         if (communicationTurn % 10 == 0) {
             // Time to sync up!
+            Gdx.app.log("pjb3 - receiveMessages", "BOUTTA YEET THIS: " + getGameStateHash() + " \n" + getGameStateString());
             engineToNetwork.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash()));
         }
         Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn + " hash is: " + getGameStateHash());
@@ -89,6 +90,10 @@ public class GameEngine {
             engineToRenderer.gameOver();
         }
     }
+
+//    public void updateState(float delta) {
+//        gameState.stepUnits(delta);
+//    }
 
     public void processMessages() {
         if (messageQueue.isEmpty()) {

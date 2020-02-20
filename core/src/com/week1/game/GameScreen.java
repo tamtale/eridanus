@@ -258,6 +258,7 @@ public class GameScreen implements Screen {
 			curTime = 0;
 			engine.processMessages();
 		}
+//		engine.updateState(time);
 		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
 		renderer.render((curTime > THRESHOLD) ? 0 : time); // Only move the units from their state position
 														   // if the threshold was not passed.
