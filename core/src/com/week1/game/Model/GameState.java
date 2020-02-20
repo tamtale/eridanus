@@ -14,6 +14,7 @@ import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Model.World.IWorldBuilder;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
+import com.week1.game.TowerBuilder.TowerDetails;
 
 import static com.week1.game.Model.Entities.TowerType.BASIC;
 import static com.week1.game.Model.Entities.TowerType.SNIPER;
@@ -33,7 +34,7 @@ public class GameState {
     private IWorldBuilder worldBuilder;
     private GameWorld world;
     
-    private TowerInfo towerInfo; 
+    private TowerLoadouts towerLoadouts;
     /*
      * Runnable to execute immediately after the game state has been initialized.
      */
@@ -184,7 +185,7 @@ public class GameState {
         towers.add(t);
         int startX = (int) t.x - 4;
         int startY = (int) t.y - 4;
-        TowerFootprint footprint = towerInfo.getTowerDetails(playerID, t.getTowerType()).getFootprint();
+        TowerFootprint footprint = towerLoadouts.getTowerDetails(playerID, t.getTowerType()).getFootprint();
         boolean[][] fp = footprint.getFp();
         int i = 0;
         for(boolean[] bool: fp){
@@ -426,16 +427,16 @@ public class GameState {
     }
 
     public boolean overlapsExistingStructure(int playerId, int towerType, int x, int y) {
-        TowerFootprint footprint = towerInfo.getTowerDetails(playerId, towerType).getFootprint();
+        TowerFootprint footprint = towerLoadouts.getTowerDetails(playerId, towerType).getFootprint();
         for (Tower t: towers) {
-            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerDetails(t.getPlayerId(), t.getTowerType()).getFootprint(), (int)t.x, (int)t.y)) {
+            if (TowerFootprint.overlap(footprint, x, y, towerLoadouts.getTowerDetails(t.getPlayerId(), t.getTowerType()).getFootprint(), (int)t.x, (int)t.y)) {
                 return true;
             }
         }
         
         for (PlayerBase pb: playerBases) {
             // use -1 as towerType for the player base
-            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerDetails(-1, -1).getFootprint(), (int)pb.x, (int)pb.y)) {
+            if (TowerFootprint.overlap(footprint, x, y, towerLoadouts.getTowerDetails(-1, -1).getFootprint(), (int)pb.x, (int)pb.y)) {
                 return true;
             }
         }
@@ -478,12 +479,12 @@ public class GameState {
         return true;
     }
     
-    public void setTowerInfo(TowerInfo info) {
-        this.towerInfo = info;
+    public void setTowerInfo(TowerLoadouts info) {
+        this.towerLoadouts = info;
     }
     public TowerDetails getTowerDetails(int playerId, int towerId) {
         // TODO: should really just all in one class, instead of converting here
-        return new TowerDetails(this.towerInfo.getTowerDetails(playerId, towerId));
+        return this.towerLoadouts.getTowerDetails(playerId, towerId);
     }
 
     public boolean getGameOver() {

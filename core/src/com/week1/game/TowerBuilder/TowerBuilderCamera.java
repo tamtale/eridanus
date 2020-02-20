@@ -28,7 +28,7 @@ public class TowerBuilderCamera {
     public CameraInputController camController;
     public TowerPresets presets;
     AssetManager assets;
-    private Tower currTower;
+    private TowerDetails currTowerDetails;
 
 
     TowerBuilderStage towerStage;
@@ -80,7 +80,7 @@ public class TowerBuilderCamera {
         loading = true;
 
 
-        currTower = presets.getTower(1);
+        currTowerDetails = presets.getTower(1);
 
     }
 
@@ -109,7 +109,7 @@ public class TowerBuilderCamera {
             modelBatch.render(space);
         }
 
-        modelBatch.render(currTower.getModel(), environment);
+        modelBatch.render(currTowerDetails.getModel(), environment);
         modelBatch.end();
 
 
@@ -127,11 +127,11 @@ public class TowerBuilderCamera {
 
     }
 
-    public void setCurrTower(Tower currTower) {
-        this.currTower = currTower;
+    public void setCurrTowerDetails(TowerDetails currTowerDetails) {
+        this.currTowerDetails = currTowerDetails;
     }
 
-    public Tower getCurrTower() {
-        return this.currTower;
+    public TowerDetails getCurrTowerDetails() {
+        return this.currTowerDetails;
     }
 }

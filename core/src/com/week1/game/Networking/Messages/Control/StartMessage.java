@@ -1,7 +1,6 @@
 package com.week1.game.Networking.Messages.Control;
 
 import com.badlogic.gdx.Gdx;
-import com.week1.game.Model.TowerDetails;
 import com.week1.game.Networking.Host;
 import com.week1.game.Networking.Messages.Game.InitMessage;
 import com.week1.game.Networking.Messages.Game.TowerDetailsMessage;
@@ -9,7 +8,6 @@ import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Networking.Messages.Update;
 import com.week1.game.Networking.Player;
-import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

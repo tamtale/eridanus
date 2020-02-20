@@ -1,8 +1,6 @@
 package com.week1.game.Networking.Messages.Control;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Array;
-import com.week1.game.Model.TowerDetails;
 import com.week1.game.Networking.Host;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Networking.Player;

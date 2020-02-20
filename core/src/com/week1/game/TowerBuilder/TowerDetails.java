@@ -10,7 +10,7 @@ import java.util.List;
 import static java.lang.Integer.max;
 import static java.lang.Math.min;
 
-public class Tower {
+public class TowerDetails {
     private double hp = 0;
     private double atk = 0;
     private double range = 0;
@@ -51,7 +51,7 @@ public class Tower {
     //want to also generate dimensions, footprint, other multipliers
     //prog generated view
 
-    public Tower(List<BlockSpec> layout) {
+    public TowerDetails(List<BlockSpec> layout) {
         this.layout = layout;
 
         //generate model and stats
@@ -62,7 +62,7 @@ public class Tower {
     /*
         Overloaded constructor to allow us to bypass automatic stat generation, if necessary for testing
      */
-    public Tower(TowerFootprint fp, double health, double price, double range, double damage) {
+    public TowerDetails(TowerFootprint fp, double health, double price, double range, double damage) {
         this.footprint = fp;
         this.hp = health;
         this.price = price;
@@ -73,14 +73,6 @@ public class Tower {
     private void populateFields() {
         int base_blocks = 0;
 
-        //Max footprint for tower if 5 x 5. The origin is at 3 x 3
-        //row represents x coord and column represents y coord
-//        for (int i = 0; i < 5; i++) {
-//            footprint.add(new ArrayList<>());
-//            for (int j = 0; j < 5; j++) {
-//                footprint.get(i).add(-1);
-//            }
-//        }
         this.footprint = new TowerFootprint();
 
         for (BlockSpec block : layout) {
@@ -92,14 +84,6 @@ public class Tower {
             ModelInstance blockInstance = new ModelInstance(TowerMaterials.modelMap.get(code));
             blockInstance.transform.setToTranslation(x * 5f, y * 5f, z * 5f);
             this.model.add(blockInstance);
-
-
-//            int curFootPrint = footprint.get(x + 2).get(z + 2);
-//            if (curFootPrint == -1) {
-//                footprint.get(x + 2).set(z + 2, y);
-//            } else {
-//                footprint.get(x + 2).set(z + 2, min(curFootPrint, y));
-//            }
             this.footprint.setFootPrint(x + 2, z + 2, true);
 
             //Generate the tower stats
@@ -112,6 +96,7 @@ public class Tower {
         //We aren't calculating armour multipliers, etc
         atk = rawAtk;
         hp = rawHp * armour;
+        range = range * 3;
 
     }
 

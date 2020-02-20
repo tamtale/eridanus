@@ -1,8 +1,6 @@
 package com.week1.game.Networking;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Array;
-import com.week1.game.Model.TowerDetails;
 import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.net.*;

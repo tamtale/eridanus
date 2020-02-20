@@ -10,7 +10,7 @@ public class TowerPresets {
 
     public static final Integer NUM_PRESETS = 6;
 
-    private static Tower tower1 = new Tower(Arrays.asList(new BlockSpec(2, 0,0,0),
+    private static TowerDetails towerDetails1 = new TowerDetails(Arrays.asList(new BlockSpec(2, 0,0,0),
                 new BlockSpec(2, 0, 0, 1),
                 new BlockSpec(2, 0, 0, -1),
                 new BlockSpec(2, -1, 0, 0),
@@ -18,7 +18,7 @@ public class TowerPresets {
                 new BlockSpec(3, 0, 1, 0),
                 new BlockSpec(5, 0, 2, 0)));
 
-    private static Tower tower2 =  new Tower(Arrays.asList(new BlockSpec(4, 0,0,0),
+    private static TowerDetails towerDetails2 =  new TowerDetails(Arrays.asList(new BlockSpec(4, 0,0,0),
             new BlockSpec(4, 0,1,0),
             new BlockSpec(4, 0,2,0),
             new BlockSpec(4, 0,3,0),
@@ -26,7 +26,7 @@ public class TowerPresets {
             new BlockSpec(6, 0,5,0),
             new BlockSpec(5, 0,6,0)));
 
-    private static Tower tower3 = new Tower(Arrays.asList(new BlockSpec(2, 0, 0, -1),
+    private static TowerDetails towerDetails3 = new TowerDetails(Arrays.asList(new BlockSpec(2, 0, 0, -1),
         new BlockSpec(2, 0, 0, 0),
         new BlockSpec(7, 0, 0, 1),
         new BlockSpec(2, -1, 0, -1),
@@ -39,7 +39,7 @@ public class TowerPresets {
         new BlockSpec(7, 2, 0, 0),
         new BlockSpec(2, 2, 0, 1)));
 
-    private static Tower tower4 = new Tower(Arrays.asList(new BlockSpec(2, 0, 0, 0),
+    private static TowerDetails towerDetails4 = new TowerDetails(Arrays.asList(new BlockSpec(2, 0, 0, 0),
         new BlockSpec(2, 0, 1, 0),
         new BlockSpec(2, 1, 1, 0),
         new BlockSpec(2, -1, 1, 0),
@@ -55,7 +55,7 @@ public class TowerPresets {
         new BlockSpec(6, 0, 2, -1),
         new BlockSpec(2, 1, 2, -1)));
 
-    private static Tower tower5 = new Tower(Arrays.asList(new BlockSpec(3, -1, 0, 0),
+    private static TowerDetails towerDetails5 = new TowerDetails(Arrays.asList(new BlockSpec(3, -1, 0, 0),
         new BlockSpec(3, 0, 0, 0),
         new BlockSpec(3, 1, 0, 0),
         new BlockSpec(2, -1, 0, 1),
@@ -69,7 +69,7 @@ public class TowerPresets {
         new BlockSpec(5, 0, 3, 0),
         new BlockSpec(5, 0, 4, 0)));
 
-    private static Tower tower6 = new Tower(Arrays.asList(new BlockSpec(2, 0, 0, -1),
+    private static TowerDetails towerDetails6 = new TowerDetails(Arrays.asList(new BlockSpec(2, 0, 0, -1),
         new BlockSpec(2, -1, 0, -1),
         new BlockSpec(2, 0, 0, 0),
         new BlockSpec(2, -1, 0, 0),
@@ -88,9 +88,9 @@ public class TowerPresets {
         new BlockSpec(3, 0, 2, 1),
         new BlockSpec(3, -1, 2, 1)));
 
-    public static List<Tower> presets = Arrays.asList(tower1, tower2, tower3, tower4, tower5, tower6);
+    public static List<TowerDetails> presets = Arrays.asList(towerDetails1, towerDetails2, towerDetails3, towerDetails4, towerDetails5, towerDetails6);
 
-    public static Tower getTower(int towernum) {
+    public static TowerDetails getTower(int towernum) {
         if (towernum < 1 || towernum > NUM_PRESETS) {
             Gdx.app.log("skv2", "Bad tower preset number"+ towernum);
             return presets.get(0);

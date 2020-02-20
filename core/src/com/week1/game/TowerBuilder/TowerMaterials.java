@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.utils.Array;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,14 +64,14 @@ public class TowerMaterials {
 
 
 
-    public static Tower getTower(List<BlockSpec> layout) {
+    public static TowerDetails getTower(List<BlockSpec> layout) {
         //TODO - the edge length is hardcoded as 5f right now
 
         Array<ModelInstance> towerLayout = new Array<>();
 
-        Tower tower = new Tower(layout);
+        TowerDetails towerDetails = new TowerDetails(layout);
 
-        return tower;
+        return towerDetails;
     }
 
 //    public Array<ModelInstance> readTowerFromTxt(String filename) {
