@@ -148,7 +148,7 @@ public class Renderer {
             for (int j = 0; j < heightMap[0].length; j++) {
                 font.getData().setScale(.1f);
                 font.setColor(Color.BLACK);
-                font.draw(batch, "" + heightMap[i][j], i, j);
+                font.draw(batch, "" + heightMap[i][j], i, j + 1);
             }
         }
         batch.end();
