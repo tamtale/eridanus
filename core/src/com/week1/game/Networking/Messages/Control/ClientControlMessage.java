@@ -4,8 +4,8 @@ import com.week1.game.Networking.Client;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.MessageType;
 
-public abstract class ControlMessage extends AMessage {
-    public ControlMessage (int playerID, MessageType messageTypeID) {
+public abstract class ClientControlMessage extends AMessage {
+    public ClientControlMessage(int playerID, MessageType messageTypeID) {
         super(playerID, messageTypeID);
     }
     

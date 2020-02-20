@@ -9,14 +9,14 @@ import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.utils.Array;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
 public class TowerMaterials {
 
-    ModelBuilder modelBuilder = new ModelBuilder();
+    static ModelBuilder modelBuilder = new ModelBuilder();
 
     public static final Map<Integer, Model> modelMap = new HashMap<Integer, Model>();
 
@@ -28,9 +28,10 @@ public class TowerMaterials {
     public static Map<Integer, Integer> blockPrice = new HashMap<>();
 
 
-    public TowerMaterials() {
-        //Make the block types
-        addBlockType("core_block.png", "coreBlock", 1, 0, 0, 0);
+//    public TowerMaterials() {
+    static  {
+    //Make the block types
+    addBlockType("core_block.png", "coreBlock", 1, 0, 0, 0);
 
         //Materials
         addBlockType("space_obsidian2.png", "obsidian", 2, 50,5,10);
@@ -43,12 +44,12 @@ public class TowerMaterials {
         addBlockType("earth3.png", "earth", 7, 15,40, 35);
 
 
-        //Easter egg
-        addBlockType("cat_boi.png", "easter egg", 69, 10, 10,0);
+    //Easter egg
+    addBlockType("cat_boi.png", "easter egg", 69, 10, 10,0);
 
     }
 
-    private void addBlockType(String filename, String blockname, Integer code, Integer hp, Integer atk, Integer price) {
+    private static void addBlockType(String filename, String blockname, Integer code, Integer hp, Integer atk, Integer price) {
         blocknamekey.put(blockname, code);
 
         modelMap.put(code, modelBuilder.createBox(5f, 5f, 5f,
@@ -63,14 +64,14 @@ public class TowerMaterials {
 
 
 
-    public Tower getTower(ArrayList<BlockSpec> layout) {
+    public static TowerDetails getTower(List<BlockSpec> layout) {
         //TODO - the edge length is hardcoded as 5f right now
 
         Array<ModelInstance> towerLayout = new Array<>();
 
-        Tower tower = new Tower(layout);
+        TowerDetails towerDetails = new TowerDetails(layout);
 
-        return tower;
+        return towerDetails;
     }
 
 //    public Array<ModelInstance> readTowerFromTxt(String filename) {
