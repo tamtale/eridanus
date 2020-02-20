@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static com.week1.game.Networking.Messages.MessageFormatter.parseHostControlMessage;
 
 public class Host {
-    public static final int DANGEROUS_HARDCODED_MESSAGE_SIZE = 4096;
+    public static final int DANGEROUS_HARDCODED_MESSAGE_SIZE = 10000;
 
     private static final String TAG = "Host - lji1";
     private static final int UPDATE_INTERVAL = 200;

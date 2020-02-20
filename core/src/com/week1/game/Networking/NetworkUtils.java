@@ -10,9 +10,16 @@ import java.util.List;
 
 public class NetworkUtils {
     private static final String TAG = "NetworkUtils - lji1";
+    private static String addr;
     public static String getLocalHostAddr() {
 //        https://stackoverflow.com/questions/40912417/java-getting-ipv4-address?fbclid=IwAR0JQ8qEf4V2bM42m-X0ATML0zf5zEyJ_gEWs9I7PskAHCmW_TNNj5cWp6I
 //        https://stackoverflow.com/questions/8462498/how-to-determine-internet-network-interface-in-java
+
+
+        if (NetworkUtils.addr != null ) {
+            return NetworkUtils.addr;
+        }
+        
         String ip;
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -39,7 +46,8 @@ public class NetworkUtils {
                             // If it works, then this ip is usable
                             socket.connect(new InetSocketAddress("google.com", 80));
                             Gdx.app.log(TAG, "Obtained local host address: " + addr.getHostAddress() + " with port: " + i);
-                            return addr.getHostAddress();
+                            NetworkUtils.addr = addr.getHostAddress();
+                            return NetworkUtils.addr;
                         } catch (Exception e) {
                             Gdx.app.log(TAG, "Port failed: " + i);
 //                            e.printStackTrace();

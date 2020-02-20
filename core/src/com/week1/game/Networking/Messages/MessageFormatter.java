@@ -49,6 +49,9 @@ public class MessageFormatter {
     
     public static HostControlMessage parseHostControlMessage(String jsonString) {
         AMessage parsedMsg = g.fromJson(jsonString, PrototypeMessage.class);
+        
+        System.out.println("About to parse as host control message: " + jsonString);
+        
         if (parsedMsg != null) {
             if (parsedMsg.messageTypeID == MessageType.JOIN) {
                 return g.fromJson(jsonString, JoinMessage.class);
