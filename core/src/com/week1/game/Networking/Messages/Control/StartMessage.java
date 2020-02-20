@@ -46,7 +46,11 @@ public class StartMessage extends HostControlMessage {
         ;
         // TODO: this gets sent first so that the game engine does any initialization before the game starts (but udp doesn't guarantee order)
         h.broadcastToRegisteredPlayers(MessageFormatter.packageMessage(
-                new Update(Arrays.asList(new String[] {MessageFormatter.packageMessage(new InitMessage(h.registry.size(), -1))}))));
+                new Update(Arrays.asList(
+                        MessageFormatter.packageMessage(new InitMessage(h.registry.size(), -1)),
+                        MessageFormatter.packageMessage(new TowerDetailsMessage(-1, h.towerDetails))
+                ))
+        ));
         
         // need to convert the tower details map into 2d array
 //        TowerDetails[h.][] towerDetailsArray = h.towerDetails.
@@ -58,9 +62,6 @@ public class StartMessage extends HostControlMessage {
 //                towerDetailsArray[i][j][k] = h.towerDetails.get(i).get(j);
 //            }
 //        }
-        h.broadcastToRegisteredPlayers(MessageFormatter.packageMessage(
-                new Update(Arrays.asList(new String[] {MessageFormatter.packageMessage(new TowerDetailsMessage(-1, h.towerDetails))}))));
-
         h.runUpdateLoop();
 
     }
