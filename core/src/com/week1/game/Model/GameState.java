@@ -147,10 +147,6 @@ public class GameState implements RenderableProvider {
     }
 
     public void addUnit(Unit u){
-
-        
-        SteeringAgent agent = new SteeringAgent(u);
-        u.agent = agent;
         u.ID = minionCount;
 //        System.out.println(u.agent);
 //        System.out.println(u.ID);
@@ -470,6 +466,6 @@ public class GameState implements RenderableProvider {
     @Override
     public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
         world.getRenderables(renderables, pool);
-        Gdx.app.log("Renderables length: ", "" + renderables.size);
+        units.forEach(unit -> unit.getRenderables(renderables, pool));
     }
 }

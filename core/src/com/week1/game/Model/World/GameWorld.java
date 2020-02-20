@@ -15,6 +15,7 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
+import com.week1.game.Model.Entities.Unit;
 
 public class GameWorld implements RenderableProvider {
     private Block[][][] blocks;

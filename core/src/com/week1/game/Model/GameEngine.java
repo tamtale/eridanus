@@ -13,13 +13,17 @@ import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.PlayerBase;
 import com.week1.game.Model.World.Basic4WorldBuilder;
 import com.week1.game.Model.World.SmallWorldBuilder;
+import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.InfoUtil;
+import com.week1.game.Networking.Messages.Game.TaggedMessage;
 import com.week1.game.Renderer.RenderConfig;
 
 import java.util.List;
+import java.util.Queue;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.week1.game.GameScreen.THRESHOLD;
@@ -34,13 +38,15 @@ public class GameEngine implements RenderableProvider {
     private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
     private InfoUtil util;
     private boolean sentWinLoss = false, sentGameOver = false;
+    private Queue<TaggedMessage> replayQueue;
 
     public Batch getSpriteBatch() {
         return spriteBatch;
     }
 
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, InfoUtil util) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, Queue<TaggedMessage> replayQueue, InfoUtil util) {
         messageQueue = new ConcurrentLinkedQueue<>();
+        this.replayQueue = replayQueue;
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
         gameState = new GameState(
                 SmallWorldBuilder.ONLY,
@@ -93,8 +99,13 @@ public class GameEngine implements RenderableProvider {
     }
 
     public void processMessages() {
+        for (TaggedMessage replayMsg = replayQueue.peek(); replayMsg != null && replayMsg.turn == communicationTurn; replayMsg = replayQueue.peek()) {
+            util.log("processMessages", "got a replayMsg");
+            replayMsg.messsage.process(gameState, util);
+            replayQueue.poll();
+        }
         if (messageQueue.isEmpty()) {
-            Gdx.app.log("ttl4 - message processing", "queue empty!");
+            // Gdx.app.log("ttl4 - message processing", "queue empty!");
             return;
         } else {
             Gdx.app.log("GameEngine: processMessages()", "queue nonempty!");

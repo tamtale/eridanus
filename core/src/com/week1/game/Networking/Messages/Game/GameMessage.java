@@ -12,3 +12,4 @@ public abstract class GameMessage extends AMessage {
     
     public abstract boolean process(GameState gameState, InfoUtil util);
 }
+

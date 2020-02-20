@@ -24,12 +24,16 @@ import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;
+import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
+import com.week1.game.Networking.Messages.Game.TaggedMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkUtils;
 import com.week1.game.Renderer.*;
 
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 public class GameScreen implements Screen {
@@ -84,6 +88,11 @@ public class GameScreen implements Screen {
 		createNewGame();
 	}
 
+	private Queue<TaggedMessage> replayQueue = new ConcurrentLinkedQueue<TaggedMessage>();
+	{
+		replayQueue.add(new TaggedMessage(new CreateMinionMessage(10, 10, 69, 0), 5));
+	}
+
 	/**
 	 * This function is called to [re]initialize the game-specific classes not
 	 * related to the network. It will be called every time you want to restart a game
@@ -111,7 +120,7 @@ public class GameScreen implements Screen {
 			public void gameOver() {
 				renderer.showGameOver();
 			}
-		}, util);
+		}, replayQueue, util);
 
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override

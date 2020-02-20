@@ -81,7 +81,7 @@ public class Renderer {
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(-8, 20, 30);
         // cam.lookAt(10,15,0);
-        cam.rotate(Vector3.X, 30f);
+        cam.rotate(Vector3.X, 45f);
         cam.position.set(-8, 20, 30);
         cam.near = 1f;
         cam.far = 500f;
@@ -161,7 +161,6 @@ public class Renderer {
         clickOracleAdapter.render();
         drawPlayerUI();
         util.drawMessages(batch);
-        Gdx.app.log("camera pos: ", cam.position.toString());
     }
 
     public InputProcessor getButtonStage() {
