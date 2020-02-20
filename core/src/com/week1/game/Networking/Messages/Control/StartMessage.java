@@ -52,16 +52,6 @@ public class StartMessage extends HostControlMessage {
                 ))
         ));
         
-        // need to convert the tower details map into 2d array
-//        TowerDetails[h.][] towerDetailsArray = h.towerDetails.
-//        h.towerDetails.to
-//        BlockSpec[][][] towerDetailsArray = new TowerDetails[h.towerDetails.size()][h.towerDetails.get(0).size()];
-//        for (int i = 0; i < h.towerDetails.size(); i++) {
-//            for (int j = 0; j < h.towerDetails.get(0).size(); j++) {
-//                for(int k = 0; k < ; k++) {
-//                towerDetailsArray[i][j][k] = h.towerDetails.get(i).get(j);
-//            }
-//        }
         h.runUpdateLoop();
 
     }

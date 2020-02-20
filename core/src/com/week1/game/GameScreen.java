@@ -24,7 +24,6 @@ import com.week1.game.Networking.NetworkUtils;
 import com.week1.game.Renderer.*;
 import com.week1.game.TowerBuilder.TowerPresets;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,8 +55,6 @@ public class GameScreen implements Screen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				networkClient.sendStartMessage();
-//				Gdx.input.setInputProcessor(clickOracle);
-//				connectionStage.dispose();
 			}
 		});
 	}
@@ -71,8 +68,6 @@ public class GameScreen implements Screen {
 
 		util = new InfoUtil(true);
 		
-		
-		
 		networkClient = NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
 			@Override
 			public void deliverUpdate(List<? extends GameMessage> messages) {
@@ -84,12 +79,6 @@ public class GameScreen implements Screen {
 				engine.setEnginePlayerId(playerId);
 			}
 		}, 
-//				Arrays.asList(
-//				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10, 1),
-//				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10, 1),
-//				new TowerDetails(new TowerFootprint(TowerFootprint.fpForBasic), 100, 150, 10, 1)
-//		)
-//				TowerPresets.presets
 				Arrays.asList(
 						TowerPresets.getTower(1).getLayout(),
 						TowerPresets.getTower(3).getLayout(),

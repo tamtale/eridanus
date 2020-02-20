@@ -74,32 +74,6 @@ public class GameState {
     public void initializeGame(int numPlayers) {
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
-//        if (numPlayers == 1) {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
-//            removePlayerBase(50, 50);
-//        } else if (numPlayers == 2) {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-//            removePlayerBase(15, 15);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
-//            removePlayerBase(85, 85);
-//        } else if (numPlayers == 3) {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-//            removePlayerBase(15, 15);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 50, 1));
-//            removePlayerBase(50, 85);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
-//            removePlayerBase(15, 85);
-//        } else {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-//            removePlayerBase(15, 15);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
-//            removePlayerBase(85, 85);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
-//            removePlayerBase(15, 85);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 15, 3));
-//            removePlayerBase(85, 15);
-//        }
-
 
         // Create the correct amount of actual players
         Vector3[] startLocs = worldBuilder.startLocations();
@@ -175,8 +149,6 @@ public class GameState {
         SteeringAgent agent = new SteeringAgent(u);
         u.agent = agent;
         u.ID = minionCount;
-//        System.out.println(u.agent);
-//        System.out.println(u.ID);
         units.add(u);
         minionCount += 1;
     }
@@ -201,9 +173,7 @@ public class GameState {
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
-//        Vector2 vec2 = new Vector2(goal.x, goal.y);
         SteeringAgent agent = unit.getAgent();
-//        System.out.println(agent);
         Vector3 unitPos = new Vector3((int) unit.x, (int) unit.y, 0); //TODO: make acutal z;
 
         OutputPath path = new OutputPath();
@@ -216,9 +186,6 @@ public class GameState {
             }
         }
         Vector3 goalPos = new Vector3((int) goal.x, (int) goal.y, (int) goal.z);
-//        System.out.println("unitPos" + unitPos);
-//        System.out.println("goalPos" + goalPos);
-//        System.out.println("UnitPosIndex " + graph.getIndex(unitPos));
         path = graph.search(unitPos, goalPos);
         if (path != null) {
             unit.setPath(path);
@@ -352,50 +319,6 @@ public class GameState {
             }
         }
     }
-
-//    public double getTowerHp(int playerId, int towerId) {
-//        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
-////        if (towerType == BASIC) {
-////            return tempTower1Health;
-////        } else if (towerType == SNIPER) {
-////            return tempTower2Health;
-////        } else {
-////            return tempTower3Health;
-////        }
-//    }
-
-//    public double getTowerCost(TowerType towerType) {
-//        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
-//        if (towerType == BASIC) {
-//            return tempTower1Cost;
-//        } else if (towerType == SNIPER) {
-//            return tempTower2Cost;
-//        } else {
-//            return tempTower3Cost;
-//        }
-//    }
-
-//    public double getTowerDmg(TowerType towerType) {
-//        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
-//        if (towerType == BASIC) {
-//            return tempTower1Damage;
-//        } else if (towerType == SNIPER) {
-//            return tempTower2Damage;
-//        } else {
-//            return tempTower3Damage;
-//        }
-//    }
-
-//    public double getTowerRange(TowerType towerType) {
-//        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
-//        if (towerType == BASIC) {
-//            return tempTower1Range;
-//        } else if (towerType == SNIPER) {
-//            return tempTower2Range;
-//        } else {
-//            return tempTower3Range;
-//        }
-//    }
 
     public Pixmap getTowerPixmap(TowerType towerType) {
         // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
