@@ -49,10 +49,10 @@ public class CreateMinionMessage extends GameMessage {
         }
 
 
-        util.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
         inputState.getPlayerStats(playerID).useMana(tempMinion1Cost);
 
         Unit unit = new Unit(x, y, null, tempMinion1Health, playerID);
+        util.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
         inputState.addUnit(unit);
 //        SteeringAgent agent = new SteeringAgent(unit, new Vector2(x, y), 0,
 //                new Vector2((float) .1, (float) .1), 0, 1, true, (float).5);

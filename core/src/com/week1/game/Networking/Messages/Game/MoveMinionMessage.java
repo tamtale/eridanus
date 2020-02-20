@@ -20,8 +20,18 @@ public class MoveMinionMessage extends GameMessage {
 
         this.minionIDs = new Array<>();
         minions.forEach((minion) -> minionIDs.add(minion.ID));
-
     }
+
+    public MoveMinionMessage(float x, float y, int playerID, int ... minionIDs) {
+        super(playerID, MESSAGE_TYPE);
+        this.x = x;
+        this.y = y;
+        this.minionIDs = new Array<>();
+        for (int minionID : minionIDs) {
+            this.minionIDs.add(minionID);
+        }
+    }
+
     @Override
     public boolean process(GameState inputState, InfoUtil util){
         float centerX = 0;//x - inputState.getMinionById(minionIDs.get(0)).x;

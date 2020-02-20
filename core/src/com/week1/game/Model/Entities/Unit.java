@@ -166,11 +166,13 @@ public class Unit extends Rectangle implements Damageable, Damaging, RenderableP
 
     private void move(float delta) {
         this.setPosition(this.x + (vel.x * delta), this.y + (vel.y * delta));
+        modelInstance.transform.setToTranslation(x, y, 1); // TODO perhaps use observer pattern here?
     }
 
     private void moveRender(float delta) {
         this.displayX = this.displayX + (vel.x * delta);
         this.displayY = this.displayY + (vel.y * delta);
+        modelInstance.transform.setToTranslation(x, y, 1); // TODO perhaps use observer pattern here?
     }
 
     public SteeringAgent getAgent(){ return agent;}

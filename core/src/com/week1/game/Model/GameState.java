@@ -198,7 +198,6 @@ public class GameState implements RenderableProvider {
         }else{
             Gdx.app.error("wab2 - ASTAR", "Astar broke");
         }
-        agent.setGoal(goal);
     }
 
     public void render(ModelBatch modelBatch, Camera cam, RenderConfig renderConfig, int renderPlayerId){

@@ -26,6 +26,7 @@ import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
+import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Networking.Messages.Game.TaggedMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkUtils;
@@ -90,7 +91,11 @@ public class GameScreen implements Screen {
 
 	private Queue<TaggedMessage> replayQueue = new ConcurrentLinkedQueue<TaggedMessage>();
 	{
-		replayQueue.add(new TaggedMessage(new CreateMinionMessage(10, 10, 69, 0), 5));
+		replayQueue.add(new TaggedMessage(new CreateMinionMessage(10, 10, 69, 0), 10));
+		replayQueue.add(new TaggedMessage(new CreateMinionMessage(12, 12, 69, 0), 20));
+		replayQueue.add(new TaggedMessage(new CreateMinionMessage(12, 10, 69, 0), 30));
+		replayQueue.add(new TaggedMessage(new MoveMinionMessage(10, 15, 0, 0), 40));
+		replayQueue.add(new TaggedMessage(new MoveMinionMessage(10, 10, 0, 0), 50));
 	}
 
 	/**
