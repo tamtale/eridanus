@@ -2,37 +2,45 @@ package com.week1.game.TowerBuilder;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.utils.Array;
+import com.week1.game.Model.TowerFootprint;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.Integer.max;
 import static java.lang.Math.min;
 
-public class Tower {
-    private int hp = 0;
-    private int atk = 0;
-    private int range = 0;
+public class TowerDetails {
+    private double hp = 0;
+    private double atk = 0;
+    private double range = 0;
     private int rawHp = 0;
     private int rawAtk = 0;
     private int armour = 1;
-    private int price = 0;
+    private double price = 0;
     private Array<ModelInstance> model = new Array<>();
-    private ArrayList<BlockSpec> layout;
-    private ArrayList<ArrayList<Integer>> footprint = new ArrayList<>();
+    private List<BlockSpec> layout;
+//    private List<List<Integer>> footprint = new ArrayList<>();
+    private TowerFootprint footprint;
+    
+    
+    public List<BlockSpec> getLayout() {
+        return layout;
+    }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public int getHp() {
+    public double getHp() {
         return hp;
     }
 
-    public int getAtk() {
+    public double getAtk() {
         return atk;
     }
 
-    public int getRange() {
+    public double getRange() {
         return range;
     }
 
@@ -43,25 +51,29 @@ public class Tower {
     //want to also generate dimensions, footprint, other multipliers
     //prog generated view
 
-    public Tower(ArrayList<BlockSpec> layout) {
+    public TowerDetails(List<BlockSpec> layout) {
         this.layout = layout;
 
         //generate model and stats
         populateFields();
 
     }
+    
+    /*
+        Overloaded constructor to allow us to bypass automatic stat generation, if necessary for testing
+     */
+    public TowerDetails(TowerFootprint fp, double health, double price, double range, double damage) {
+        this.footprint = fp;
+        this.hp = health;
+        this.price = price;
+        this.range = range;
+        this.atk = damage;
+    }
 
     private void populateFields() {
         int base_blocks = 0;
 
-        //Max footprint for tower if 5 x 5. The origin is at 3 x 3
-        //row represents x coord and column represents y coord
-        for (int i = 0; i < 5; i++) {
-            footprint.add(new ArrayList<>());
-            for (int j = 0; j < 5; j++) {
-                footprint.get(i).add(-1);
-            }
-        }
+        this.footprint = new TowerFootprint();
 
         for (BlockSpec block : layout) {
             int code = block.getBlockCode();
@@ -72,29 +84,23 @@ public class Tower {
             ModelInstance blockInstance = new ModelInstance(TowerMaterials.modelMap.get(code));
             blockInstance.transform.setToTranslation(x * 5f, y * 5f, z * 5f);
             this.model.add(blockInstance);
-
-
-            int curFootPrint = footprint.get(x + 2).get(z + 2);
-            if (curFootPrint == -1) {
-                footprint.get(x + 2).set(z + 2, y);
-            } else {
-                footprint.get(x + 2).set(z + 2, min(curFootPrint, y));
-            }
+            this.footprint.setFootPrint(x + 2, z + 2, true);
 
             //Generate the tower stats
             rawHp += TowerMaterials.blockHp.get(code);
             rawAtk += TowerMaterials.blockAtk.get(code);
-            range = max(range, y + 1);
+            range = Math.max(range, y + 1);
             price += TowerMaterials.blockPrice.get(code);
         }
 
         //We aren't calculating armour multipliers, etc
-        atk = rawAtk;
+        atk = rawAtk * 0.05;
         hp = rawHp * armour;
+        range = range * 3;
 
     }
 
-    public ArrayList<ArrayList<Integer>> getFootprint() {
+    public TowerFootprint getFootprint() {
         return this.footprint;
     }
 }

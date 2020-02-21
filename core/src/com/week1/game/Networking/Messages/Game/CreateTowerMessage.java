@@ -7,7 +7,7 @@ import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Model.Entities.TowerType;
 import com.week1.game.InfoUtil;
-
+import com.week1.game.TowerBuilder.TowerDetails;
 
 
 public class CreateTowerMessage extends GameMessage {
@@ -26,14 +26,13 @@ public class CreateTowerMessage extends GameMessage {
 
     @Override
     public boolean process(GameState inputState, InfoUtil util){
-        // First, check if it is able to be built.
-        // TODO do lookup of the cost based on towerType, do not use hardcoded number [tempTower1Cost]
+        TowerDetails towerDetails = inputState.getTowerDetails(this.playerID, this.towerType.ordinal());
         double towerCost, towerHealth, towerDmg, towerRange;
-        towerCost = inputState.getTowerCost(towerType);
-        towerHealth = inputState.getTowerHp(towerType);
-        towerDmg = inputState.getTowerDmg(towerType);
-        towerRange = inputState.getTowerRange(towerType);
-        Pixmap towerPixmap = inputState.getTowerPixmap(towerType);
+        towerCost = towerDetails.getPrice();
+        towerHealth = towerDetails.getHp();
+        towerDmg = towerDetails.getAtk();
+        towerRange = towerDetails.getRange();
+        Pixmap towerPixmap = inputState.getTowerPixmap(towerType); // TOOD: tower image should come from TowerDetails too
 
         if (towerCost > inputState.getPlayerStats(playerID).getMana()) {
             // Do not have enough mana!
@@ -47,7 +46,7 @@ public class CreateTowerMessage extends GameMessage {
             return false;
         }
         
-        if(inputState.overlapsExistingStructure(towerType.ordinal(), (int)x, (int)y)) {
+        if(inputState.overlapsExistingStructure(this.playerID, towerType.ordinal(), (int)x, (int)y)) {
             util.log("lji1 - CreateTowerMessage", "Overlapping with existing structure.");
             return false;
         }
@@ -59,7 +58,7 @@ public class CreateTowerMessage extends GameMessage {
         util.log("lji1 - CreateTowerMessage", "Creating tower!");
         Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerCost, towerPixmap, playerID, towerType.ordinal());
 
-        inputState.addTower(tower);
+        inputState.addTower(tower, playerID);
         return true;
     }
 
