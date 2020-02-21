@@ -20,8 +20,8 @@ public class TowerDetails {
     private double price = 0;
     private Array<ModelInstance> model = new Array<>();
     private List<BlockSpec> layout;
-//    private List<List<Integer>> footprint = new ArrayList<>();
     private TowerFootprint footprint;
+    private String name = "";
     
     
     public List<BlockSpec> getLayout() {
@@ -51,11 +51,13 @@ public class TowerDetails {
     //want to also generate dimensions, footprint, other multipliers
     //prog generated view
 
-    public TowerDetails(List<BlockSpec> layout) {
+    public TowerDetails(List<BlockSpec> layout, String name) {
         this.layout = layout;
+        this.name = name;
 
         //generate model and stats
         populateFields();
+
 
     }
     
@@ -102,5 +104,10 @@ public class TowerDetails {
 
     public TowerFootprint getFootprint() {
         return this.footprint;
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }

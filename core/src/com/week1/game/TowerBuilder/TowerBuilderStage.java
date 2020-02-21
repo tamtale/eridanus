@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
 import com.week1.game.Model.ClickOracle;
@@ -21,7 +22,7 @@ public class TowerBuilderStage {
     public StatsWidget sw;
     public TowerBuilderCamera builder;
     private TextButton startGame;
-    private SelectBox<String> selectBox;
+    private SelectBox<TowerDetails> selectBox;
     private TextButton displayButton;
 
     public TowerBuilderStage(TowerBuilderScreen towerscreen) {
@@ -51,8 +52,12 @@ public class TowerBuilderStage {
         );
 
         displayButton = new TextButton("Display", new Skin(Gdx.files.internal("uiskin.json")));
-        selectBox =new SelectBox<String>(new Skin(Gdx.files.internal("uiskin.json")));
-        selectBox.setItems("Tower1","Tower2","Tower3","Tower4", "Tower5", "Tower6");
+        selectBox =new SelectBox(new Skin(Gdx.files.internal("uiskin.json")));
+        Array<TowerDetails> presets = new Array<>();
+        for (TowerDetails p: TowerPresets.presets) {
+            presets.add(p);
+        }
+        selectBox.setItems(presets);
 
 
         startGame = new TextButton("Start Game", new Skin(Gdx.files.internal("uiskin.json")));
@@ -90,7 +95,7 @@ public class TowerBuilderStage {
         displayButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                TowerDetails selectedTower = TowerPresets.getTower(Integer.parseInt(String.valueOf(selectBox.getSelected().charAt(5))));
+                TowerDetails selectedTower = selectBox.getSelected();
                 builder.setCurrTowerDetails(selectedTower);
                 sw.setLblTxt(
                             (int) selectedTower.getHp(),

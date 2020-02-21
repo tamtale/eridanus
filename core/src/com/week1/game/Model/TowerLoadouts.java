@@ -14,7 +14,7 @@ public class TowerLoadouts {
         for (List<List<BlockSpec>> player: details) {
             List<TowerDetails> playerTowerDetails = new ArrayList<>();
             for (List<BlockSpec> tower: player) {
-                playerTowerDetails.add(new TowerDetails(tower));
+                playerTowerDetails.add(new TowerDetails(tower, ""));
             }
             this.details.add(playerTowerDetails);
         }

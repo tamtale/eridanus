@@ -69,7 +69,7 @@ public class TowerMaterials {
 
         Array<ModelInstance> towerLayout = new Array<>();
 
-        TowerDetails towerDetails = new TowerDetails(layout);
+        TowerDetails towerDetails = new TowerDetails(layout, "");
 
         return towerDetails;
     }
