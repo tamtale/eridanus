@@ -2,15 +2,16 @@ package com.week1.game.TowerBuilder;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
+import com.week1.game.Model.ClickOracle;
 
 import java.util.ArrayList;
 
@@ -18,9 +19,10 @@ public class TowerBuilderStage {
     private TowerBuilderScreen towerscreen;
     public Stage stage;
     public StatsWidget sw;
-    private ArrayList<TextButton> towerButtons = new ArrayList<>();
     public TowerBuilderCamera builder;
     private TextButton startGame;
+    private SelectBox<String> selectBox;
+    private TextButton displayButton;
 
     public TowerBuilderStage(TowerBuilderScreen towerscreen) {
         this.towerscreen =towerscreen;
@@ -36,7 +38,10 @@ public class TowerBuilderStage {
         setListeners();
     }
 
+
+
     private void setWidgets() {
+
         sw = new StatsWidget();
         sw.setLblTxt(
                 (int)builder.getCurrTowerDetails().getHp(),
@@ -45,16 +50,17 @@ public class TowerBuilderStage {
                 (int)builder.getCurrTowerDetails().getPrice()
         );
 
+        displayButton = new TextButton("Display", new Skin(Gdx.files.internal("uiskin.json")));
+        selectBox =new SelectBox<String>(new Skin(Gdx.files.internal("uiskin.json")));
+        selectBox.setItems("Tower1","Tower2","Tower3","Tower4", "Tower5", "Tower6");
 
-        for (int i = 0; i < builder.presets.NUM_PRESETS; i ++) {
-            towerButtons.add(new TextButton("Tower" + Integer.toString(i + 1),
-                    new Skin(Gdx.files.internal("uiskin.json"))));
-        }
 
         startGame = new TextButton("Start Game", new Skin(Gdx.files.internal("uiskin.json")));
     }
 
     private void configureWidgets() {
+
+        //Add the background image
         stage.addActor(new Image(new TextureRegionDrawable(new Texture("fuzzy_galaxy.png"))));
 
         //Stats widget things
@@ -62,47 +68,38 @@ public class TowerBuilderStage {
         sw.setPosition(GameController.VIRTUAL_WIDTH - 250, GameController.VIRTUAL_HEIGHT - 200);
         stage.addActor(sw);
 
-        //Toggle presets buttons
-        for (int i = 0; i < builder.presets.NUM_PRESETS; i ++) {
-            towerButtons.get(i).setSize(128, 48);
-            towerButtons.get(i).setPosition(i * 128, 0);
-            stage.addActor(towerButtons.get(i));
-        }
 
+
+        selectBox.setSize(128, 48);
+        selectBox.setPosition(0, 0);
+        stage.addActor(selectBox);
+
+        displayButton.setSize(128, 48);
+        displayButton.setPosition(128, 0);
+        stage.addActor(displayButton);
 
         //Start Game button
         startGame.setSize(128, 48);
         startGame.setPosition(64, GameController.VIRTUAL_HEIGHT - 200);
         stage.addActor(startGame);
 
-
-
-
     }
 
     private void setListeners() {
-        for (int i = 0; i < builder.presets.NUM_PRESETS; i ++) {
 
-            //copying i to effectively final temp variable so that reference in the click listener works
-            int finalI = i;
-
-            towerButtons.get(i).addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    TowerDetails currTowerDetails = builder.presets.getTower(finalI + 1);
-                    builder.setCurrTowerDetails(currTowerDetails);
-                    sw.setLblTxt(
-                            (int) currTowerDetails.getHp(),
-                            (int) currTowerDetails.getAtk(),
-                            (int) currTowerDetails.getRange(),
-                            (int) currTowerDetails.getPrice()
+        displayButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                TowerDetails selectedTower = TowerPresets.getTower(Integer.parseInt(String.valueOf(selectBox.getSelected().charAt(5))));
+                builder.setCurrTowerDetails(selectedTower);
+                sw.setLblTxt(
+                            (int) selectedTower.getHp(),
+                            (int) selectedTower.getAtk(),
+                            (int) selectedTower.getRange(),
+                            (int) selectedTower.getPrice()
                     );
-                }
-            });
-
-
-        }
-
+            }
+        });
 
         startGame.addListener(new ClickListener() {
             @Override
@@ -113,6 +110,7 @@ public class TowerBuilderStage {
     }
 
     public void render() {
+        stage.act();
         stage.draw();
     }
 
