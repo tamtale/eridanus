@@ -15,6 +15,10 @@ import com.week1.game.Model.World.IWorldBuilder;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
 
+import java.sql.Time;
+import java.time.Instant;
+import java.time.Period;
+
 import static com.week1.game.Model.Entities.TowerType.BASIC;
 import static com.week1.game.Model.Entities.TowerType.SNIPER;
 import static com.week1.game.Model.StatsConfig.*;
@@ -225,8 +229,12 @@ public class GameState {
         Vector3 goalPos = new Vector3((int) goal.x, (int) goal.y, (int) goal.z);
 //        System.out.println("unitPos" + unitPos);
 //        System.out.println("goalPos" + goalPos);
-//        System.out.println("UnitPosIndex " + graph.getIndex(unitPos));
+//        System.out.println("UnitPosIndex " + graph.getIndex(unitPos));D
+
+        long start = System.nanoTime();
         path = graph.search(unitPos, goalPos);
+        long end = System.nanoTime();
+        Gdx.app.log("wab2 - ASTAR", "AStar completed in " + (end - start) + " nanoseconds");
         if (path != null) {
             unit.setPath(path);
         }else{
