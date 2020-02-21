@@ -4,11 +4,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerFootprint;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static java.lang.Integer.max;
-import static java.lang.Math.min;
 
 public class TowerDetails {
     private double hp = 0;
@@ -22,7 +18,6 @@ public class TowerDetails {
     private List<BlockSpec> layout;
 //    private List<List<Integer>> footprint = new ArrayList<>();
     private TowerFootprint footprint;
-    
     
     public List<BlockSpec> getLayout() {
         return layout;

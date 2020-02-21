@@ -2,7 +2,6 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.PathFinder;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -16,8 +15,6 @@ import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.TowerBuilder.TowerDetails;
 
-import static com.week1.game.Model.Entities.TowerType.BASIC;
-import static com.week1.game.Model.Entities.TowerType.SNIPER;
 import static com.week1.game.Model.StatsConfig.*;
 
 
@@ -79,10 +76,9 @@ public class GameState {
         Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
             playerStats.add(new PlayerStat());
-
             playerBases.add(new PlayerBase(playerBaseInitialHp, (int) startLocs[i].x, (int) startLocs[i].y, i));
-            removePlayerBase((int) startLocs[i].x, (int) startLocs[i].y);
         }
+
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
         fullyInitialized = true;
         postInit.run();
@@ -317,17 +313,6 @@ public class GameState {
                 // Reward the player who destroyed the base a lump sum
                 playerStats.get(attackingPlayerId).giveMana((playerBaseBonus));
             }
-        }
-    }
-
-    public Pixmap getTowerPixmap(TowerType towerType) {
-        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
-        if (towerType == BASIC) {
-            return basicTexture;
-        } else if (towerType == SNIPER) {
-            return sniperTexture;
-        } else {
-            return tankTexture;
         }
     }
   

@@ -43,22 +43,8 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     private static Texture selectedSkin = makeTexture(SIZE, SIZE, Color.YELLOW);
     private static Texture rangeCircle;
 
-    static {
-        Pixmap circlePixmap = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
-        circlePixmap.setBlending(Pixmap.Blending.None);
-        circlePixmap.setColor(1, 1, 1, .5f);
-        circlePixmap.drawCircle(50, 50, 50);
-        rangeCircle = new Texture(circlePixmap);
-    }
-    private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {
-        {
-            put(0, makeTexture(SIZE, SIZE, Color.BLUE));
-            put(1, makeTexture(SIZE, SIZE, Color.RED));
-            put(2, makeTexture(SIZE, SIZE, Color.WHITE));
-            put(3, makeTexture(SIZE, SIZE, Color.PURPLE));
-            put(4, makeTexture(SIZE, SIZE, Color.PINK));
-        }
-    };
+
+    private final static Map<Integer, Texture> colorMap = new HashMap<>();
 
 
 
@@ -71,6 +57,20 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         this.displayX = x;
         this.displayY = y;
         this.vel = new Vector3(0, 0, 0);
+    }
+
+    public static void makeTextures() {
+        Pixmap circlePixmap = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
+        circlePixmap.setBlending(Pixmap.Blending.None);
+        circlePixmap.setColor(1, 1, 1, .5f);
+        circlePixmap.drawCircle(50, 50, 50);
+        rangeCircle = new Texture(circlePixmap);
+
+        colorMap.put(0, makeTexture(SIZE, SIZE, Color.BLUE));
+        colorMap.put(1, makeTexture(SIZE, SIZE, Color.RED));
+        colorMap.put(2, makeTexture(SIZE, SIZE, Color.WHITE));
+        colorMap.put(3, makeTexture(SIZE, SIZE, Color.PURPLE));
+        colorMap.put(4, makeTexture(SIZE, SIZE, Color.PINK));
     }
 
     public void draw(Batch batch, float delta, boolean showAttackRadius) {
