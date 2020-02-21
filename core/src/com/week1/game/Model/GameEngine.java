@@ -8,7 +8,6 @@ import com.week1.game.InfoUtil;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.PlayerBase;
 import com.week1.game.Model.World.Basic4WorldBuilder;
-import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Renderer.RenderConfig;
 
@@ -30,7 +29,6 @@ public class GameEngine {
     public Batch getBatch() {
         return batch;
     }
-
 
     public GameEngine(IEngineToRendererAdapter engineToRendererAdapter,IEngineToNetworkAdapter engineToNetworkAdapter, InfoUtil util) {
 
@@ -57,7 +55,6 @@ public class GameEngine {
 
     public void receiveMessages(List<? extends GameMessage> messages) {
         communicationTurn += 1;
-
         Gdx.app.log("ttl4 - receiveMessages", "start of communication turn: " + communicationTurn);
 
         // Modify things like mana, deal damage, moving units, and checking if the game ends
@@ -75,6 +72,7 @@ public class GameEngine {
             message.process(gameState, util);
             Gdx.app.log("GameEngine: receiveMessages()", "done processing message");
         }
+
         Gdx.app.log("pjb3 - receiveMessages", "end of communication turn: " + communicationTurn);
     }
 

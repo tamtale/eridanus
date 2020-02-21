@@ -15,8 +15,8 @@ public class TowerDetailsMessage extends GameMessage {
     
     private List<List<List<BlockSpec>>> details;
     
-    public TowerDetailsMessage(int playerID, List<List<List<BlockSpec>>> details) {
-        super(playerID, MESSAGE_TYPE);
+    public TowerDetailsMessage(int playerID, List<List<List<BlockSpec>>> details, int intHash) {
+        super(playerID, MESSAGE_TYPE, intHash);
         this.details = details;
         
     }
