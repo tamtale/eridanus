@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
 import com.week1.game.Model.Entities.Building;
+import com.week1.game.Model.Entities.PlayerBase;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
@@ -32,7 +33,6 @@ public class GameScreen implements Screen {
 	public static float THRESHOLD = .2f;
 	public static int PIXELS_PER_UNIT = 64;
 	private String[] args;
-	private float curTime = 0f;
 	private Client networkClient;
 	private GameEngine engine;
 	private Renderer renderer;
@@ -229,6 +229,8 @@ public class GameScreen implements Screen {
 	public void render(float delta) {
 		if (!engine.started()) {
 			connectionStage.draw();
+			PlayerBase.createTextures();
+			Unit.makeTextures();
 //			renderer.renderInfo();
 			return;
 		}
@@ -243,15 +245,15 @@ public class GameScreen implements Screen {
 			pressedStartbtn = true;
 		}
 
-
+//		engine.
 		float time = Gdx.graphics.getDeltaTime();
-		curTime += time;
-		if (curTime > THRESHOLD) {
-			curTime = 0;
-			engine.processMessages();
-		}
+//		curTime += time;
+//		if (curTime > THRESHOLD) {
+//			curTime = 0;
+//			engine.processMessages();
+//		}
 		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
-		renderer.render((curTime > THRESHOLD) ? 0 : time); // Only move the units from their state position
+		renderer.render(time); // Only move the units from their state position
 														   // if the threshold was not passed.
 	}
 

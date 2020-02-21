@@ -17,11 +17,23 @@ public class PlayerBase extends Building {
     public float x, y;
     private double hp, maxHp;
     private int playerID;
+    private static boolean initialized = false;
+
     private static Texture skin;
     protected static final int SIDELENGTH = 8;
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
 
-    static {
+
+    public PlayerBase(double initialHp, float x, float y, int playerID) {
+        this.hp = initialHp;
+        this.maxHp = initialHp;
+        this.playerID = playerID;
+        this.x = x;
+        this.y = y;
+        this.initialized = true;
+    }
+
+    public static void createTextures() {
         Pixmap towerUnscaled = new Pixmap(Gdx.files.internal("basetop.png"));
         Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, Pixmap.Format.RGBA8888);
         towerScaled.drawPixmap(towerUnscaled, 0, 0, towerUnscaled.getWidth(), towerUnscaled.getHeight(), 0, 0, SIDELENGTH, SIDELENGTH);
@@ -51,22 +63,16 @@ public class PlayerBase extends Building {
         circlePixmap.fillCircle(50, 50, 50);
         colorMap.put(4, new Texture(circlePixmap));
         circlePixmap.dispose();
-    }
-
-    public PlayerBase(double initialHp, float x, float y, int playerID) {
-        this.hp = initialHp;
-        this.maxHp = initialHp;
-        this.playerID = playerID;
-        this.x = x;
-        this.y = y;
-
+        initialized = true;
     }
 
     public void draw(Batch batch, boolean showSpawnRadius) {
         if (showSpawnRadius) {
             batch.draw(colorMap.get(playerID), x - (float)placementRange, y - (float)placementRange, (float)placementRange * 2, (float)placementRange * 2);
         }
-        batch.draw(getSkin(), this.x - (SIDELENGTH / 2f), this.y - (SIDELENGTH / 2f), SIDELENGTH, SIDELENGTH);
+        if (initialized) {
+            batch.draw(getSkin(), this.x - (SIDELENGTH / 2f), this.y - (SIDELENGTH / 2f), SIDELENGTH, SIDELENGTH);
+        }
         drawHealthBar(batch, x, y, 0, SIDELENGTH, hp, maxHp);
     }
     
