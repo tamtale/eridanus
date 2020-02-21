@@ -1,5 +1,6 @@
 package com.week1.game.Networking.Messages.Game;
 
+import com.badlogic.gdx.Gdx;
 import com.week1.game.InfoUtil;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.TowerLoadouts;
@@ -23,7 +24,7 @@ public class TowerDetailsMessage extends GameMessage {
 
     @Override
     public boolean process(GameState inputState, InfoUtil util){
-        System.out.println("Processing TowerDetailsMessage!");
+        Gdx.app.log("TowerDetailsMessage", "Processing TowerDetailsMessage!");
         inputState.setTowerInfo(new TowerLoadouts(details));
         return true;
     }
