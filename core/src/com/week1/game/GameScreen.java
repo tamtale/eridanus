@@ -253,13 +253,7 @@ public class GameScreen implements Screen {
 			pressedStartbtn = true;
 		}
 
-//		engine.
 		float time = Gdx.graphics.getDeltaTime();
-//		curTime += time;
-//		if (curTime > THRESHOLD) {
-//			curTime = 0;
-//			engine.processMessages();
-//		}
 		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
 		renderer.render(time); // Only move the units from their state position
 														   // if the threshold was not passed.
