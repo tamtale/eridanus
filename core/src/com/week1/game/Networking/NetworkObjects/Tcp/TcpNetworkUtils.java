@@ -1,6 +1,7 @@
-package com.week1.game.Networking;
+package com.week1.game.Networking.NetworkObjects.Tcp;
 
 import com.badlogic.gdx.Gdx;
+import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.net.*;
@@ -8,7 +9,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Enumeration;
 import java.util.List;
 
-public class NetworkUtils {
+public class TcpNetworkUtils {
     private static final String TAG = "NetworkUtils - lji1";
     private static String addr;
     public static String getLocalHostAddr() {
@@ -16,8 +17,8 @@ public class NetworkUtils {
 //        https://stackoverflow.com/questions/8462498/how-to-determine-internet-network-interface-in-java
 
 
-        if (NetworkUtils.addr != null ) {
-            return NetworkUtils.addr;
+        if (TcpNetworkUtils.addr != null ) {
+            return TcpNetworkUtils.addr;
         }
         
         String ip;
@@ -46,8 +47,8 @@ public class NetworkUtils {
                             // If it works, then this ip is usable
                             socket.connect(new InetSocketAddress("google.com", 80));
                             Gdx.app.log(TAG, "Obtained local host address: " + addr.getHostAddress() + " with port: " + i);
-                            NetworkUtils.addr = addr.getHostAddress();
-                            return NetworkUtils.addr;
+                            TcpNetworkUtils.addr = addr.getHostAddress();
+                            return TcpNetworkUtils.addr;
                         } catch (Exception e) {
                             Gdx.app.log(TAG, "Port failed on: " + addr + ": " + i);
 //                            e.printStackTrace();
@@ -70,7 +71,7 @@ public class NetworkUtils {
      * @param args - Either "host" or "client <ip address> <port number> <optional - start>"
      * @return The client object
      */
-    public static Client initNetworkObjects(String[] args, INetworkClientToEngineAdapter adapter, List<List<BlockSpec>> details) {
+    public static TcpClient initNetworkObjects(String[] args, INetworkClientToEngineAdapter adapter, List<List<BlockSpec>> details) {
         final String TAG = "initNetworkObjects - lji1";
         Gdx.app.log(TAG, "Local host address: " + getLocalHostAddr());
         
@@ -79,7 +80,7 @@ public class NetworkUtils {
             Gdx.app.log(TAG, "\t" + args[i]);
         }
 
-        Client c =  null;
+        TcpClient c =  null;
         try {
             if (args[0].equals("host")) {
                 Gdx.app.log(TAG, "Host option chosen.");
@@ -93,13 +94,13 @@ public class NetworkUtils {
                 } catch (Exception e) {
                     throw new IndexOutOfBoundsException("Expected arguments in format: host <portnumber> <start (optional)>");
                 }
-                Host h = new Host(port);
+                TcpHost h = new TcpHost(port);
                 // start listening for messages from clients
                 h.listenForClientMessages();
 
 
                 // Now make the client stuff
-                c = new Client(localIpAddr, h.getPort(), adapter);
+                c = new TcpClient(localIpAddr, h.getPort(), adapter);
                 c.sendJoinMessage(details);
 
             } else if  (args[0].equals("client")) {
@@ -109,7 +110,7 @@ public class NetworkUtils {
                 try {
                     String hostIpAddr = args[1];
                     int hostPort = Integer.parseInt(args[2]);
-                    c = new Client(hostIpAddr, hostPort, adapter);
+                    c = new TcpClient(hostIpAddr, hostPort, adapter);
                     c.sendJoinMessage(details);
 
                 }

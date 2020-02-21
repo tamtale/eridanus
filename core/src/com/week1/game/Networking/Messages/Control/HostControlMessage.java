@@ -1,7 +1,7 @@
 package com.week1.game.Networking.Messages.Control;
 
-import com.week1.game.Networking.Client;
-import com.week1.game.Networking.Host;
+import com.week1.game.Networking.NetworkObjects.AHost;
+import com.week1.game.Networking.NetworkObjects.Udp.UdpHost;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.MessageType;
 
@@ -12,5 +12,5 @@ public abstract class HostControlMessage extends AMessage {
         super(playerID, messageTypeID);
     }
     
-    public abstract void updateHost(Host h, DatagramPacket p);
+    public abstract void updateHost(AHost h, DatagramPacket p);
 }

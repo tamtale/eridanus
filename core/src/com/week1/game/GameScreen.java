@@ -15,12 +15,12 @@ import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.Unit;
-import com.week1.game.Networking.Client;
+import com.week1.game.Networking.NetworkObjects.Udp.UdpClient;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
-import com.week1.game.Networking.NetworkUtils;
+import com.week1.game.Networking.NetworkObjects.Udp.UdpNetworkUtils;
 import com.week1.game.Renderer.*;
 import com.week1.game.TowerBuilder.TowerPresets;
 
@@ -33,7 +33,7 @@ public class GameScreen implements Screen {
 	public static int PIXELS_PER_UNIT = 64;
 	private String[] args;
 	private float curTime = 0f;
-	private Client networkClient;
+	private UdpClient networkClient;
 	private GameEngine engine;
 	private Renderer renderer;
 	private ClickOracle clickOracle;
@@ -68,7 +68,7 @@ public class GameScreen implements Screen {
 
 		util = new InfoUtil(true);
 		
-		networkClient = NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
+		networkClient = UdpNetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
 			@Override
 			public void deliverUpdate(List<? extends GameMessage> messages) {
 				engine.receiveMessages(messages);

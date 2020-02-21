@@ -1,4 +1,4 @@
-package com.week1.game.Networking;
+package com.week1.game.Networking.NetworkObjects;
 
 import java.net.InetAddress;
 

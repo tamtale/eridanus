@@ -1,11 +1,13 @@
-package com.week1.game.Networking;
+package com.week1.game.Networking.NetworkObjects.Tcp;
 
 import com.badlogic.gdx.Gdx;
-import com.week1.game.Networking.Messages.*;
+import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.Control.ClientControlMessage;
 import com.week1.game.Networking.Messages.Control.JoinMessage;
 import com.week1.game.Networking.Messages.Control.StartMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
+import com.week1.game.Networking.Messages.MessageFormatter;
+import com.week1.game.Networking.NetworkObjects.AClient;
 import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.io.IOException;
@@ -14,7 +16,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.List;
 
-public class Client {
+public class TcpClient extends AClient {
     private static final String TAG = "Client - lji1";
     private DatagramSocket udpSocket;
     private InetAddress hostAddress;
@@ -24,7 +26,7 @@ public class Client {
     private int playerId = -1;
     
     
-    public Client(String hostIpAddr, int hostPort, INetworkClientToEngineAdapter adapter) throws IOException {
+    public TcpClient(String hostIpAddr, int hostPort, INetworkClientToEngineAdapter adapter) throws IOException {
         this.hostAddress = InetAddress.getByName(hostIpAddr);
         this.hostPort = hostPort;
         this.adapter = adapter;
@@ -60,7 +62,7 @@ public class Client {
         
         new Thread(() -> {
             while (true) {
-                byte[] buf = new byte[Host.DANGEROUS_HARDCODED_MESSAGE_SIZE]; // TODO: size this according to message length
+                byte[] buf = new byte[TcpHost.DANGEROUS_HARDCODED_MESSAGE_SIZE]; // TODO: size this according to message length
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
                 try {

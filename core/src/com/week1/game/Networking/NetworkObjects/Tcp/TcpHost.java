@@ -1,46 +1,41 @@
-package com.week1.game.Networking;
+package com.week1.game.Networking.NetworkObjects.Tcp;
 
 import com.badlogic.gdx.Gdx;
-import com.week1.game.Networking.Messages.*;
 import com.week1.game.Networking.Messages.Control.HostControlMessage;
-import com.week1.game.TowerBuilder.BlockSpec;
+import com.week1.game.Networking.Messages.MessageFormatter;
+import com.week1.game.Networking.Messages.Update;
+import com.week1.game.Networking.NetworkObjects.AHost;
+import com.week1.game.Networking.NetworkObjects.Player;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.week1.game.Networking.Messages.MessageFormatter.parseHostControlMessage;
 
-public class Host {
-    public static final int DANGEROUS_HARDCODED_MESSAGE_SIZE = 10000;
+public class TcpHost extends AHost {
 
     private static final String TAG = "Host - lji1";
     private static final int UPDATE_INTERVAL = 200;
     private int port;
     public DatagramSocket udpSocket;
     
-    public Map<InetAddress, Player> registry = new HashMap<>();
     
-    public boolean gameStarted = false;
-//    private StringBuilder aggregateMessage = new StringBuilder();
     
     private ConcurrentLinkedQueue<String> incomingMessages = new ConcurrentLinkedQueue<>();
     
-    public List<List<List<BlockSpec>>> towerDetails = new ArrayList<>(); // first index is implicitly the player id
-    public int runningPlayerId = 0;
     
-    
-    public Host(int port) throws IOException {
+    public TcpHost(int port) throws IOException {
         this.udpSocket = new DatagramSocket(port);
         udpSocket.setReuseAddress(true);
 //        this.port = udpSocket.getLocalPort();
         this.port = port;
         
         Gdx.app.log(TAG, "Creating socket for host instance with address: " +
-                NetworkUtils.getLocalHostAddr() + " on port: " + this.port);
+                TcpNetworkUtils.getLocalHostAddr() + " on port: " + this.port);
         
     }
     
@@ -88,7 +83,12 @@ public class Host {
             }
         }).start();
     }
-    
+
+    @Override
+    public void sendMessage(String msg, Player player) {
+        throw new IndexOutOfBoundsException("UNIMPLEMENTED!");
+    }
+
     private void processMessage(DatagramPacket packet) {
         String msg = new String(packet.getData()).trim();
         

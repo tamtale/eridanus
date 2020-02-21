@@ -1,9 +1,10 @@
 package com.week1.game.Networking.Messages.Control;
 
 import com.badlogic.gdx.Gdx;
-import com.week1.game.Networking.Host;
+import com.week1.game.Networking.NetworkObjects.AHost;
+import com.week1.game.Networking.NetworkObjects.Udp.UdpHost;
 import com.week1.game.Networking.Messages.MessageType;
-import com.week1.game.Networking.Player;
+import com.week1.game.Networking.NetworkObjects.Player;
 import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.net.DatagramPacket;
@@ -21,7 +22,7 @@ public class JoinMessage extends HostControlMessage {
     }
 
     @Override 
-    public void updateHost(Host h, DatagramPacket p) {
+    public void updateHost(AHost h, DatagramPacket p) {
         Gdx.app.log(TAG, "Host received a 'join' message from: " + p.getAddress().getHostAddress());
 
         h.towerDetails.add(details);
