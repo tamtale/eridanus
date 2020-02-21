@@ -2,8 +2,11 @@ package com.week1.game.Networking;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.Networking.Messages.*;
-import com.week1.game.Networking.Messages.Control.ControlMessage;
+import com.week1.game.Networking.Messages.Control.ClientControlMessage;
+import com.week1.game.Networking.Messages.Control.JoinMessage;
+import com.week1.game.Networking.Messages.Control.StartMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
+import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -28,9 +31,6 @@ public class Client {
         
         this.udpSocket = new DatagramSocket();
         Gdx.app.log(TAG, "Created socket for client instance on port: " + udpSocket.getLocalPort());
-        
-        Gdx.app.log(TAG, "Sending join message.");
-        sendStringMessage("join");
         
         awaitUpdates();
     }
@@ -60,7 +60,7 @@ public class Client {
         
         new Thread(() -> {
             while (true) {
-                byte[] buf = new byte[1024]; // TODO: size this according to message length
+                byte[] buf = new byte[Host.DANGEROUS_HARDCODED_MESSAGE_SIZE]; // TODO: size this according to message length
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
                 try {
@@ -68,9 +68,9 @@ public class Client {
                     udpSocket.receive(packet);
                     String messages = new String(packet.getData()).trim();
                     
-                    Gdx.app.debug(TAG, "About to try parsing message: " + messages);
+                    Gdx.app.log(TAG, "About to try parsing message: " + messages);
                     // try parsing as a control message first
-                    ControlMessage controlMsg = MessageFormatter.parseControlMessage(messages);
+                    ClientControlMessage controlMsg = MessageFormatter.parseClientControlMessage(messages);
                     if (controlMsg != null) {
                         Gdx.app.log(TAG, "Received control message: " + controlMsg);
                         controlMsg.updateClient(this);
@@ -100,6 +100,14 @@ public class Client {
     }
     
     public void sendStartMessage() {
-        this.sendStringMessage("start");
+        System.out.println("Trying to send start message.");
+        // the client doesn't know its player id until later, so just use -1
+        this.sendStringMessage(MessageFormatter.packageMessage(new StartMessage(-1)));
+    }
+    
+    public void sendJoinMessage(List<List<BlockSpec>> details) {
+        Gdx.app.log(TAG, "Sending join message.");
+        // the client doesn't know its player id until later, so just use -1
+        sendStringMessage(MessageFormatter.packageMessage(new JoinMessage(-1, details)));
     }
 }
