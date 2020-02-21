@@ -2,7 +2,6 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.PathFinder;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -14,9 +13,8 @@ import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Model.World.IWorldBuilder;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
+import com.week1.game.TowerBuilder.TowerDetails;
 
-import static com.week1.game.Model.Entities.TowerType.BASIC;
-import static com.week1.game.Model.Entities.TowerType.SNIPER;
 import static com.week1.game.Model.StatsConfig.*;
 
 
@@ -32,13 +30,12 @@ public class GameState {
     private Array<SteeringAgent> agents;
     private IWorldBuilder worldBuilder;
     private GameWorld world;
+    
+    private TowerLoadouts towerLoadouts;
     /*
      * Runnable to execute immediately after the game state has been initialized.
      */
     private Runnable postInit;
-
-    private TowerInfo towerInfo = new TowerInfo(); // TODO: should be set by an initialization message with tower info for foreign player towers
-
     private boolean fullyInitialized = false;
 
     public GameState(IWorldBuilder worldBuilder, Runnable postInit){
@@ -74,41 +71,14 @@ public class GameState {
     public void initializeGame(int numPlayers) {
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
-//        if (numPlayers == 1) {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 50, 50, 0));
-//            removePlayerBase(50, 50);
-//        } else if (numPlayers == 2) {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-//            removePlayerBase(15, 15);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
-//            removePlayerBase(85, 85);
-//        } else if (numPlayers == 3) {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-//            removePlayerBase(15, 15);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 50, 1));
-//            removePlayerBase(50, 85);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
-//            removePlayerBase(15, 85);
-//        } else {
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 15, 0));
-//            removePlayerBase(15, 15);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 85, 1));
-//            removePlayerBase(85, 85);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 15, 85, 2));
-//            removePlayerBase(15, 85);
-//            playerBases.add(new PlayerBase(playerBaseInitialHp, 85, 15, 3));
-//            removePlayerBase(85, 15);
-//        }
-
 
         // Create the correct amount of actual players
         Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
             playerStats.add(new PlayerStat());
-
             playerBases.add(new PlayerBase(playerBaseInitialHp, (int) startLocs[i].x, (int) startLocs[i].y, i));
-            removePlayerBase((int) startLocs[i].x, (int) startLocs[i].y);
         }
+
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
         fullyInitialized = true;
         postInit.run();
@@ -175,17 +145,15 @@ public class GameState {
         SteeringAgent agent = new SteeringAgent(u);
         u.agent = agent;
         u.ID = minionCount;
-//        System.out.println(u.agent);
-//        System.out.println(u.ID);
         units.add(u);
         minionCount += 1;
     }
 
-    public void addTower(Tower t) {
+    public void addTower(Tower t, int playerID) {
         towers.add(t);
         int startX = (int) t.x - 4;
         int startY = (int) t.y - 4;
-        TowerFootprint footprint = towerInfo.getTowerFootprint(t.getTowerType());
+        TowerFootprint footprint = towerLoadouts.getTowerDetails(playerID, t.getTowerType()).getFootprint();
         boolean[][] fp = footprint.getFp();
         int i = 0;
         for(boolean[] bool: fp){
@@ -201,9 +169,7 @@ public class GameState {
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
-//        Vector2 vec2 = new Vector2(goal.x, goal.y);
         SteeringAgent agent = unit.getAgent();
-//        System.out.println(agent);
         Vector3 unitPos = new Vector3((int) unit.x, (int) unit.y, 0); //TODO: make acutal z;
 
         OutputPath path = new OutputPath();
@@ -216,9 +182,6 @@ public class GameState {
             }
         }
         Vector3 goalPos = new Vector3((int) goal.x, (int) goal.y, (int) goal.z);
-//        System.out.println("unitPos" + unitPos);
-//        System.out.println("goalPos" + goalPos);
-//        System.out.println("UnitPosIndex " + graph.getIndex(unitPos));
         path = graph.search(unitPos, goalPos);
         if (path != null) {
             unit.setPath(path);
@@ -352,61 +315,6 @@ public class GameState {
             }
         }
     }
-
-    public double getTowerHp(TowerType towerType) {
-        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
-        if (towerType == BASIC) {
-            return tempTower1Health;
-        } else if (towerType == SNIPER) {
-            return tempTower2Health;
-        } else {
-            return tempTower3Health;
-        }
-    }
-
-    public double getTowerCost(TowerType towerType) {
-        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
-        if (towerType == BASIC) {
-            return tempTower1Cost;
-        } else if (towerType == SNIPER) {
-            return tempTower2Cost;
-        } else {
-            return tempTower3Cost;
-        }
-    }
-
-    public double getTowerDmg(TowerType towerType) {
-        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
-        if (towerType == BASIC) {
-            return tempTower1Damage;
-        } else if (towerType == SNIPER) {
-            return tempTower2Damage;
-        } else {
-            return tempTower3Damage;
-        }
-    }
-
-    public double getTowerRange(TowerType towerType) {
-        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
-        if (towerType == BASIC) {
-            return tempTower1Range;
-        } else if (towerType == SNIPER) {
-            return tempTower2Range;
-        } else {
-            return tempTower3Range;
-        }
-    }
-
-    public Pixmap getTowerPixmap(TowerType towerType) {
-        // TODO fill this out with dynamically sent messages. Currently it will just look up things from the current tower
-        if (towerType == BASIC) {
-            return basicTexture;
-        } else if (towerType == SNIPER) {
-            return sniperTexture;
-        } else {
-            return tankTexture;
-        }
-    }
   
     public boolean findNearbyStructure(float x, float y, int playerId) {
         // Check if it is near the home base
@@ -426,18 +334,17 @@ public class GameState {
         return false;
     }
 
-    public boolean overlapsExistingStructure(int towerType, int x, int y) {
-        TowerFootprint footprint = towerInfo.getTowerFootprint(towerType);
-        // TODO: check for overlaps with base also
+    public boolean overlapsExistingStructure(int playerId, int towerType, int x, int y) {
+        TowerFootprint footprint = towerLoadouts.getTowerDetails(playerId, towerType).getFootprint();
         for (Tower t: towers) {
-            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerFootprint(t.getTowerType()), (int)t.x, (int)t.y)) {
+            if (TowerFootprint.overlap(footprint, x, y, towerLoadouts.getTowerDetails(t.getPlayerId(), t.getTowerType()).getFootprint(), (int)t.x, (int)t.y)) {
                 return true;
             }
         }
         
         for (PlayerBase pb: playerBases) {
             // use -1 as towerType for the player base
-            if (TowerFootprint.overlap(footprint, x, y, towerInfo.getTowerFootprint(-1), (int)pb.x, (int)pb.y)) {
+            if (TowerFootprint.overlap(footprint, x, y, towerLoadouts.getTowerDetails(-1, -1).getFootprint(), (int)pb.x, (int)pb.y)) {
                 return true;
             }
         }
@@ -478,6 +385,13 @@ public class GameState {
             }
         }
         return true;
+    }
+    
+    public void setTowerInfo(TowerLoadouts info) {
+        this.towerLoadouts = info;
+    }
+    public TowerDetails getTowerDetails(int playerId, int towerId) {
+        return this.towerLoadouts.getTowerDetails(playerId, towerId);
     }
 
     public boolean getGameOver() {

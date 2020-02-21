@@ -1,6 +1,9 @@
 package com.week1.game;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
@@ -14,6 +17,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
 import com.week1.game.Model.Entities.Building;
+import com.week1.game.Model.Entities.PlayerBase;
+import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
@@ -22,7 +27,9 @@ import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkUtils;
 import com.week1.game.Renderer.*;
+import com.week1.game.TowerBuilder.TowerPresets;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -30,7 +37,6 @@ public class GameScreen implements Screen {
 	public static float THRESHOLD = .2f;
 	public static int PIXELS_PER_UNIT = 64;
 	private String[] args;
-	private float curTime = 0f;
 	private Client networkClient;
 	private GameEngine engine;
 	private Renderer renderer;
@@ -40,6 +46,7 @@ public class GameScreen implements Screen {
 	//This is a temporary stage that is displayed before connection of clients
 	private Stage connectionStage;
 	private boolean pressedStartbtn;
+	private boolean createdTextures;
 
 	private void makeTempStage() {
 		connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
@@ -53,8 +60,6 @@ public class GameScreen implements Screen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				networkClient.sendStartMessage();
-//				Gdx.input.setInputProcessor(clickOracle);
-//				connectionStage.dispose();
 			}
 		});
 	}
@@ -67,6 +72,7 @@ public class GameScreen implements Screen {
 		pressedStartbtn = false;
 
 		util = new InfoUtil(true);
+		
 		networkClient = NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
 			@Override
 			public void deliverUpdate(List<? extends GameMessage> messages) {
@@ -77,7 +83,13 @@ public class GameScreen implements Screen {
 			public void setPlayerId(int playerId) {
 				engine.setEnginePlayerId(playerId);
 			}
-		});
+		}, 
+				Arrays.asList(
+						TowerPresets.getTower(1).getLayout(),
+						TowerPresets.getTower(3).getLayout(),
+						TowerPresets.getTower(5).getLayout()
+						)
+	); // TODO: actually pass the towers
 
 		createNewGame();
 	}
@@ -237,8 +249,13 @@ public class GameScreen implements Screen {
 	public void render(float delta) {
 		if (!engine.started()) {
 			connectionStage.draw();
-//			renderer.renderInfo();
 			return;
+		}
+		if (!createdTextures) {
+			PlayerBase.createTextures();
+			Unit.makeTextures();
+			Tower.makeTextures();
+			createdTextures = true;
 		}
 
 		if (!pressedStartbtn) {
@@ -251,16 +268,9 @@ public class GameScreen implements Screen {
 			pressedStartbtn = true;
 		}
 
-
 		float time = Gdx.graphics.getDeltaTime();
-		curTime += time;
-		if (curTime > THRESHOLD) {
-			curTime = 0;
-			engine.processMessages();
-		}
-//		engine.updateState(time);
 		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
-		renderer.render((curTime > THRESHOLD) ? 0 : time); // Only move the units from their state position
+		renderer.render(time); // Only move the units from their state position
 														   // if the threshold was not passed.
 	}
 

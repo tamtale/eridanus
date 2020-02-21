@@ -40,7 +40,7 @@ public class MainMenuScreen implements Screen {
         playButton.setSize(128,64);
         playButton.setPosition(GameController.VIRTUAL_WIDTH/2 - playButton.getWidth()/2 - 10, 24);
         //Set the background image
-        stage.addActor(new Image(new TextureRegionDrawable(new Texture("main_menu.png"))));
+        stage.addActor(new Image(new TextureRegionDrawable(new Texture("menu.png"))));
         stage.addActor(playButton);
 
     }

@@ -2,27 +2,23 @@ package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.week1.game.InfoUtil;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.PlayerBase;
 import com.week1.game.Model.World.Basic4WorldBuilder;
 import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
-
-import com.badlogic.gdx.math.Vector3;
-import com.week1.game.InfoUtil;
-import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Renderer.RenderConfig;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.week1.game.GameScreen.THRESHOLD;
 
 public class GameEngine {
 
     private GameState gameState;
-    private ConcurrentLinkedQueue<GameMessage> messageQueue;
     private int communicationTurn = 0;
     private SpriteBatch batch;
     private IEngineToRendererAdapter engineToRenderer;
@@ -35,8 +31,9 @@ public class GameEngine {
         return batch;
     }
 
+
     public GameEngine(IEngineToRendererAdapter engineToRendererAdapter,IEngineToNetworkAdapter engineToNetworkAdapter, InfoUtil util) {
-        messageQueue = new ConcurrentLinkedQueue<>();
+
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
         gameState = new GameState(
                 Basic4WorldBuilder.ONLY,
@@ -60,15 +57,25 @@ public class GameEngine {
 
     public void receiveMessages(List<? extends GameMessage> messages) {
         communicationTurn += 1;
-        synchronousUpdateState();
-        if (communicationTurn % 10 == 0) {
-            // Time to sync up!
-            Gdx.app.log("pjb3 - receiveMessages", "BOUTTA YEET THIS: " + getGameStateHash() + " \n" + getGameStateString());
-            engineToNetwork.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash()));
-        }
-        Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn + " hash is: " + getGameStateHash());
 
-        messageQueue.addAll(messages);
+        Gdx.app.log("ttl4 - receiveMessages", "start of communication turn: " + communicationTurn);
+
+        // Modify things like mana, deal damage, moving units, and checking if the game ends
+        synchronousUpdateState();
+
+        // Process the messages that come in, if there are any.
+        // prints a message whether or not it has messages to process
+        if (messages.isEmpty()) {
+            Gdx.app.log("pjb3 - message processing", "Info: queue empty!");
+        } else {
+            Gdx.app.log("pjb3 - message processing", "Info: queue nonempty!");
+        }
+        for (GameMessage message : messages) {
+            Gdx.app.log("GameEngine: receiveMessages()", "processing message");
+            message.process(gameState, util);
+            Gdx.app.log("GameEngine: receiveMessages()", "done processing message");
+        }
+        Gdx.app.log("pjb3 - receiveMessages", "end of communication turn: " + communicationTurn);
     }
 
     public void synchronousUpdateState() {
@@ -88,24 +95,6 @@ public class GameEngine {
         }
         if (!sentGameOver && gameState.getGameOver()) {
             engineToRenderer.gameOver();
-        }
-    }
-
-//    public void updateState(float delta) {
-//        gameState.stepUnits(delta);
-//    }
-
-    public void processMessages() {
-        if (messageQueue.isEmpty()) {
-            Gdx.app.log("ttl4 - message processing", "queue empty!");
-            return;
-        } else {
-            Gdx.app.log("GameEngine: processMessages()", "queue nonempty!");
-        }
-        for (GameMessage message = messageQueue.poll(); message != null; message = messageQueue.poll()) {
-            Gdx.app.log("GameEngine: processMessages()", "processing message");
-            message.process(gameState, util);
-            Gdx.app.log("GameEngine: processMessages()", "done processing message");
         }
     }
 
