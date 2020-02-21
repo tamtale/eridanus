@@ -1,14 +1,11 @@
 package com.week1.game.TowerBuilder;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerFootprint;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static java.lang.Integer.max;
-import static java.lang.Math.min;
 
 public class TowerDetails {
     private double hp = 0;
@@ -22,6 +19,8 @@ public class TowerDetails {
     private List<BlockSpec> layout;
 //    private List<List<Integer>> footprint = new ArrayList<>();
     private TowerFootprint footprint;
+    private Texture skin; // This is the skin that should be rendered. Must be created at the beginning of the game.
+                          // May be able to be removed when we complete the move to 3D.
     
     
     public List<BlockSpec> getLayout() {

@@ -1,6 +1,9 @@
 package com.week1.game;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
@@ -15,6 +18,7 @@ import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.PlayerBase;
+import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
@@ -42,6 +46,7 @@ public class GameScreen implements Screen {
 	//This is a temporary stage that is displayed before connection of clients
 	private Stage connectionStage;
 	private boolean pressedStartbtn;
+	private boolean createdTextures;
 
 	private void makeTempStage() {
 		connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
@@ -229,10 +234,13 @@ public class GameScreen implements Screen {
 	public void render(float delta) {
 		if (!engine.started()) {
 			connectionStage.draw();
+			return;
+		}
+		if (!createdTextures) {
 			PlayerBase.createTextures();
 			Unit.makeTextures();
-//			renderer.renderInfo();
-			return;
+			Tower.makeTextures();
+			createdTextures = true;
 		}
 
 		if (!pressedStartbtn) {
