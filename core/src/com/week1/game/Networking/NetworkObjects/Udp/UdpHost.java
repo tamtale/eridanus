@@ -83,17 +83,6 @@ public class UdpHost extends AHost {
         }).start();
     }
 
-    @Override
-    public void sendMessage(String msg, Player player) {
-
-        DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length, player.address, player.port);
-        try {
-            this.udpSocket.send(packet);
-        } catch (IOException e) {
-            Gdx.app.error(TAG, "Failed to send message to: " + player.address);
-            e.printStackTrace();
-        }
-    }
 
     private void processMessage(DatagramPacket packet) {
         String msg = new String(packet.getData()).trim();
@@ -102,7 +91,7 @@ public class UdpHost extends AHost {
 //             Game has not started
             HostControlMessage ctrlMsg = parseHostControlMessage(msg);
             if (ctrlMsg != null) {
-                ctrlMsg.updateHost(this, packet);
+                ctrlMsg.updateHost(this, packet.getAddress(), packet.getPort());
             } else {
                 Gdx.app.error(TAG, "Unrecognized message before start of game.");
             }
@@ -118,13 +107,19 @@ public class UdpHost extends AHost {
     public void broadcastToRegisteredPlayers(String msg) {
         registry.values().forEach((player) -> {
             System.out.println("Sending message: " + msg + " to player: " + player.address);
-            DatagramPacket p = new DatagramPacket(msg.getBytes(), msg.getBytes().length, player.address, player.port);
-            try {
-                this.udpSocket.send(p);
-            } catch (IOException e) {
-                Gdx.app.error(TAG, "Failed to send message to: " + player.address);
-                e.printStackTrace();
-            }
+            sendMessage(msg, player);
         });
+    }
+    
+    @Override
+    public void sendMessage(String msg, Player player) {
+
+        DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length, player.address, player.port);
+        try {
+            this.udpSocket.send(packet);
+        } catch (IOException e) {
+            Gdx.app.error(TAG, "Failed to send message to: " + player.address);
+            e.printStackTrace();
+        }
     }
 }

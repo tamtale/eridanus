@@ -12,6 +12,7 @@ import com.week1.game.Networking.NetworkObjects.Player;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.util.Arrays;
 
 public class StartMessage extends HostControlMessage {
@@ -23,9 +24,9 @@ public class StartMessage extends HostControlMessage {
     }
 
     @Override 
-    public void updateHost(AHost h, DatagramPacket p) {
+    public void updateHost(AHost h, InetAddress addr, int port) {
         h.gameStarted = true;
-        Gdx.app.log(TAG, "Host received a 'start' message from: " + p.getAddress().getHostAddress());
+        Gdx.app.log(TAG, "Host received a 'start' message from: " + addr.getHostAddress());
 
         // tell each player what their id is
 //                int playerId = 0;

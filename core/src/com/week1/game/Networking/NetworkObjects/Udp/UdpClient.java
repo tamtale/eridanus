@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.*;
 import com.week1.game.Networking.Messages.Control.ClientControlMessage;
-import com.week1.game.Networking.Messages.Control.JoinMessage;
+import com.week1.game.Networking.Messages.Control.UdpJoinMessage;
 import com.week1.game.Networking.Messages.Control.StartMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.NetworkObjects.AClient;
@@ -110,6 +110,6 @@ public class UdpClient extends AClient {
     public void sendJoinMessage(List<List<BlockSpec>> details) {
         Gdx.app.log(TAG, "Sending join message.");
         // the client doesn't know its player id until later, so just use -1
-        sendStringMessage(MessageFormatter.packageMessage(new JoinMessage(-1, details)));
+        sendStringMessage(MessageFormatter.packageMessage(new UdpJoinMessage(-1, details)));
     }
 }

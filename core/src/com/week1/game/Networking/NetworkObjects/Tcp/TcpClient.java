@@ -3,24 +3,31 @@ package com.week1.game.Networking.NetworkObjects.Tcp;
 import com.badlogic.gdx.Gdx;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.Control.ClientControlMessage;
-import com.week1.game.Networking.Messages.Control.JoinMessage;
+import com.week1.game.Networking.Messages.Control.TcpJoinMessage;
+import com.week1.game.Networking.Messages.Control.UdpJoinMessage;
 import com.week1.game.Networking.Messages.Control.StartMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkObjects.AClient;
 import com.week1.game.TowerBuilder.BlockSpec;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.util.List;
 
 public class TcpClient extends AClient {
     private static final String TAG = "Client - lji1";
-    private DatagramSocket udpSocket;
+ 
+    private Socket tcpSocket;
     private InetAddress hostAddress;
     private int hostPort;
+    
+    private DataInputStream in;
+    private DataOutputStream out;
+    
     private INetworkClientToEngineAdapter adapter;
     
     private int playerId = -1;
@@ -31,8 +38,10 @@ public class TcpClient extends AClient {
         this.hostPort = hostPort;
         this.adapter = adapter;
         
-        this.udpSocket = new DatagramSocket();
-        Gdx.app.log(TAG, "Created socket for client instance on port: " + udpSocket.getLocalPort());
+        this.tcpSocket = new Socket(hostAddress, hostPort);
+        this.in = new DataInputStream(tcpSocket.getInputStream());
+        this.out = new DataOutputStream(tcpSocket.getOutputStream());
+        Gdx.app.log(TAG, "Created socket for client instance on port: " + tcpSocket.getLocalPort());
         
         awaitUpdates();
     }
@@ -41,15 +50,10 @@ public class TcpClient extends AClient {
         return hostAddress.toString() + ":" + hostPort;
     }
     
-    
-    // TODO: since using UDP protocol, doesn't guarantee ordering of messages -> update to TCP to resolve
     public void sendStringMessage(String msg) {
-        DatagramPacket p = new DatagramPacket(
-                msg.getBytes(), msg.getBytes().length, hostAddress, this.hostPort);
-
         Gdx.app.log(TAG, "About to send message: " + msg + " to: " + hostAddress + ":" + this.hostPort);
         try {
-            this.udpSocket.send(p);
+            this.out.writeUTF(msg);
             Gdx.app.log(TAG, "Sent message");
         } catch (IOException e) {
             Gdx.app.error(TAG, "Failed to send message: " + msg);
@@ -62,13 +66,15 @@ public class TcpClient extends AClient {
         
         new Thread(() -> {
             while (true) {
-                byte[] buf = new byte[TcpHost.DANGEROUS_HARDCODED_MESSAGE_SIZE]; // TODO: size this according to message length
-                DatagramPacket packet = new DatagramPacket(buf, buf.length);
+//                byte[] buf = new byte[TcpHost.DANGEROUS_HARDCODED_MESSAGE_SIZE]; // TODO: size this according to message length
+//                DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
                 try {
                     // blocks until a packet is received
-                    udpSocket.receive(packet);
-                    String messages = new String(packet.getData()).trim();
+//                    udpSocket.receive(packet);
+//                    String messages = new String(packet.getData()).trim();
+                    String messages = this.in.readUTF();
+                    
                     
                     Gdx.app.log(TAG, "About to try parsing message: " + messages);
                     // try parsing as a control message first
@@ -110,6 +116,6 @@ public class TcpClient extends AClient {
     public void sendJoinMessage(List<List<BlockSpec>> details) {
         Gdx.app.log(TAG, "Sending join message.");
         // the client doesn't know its player id until later, so just use -1
-        sendStringMessage(MessageFormatter.packageMessage(new JoinMessage(-1, details)));
+        sendStringMessage(MessageFormatter.packageMessage(new TcpJoinMessage(-1, details)));
     }
 }

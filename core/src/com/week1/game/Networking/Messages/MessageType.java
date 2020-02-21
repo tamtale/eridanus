@@ -13,6 +13,7 @@ public enum MessageType {
     PLAYERID,
     
     // Host Control Messages
-    JOIN,
+    TCPJOIN,
+    UDPJOIN,
     START
 }

@@ -7,9 +7,10 @@ import com.week1.game.Networking.Messages.Update;
 import com.week1.game.Networking.NetworkObjects.AHost;
 import com.week1.game.Networking.NetworkObjects.Player;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -21,18 +22,13 @@ public class TcpHost extends AHost {
     private static final String TAG = "Host - lji1";
     private static final int UPDATE_INTERVAL = 200;
     private int port;
-    public DatagramSocket udpSocket;
-    
-    
+    public ServerSocket serverSocket;
     
     private ConcurrentLinkedQueue<String> incomingMessages = new ConcurrentLinkedQueue<>();
     
-    
     public TcpHost(int port) throws IOException {
-        this.udpSocket = new DatagramSocket(port);
-        udpSocket.setReuseAddress(true);
-//        this.port = udpSocket.getLocalPort();
         this.port = port;
+        this.serverSocket = new ServerSocket(port);
         
         Gdx.app.log(TAG, "Creating socket for host instance with address: " +
                 TcpNetworkUtils.getLocalHostAddr() + " on port: " + this.port);
@@ -45,23 +41,42 @@ public class TcpHost extends AHost {
 
     public void listenForClientMessages() {
         
-        // Spawn a new thread to listen for messages incoming to the host
-        new Thread(() -> {
+        // Accepts connections to joining players
+        Thread joiningPlayersThead = new Thread(() -> {
             while (true) {
-                Gdx.app.log(TAG, "Host is listening for next client message.");
-                byte[] buf = new byte[DANGEROUS_HARDCODED_MESSAGE_SIZE]; // TODO: DANGEROUS HARDCODED
-                DatagramPacket packet = new DatagramPacket(buf, buf.length);
-
                 try {
-                    // blocks until a packet is received
-                    udpSocket.receive(packet);
-                    processMessage(packet);
-                    
+                    Socket socket = this.serverSocket.accept();
+                    Player player = new Player(
+                            this.runningPlayerId++,
+                            socket.getInetAddress(),
+                            socket.getPort(),
+                            new DataInputStream(socket.getInputStream()),
+                            new DataOutputStream(socket.getOutputStream())
+                    );
+                    registry.put(socket.getInetAddress(), player);
+
+                    // spawn a thread to listen on this socket
+                    new Thread(() -> {
+                        String msg = "";
+                        while (true) {
+                            try {
+                                Gdx.app.log(TAG, "Host is listening for next client message from: "  + player.address);
+                                msg = player.in.readUTF();
+                                processMessage(msg, player.address, player.port);
+
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    }).start();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
+        joiningPlayersThead.start(); 
     }
     
     public void runUpdateLoop() {
@@ -84,25 +99,21 @@ public class TcpHost extends AHost {
         }).start();
     }
 
-    @Override
-    public void sendMessage(String msg, Player player) {
-        throw new IndexOutOfBoundsException("UNIMPLEMENTED!");
-    }
 
-    private void processMessage(DatagramPacket packet) {
-        String msg = new String(packet.getData()).trim();
+    private void processMessage(String msg, InetAddress addr, int port) {
+//        String msg = new String(packet.getData()).trim();
         
         if (!gameStarted) {
 //             Game has not started
             HostControlMessage ctrlMsg = parseHostControlMessage(msg);
             if (ctrlMsg != null) {
-                ctrlMsg.updateHost(this, packet);
+                ctrlMsg.updateHost(this, addr, port);
             } else {
                 Gdx.app.error(TAG, "Unrecognized message before start of game.");
             }
         } else {
             // Game has started
-            Gdx.app.log(TAG, "Host received an update message from: " + packet.getAddress().getHostAddress());
+            Gdx.app.log(TAG, "Host received an update message from: " + addr.getHostAddress());
             incomingMessages.add(msg);
         }
         
@@ -112,13 +123,17 @@ public class TcpHost extends AHost {
     public void broadcastToRegisteredPlayers(String msg) {
         registry.values().forEach((player) -> {
             System.out.println("Sending message: " + msg + " to player: " + player.address);
-            DatagramPacket p = new DatagramPacket(msg.getBytes(), msg.getBytes().length, player.address, player.port);
-            try {
-                this.udpSocket.send(p);
-            } catch (IOException e) {
-                Gdx.app.error(TAG, "Failed to send message to: " + player.address);
-                e.printStackTrace();
-            }
+            sendMessage(msg, player);
         });
+    }
+    
+    @Override
+    public void sendMessage(String msg, Player player) {
+        System.out.println(player);
+        try {
+            player.out.writeUTF(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
