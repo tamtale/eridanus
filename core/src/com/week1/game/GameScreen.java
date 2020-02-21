@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -175,9 +176,15 @@ public class GameScreen implements Screen {
 						renderer.getCamera().unproject(projected);
 					}
 
+
 					@Override
 					public void setTranslationDirection(Direction direction) {
 						renderer.setPanning(direction);
+					}
+
+					@Override
+					public Ray getRay(float screenX, float screenY) {
+						return renderer.getCam().getPickRay(screenX, screenY);
 					}
 
 					public Camera getCamera() {
@@ -188,6 +195,11 @@ public class GameScreen implements Screen {
 					@Override
 					public Unit selectUnit(Vector3 position) {
 						return engine.getGameState().findUnit(position);
+					}
+
+					@Override
+					public Unit selectUnitFromRay(Ray ray) {
+					  return engine.getGameState().findUnit(ray);
 					}
 
 					@Override

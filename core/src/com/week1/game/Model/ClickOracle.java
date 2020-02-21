@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Entities.TowerType;
 import com.week1.game.Model.Entities.Unit;
@@ -29,6 +30,7 @@ public class ClickOracle extends InputAdapter {
 
     private Vector3 touchPos = new Vector3();
     private Array<Unit> multiSelected = new Array<>();
+    private Ray pickedRay = new Ray();
 
     private Vector3 selectionLocationStart = new Vector3();
     private Vector3 selectionLocationEnd = new Vector3();
@@ -121,6 +123,11 @@ public class ClickOracle extends InputAdapter {
         }
 
         touchPos.set(screenX, screenY, 0);
+        // for 3D, get the ray that the click represents.
+        pickedRay.set(rendererAdapter.getRay(screenX, screenY));
+        // TODO generalize this.
+
+        // for 2D, just unproject.
         rendererAdapter.unproject(touchPos);
 
 
@@ -139,7 +146,8 @@ public class ClickOracle extends InputAdapter {
                 networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.TANK, networkAdapter.getPlayerId()));
             } else {
 
-                Unit unit = engineAdapter.selectUnit(touchPos);
+                // Unit unit = engineAdapter.selectUnit(touchPos);
+                Unit unit = engineAdapter.selectUnitFromRay(pickedRay);
                 if (unit == null) {
                     Gdx.app.log("ttl4 - ClickOracle", "nothing selected!");
                     System.out.println("aaaaa");
@@ -157,8 +165,7 @@ public class ClickOracle extends InputAdapter {
                     }
 
                 } else {
-                    System.out.println("bbbbb");
-                    Gdx.app.log("ttl4 - ClickOracle", "selected selected!");
+                    Gdx.app.log("ttl4 - ClickOracle", "selected a unit!");
                     deMultiSelect();
                     selectionLocationStart.set(unit.x, unit.y, 0);
                     selectionLocationEnd.set(unit.x, unit.y, 0);

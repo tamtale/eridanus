@@ -8,7 +8,10 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.week1.game.AIMovement.SteeringAgent;
@@ -211,6 +214,15 @@ public class GameState implements RenderableProvider {
            if (unit.contains(position.x, position.y))  {
                return unit;
            }
+        }
+        return null;
+    }
+
+    private Vector3 intersect = new Vector3(0, 0, 1);
+    private Plane two = new Plane(intersect, -2);
+    public Unit findUnit(Ray ray) {
+        if (Intersector.intersectRayPlane(ray, two, intersect)) {
+            Gdx.app.log("findUnit", "intersection at: " + intersect.toString());
         }
         return null;
     }
