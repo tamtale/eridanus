@@ -204,7 +204,9 @@ public class GameState {
             unit.draw(batch, renderConfig.getDelta(), showAttackRadius);
         }
 
-        for (Tower tower : towers) {
+        Tower tower;
+        for (int i = 0; i < towers.size; i++) {
+            tower = towers.get(i);
             if (tower.getPlayerId() == renderPlayerId) {
                 // Only show the spawn radius for your own tower.
                 tower.draw(batch, showAttackRadius, showSpawnRadius);
@@ -213,7 +215,9 @@ public class GameState {
             }
         }
 
-        for (PlayerBase playerBase : playerBases) {
+        PlayerBase playerBase;
+        for (int i = 0; i < playerBases.size; i++) {
+            playerBase = playerBases.get(i);
             if (playerBase.getPlayerId() == renderPlayerId) {
                 // only show the spawn radius for your own base
                 playerBase.draw(batch, showSpawnRadius);
