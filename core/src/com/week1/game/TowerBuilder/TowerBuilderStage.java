@@ -40,15 +40,15 @@ public class TowerBuilderStage {
 
     //make skins
     private TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
-            new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"),
-            new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"),
-            new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"), new BitmapFont());
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("8e7186")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("8e7186")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("8e7186")), new BitmapFont());
 
 
     private TextButton.TextButtonStyle pressedBlueStyle = new TextButton.TextButtonStyle(
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLUE),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLUE),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLUE), new BitmapFont());
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("574053")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("574053")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("574053")), new BitmapFont());
 
     private boolean isBuildMode = false;
 
