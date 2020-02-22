@@ -35,6 +35,11 @@ public class TowerBuilderCamera {
     ModelInstance space;
     Boolean loading;
 
+    //keep a 3d internal representation of the grid and store whether each block is
+
+    //add a build button
+    //when clicked(selected) add a save button and a change material button and remove block button and add block button
+
 
     private void initEnvironment() {
         environment = new Environment();
@@ -128,4 +133,7 @@ public class TowerBuilderCamera {
     public TowerDetails getCurrTowerDetails() {
         return this.currTowerDetails;
     }
+
+    //Some way to register clicks
+
 }

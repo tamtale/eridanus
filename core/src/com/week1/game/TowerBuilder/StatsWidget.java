@@ -20,7 +20,6 @@ public class StatsWidget extends Actor {
         panelstyle.font = new BitmapFont();
 
         label = new Label("",
-//                new Skin(Gdx.files.internal("uiskin.json")));
                 panelstyle);
         label.setAlignment(Align.center);
 
