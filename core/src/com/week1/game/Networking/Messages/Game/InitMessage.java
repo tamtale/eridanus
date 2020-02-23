@@ -1,5 +1,6 @@
 package com.week1.game.Networking.Messages.Game;
 
+import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.InfoUtil;
@@ -16,7 +17,7 @@ public class InitMessage extends GameMessage {
     }
 
     @Override
-    public boolean process(GameState inputState, InfoUtil util){
+    public boolean process(GameEngine engine, GameState inputState, InfoUtil util){
         inputState.initializeGame(this.numPlayers);
         return true;
     }
