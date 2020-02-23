@@ -11,8 +11,8 @@ public class InitMessage extends GameMessage {
     
     private int numPlayers;
 
-    public InitMessage(int numPlayers, int playerID){
-        super(playerID, MESSAGE_TYPE);
+    public InitMessage(int numPlayers, int playerID, int intHash){
+        super(playerID, MESSAGE_TYPE, intHash);
         this.numPlayers = numPlayers;
     }
 

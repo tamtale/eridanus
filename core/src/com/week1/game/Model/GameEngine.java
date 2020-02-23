@@ -1,4 +1,5 @@
 package com.week1.game.Model;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -8,7 +9,9 @@ import com.week1.game.InfoUtil;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.PlayerBase;
 import com.week1.game.Model.World.Basic4WorldBuilder;
+import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
+import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Renderer.RenderConfig;
 
 import java.util.List;
@@ -21,6 +24,7 @@ public class GameEngine {
     private int communicationTurn = 0;
     private SpriteBatch batch;
     private IEngineToRendererAdapter engineToRenderer;
+    private IEngineToNetworkAdapter engineToNetwork;
     private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
     private InfoUtil util;
     private boolean sentWinLoss = false, sentGameOver = false;
@@ -30,7 +34,8 @@ public class GameEngine {
         return batch;
     }
 
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, InfoUtil util) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter,IEngineToNetworkAdapter engineToNetworkAdapter, InfoUtil util) {
+
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
         gameState = new GameState(
                 Basic4WorldBuilder.ONLY,
@@ -48,6 +53,7 @@ public class GameEngine {
         Gdx.app.log("wab2- GameEngine", "gameState built");
         batch = new SpriteBatch();
         engineToRenderer = engineToRendererAdapter;
+        engineToNetwork =engineToNetworkAdapter;
         this.util = util;
     }
 
@@ -70,6 +76,12 @@ public class GameEngine {
             message.process(this, gameState, util);
             Gdx.app.log("GameEngine: receiveMessages()", "done processing message");
         }
+
+        if (communicationTurn % 10 == 0) {
+            // Time to sync up!
+            engineToNetwork.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash()));
+        }
+
         Gdx.app.log("pjb3 - receiveMessages", "end of communication turn: " + communicationTurn);
     }
 
@@ -92,7 +104,6 @@ public class GameEngine {
             engineToRenderer.gameOver();
         }
     }
-
 
     public void render(RenderConfig renderConfig){
         batch.begin();
@@ -131,5 +142,21 @@ public class GameEngine {
 
     public Array<Building> getBuildings() {
         return gameState.getBuildings();
+    }
+
+    /**
+     * Gets the hash associated with the current state of the game.
+     * @return
+     */
+    public int getGameStateHash() {
+        GameState.PackagedGameState wrapped = gameState.packState();
+//        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
+        return wrapped.getHash();
+    }
+
+    public String getGameStateString() {
+        GameState.PackagedGameState wrapped = gameState.packState();
+//        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
+        return wrapped.getGameString();
     }
 }

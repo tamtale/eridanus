@@ -204,7 +204,9 @@ public class GameState {
             unit.draw(batch, renderConfig.getDelta(), showAttackRadius);
         }
 
-        for (Tower tower : towers) {
+        Tower tower;
+        for (int i = 0; i < towers.size; i++) {
+            tower = towers.get(i);
             if (tower.getPlayerId() == renderPlayerId) {
                 // Only show the spawn radius for your own tower.
                 tower.draw(batch, showAttackRadius, showSpawnRadius);
@@ -213,7 +215,9 @@ public class GameState {
             }
         }
 
-        for (PlayerBase playerBase : playerBases) {
+        PlayerBase playerBase;
+        for (int i = 0; i < playerBases.size; i++) {
+            playerBase = playerBases.get(i);
             if (playerBase.getPlayerId() == renderPlayerId) {
                 // only show the spawn radius for your own base
                 playerBase.draw(batch, showSpawnRadius);
@@ -423,10 +427,64 @@ public class GameState {
 
     public void moveUnits(float movementAmount) {
         for (Unit u: units) {
-//            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous step. Real x, y before (" + u.x + " " + u.y + ")");
             u.step(movementAmount);
-//            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous after. Real x y after (" + u.x + " " + u.y + ")");
-//            Gdx.app.log("pjb3 GameState moveUnits (sync)","Synchronous after. display x y after (" + u.getDisplayX() + " " + u.getDisplayY() + ")");
+        }
+    }
+
+    public PackagedGameState packState() {
+        return new PackagedGameState(units, towers, playerBases, playerStats);
+    }
+
+
+    /**
+     * This inner class maintains the wrapper information for creating the wrapped version of the gamestate
+     * that is used to create and verify the hashes. It contains the encoded hash and the human readable string version
+     * of everything concatenated together.
+      */
+    public static class PackagedGameState {
+
+        int encodedhash;
+        private String gameString;
+
+        public PackagedGameState (Array<Unit> units, Array<Tower> towers, Array<PlayerBase> bases, Array<PlayerStat> stats) {
+            gameString = "";
+            Unit u;
+            for (int i = 0; i < units.size; i++) {
+                u = units.get(i);
+                gameString += u.toString() + "\n";
+            }
+            gameString += "\n";
+
+            Tower t;
+            for (int i = 0 ; i < towers.size; i++) {
+                t = towers.get(i);
+                gameString += t.toString() + "\n";
+            }
+            gameString += "\n";
+
+            PlayerBase pb;
+            for (int i = 0; i < bases.size; i ++) {
+                pb = bases.get(i);
+                gameString += pb.toString() + "\n";
+            }
+            gameString += "\n";
+
+            PlayerStat s;
+            for (int i = 0; i < stats.size; i++) {
+                s = stats.get(i);
+                gameString += s.toString();
+            }
+
+
+            encodedhash = gameString.hashCode();
+        }
+
+        public int getHash() {
+            return this.encodedhash;
+        }
+
+        public String getGameString() {
+            return this.gameString;
         }
     }
 }

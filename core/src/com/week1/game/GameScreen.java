@@ -116,6 +116,11 @@ public class GameScreen implements Screen {
 			public void gameOver() {
 				renderer.showGameOver();
 			}
+		}, new IEngineToNetworkAdapter() {
+			@Override
+			public void sendMessage(AMessage msg) {
+				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
+			}
 		}, util);
 
 		renderer = new Renderer(new IRendererToEngineAdapter() {
@@ -204,6 +209,16 @@ public class GameScreen implements Screen {
 					@Override
 					public Array<Building> getBuildings() {
 						return engine.getBuildings();
+					}
+
+					@Override
+					public int getGameStateHash() {
+						return engine.getGameStateHash();
+					}
+
+					@Override
+					public String getGameStateString() {
+						return engine.getGameStateString();
 					}
 
 				},

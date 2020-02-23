@@ -11,8 +11,8 @@ public class TestMessage extends GameMessage {
     private int coolValue;
     private String wow;
 
-    public TestMessage(int coolValue, String wow, int playerID) {
-        super(playerID, MESSAGE_TYPE);
+    public TestMessage(int coolValue, String wow, int playerID, int intHash) {
+        super(playerID, MESSAGE_TYPE, intHash);
         this.coolValue = coolValue;
         this.wow = wow;
     }
