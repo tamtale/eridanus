@@ -25,6 +25,7 @@ public class GameEngine {
     private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
     private InfoUtil util;
     private boolean sentWinLoss = false, sentGameOver = false;
+    private boolean isStarted = false;
 
     public Batch getBatch() {
         return batch;
@@ -69,7 +70,7 @@ public class GameEngine {
         }
         for (GameMessage message : messages) {
             Gdx.app.log("GameEngine: receiveMessages()", "processing message");
-            message.process(gameState, util);
+            message.process(this, gameState, util);
             Gdx.app.log("GameEngine: receiveMessages()", "done processing message");
         }
 
@@ -108,10 +109,14 @@ public class GameEngine {
     }
 
     /*
-     * Whether or not the first communication message has been received from the host.
+     * whether the host has explicitly sent a message to tell the GameEngine to start
      */
     public boolean started() {
-        return communicationTurn > 0;
+        return isStarted;
+    }
+    
+    public void start() {
+        isStarted = true;
     }
 
     /**

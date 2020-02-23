@@ -1,5 +1,6 @@
 package com.week1.game.Networking.Messages.Game;
 
+import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.MessageType;
@@ -12,8 +13,8 @@ public abstract class GameMessage extends AMessage {
         super(playerID, messageTypeID);
         this.intHash = intHash;
     }
-    
-    public abstract boolean process(GameState gameState, InfoUtil util);
+
+    public abstract boolean process(GameEngine engine, GameState gameState, InfoUtil util);
 
     public int getHashCode() {
         return intHash;
