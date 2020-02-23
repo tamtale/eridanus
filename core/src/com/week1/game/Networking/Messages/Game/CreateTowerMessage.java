@@ -2,6 +2,7 @@ package com.week1.game.Networking.Messages.Game;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.week1.game.Model.Damage;
+import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Networking.Messages.MessageType;
@@ -25,7 +26,7 @@ public class CreateTowerMessage extends GameMessage {
     }
 
     @Override
-    public boolean process(GameState inputState, InfoUtil util){
+    public boolean process(GameEngine engine, GameState inputState, InfoUtil util){
         TowerDetails towerDetails = inputState.getTowerDetails(this.playerID, this.towerType.ordinal());
         double towerCost, towerHealth, towerDmg, towerRange;
         towerCost = towerDetails.getPrice();
