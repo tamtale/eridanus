@@ -29,19 +29,12 @@ import static java.lang.Math.abs;
 public class Unit extends Rectangle implements Damageable, Damaging, RenderableProvider {
     private final int playerID;
     public OutputPath path;
-    public boolean isClicked() {
-        return clicked;
-    }
-
-    public void setClicked(boolean clicked) {
-        this.clicked = clicked;
-    }
     private int turn = 0;
     private double hp;
     private Vector3 vel;
     private float displayX, displayY;
     private double maxHp;
-    public boolean clicked = false;
+    private boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
     public static double speed = 5;
@@ -61,6 +54,10 @@ public class Unit extends Rectangle implements Damageable, Damaging, RenderableP
             put(4, Color.PINK);
         }
     };
+    private Texture unselectedSkin;
+    private static Texture selectedSkin = makeTexture(SIZE, SIZE, Color.YELLOW);
+    private static Texture rangeCircle;
+
 
     private final static Map<Integer, Model> modelMap = new HashMap<Integer, Model>() {
         {
@@ -85,14 +82,31 @@ public class Unit extends Rectangle implements Damageable, Damaging, RenderableP
         this.box = new BoundingBox();
     }
 
+    public void draw(Batch batch, float delta, boolean showAttackRadius) {
+        if (delta == 0) {
+            // Sync the state of units by not projecting anything
+            displayX = x;
+            displayY = y;
+        } else {
+            moveRender(delta);
+        }
+
+        if (showAttackRadius) {
+            batch.draw(rangeCircle, displayX - ((float)tempMinionRange), displayY - ((float)tempMinionRange), (float)tempMinionRange * 2, (float)tempMinionRange * 2);
+        }
+        batch.draw(getSkin(), displayX - (SIZE / 2f), displayY - (SIZE / 2f), SIZE, SIZE);
+        // TODO draw this in a UI rendering procedure
+        drawHealthBar(batch, displayX, displayY, 0, SIZE, this.hp, this.maxHp);
+    }
+
     public void step(float delta) {
         if (path != null) {
             if (path.getPath().size != 1) {
                 if ((abs((int) this.x - (int) path.get(0).x) <= 1 &&
                         abs((int) this.y - (int) path.get(0).y) <= 1)) {
                     turn = 0;
-                    float dx = path.get(1).x - (int) this.x;
-                    float dy = path.get(1).y - (int) this.y;
+                    float dx = path.get(1).x - this.x;
+                    float dy = path.get(1).y - this.y;
                     double angle = Math.atan(dy/dx);
                     if (dx < 0) {
                         angle += Math.PI;
@@ -127,6 +141,19 @@ public class Unit extends Rectangle implements Damageable, Damaging, RenderableP
         modelInstance.transform.setToTranslation(x, y, 1); // TODO perhaps use observer pattern here?
     }
 
+    public SteeringAgent getAgent(){ return agent;}
+    public Texture getSelectedSkin(){
+        return selectedSkin;
+    }
+
+    private Texture getSkin() {
+        return clicked ? selectedSkin : unselectedSkin;
+    }
+
+    public void setClicked(boolean clicked) {
+        this.clicked = clicked;
+    }
+    
     @Override
     public boolean takeDamage(double dmg, Damage.type damageType) {
         this.hp -= dmg;
@@ -179,9 +206,21 @@ public class Unit extends Rectangle implements Damageable, Damaging, RenderableP
         return displayY;
     }
 
-    @Override
     public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
         modelInstance.getRenderables(renderables, pool);
+    }
+
+    public String toString() {
+        return "Unit{" +
+                "playerID=" + playerID +
+                ", turn=" + turn +
+                ", hp=" + hp +
+                ", vel=" + vel +
+                ", maxHp=" + maxHp +
+                ", ID=" + ID +
+                ", x=" + x +
+                ", y=" + y +
+                '}';
     }
 }
 

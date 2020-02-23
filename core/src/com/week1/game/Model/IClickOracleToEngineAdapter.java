@@ -13,4 +13,8 @@ public interface IClickOracleToEngineAdapter {
     boolean isPlayerAlive();
     Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB);
     Array<Building> getBuildings();
+
+    int getGameStateHash();
+
+    String getGameStateString();
 }

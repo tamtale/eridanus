@@ -9,12 +9,12 @@ import com.week1.game.Model.Damage;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.week1.game.Model.StatsConfig.placementRange;
+import static com.week1.game.Model.StatsConfig.*;
 
 public class Tower extends Building implements Damaging {
     private static final int SIDELENGTH = 3;
     public float x, y;
-    private Texture skin;
+    private static Texture skin; // TODO change this when we go to 3D to actually use the model of the tower.
     private int playerID, towerType;
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
     private static Texture rangeCircle;
@@ -22,7 +22,26 @@ public class Tower extends Building implements Damaging {
 
     private Damage.type attackType;
 
-    static {
+
+    public Tower(float x, float y, double hp, double dmg, double range, Damage.type attackType, double cost, int playerID, int towerType) {
+        this.x = x;
+        this.y = y;
+        this.hp = hp;
+        this.maxHp = hp;
+        this.dmg = dmg;
+        this.cost = cost;
+        this.range = range;
+        this.playerID = playerID;
+        this.attackType = attackType;
+        this.towerType = towerType;
+    }
+
+    public static void makeTextures() {
+        Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, sniperTexture.getFormat());
+        towerScaled.drawPixmap(sniperTexture, 0, 0, sniperTexture.getWidth(), sniperTexture.getHeight(),
+                0, 0, SIDELENGTH, SIDELENGTH);
+        skin = new Texture(towerScaled);
+
         // Make the textures for the circles surrounding the tower
         Pixmap circlePixmap = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
         circlePixmap.setBlending(Pixmap.Blending.None);
@@ -54,24 +73,6 @@ public class Tower extends Building implements Damaging {
         circlePixmap.drawCircle(50, 50, 50);
         rangeCircle = new Texture(circlePixmap);
         circlePixmap.dispose();
-    }
-
-    public Tower(float x, float y, double hp, double dmg, double range, Damage.type attackType, double cost, Pixmap towerUnscaled, int playerID, int towerType) {
-        this.x = x;
-        this.y = y;
-        this.hp = hp;
-        this.maxHp = hp;
-        this.dmg = dmg;
-        this.cost = cost;
-        this.range = range;
-        this.playerID = playerID;
-        this.attackType = attackType;
-        this.towerType = towerType;
-
-        Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, towerUnscaled.getFormat());
-        towerScaled.drawPixmap(towerUnscaled, 0, 0, towerUnscaled.getWidth(), towerUnscaled.getHeight(),
-                0, 0, SIDELENGTH, SIDELENGTH);
-        this.skin = new Texture(towerScaled);
     }
     
     public void draw(Batch batch, boolean showAttackRadius, boolean showSpawnRadius) {
@@ -180,5 +181,20 @@ public class Tower extends Building implements Damaging {
         else{
             return new Vector3(x, startY, 0);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Tower{" +
+                "x=" + x +
+                ", y=" + y +
+                ", playerID=" + playerID +
+                ", towerType=" + towerType +
+                ", hp=" + hp +
+                ", maxHp=" + maxHp +
+                ", dmg=" + dmg +
+                ", range=" + range +
+                ", cost=" + cost +
+                '}';
     }
 }
