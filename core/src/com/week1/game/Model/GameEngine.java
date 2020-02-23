@@ -106,11 +106,9 @@ public class GameEngine {
     }
 
     /*
-     * Was previously: Whether or not the first communication message has been received from the host.
-     * Is now: whether the host has explicitly sent a message to tell the GameEngine to start
+     * whether the host has explicitly sent a message to tell the GameEngine to start
      */
     public boolean started() {
-        //return communicationTurn > 0;
         return isStarted;
     }
     
