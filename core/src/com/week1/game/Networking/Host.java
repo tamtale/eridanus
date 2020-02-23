@@ -90,9 +90,11 @@ public class Host {
                 // Verify game state on any messages sent this game turn
                 int prevHash = 0; // This will be the hash that everything is compared to
                 boolean didFail = false;
+                boolean didCheck = false;
                 for (String outgoingMessage : outgoingMessages) {
                     GameMessage msg = MessageFormatter.parseMessage(outgoingMessage);
                     if (msg instanceof CheckSyncMessage) {
+                        didCheck = true;
                         int hash = msg.getHashCode();
                         if (prevHash == 0) {
                             // if it has not been set, set the standard to this one.
@@ -108,7 +110,7 @@ public class Host {
                 }
                 if (didFail) {
                     outgoingMessages.add(0, MessageFormatter.packageMessage(new SyncIssueMessage(-1, SYNCERR, prevHash)));
-                } else {
+                } else if (didCheck) {
                     Gdx.app.log("pjb3 - Host", "Nice. The hashes match up.");
                 }
 

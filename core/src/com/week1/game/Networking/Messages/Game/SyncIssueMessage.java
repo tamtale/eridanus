@@ -2,6 +2,7 @@ package com.week1.game.Networking.Messages.Game;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.InfoUtil;
+import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
 import com.week1.game.Networking.Messages.MessageType;
 
@@ -12,7 +13,7 @@ public class SyncIssueMessage extends GameMessage {
     }
 
     @Override
-    public boolean process(GameState gameState, InfoUtil util) {
+    public boolean process(GameEngine engine, GameState gameState, InfoUtil util) {
         Gdx.app.log("pjb3 - SyncIssueMessage", "SYNCHRONIZATION ISSUE. CHECK STATE");
         util.log("pjb3 - SyncIssueMessage", "SYNCHRONIZATION ISSUE. CHECK STATE");
         util.log("pjb3 - SyncIssueMessage", gameState.packState().getGameString());

@@ -1,4 +1,5 @@
 package com.week1.game.Model;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -8,7 +9,9 @@ import com.week1.game.InfoUtil;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.PlayerBase;
 import com.week1.game.Model.World.Basic4WorldBuilder;
+import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
+import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Renderer.RenderConfig;
 
 import java.util.List;
@@ -72,6 +75,11 @@ public class GameEngine {
             Gdx.app.log("GameEngine: receiveMessages()", "processing message");
             message.process(this, gameState, util);
             Gdx.app.log("GameEngine: receiveMessages()", "done processing message");
+        }
+
+        if (communicationTurn % 10 == 0) {
+            // Time to sync up!
+            engineToNetwork.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash()));
         }
 
         Gdx.app.log("pjb3 - receiveMessages", "end of communication turn: " + communicationTurn);
