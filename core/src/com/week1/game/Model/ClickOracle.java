@@ -123,8 +123,8 @@ public class ClickOracle extends InputAdapter {
         touchPos.set(screenX, screenY, 0);
         rendererAdapter.unproject(touchPos);
 
-        int currentGameState = engineAdapter.getGameStateHash();
-        Gdx.app.log("pjb3 - ClickOracle", "hash int is " + currentGameState);
+        int currentGameHash = engineAdapter.getGameStateHash();
+        Gdx.app.log("pjb3 - ClickOracle", "hash int is " + currentGameHash);
         Gdx.app.log("pjb3 - ClickOracle", "the human readable is: " + engineAdapter.getGameStateString());
 
         if (button == Input.Buttons.LEFT) {
@@ -133,13 +133,13 @@ public class ClickOracle extends InputAdapter {
             // For advanced users, we will keep this as the first check, then defer to the other users
             if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
                 Gdx.app.log("lji1 - ClickOracle", "Spawn basic tower.");
-                networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.BASIC, networkAdapter.getPlayerId(), currentGameState));
+                networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.BASIC, networkAdapter.getPlayerId(), currentGameHash));
             } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
                 Gdx.app.log("lji1 - ClickOracle", "Spawn sniper tower.");
-                networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.SNIPER, networkAdapter.getPlayerId(), currentGameState));
+                networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.SNIPER, networkAdapter.getPlayerId(), currentGameHash));
             } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
                 Gdx.app.log("lji1 - ClickOracle", "Spawn tank tower.");
-                networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.TANK, networkAdapter.getPlayerId(), currentGameState));
+                networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.TANK, networkAdapter.getPlayerId(), currentGameHash));
             } else {
 
                 Unit unit = engineAdapter.selectUnit(touchPos);
@@ -148,16 +148,16 @@ public class ClickOracle extends InputAdapter {
                     System.out.println("aaaaa");
                     if (spawnType == SpawnInfo.SpawnType.UNIT) {
                         Gdx.app.log("pjb3 - ClickOracle", "Spawn unit");
-                        networkAdapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, networkAdapter.getPlayerId(), currentGameState));
+                        networkAdapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, networkAdapter.getPlayerId(), currentGameHash));
                     } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
                         Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
-                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.BASIC, networkAdapter.getPlayerId(), currentGameState));
+                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.BASIC, networkAdapter.getPlayerId(), currentGameHash));
                     } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
                         Gdx.app.log("pjb3 - ClickOracle", "Spawn Tower 2 tower via state");
-                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.SNIPER, networkAdapter.getPlayerId(), currentGameState));
+                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.SNIPER, networkAdapter.getPlayerId(), currentGameHash));
                     } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
                         Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
-                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.TANK, networkAdapter.getPlayerId(), currentGameState));
+                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.TANK, networkAdapter.getPlayerId(), currentGameHash));
                     }
 
                 } else {
@@ -189,7 +189,7 @@ public class ClickOracle extends InputAdapter {
 //            }
 //            if (!overlapped) {
                 networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y,
-                        networkAdapter.getPlayerId(), multiSelected, currentGameState));
+                        networkAdapter.getPlayerId(), multiSelected, currentGameHash));
 //            }
             return false;
 
