@@ -178,7 +178,6 @@ public class GameState implements RenderableProvider {
 
     public void updateGoal(Unit unit, Vector3 goal) {
 //        Vector2 vec2 = new Vector2(goal.x, goal.y);
-        SteeringAgent agent = unit.getAgent();
 //        System.out.println(agent);
         Vector3 unitPos = new Vector3((int) unit.x, (int) unit.y, 0); //TODO: make acutal z;
 

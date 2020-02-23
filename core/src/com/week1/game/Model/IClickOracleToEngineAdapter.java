@@ -9,6 +9,7 @@ import com.week1.game.Model.Entities.Unit;
 public interface IClickOracleToEngineAdapter {
     Unit selectUnit(Vector3 position);
     Unit selectUnitFromRay(Ray ray);
+    Vector3 selectIntersectionFromRay(Ray ray);
     boolean isPlayerAlive();
     Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB);
     Array<Building> getBuildings();

@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.week1.game.AIMovement.SteeringAgent;
@@ -45,32 +46,11 @@ public class Unit extends Rectangle implements Damageable, Damaging, RenderableP
     public int ID;
     public static double speed = 5;
     public  static int SIZE = 1;
-
-    private Texture unselectedSkin;
-    private static Texture selectedSkin = makeTexture(SIZE, SIZE, Color.YELLOW);
-    private static Texture rangeCircle;
-
+    private BoundingBox box;
     // 3D STUFF
     private static ModelBuilder BUILDER = new ModelBuilder();
     private Model model;
     private ModelInstance modelInstance;
-
-    static {
-        Pixmap circlePixmap = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
-        circlePixmap.setBlending(Pixmap.Blending.None);
-        circlePixmap.setColor(1, 1, 1, .5f);
-        circlePixmap.drawCircle(50, 50, 50);
-        rangeCircle = new Texture(circlePixmap);
-    }
-    private final static Map<Integer, Texture> textureMap = new HashMap<Integer, Texture>() {
-        {
-            put(0, makeTexture(SIZE, SIZE, Color.BLUE));
-            put(1, makeTexture(SIZE, SIZE, Color.RED));
-            put(2, makeTexture(SIZE, SIZE, Color.WHITE));
-            put(3, makeTexture(SIZE, SIZE, Color.PURPLE));
-            put(4, makeTexture(SIZE, SIZE, Color.PINK));
-        }
-    };
 
     private final static Map<Integer, Color> colorMap = new HashMap<Integer, Color>() {
         {
@@ -93,7 +73,6 @@ public class Unit extends Rectangle implements Damageable, Damaging, RenderableP
 
     public Unit(float x, float y, Texture t, double hp, int playerID) {
         super(x, y, 1, 1); // TODO make the x and y the center points of it for getX() and getY() which is used in range calculations
-        this.unselectedSkin = textureMap.get(playerID);
         this.playerID = playerID;
         this.hp = hp;
         this.maxHp = hp;
@@ -103,23 +82,7 @@ public class Unit extends Rectangle implements Damageable, Damaging, RenderableP
         this.model = modelMap.get(playerID);
         this.modelInstance = new ModelInstance(model);
         modelInstance.transform.setTranslation(x, y, 1);
-    }
-
-    public void draw(Batch batch, float delta, boolean showAttackRadius) {
-        if (delta == 0) {
-            // Sync the state of units by not projecting anything
-            displayX = x;
-            displayY = y;
-        } else {
-            moveRender(delta);
-        }
-
-        if (showAttackRadius) {
-            batch.draw(rangeCircle, displayX - ((float)tempMinionRange), displayY - ((float)tempMinionRange), (float)tempMinionRange * 2, (float)tempMinionRange * 2);
-        }
-        batch.draw(getSkin(), displayX - (SIZE / 2f), displayY - (SIZE / 2f), SIZE, SIZE);
-        // TODO draw this in a UI rendering procedure
-        drawHealthBar(batch, displayX, displayY, 0, SIZE, this.hp, this.maxHp);
+        this.box = new BoundingBox();
     }
 
     public void step(float delta) {
@@ -145,23 +108,12 @@ public class Unit extends Rectangle implements Damageable, Damaging, RenderableP
                 turn ++;
             }
             if (path.getPath().size <= 1) {
-//                Gdx.app.log("Unit - pjb3", "Killing VELOCITY");
                 vel.x = 0;
                 vel.y = 0;
-            } else {
-//                Gdx.app.log("Unit - pjb3", "Not Killing VELOCITY. Path len is " + path.getPath().size + " and the 0th is " + path.get(0));
             }
         }
-//        Gdx.app.log("Unit - pjb3", "Checking velocity (" + vel.x + " " + vel.y + ")" + " goal (?,?) and pos (" + x + "," + y + ")");
         this.displayX = this.x; // Sync the unit's display to the next 'real' location
         this.displayY = this.y;
-
-//        float dx = path.get(0).x - this.x;
-//        float dy = path.get(0).y - this.y;
-//
-//        if (agent != null) {
-//            agent.update(delta);
-//        }
     }
 
     private void move(float delta) {
@@ -175,15 +127,6 @@ public class Unit extends Rectangle implements Damageable, Damaging, RenderableP
         modelInstance.transform.setToTranslation(x, y, 1); // TODO perhaps use observer pattern here?
     }
 
-    public SteeringAgent getAgent(){ return agent;}
-    public Texture getSelectedSkin(){
-        return selectedSkin;
-    }
-
-    private Texture getSkin() {
-        return clicked ? selectedSkin : unselectedSkin;
-    }
-    
     @Override
     public boolean takeDamage(double dmg, Damage.type damageType) {
         this.hp -= dmg;

@@ -73,7 +73,7 @@ public class GameEngine implements RenderableProvider {
         // TODO unit movement should be 'reverted' and then stepped here in the long term so state is consistent.
         synchronousUpdateState();
 
-        Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn);
+        // Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn);
 
         messageQueue.addAll(messages);
     }

@@ -203,6 +203,12 @@ public class GameScreen implements Screen {
 					}
 
 					@Override
+					public Vector3 selectIntersectionFromRay(Ray ray) {
+					  // TODO this
+						return null;
+					}
+
+					@Override
 					public boolean isPlayerAlive() {
 						return engine.isPlayerAlive();
 					}
