@@ -19,6 +19,7 @@ import com.week1.game.TowerBuilder.TowerDetails;
 import java.sql.Time;
 import java.time.Instant;
 import java.time.Period;
+import java.util.Map;
 
 import static com.week1.game.Model.Entities.TowerType.BASIC;
 import static com.week1.game.Model.Entities.TowerType.SNIPER;
@@ -325,7 +326,10 @@ public class GameState {
 
             } else if (deadEntity.getClass() == Tower.class) {
                 towers.removeValue((Tower)deadEntity, false);
-                Array<Connection<Vector3>> edges = ((Tower) deadEntity).getRemovedEdges();
+                Map<Vector3, Array<Connection<Vector3>>> edges = ((Tower) deadEntity).getRemovedEdges();
+                for(Vector3 block: edges.keySet()){
+                    graph.setConnections(block, edges.get(block));
+                }
                 // Reward the player who destroyed the tower the mana.
                 playerStats.get(attackingPlayerId).giveMana(((Tower)deadEntity).getCost() * towerDestructionBonus);
 

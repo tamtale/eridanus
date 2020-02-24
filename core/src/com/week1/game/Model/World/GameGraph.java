@@ -93,6 +93,10 @@ public class GameGraph implements IndexedGraph<Vector3> {
         this.pathFinder = pathFinder;
     }
 
+    public void setConnections(Vector3 fromNode, Array<Connection<Vector3>> connections) {
+        edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = connections;
+    }
+
 //    public Vector3 getVector3(int i, int j, int k) {
 //        return vecCoords[i][j][k];
 //    }
