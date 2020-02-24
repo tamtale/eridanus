@@ -197,9 +197,6 @@ public class GameState {
             }
         }
         Vector3 goalPos = new Vector3((int) goal.x, (int) goal.y, (int) goal.z);
-//        System.out.println("unitPos" + unitPos);
-//        System.out.println("goalPos" + goalPos);
-//        System.out.println("UnitPosIndex " + graph.getIndex(unitPos));D
 
         long start = System.nanoTime();
         path = graph.search(unitPos, goalPos);
