@@ -497,6 +497,10 @@ public class GameState implements RenderableProvider {
     @Override
     public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
         world.getRenderables(renderables, pool);
-        units.forEach(unit -> unit.getRenderables(renderables, pool));
+        Unit unit;
+        for (int u = 0; u < units.size; u++) {
+            unit = units.get(u);
+            unit.getRenderables(renderables, pool);
+        }
     }
 }

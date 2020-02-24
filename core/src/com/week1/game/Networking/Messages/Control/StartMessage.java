@@ -1,7 +1,9 @@
 package com.week1.game.Networking.Messages.Control;
 
 import com.badlogic.gdx.Gdx;
+import com.week1.game.Model.Entities.TowerType;
 import com.week1.game.Networking.Host;
+import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 import com.week1.game.Networking.Messages.Game.InitMessage;
 import com.week1.game.Networking.Messages.Game.TowerDetailsMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
@@ -45,10 +47,18 @@ public class StartMessage extends HostControlMessage {
         }
         ;
         // TODO: this gets sent first so that the game engine does any initialization before the game starts (but udp doesn't guarantee order)
+        
+        System.out.println("About to broadcast init messages.");
         h.broadcastToRegisteredPlayers(MessageFormatter.packageMessage(
                 new Update(Arrays.asList(
                         MessageFormatter.packageMessage(new InitMessage(h.registry.size(), -1, 0)),
-                        MessageFormatter.packageMessage(new TowerDetailsMessage(-1, h.towerDetails, 0))
+                        MessageFormatter.packageMessage(new TowerDetailsMessage(-1, h.towerDetails, 0)),
+                        MessageFormatter.packageMessage(new CreateTowerMessage(4, 4, 2, 0, 0, 0)),
+                        MessageFormatter.packageMessage(new CreateTowerMessage(10, 4, 1, 1, 0, 0)),
+                        MessageFormatter.packageMessage(new CreateTowerMessage(20, 4, 1, 2, 0, 0)),
+                        MessageFormatter.packageMessage(new CreateTowerMessage(25, 15, 1, 3, 0, 0)),
+                        MessageFormatter.packageMessage(new CreateTowerMessage(5, 15, 1, 4, 0, 0)),
+                        MessageFormatter.packageMessage(new CreateTowerMessage(15, 15, 1, 5, 0, 0))
                 ))
         ));
         

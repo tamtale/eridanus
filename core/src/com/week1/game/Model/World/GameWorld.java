@@ -63,6 +63,12 @@ public class GameWorld implements RenderableProvider {
     }
     public void setBlock(int i, int j, int k, Block block) {
         blocks[i][j][k] = block;
+
+        System.out.println("block: " + blocks[i][j][k]);
+        System.out.println("optional: " + blocks[i][j][k].modelInstance(i,j,k));
+        blocks[i][j][k]
+                .modelInstance(i,j,k)
+                .ifPresent(modelInstance -> instances.add(modelInstance));
         refreshHeight = true;
     }
 

@@ -10,10 +10,15 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.week1.game.Model.Initializer;
+import com.week1.game.TowerBuilder.BlockType;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public interface Block {
@@ -76,7 +81,23 @@ public interface Block {
             }
         };
 
+
+//        public static TerrainBlock REDBLOCK = new TerrainBlock("water2.png") {
+//            @Override
+//            public float getCost(){
+//                return 1.5f;
+//            }
+//
+//            @Override
+//            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+//                ModelInstance instance = new ModelInstance(model);
+//                instance.transform.setToTranslation(x, y, z);
+//                return Optional.of(instance);
+//            }
+//        };
+
         private Array<Connection<Block>> edges;
+        
         TerrainBlock(Color color) {
             this.edges = new Array<>();
             this.model = BUILDER.createBox(1f, 1f, 1f,
@@ -86,6 +107,18 @@ public interface Block {
         }
 
 
+//        TerrainBlock(String textureFilename) {
+//            this.edges = new Array<>();
+////            this.model = BUILDER.createBox(1f, 1f, 1f,
+////                    new Material(ColorAttribute.createDiffuse(Color.GREEN)),
+////                    VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+//
+//            this.model = BUILDER.createBox(1f, 1f, 1f,
+//                    new Material(TextureAttribute.createDiffuse(new Texture(textureFilename))),
+//                    VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
+//
+//        }
+        
 
         @Override
         public TextureRegion getTextureRegion() {
@@ -133,6 +166,9 @@ public interface Block {
         public TowerBlock(Vector3 coords) {
             this.coords = coords;
         }
+        Model model;
+
+
         @Override
         public TextureRegion getTextureRegion() {
             return null;
@@ -178,6 +214,121 @@ public interface Block {
             // TODO this
             return Optional.empty();
         }
+
+        public static Map<BlockType, TowerBlock> towerBlockMap = new HashMap<BlockType, TowerBlock>() {{
+            this.put(BlockType.WATER, new TowerBlock() {
+                @Override
+                public float getCost(){
+                    return 1.5f;
+                }
+
+                @Override
+                public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                    ModelInstance instance = new ModelInstance(Initializer.waterBlock);
+                    instance.transform.setToTranslation(x, y, z);
+                    return Optional.of(instance);
+                }
+            });
+
+            this.put(BlockType.MOONSTONE, new TowerBlock() {
+                @Override
+                public float getCost(){
+                    return 1.5f;
+                }
+
+                @Override
+                public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                    ModelInstance instance = new ModelInstance(Initializer.moonStone);
+                    instance.transform.setToTranslation(x, y, z);
+                    return Optional.of(instance);
+                }
+            });
+            
+            this.put(BlockType.OBSIDIAN, new TowerBlock() {
+                @Override
+                public float getCost(){
+                    return 1.5f;
+                }
+
+                @Override
+                public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                    ModelInstance instance = new ModelInstance(Initializer.spaceObsidian);
+                    instance.transform.setToTranslation(x, y, z);
+                    return Optional.of(instance);
+                }
+            });
+            
+            this.put(BlockType.SPACEGOLD, new TowerBlock() {
+                @Override
+                public float getCost(){
+                    return 1.5f;
+                }
+
+                @Override
+                public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                    ModelInstance instance = new ModelInstance(Initializer.spaceGold);
+                    instance.transform.setToTranslation(x, y, z);
+                    return Optional.of(instance);
+                }
+            });
+            
+            this.put(BlockType.EARTH, new TowerBlock() {
+                @Override
+                public float getCost(){
+                    return 1.5f;
+                }
+
+                @Override
+                public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                    ModelInstance instance = new ModelInstance(Initializer.earthBlock);
+                    instance.transform.setToTranslation(x, y, z);
+                    return Optional.of(instance);
+                }
+            });
+
+            this.put(BlockType.FIRE, new TowerBlock() {
+                @Override
+                public float getCost(){
+                    return 1.5f;
+                }
+
+                @Override
+                public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                    ModelInstance instance = new ModelInstance(Initializer.fireBlock);
+                    instance.transform.setToTranslation(x, y, z);
+                    return Optional.of(instance);
+                }
+            });
+
+            this.put(BlockType.EASTEREGG, new TowerBlock() {
+                @Override
+                public float getCost(){
+                    return 1.5f;
+                }
+
+                @Override
+                public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                    ModelInstance instance = new ModelInstance(Initializer.easterEgg);
+                    instance.transform.setToTranslation(x, y, z);
+                    return Optional.of(instance);
+                }
+            });
+            
+        }};
+
+
+        TowerBlock() {
+            this.edges = new Array<>();
+//            this.model = BUILDER.createBox(1f, 1f, 1f,
+//                    new Material(ColorAttribute.createDiffuse(Color.GREEN)),
+//                    VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+
+//            this.model = BUILDER.createBox(1f, 1f, 1f,
+//                    new Material(TextureAttribute.createDiffuse(new Texture(textureFilename))),
+//                    VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
+
+        }
+
     }
 }
 

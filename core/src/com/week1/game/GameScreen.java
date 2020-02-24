@@ -76,6 +76,8 @@ public class GameScreen implements Screen {
 	public GameScreen(String[] args) {
 		// Set the logging level
 		Gdx.app.setLogLevel(Application.LOG_INFO);
+		
+		Initializer.init();
 
 		pressedStartbtn = false;
 
@@ -94,8 +96,11 @@ public class GameScreen implements Screen {
 		}, 
 				Arrays.asList(
 						TowerPresets.getTower(1).getLayout(),
+						TowerPresets.getTower(2).getLayout(),
 						TowerPresets.getTower(3).getLayout(),
-						TowerPresets.getTower(5).getLayout()
+						TowerPresets.getTower(4).getLayout(),
+						TowerPresets.getTower(5).getLayout(),
+						TowerPresets.getTower(6).getLayout()
 						)
 	); // TODO: actually pass the towers
 
