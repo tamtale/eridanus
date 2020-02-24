@@ -103,18 +103,9 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     public void step(float delta) {
         if (path != null) {
             if (path.getPath().size > 0) {
-//                this.curNode = new Vector3(this.x, this.y, 0);
-//                Line travelPath = new Line(lastNode.x, lastNode.y, curNode.x, curNode.y);
-//                Rectangle nodeRect = new Rectangle(path.get(1).x, path.get(1).y, 1, 1);
-
-//                boolean intersect = lineRect(lastNode.x, lastNode.y, curNode.x, curNode.y,
-//                        path.get(1).x, path.get(1).y, 1, 1);
-//                if (intersect){
                 if (distanceTraveled > distance) {
                     turn = 0;
-                    Gdx.app.setLogLevel(Application.LOG_NONE);
                     this.lastNode = new Vector3(this.x, this.y, 0);
-//                    System.out.println("finX " + path.get(1).x + " finY " + path.get(1).y);
                     float dx = path.get(0).x - this.x;
                     float dy = path.get(0).y - this.y;
                     this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
@@ -134,10 +125,6 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
             }
             if (path.getPath().size <= 0) {
-//                Gdx.app.log("Unit - pjb3", "Killing VELOCITY");
-//                path.removeIndex(0);
-                agent.setGoal(goal);
-//                this.close = true;
                 path = null;
                 vel.x = 0;
                 vel.y = 0;
@@ -149,20 +136,11 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         this.displayX = this.x; // Sync the unit's display to the next 'real' location
         this.displayY = this.y;
 
-//        float dx = path.get(0).x - this.x;
-//        float dy = path.get(0).y - this.y;
-//
-//        if (agent != null) {
-//            agent.update(delta);
-//        }
     }
 
     private void move(float delta) {
         this.setPosition(this.x + (vel.x * delta), this.y + (vel.y * delta));
-        System.out.println("xdistTraveled " + vel.x * delta + "ydistTraveled " + vel.y * delta);
         this.distanceTraveled += Math.sqrt(Math.pow(vel.x * delta, 2) + Math.pow(vel.y * delta, 2));
-        System.out.println("distance traveled" + distanceTraveled);
-
     }
 
     private void moveRender(float delta) {
