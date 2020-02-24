@@ -30,6 +30,10 @@ public class TowerBuilderStage {
     private SelectBox<TowerDetails> selectBox;
     private TextButton displayButton;
 
+    //add a build button
+    //when clicked(selected) add a save button and a change material button and remove block button and add block button
+
+
     //Build mode buttons
     private TextButton buildMode;
     private TextButton saveTower;
@@ -168,8 +172,12 @@ public class TowerBuilderStage {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("clicked add block button");
-
-            }
+                if (addBlock.isChecked()) {
+                    addBlock.setStyle(pressedBlueStyle);
+                } else {
+                    addBlock.setStyle(normalStyle);
+                }
+             }
         });
 
 

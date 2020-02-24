@@ -37,8 +37,6 @@ public class TowerBuilderCamera {
 
     //keep a 3d internal representation of the grid and store whether each block is
 
-    //add a build button
-    //when clicked(selected) add a save button and a change material button and remove block button and add block button
 
 
     private void initEnvironment() {
@@ -65,7 +63,10 @@ public class TowerBuilderCamera {
         //Init the camera
         camController = new CameraInputController(cam);
         InputMultiplexer multiplexer = new InputMultiplexer();
+        BuilderInputProcessor bip = new BuilderInputProcessor();
+
         multiplexer.addProcessor(towerStage.stage);
+        multiplexer.addProcessor(bip);
         multiplexer.addProcessor(camController);
         Gdx.input.setInputProcessor(multiplexer);
     }
