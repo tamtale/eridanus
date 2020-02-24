@@ -2,6 +2,7 @@ package com.week1.game.Networking.Messages.Game;
 
 import com.badlogic.gdx.graphics.Pixmap;
 import com.week1.game.Model.Damage;
+import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Networking.Messages.MessageType;
@@ -17,22 +18,21 @@ public class CreateTowerMessage extends GameMessage {
     private TowerType towerType;
 
 
-    public CreateTowerMessage(float x, float y, TowerType towerType, int playerID){
-        super(playerID, MESSAGE_TYPE);
+    public CreateTowerMessage(float x, float y, TowerType towerType, int playerID, int intHash) {
+        super(playerID, MESSAGE_TYPE, intHash);
         this.x = x;
         this.y = y;
         this.towerType = towerType;
     }
 
     @Override
-    public boolean process(GameState inputState, InfoUtil util){
+    public boolean process(GameEngine engine, GameState inputState, InfoUtil util){
         TowerDetails towerDetails = inputState.getTowerDetails(this.playerID, this.towerType.ordinal());
         double towerCost, towerHealth, towerDmg, towerRange;
         towerCost = towerDetails.getPrice();
         towerHealth = towerDetails.getHp();
         towerDmg = towerDetails.getAtk();
         towerRange = towerDetails.getRange();
-        Pixmap towerPixmap = inputState.getTowerPixmap(towerType); // TOOD: tower image should come from TowerDetails too
 
         if (towerCost > inputState.getPlayerStats(playerID).getMana()) {
             // Do not have enough mana!
@@ -56,7 +56,7 @@ public class CreateTowerMessage extends GameMessage {
 
 
         util.log("lji1 - CreateTowerMessage", "Creating tower!");
-        Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerCost, towerPixmap, playerID, towerType.ordinal());
+        Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerCost, playerID, towerType.ordinal());
 
         inputState.addTower(tower, playerID);
         return true;

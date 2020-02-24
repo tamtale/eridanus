@@ -43,7 +43,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     private Vector3 vel;
     private float displayX, displayY;
     private double maxHp;
-    public boolean clicked = false;
+    private boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
     public static double speed = 4;
@@ -53,22 +53,8 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     private static Texture selectedSkin = makeTexture(SIZE, SIZE, Color.YELLOW);
     private static Texture rangeCircle;
 
-    static {
-        Pixmap circlePixmap = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
-        circlePixmap.setBlending(Pixmap.Blending.None);
-        circlePixmap.setColor(1, 1, 1, .5f);
-        circlePixmap.drawCircle(50, 50, 50);
-        rangeCircle = new Texture(circlePixmap);
-    }
-    private final static Map<Integer, Texture> colorMap = new HashMap<Integer, Texture>() {
-        {
-            put(0, makeTexture(SIZE, SIZE, Color.BLUE));
-            put(1, makeTexture(SIZE, SIZE, Color.RED));
-            put(2, makeTexture(SIZE, SIZE, Color.WHITE));
-            put(3, makeTexture(SIZE, SIZE, Color.PURPLE));
-            put(4, makeTexture(SIZE, SIZE, Color.PINK));
-        }
-    };
+
+    private final static Map<Integer, Texture> colorMap = new HashMap<>();
 
 
 
@@ -81,7 +67,20 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         this.displayX = x;
         this.displayY = y;
         this.vel = new Vector3(0, 0, 0);
-        this.close = false;
+    }
+
+    public static void makeTextures() {
+        Pixmap circlePixmap = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
+        circlePixmap.setBlending(Pixmap.Blending.None);
+        circlePixmap.setColor(1, 1, 1, .5f);
+        circlePixmap.drawCircle(50, 50, 50);
+        rangeCircle = new Texture(circlePixmap);
+
+        colorMap.put(0, makeTexture(SIZE, SIZE, Color.BLUE));
+        colorMap.put(1, makeTexture(SIZE, SIZE, Color.RED));
+        colorMap.put(2, makeTexture(SIZE, SIZE, Color.WHITE));
+        colorMap.put(3, makeTexture(SIZE, SIZE, Color.PURPLE));
+        colorMap.put(4, makeTexture(SIZE, SIZE, Color.PINK));
     }
 
     public void draw(Batch batch, float delta, boolean showAttackRadius) {
@@ -130,7 +129,6 @@ public class Unit extends Rectangle implements Damageable, Damaging {
                     path.removeIndex(0);
                     this.distanceTraveled = 0;
                 }
-
                 move(delta);
                 turn++;
 
@@ -147,16 +145,19 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 //                Gdx.app.log("Unit - pjb3", "Not Killing VELOCITY. Path len is " + path.getPath().size + " and the 0th is " + path.get(0));
             }
         }
+//        Gdx.app.log("Unit - pjb3", "Checking velocity (" + vel.x + " " + vel.y + ")" + " goal (?,?) and pos (" + x + "," + y + ")");
+        this.displayX = this.x; // Sync the unit's display to the next 'real' location
+        this.displayY = this.y;
+
+//        float dx = path.get(0).x - this.x;
+//        float dy = path.get(0).y - this.y;
+//
+//        if (agent != null) {
+//            agent.update(delta);
 //        }
-//        move(delta);
     }
 
     private void move(float delta) {
-
-//        if (close){
-//            System.out.println("CLOSE");
-//            agent.update(delta);
-//        }
         this.setPosition(this.x + (vel.x * delta), this.y + (vel.y * delta));
         System.out.println("xdistTraveled " + vel.x * delta + "ydistTraveled " + vel.y * delta);
         this.distanceTraveled += Math.sqrt(Math.pow(vel.x * delta, 2) + Math.pow(vel.y * delta, 2));
@@ -177,7 +178,11 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     private Texture getSkin() {
         return clicked ? selectedSkin : unselectedSkin;
     }
-    
+
+    public void setClicked(boolean clicked) {
+        this.clicked = clicked;
+    }
+
     @Override
     public boolean takeDamage(double dmg, Damage.type damageType) {
         this.hp -= dmg;
@@ -260,6 +265,20 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
     public void setGoal(Vector3 goal) {
         this.goal = goal;
+    }
+
+    @Override
+    public String toString() {
+        return "Unit{" +
+                "playerID=" + playerID +
+                ", turn=" + turn +
+                ", hp=" + hp +
+                ", vel=" + vel +
+                ", maxHp=" + maxHp +
+                ", ID=" + ID +
+                ", x=" + x +
+                ", y=" + y +
+                '}';
     }
 }
 
