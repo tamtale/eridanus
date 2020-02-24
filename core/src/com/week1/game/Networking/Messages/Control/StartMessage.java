@@ -47,8 +47,8 @@ public class StartMessage extends HostControlMessage {
         // TODO: this gets sent first so that the game engine does any initialization before the game starts (but udp doesn't guarantee order)
         h.broadcastToRegisteredPlayers(MessageFormatter.packageMessage(
                 new Update(Arrays.asList(
-                        MessageFormatter.packageMessage(new InitMessage(h.registry.size(), -1)),
-                        MessageFormatter.packageMessage(new TowerDetailsMessage(-1, h.towerDetails))
+                        MessageFormatter.packageMessage(new InitMessage(h.registry.size(), -1, 0)),
+                        MessageFormatter.packageMessage(new TowerDetailsMessage(-1, h.towerDetails, 0))
                 ))
         ));
         

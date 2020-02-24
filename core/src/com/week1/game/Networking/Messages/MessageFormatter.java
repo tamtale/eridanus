@@ -18,26 +18,12 @@ public class MessageFormatter {
      * @param jsonString - json formatted message
      * @return - the parsed message
      */
-    public static List<GameMessage> parseMessage(String jsonString) {
+    public static List<GameMessage> parseMessages(String jsonString) {
         List<GameMessage> msgList = new ArrayList<>();
         Update update = g.fromJson(jsonString, Update.class);
+        Gdx.app.log("pjb3 MessageFormatter", "parseMessages(). Here are the messages to send out " + update.messages);
         update.messages.forEach((msg) -> {
-            AMessage prototypeMessage = g.fromJson(msg, PrototypeMessage.class);
-//            Gdx.app.log(TAG, "Parsed Message: " + parsedMsg);
-            GameMessage parsedMsg = null;
-            if (prototypeMessage.messageTypeID == MessageType.TEST) { 
-                parsedMsg = g.fromJson(msg, TestMessage.class);
-            } else if (prototypeMessage.messageTypeID == MessageType.CREATEMINION){
-                parsedMsg = g.fromJson(msg, CreateMinionMessage.class);
-            } else if (prototypeMessage.messageTypeID == MessageType.MOVE){
-                parsedMsg = g.fromJson(msg, MoveMinionMessage.class);
-            } else if (prototypeMessage.messageTypeID == MessageType.CREATETOWER){
-                parsedMsg = g.fromJson(msg, CreateTowerMessage.class);
-            } else if (prototypeMessage.messageTypeID == MessageType.INIT){
-                parsedMsg = g.fromJson(msg, InitMessage.class);
-            } else if (prototypeMessage.messageTypeID == MessageType.TOWERDETAILS){
-                parsedMsg = g.fromJson(msg, TowerDetailsMessage.class);
-            }
+            GameMessage parsedMsg = parseMessage(msg);
             if (parsedMsg == null) {
                 Gdx.app.error(TAG, "The following message had an unrecognized MessageType: " + msg);
             } else {
@@ -45,6 +31,30 @@ public class MessageFormatter {
             }
         });
         return msgList;
+    }
+
+    public static GameMessage parseMessage(String msg) {
+        AMessage prototypeMessage = g.fromJson(msg, PrototypeMessage.class);
+//            Gdx.app.log(TAG, "Parsed Message: " + parsedMsg);
+        GameMessage parsedMsg = null;
+        if (prototypeMessage.messageTypeID == MessageType.TEST) {
+            parsedMsg = g.fromJson(msg, TestMessage.class);
+        } else if (prototypeMessage.messageTypeID == MessageType.CREATEMINION){
+            parsedMsg = g.fromJson(msg, CreateMinionMessage.class);
+        } else if (prototypeMessage.messageTypeID == MessageType.MOVE){
+            parsedMsg = g.fromJson(msg, MoveMinionMessage.class);
+        } else if (prototypeMessage.messageTypeID == MessageType.CREATETOWER){
+            parsedMsg = g.fromJson(msg, CreateTowerMessage.class);
+        } else if (prototypeMessage.messageTypeID == MessageType.INIT){
+            parsedMsg = g.fromJson(msg, InitMessage.class);
+        } else if (prototypeMessage.messageTypeID == MessageType.SYNCERR){
+            parsedMsg = g.fromJson(msg, SyncIssueMessage.class);
+        } else if (prototypeMessage.messageTypeID == MessageType.CHECKSYNC){
+            parsedMsg = g.fromJson(msg, CheckSyncMessage.class);
+        } else if (prototypeMessage.messageTypeID == MessageType.TOWERDETAILS){
+            parsedMsg = g.fromJson(msg, TowerDetailsMessage.class);
+        }
+        return parsedMsg;
     }
     
     public static HostControlMessage parseHostControlMessage(String jsonString) {

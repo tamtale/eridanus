@@ -7,6 +7,8 @@ public enum MessageType {
     MOVE,
     CREATETOWER,
     INIT,
+    CHECKSYNC,
+    SYNCERR,
     TOWERDETAILS,
     
     // Client Control Messages
