@@ -21,6 +21,7 @@ public class Tower extends Building implements Damaging {
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
     private static Texture rangeCircle;
     private double hp, maxHp, dmg, range, cost;
+    private Map<Vector3, Array<Connection<Vector3>>> removedEdges;
 
     private Damage.type attackType;
 
@@ -186,8 +187,13 @@ public class Tower extends Building implements Damaging {
     }
 
     @Override
-    public void setRemovedEdges(Array<Connection<Vector3>> connections) {
+    public void putRemovedEdges(Vector3 fromNode, Array<Connection<Vector3>> connections) {
         this.removedEdges = connections;
+    }
+
+    @Override
+    public Array<Connection<Vector3>> getRemovedEdges() {
+        return this.removedEdges;
     }
 
     @Override

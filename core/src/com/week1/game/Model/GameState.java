@@ -1,6 +1,7 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
@@ -324,6 +325,7 @@ public class GameState {
 
             } else if (deadEntity.getClass() == Tower.class) {
                 towers.removeValue((Tower)deadEntity, false);
+                Array<Connection<Vector3>> edges = ((Tower) deadEntity).getRemovedEdges();
                 // Reward the player who destroyed the tower the mana.
                 playerStats.get(attackingPlayerId).giveMana(((Tower)deadEntity).getCost() * towerDestructionBonus);
 

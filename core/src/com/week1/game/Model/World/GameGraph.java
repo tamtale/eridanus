@@ -65,7 +65,7 @@ public class GameGraph implements IndexedGraph<Vector3> {
     }
 
     public void removeAllConnections(Vector3 fromNode, Building b){
-        b.setRemovedEdges(edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z]);
+        b.putRemovedEdges(fromNode, edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z]);
         edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = new Array<>();
     }
 

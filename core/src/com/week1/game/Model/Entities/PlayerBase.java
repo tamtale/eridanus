@@ -161,6 +161,11 @@ public class PlayerBase extends Building {
     }
 
     @Override
+    public Array<Connection<Vector3>> getRemovedEdges() {
+        return this.removedEdges;
+    }
+
+    @Override
     public String toString() {
         return "PlayerBase{" +
                 "x=" + x +
