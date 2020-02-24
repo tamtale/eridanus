@@ -1,5 +1,6 @@
 package com.week1.game.Networking.Messages.Game;
 
+import com.badlogic.gdx.Gdx;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
@@ -52,9 +53,11 @@ public class CreateMinionMessage extends GameMessage {
 
         inputState.getPlayerStats(playerID).useMana(tempMinion1Cost);
 
-        Unit unit = new Unit(x, y, null, tempMinion1Health, playerID);
-        util.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
-        inputState.addUnit(unit);
+        Gdx.app.postRunnable(() -> {
+            Unit unit = new Unit(x, y, 1, tempMinion1Health, playerID);
+            util.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
+            inputState.addUnit(unit);
+        });
 //        SteeringAgent agent = new SteeringAgent(unit, new Vector2(x, y), 0,
 //                new Vector2((float) .1, (float) .1), 0, 1, true, (float).5);
 //        inputState.addAgent(agent);

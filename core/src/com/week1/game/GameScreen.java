@@ -103,6 +103,12 @@ public class GameScreen implements Screen {
 	}
 
 	private Queue<TaggedMessage> replayQueue = new ConcurrentLinkedQueue<TaggedMessage>();
+	{
+		// adding some stuff to the replayQueue to test 3D.
+      	replayQueue.add(new TaggedMessage(new CreateMinionMessage(10, 10, 69, 0, -1), 5));
+		replayQueue.add(new TaggedMessage(new CreateMinionMessage(10, 12, 69, 0, -1), 10));
+		replayQueue.add(new TaggedMessage(new CreateMinionMessage(11, 11, 69, 0, -1), 15));
+	}
 
 	/**
 	 * This function is called to [re]initialize the game-specific classes not

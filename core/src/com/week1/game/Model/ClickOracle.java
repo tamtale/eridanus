@@ -170,8 +170,8 @@ public class ClickOracle extends InputAdapter {
                 } else {
                     Gdx.app.log("ttl4 - ClickOracle", "selected a unit!");
                     deMultiSelect();
-                    selectionLocationStart.set(unit.x, unit.y, 0);
-                    selectionLocationEnd.set(unit.x, unit.y, 0);
+                    selectionLocationStart.set(unit.getX(), unit.getY(), 0);
+                    selectionLocationEnd.set(unit.getX(), unit.getY(), 0);
                     multiSelect(unit);
                 }
             }

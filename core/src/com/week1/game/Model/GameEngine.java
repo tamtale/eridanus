@@ -99,6 +99,11 @@ public class GameEngine implements RenderableProvider {
             message.process(this, gameState, util);
             Gdx.app.log("GameEngine: receiveMessages()", "done processing message");
         }
+        // Process the replay messages.
+        for (TaggedMessage message = replayQueue.peek(); message != null && message.turn == communicationTurn; message = replayQueue.peek()) {
+            replayQueue.poll();
+            message.gameMessage.process(this, gameState, util);
+        }
 
         if (communicationTurn % 10 == 0) {
             // Time to sync up!
