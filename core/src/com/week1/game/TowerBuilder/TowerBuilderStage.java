@@ -54,7 +54,7 @@ public class TowerBuilderStage {
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("574053")),
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("574053")), new BitmapFont());
 
-    private boolean isBuildMode = false;
+    public boolean isBuildMode = false;
 
     public TowerBuilderStage(TowerBuilderScreen towerscreen) {
         this.towerscreen =towerscreen;

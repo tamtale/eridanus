@@ -56,8 +56,6 @@ public class TowerMaterials {
                 new Material(TextureAttribute.createDiffuse(new Texture(filename))),
                 VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal));
 
-        System.out.println("~~~~~ block length is " + 5f);
-
         blockHp.put(code, hp);
         blockAtk.put(code, atk);
         blockPrice.put(code, price);

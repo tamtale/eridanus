@@ -23,6 +23,7 @@ public class TowerDetails {
     private List<BlockSpec> layout;
     private TowerFootprint footprint;
     private String name = "";
+    private Array<ModelInstance> invisiBlox = new Array<>();
     
     
     public List<BlockSpec> getLayout() {
