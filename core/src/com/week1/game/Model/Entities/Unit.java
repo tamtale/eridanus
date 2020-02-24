@@ -76,7 +76,7 @@ public class Unit implements Damageable, Damaging, RenderableProvider {
         this.vel = new Vector3(0, 0, 0);
         this.model = modelMap.get(playerID);
         this.modelInstance = new ModelInstance(model);
-        modelInstance.transform.setTranslation(x, y, 1);
+        modelInstance.transform.setTranslation(x, y, z);
     }
 
     public void draw(Batch batch, float delta, boolean showAttackRadius) {
@@ -161,6 +161,10 @@ public class Unit implements Damageable, Damaging, RenderableProvider {
     @Override
     public float getY() {
         return position.y;
+    }
+
+    public float getZ() {
+        return position.z;
     }
 
     public void collide() {

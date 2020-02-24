@@ -15,14 +15,20 @@ public class CreateMinionMessage extends GameMessage {
     private final static String TAG = "CreateMinionMessage";
     
 
-    private float x, y;
+    private float x, y, z;
     private int unitType;
 
+    // Holdover form 2D-land.
     public CreateMinionMessage(float x, float y, int unitType, int playerID, int intHash){
+      this(x, y, 1, unitType, playerID, intHash);
+    }
+
+    public CreateMinionMessage(float x, float y, float z, int unitType, int playerID, int intHash){
         super(playerID, MESSAGE_TYPE, intHash);
         this.x = x;
         this.y = y;
         this.unitType = unitType; // TODO use this
+        this.z = z;
     }
 
     @Override
@@ -54,7 +60,7 @@ public class CreateMinionMessage extends GameMessage {
         inputState.getPlayerStats(playerID).useMana(tempMinion1Cost);
 
         Gdx.app.postRunnable(() -> {
-            Unit unit = new Unit(x, y, 1, tempMinion1Health, playerID);
+            Unit unit = new Unit(x, y, z, tempMinion1Health, playerID);
             util.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
             inputState.addUnit(unit);
         });

@@ -134,6 +134,7 @@ public class GameEngine implements RenderableProvider {
     }
 
     public void render(RenderConfig renderConfig, ModelBatch modelBatch, Camera cam, Environment env) {
+      // TODO use the renderConfig to interpolate movement
         modelBatch.begin(cam);
         modelBatch.render(gameState, env);
         modelBatch.end();

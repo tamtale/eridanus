@@ -32,7 +32,7 @@ public class Renderer {
     private IRendererToNetworkAdapter networkAdapter;
     private IRendererToClickOracleAdapter clickOracleAdapter;
     private IRendererToGameScreenAdapter gameScreenAdapter;
-    private RenderConfig renderConfig;
+    private RenderConfig renderConfig = new RenderConfig(false, false, 0);
     private BitmapFont font = new BitmapFont();
     private Vector3 panning = new Vector3();
     private Map<Direction, Vector3> directionToVector;
@@ -156,7 +156,7 @@ public class Renderer {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         updateCamera();
-        renderConfig = new RenderConfig(getShowAttackRadius(), getShowSpawnRadius(), deltaTime);
+        renderConfig.set(getShowAttackRadius(), getShowSpawnRadius(), deltaTime);
         engineAdapter.render(renderConfig);
         clickOracleAdapter.render();
         drawPlayerUI();

@@ -12,15 +12,23 @@ public class MoveMinionMessage extends GameMessage {
 
     private float x;
     private float y;
-    private Array<Integer> minionIDs;
+    private Array<Integer> minionIDs = new Array<>();
 
     public MoveMinionMessage(float x, float y, int playerID, Array<Unit> minions, int intHash) {
         super(playerID, MESSAGE_TYPE, intHash);
         this.x = x;
         this.y = y;
 
-        this.minionIDs = new Array<>();
         minions.forEach((minion) -> minionIDs.add(minion.ID));
+    }
+
+    public MoveMinionMessage(float x, float y, int playerID, int intHash, int ... ids) {
+        super(playerID, MESSAGE_TYPE, intHash);
+        this.x = x;
+        this.y = y;
+        for (int id: ids) {
+          minionIDs.add(id);
+        }
     }
 
 
