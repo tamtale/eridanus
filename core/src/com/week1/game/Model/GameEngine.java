@@ -12,9 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.PlayerBase;
-import com.week1.game.Model.World.Basic4WorldBuilder;
 import com.week1.game.Model.World.SmallWorldBuilder;
-import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 
 import com.badlogic.gdx.math.Vector3;
@@ -24,20 +22,9 @@ import com.week1.game.Renderer.RenderConfig;
 
 import java.util.List;
 import java.util.Queue;
-import java.util.Random;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
-import com.week1.game.InfoUtil;
-import com.week1.game.Model.Entities.Building;
-import com.week1.game.Model.Entities.PlayerBase;
-import com.week1.game.Model.World.Basic4WorldBuilder;
 import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
-import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageType;
-import com.week1.game.Renderer.RenderConfig;
 
-import java.util.List;
 import static com.week1.game.GameScreen.THRESHOLD;
 
 public class GameEngine implements RenderableProvider {
@@ -89,9 +76,7 @@ public class GameEngine implements RenderableProvider {
             Gdx.app.log("pjb3 - message processing", "Info: queue nonempty!");
         }
         for (GameMessage message : messages) {
-            Gdx.app.log("GameEngine: receiveMessages()", "processing message");
             message.process(this, gameState, util);
-            Gdx.app.log("GameEngine: receiveMessages()", "done processing message");
         }
         // Process the replay messages.
         for (TaggedMessage message = replayQueue.peek(); message != null && message.turn == communicationTurn; message = replayQueue.peek()) {
