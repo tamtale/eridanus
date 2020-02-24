@@ -45,20 +45,16 @@ public class GameEngine implements RenderableProvider {
     private GameState gameState;
     private int communicationTurn = 0;
     private SpriteBatch spriteBatch;
-    private IEngineToRendererAdapter engineToRenderer;
-    private IEngineToNetworkAdapter engineToNetwork;
+    private IEngineAdapter adapter;
     private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
     private InfoUtil util;
     private boolean sentWinLoss = false, sentGameOver = false;
     private Queue<TaggedMessage> replayQueue;
     private boolean isStarted = false;
 
-    public Batch getSpriteBatch() {
-        return spriteBatch;
-    }
-
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, IEngineToNetworkAdapter engineToNetworkAdapter, Queue<TaggedMessage> replayQueue, InfoUtil util) {
+    public GameEngine(IEngineAdapter adapter, Queue<TaggedMessage> replayQueue, InfoUtil util) {
         this.replayQueue = replayQueue;
+        this.adapter = adapter;
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
         gameState = new GameState(
                 SmallWorldBuilder.ONLY,
@@ -71,12 +67,10 @@ public class GameEngine implements RenderableProvider {
                         }
                     }
                     position.set(myBase.getX(), myBase.getY(), 0);
-                    engineToRenderer.setDefaultLocation(position);
+                    adapter.setDefaultLocation(position);
                 });
         Gdx.app.log("wab2- GameEngine", "gameState built");
         spriteBatch = new SpriteBatch();
-        engineToRenderer = engineToRendererAdapter;
-        engineToNetwork =engineToNetworkAdapter;
         this.util = util;
     }
 
@@ -107,7 +101,7 @@ public class GameEngine implements RenderableProvider {
 
         if (communicationTurn % 10 == 0) {
             // Time to sync up!
-            engineToNetwork.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash()));
+            adapter.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash()));
         }
 
         Gdx.app.log("pjb3 - receiveMessages", "end of communication turn: " + communicationTurn);
@@ -121,15 +115,15 @@ public class GameEngine implements RenderableProvider {
         // Check the win/loss/restart conditions
         if (!sentWinLoss) {
             if (!gameState.isPlayerAlive(enginePlayerId)) {
-                engineToRenderer.endGame(0); // TODO make an enum probably im tired
+                adapter.endGame(0); // TODO make an enum probably im tired
                 sentWinLoss = true;
             } else if (gameState.checkIfWon(enginePlayerId)) {
-                engineToRenderer.endGame(1); // TODO same as above
+                adapter.endGame(1); // TODO same as above
                 sentWinLoss = true;
             }
         }
         if (!sentGameOver && gameState.getGameOver()) {
-            engineToRenderer.gameOver();
+            adapter.gameOver();
         }
     }
 

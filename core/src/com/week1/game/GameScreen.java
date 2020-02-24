@@ -5,13 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -21,11 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
 import com.week1.game.Model.Entities.Building;
-import com.week1.game.Model.Entities.PlayerBase;
-import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
@@ -120,7 +111,7 @@ public class GameScreen implements Screen {
 	 * TODO Need to make this reset anything within the network client that needs revision.
 	 */
 	public void createNewGame() {
-		engine = new GameEngine(new IEngineToRendererAdapter() {
+		engine = new GameEngine(new IEngineAdapter() {
 			@Override
 			public void sendToModelBatch(RenderableProvider provider) {
 			    renderer.render3D(provider);
@@ -141,23 +132,25 @@ public class GameScreen implements Screen {
 			public void gameOver() {
 				renderer.showGameOver();
 			}
-		} , new IEngineToNetworkAdapter() {
+
 			@Override
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
 		}, replayQueue, util);
 
-		renderer = new Renderer(new IRendererToEngineAdapter() {
+		renderer = new Renderer(new IRendererAdapter() {
 			@Override
-			public void render(RenderConfig renderConfig) {
+			public void renderSystem(RenderConfig renderConfig) {
 				engine.render(renderConfig, renderer.getModelBatch(), renderer.getCam(), renderer.getEnv());
+				clickOracle.render();
 			}
 
+			@Override
 			public double getPlayerMana(int playerId) {
 				return engine.getGameState().getPlayerStats(playerId).getMana();
 			}
-		}, new IRendererToNetworkAdapter() {
+
 			@Override
 			public String getHostAddr() {
 				return networkClient.getHostAddr();
@@ -172,25 +165,19 @@ public class GameScreen implements Screen {
 			public String getClientAddr() {
 				return null;
 			}
-		},
-				new IRendererToClickOracleAdapter() {
-					@Override
-					public void render() {
-						clickOracle.render();
-					}
 
-					@Override
-					public void setSelectedSpawnState(SpawnInfo type) {
-						clickOracle.setSpawnType(type);
-					}
-				}, new IRendererToGameScreenAdapter() {
+			@Override
+			public void setSelectedSpawnState(SpawnInfo type) {
+				clickOracle.setSpawnType(type);
+			}
+
 			@Override
 			public void restartGame() {
 				createNewGame();
 			}
 		}, util);
 		clickOracle = new ClickOracle(
-				new IClickOracleToRendererAdapter() {
+				new IClickOracleAdapter() {
 					@Override
 					public void unproject(Vector3 projected) {
 						renderer.getCamera().unproject(projected);
@@ -210,8 +197,7 @@ public class GameScreen implements Screen {
 					public Camera getCamera() {
 						return renderer.getCamera();
 					}
-				},
-				new IClickOracleToEngineAdapter() {
+
 					@Override
 					public Unit selectUnit(Vector3 position) {
 						return engine.getGameState().findUnit(position);
@@ -253,8 +239,6 @@ public class GameScreen implements Screen {
 						return engine.getGameStateString();
 					}
 
-				},
-				new IClickOracleToNetworkAdapter() {
 					@Override
 					public void sendMessage(AMessage msg) {
 						networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));

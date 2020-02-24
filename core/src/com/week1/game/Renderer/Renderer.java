@@ -28,10 +28,7 @@ public class Renderer {
     private Environment env;
     private Vector3 touchPos = new Vector3();
     private Vector3 defaultPosition = new Vector3(50, 50, 0);
-    private IRendererToEngineAdapter engineAdapter;
-    private IRendererToNetworkAdapter networkAdapter;
-    private IRendererToClickOracleAdapter clickOracleAdapter;
-    private IRendererToGameScreenAdapter gameScreenAdapter;
+    private IRendererAdapter adapter;
     private RenderConfig renderConfig = new RenderConfig(false, false, 0);
     private BitmapFont font = new BitmapFont();
     private Vector3 panning = new Vector3();
@@ -51,16 +48,10 @@ public class Renderer {
     private int winState = -1;
     private InfoUtil util;
 
-    public Renderer(IRendererToEngineAdapter engineAdapter,
-                    IRendererToNetworkAdapter networkAdapter,
-                    IRendererToClickOracleAdapter clickOracleAdapter,
-                    IRendererToGameScreenAdapter gameScreenAdapter,
+    public Renderer(IRendererAdapter clickOracleAdapter,
                     InfoUtil util) {
-        this.engineAdapter = engineAdapter;
-        this.networkAdapter = networkAdapter;
-        this.clickOracleAdapter = clickOracleAdapter;
+        this.adapter = clickOracleAdapter;
         this.util = util;
-        this.gameScreenAdapter = gameScreenAdapter;
     }
 
     public ModelBatch getModelBatch() {
@@ -86,7 +77,7 @@ public class Renderer {
         cam.near = 1f;
         cam.far = 500f;
         cam.update();
-        gameButtonsStage = new GameButtonsStage(clickOracleAdapter, gameScreenAdapter);
+        gameButtonsStage = new GameButtonsStage(adapter);
         cam.update();
     }
 
@@ -131,13 +122,13 @@ public class Renderer {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         startBatch();
         font.setColor(Color.WHITE);
-        font.draw(batch, "Host IP:" + networkAdapter.getHostAddr(), 50, 50);
+        font.draw(batch, "Host IP:" + adapter.getHostAddr(), 50, 50);
         endBatch();
     }
 
     public void drawPlayerUI() {
         startBatch();
-        gameButtonsStage.renderUI((int)engineAdapter.getPlayerMana(networkAdapter.getPlayerId()));
+        gameButtonsStage.renderUI((int) adapter.getPlayerMana(adapter.getPlayerId()));
         endBatch();
     }
 
@@ -157,8 +148,7 @@ public class Renderer {
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         updateCamera();
         renderConfig.set(getShowAttackRadius(), getShowSpawnRadius(), deltaTime);
-        engineAdapter.render(renderConfig);
-        clickOracleAdapter.render();
+        adapter.renderSystem(renderConfig);
         drawPlayerUI();
         util.drawMessages(batch);
     }
