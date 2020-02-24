@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Damage;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +24,7 @@ public class PlayerBase extends Building {
     private static Texture skin;
     protected static final int SIDELENGTH = 8;
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
+    private Map<Vector3, Array<Connection<Vector3>>> removedEdges;
 
 
     public PlayerBase(double initialHp, float x, float y, int playerID) {
@@ -156,12 +158,12 @@ public class PlayerBase extends Building {
     }
 
     @Override
-    public void setRemovedEdges(Array<Connection<Vector3>> connections) {
-        this.removedEdges = connections;
+    public void putRemovedEdges(Vector3 fromNode, Array<Connection<Vector3>> connections) {
+        removedEdges.put(fromNode, connections);
     }
 
     @Override
-    public Array<Connection<Vector3>> getRemovedEdges() {
+    public Map<Vector3, Array<Connection<Vector3>>> getRemovedEdges() {
         return this.removedEdges;
     }
 
