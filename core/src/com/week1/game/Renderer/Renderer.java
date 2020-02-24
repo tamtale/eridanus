@@ -140,18 +140,6 @@ public class Renderer {
         updateCamera();
         mapRenderer.setView(camera);
         mapRenderer.render();
-
-
-        int[][] heightMap = engineAdapter.heightMap();
-        batch.begin();
-        for (int i = 0; i < heightMap.length; i++) {
-            for (int j = 0; j < heightMap[0].length; j++) {
-                font.getData().setScale(.1f);
-                font.setColor(Color.BLACK);
-                font.draw(batch, "" + heightMap[i][j], i, j + 1);
-            }
-        }
-        batch.end();
         renderConfig = new RenderConfig(getShowAttackRadius(), getShowSpawnRadius(), deltaTime);
         engineAdapter.render(renderConfig);
         clickOracleAdapter.render();
