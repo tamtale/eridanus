@@ -115,7 +115,7 @@ public class GameState implements RenderableProvider {
                         (unit.getX() < tower.x + (tower.getSidelength() / 2f) + 0.5f) &&
                         (unit.getY() > tower.y - (tower.getSidelength() / 2f) + 0.5f) &&
                         (unit.getY() < tower.y + (tower.getSidelength() / 2f) + 0.5f)) {
-                    collide(unit);
+                    unit.collide();
                     Gdx.app.log("stepUnits - wab2", "Unit " + unit.ID + " collided with " + tower);
                 }
             }
@@ -125,7 +125,7 @@ public class GameState implements RenderableProvider {
                         (unit.getX() < base.x + (base.getSidelength() / 2f)) &&
                         (unit.getY() > base.y - (base.getSidelength() / 2f)) &&
                         (unit.getY() < base.y + (base.getSidelength() / 2f))) {
-                    collide(unit);
+                    unit.collide();
                     Gdx.app.log("stepUnits - wab2", "Unit " + unit.ID + " collided with " + base);
                 }
             }
@@ -133,13 +133,6 @@ public class GameState implements RenderableProvider {
 
     }
 
-    public void collide(Unit unit){
-        Vector3 linVel = unit.agent.getLinearVelocity();
-        unit.setX(unit.getX() - 2 * linVel.x);
-        unit.setY(unit.getY() - 2 * linVel.y);
-        unit.agent.setLinearVelocity(new Vector3(0, 0, 0));
-        unit.agent.setSteeringBehavior(null);
-    }
     public void updateMana(float amount){
         for (PlayerStat player : playerStats) {
             player.regenMana(amount);
@@ -173,14 +166,14 @@ public class GameState implements RenderableProvider {
 
     public void updateGoal(Unit unit, Vector3 goal) {
         SteeringAgent agent = unit.getAgent();
-        Vector3 unitPos = new Vector3((int) unit.x, (int) unit.y, 0); //TODO: make acutal z;
+        Vector3 unitPos = new Vector3((int) unit.getX(), (int) unit.getY(), 0); //TODO: make acutal z;
 
         OutputPath path = new OutputPath();
         Array<Building> buildings = this.getBuildings();
 
         for(Building building: buildings) {
             if(building.overlap(goal.x, goal.y)) {
-                goal = building.closestPoint(unit.x, unit.y);
+                goal = building.closestPoint(unit.getX(), unit.getY());
                 break;
             }
         }
@@ -252,8 +245,8 @@ public class GameState implements RenderableProvider {
     public Array<Unit> findUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
         Array<Unit> unitsToSelect = new Array<>();
         for (Unit u : units) {
-            if (Math.min(cornerA.x, cornerB.x) < u.x && u.x < Math.max(cornerA.x, cornerB.x) &&
-                Math.min(cornerA.y, cornerB.y) < u.y && u.y < Math.max(cornerA.y, cornerB.y)) {
+            if (Math.min(cornerA.x, cornerB.x) < u.getX() && u.getX() < Math.max(cornerA.x, cornerB.x) &&
+                Math.min(cornerA.y, cornerB.y) < u.getY() && u.getY() < Math.max(cornerA.y, cornerB.y)) {
                 unitsToSelect.add(u);
             }
         }
@@ -273,8 +266,8 @@ public class GameState implements RenderableProvider {
         return null;
     }
     public void moveMinion(float dx, float dy, Unit u) {
-        System.out.println("u.x: " + u.x + " u.y: " + u.y + " dx: " + dx + " dy: " + dy);
-        updateGoal(u, new Vector3(u.x + dx, u.y + dy, 0));
+        System.out.println("u.x: " + u.getX() + " u.y: " + u.getY() + " dx: " + dx + " dy: " + dy);
+        updateGoal(u, new Vector3(u.getX() + dx, u.getY() + dy, 0));
     }
 
     public void dealDamage(float delta) {

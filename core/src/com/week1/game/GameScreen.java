@@ -76,6 +76,8 @@ public class GameScreen implements Screen {
 	public GameScreen(String[] args) {
 		// Set the logging level
 		Gdx.app.setLogLevel(Application.LOG_INFO);
+		
+		Initializer.init();
 
 		pressedStartbtn = false;
 
@@ -94,8 +96,11 @@ public class GameScreen implements Screen {
 		}, 
 				Arrays.asList(
 						TowerPresets.getTower(1).getLayout(),
+						TowerPresets.getTower(2).getLayout(),
 						TowerPresets.getTower(3).getLayout(),
-						TowerPresets.getTower(5).getLayout()
+						TowerPresets.getTower(4).getLayout(),
+						TowerPresets.getTower(5).getLayout(),
+						TowerPresets.getTower(6).getLayout()
 						)
 	); // TODO: actually pass the towers
 
@@ -103,6 +108,7 @@ public class GameScreen implements Screen {
 	}
 
 	private Queue<TaggedMessage> replayQueue = new ConcurrentLinkedQueue<TaggedMessage>();
+//<<<<<<< HEAD
 //<<<<<<< Updated upstream
 //=======
 //	{
@@ -114,6 +120,14 @@ public class GameScreen implements Screen {
 //		
 //	}
 //>>>>>>> Stashed changes
+//=======
+//	{
+//		// adding some stuff to the replayQueue to test 3D.
+//      	replayQueue.add(new TaggedMessage(new CreateMinionMessage(10, 10, 69, 0, -1), 5));
+//		replayQueue.add(new TaggedMessage(new CreateMinionMessage(10, 12, 69, 0, -1), 10));
+//		replayQueue.add(new TaggedMessage(new CreateMinionMessage(11, 11, 69, 0, -1), 15));
+//	}
+//>>>>>>> b7e94858b37df89e316c513b7b96c37dbd5cc2db
 
 	/**
 	 * This function is called to [re]initialize the game-specific classes not

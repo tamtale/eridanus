@@ -71,7 +71,7 @@ public class TowerDetails {
         this.footprint = new TowerFootprint();
 
         for (BlockSpec block : layout) {
-            int code = block.getBlockCode();
+            BlockType code = block.getBlockCode();
             int x = block.getX();
             int y = block.getY();
             int z = block.getZ();
