@@ -179,9 +179,6 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         return clicked ? selectedSkin : unselectedSkin;
     }
 
-    public void setClicked(boolean clicked) {
-        this.clicked = clicked;
-    }
 
     @Override
     public boolean takeDamage(double dmg, Damage.type damageType) {
