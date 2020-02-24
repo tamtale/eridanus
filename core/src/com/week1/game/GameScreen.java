@@ -103,6 +103,17 @@ public class GameScreen implements Screen {
 	}
 
 	private Queue<TaggedMessage> replayQueue = new ConcurrentLinkedQueue<TaggedMessage>();
+//<<<<<<< Updated upstream
+//=======
+//	{
+//		replayQueue.add(new TaggedMessage(new CreateMinionMessage(10, 10, 69, 0), 10));
+//		replayQueue.add(new TaggedMessage(new CreateMinionMessage(12, 12, 69, 0), 20));
+//		replayQueue.add(new TaggedMessage(new CreateMinionMessage(12, 10, 69, 0), 30));
+//		replayQueue.add(new TaggedMessage(new MoveMinionMessage(10, 15, 0, 0), 40));
+//		replayQueue.add(new TaggedMessage(new MoveMinionMessage(10, 10, 0, 0), 50));
+//		
+//	}
+//>>>>>>> Stashed changes
 
 	/**
 	 * This function is called to [re]initialize the game-specific classes not

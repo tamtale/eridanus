@@ -1,10 +1,12 @@
 package com.week1.game.Networking.Messages.Game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Entities.Tower;
+import com.week1.game.Model.World.Block;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Model.Entities.TowerType;
 import com.week1.game.InfoUtil;
@@ -27,6 +29,12 @@ public class CreateTowerMessage extends GameMessage {
 
     @Override
     public boolean process(GameEngine engine, GameState inputState, InfoUtil util){
+        Gdx.app.log("CreateTowerMessage", "Processing CreateTowerMessage!");
+
+        inputState.getWorld().setBlock(2,2,2, Block.TowerBlock.WATERGUN);
+
+        Gdx.app.log("CreateTowerMessage", "Should have created extra block");
+        
         TowerDetails towerDetails = inputState.getTowerDetails(this.playerID, this.towerType.ordinal());
         double towerCost, towerHealth, towerDmg, towerRange;
         towerCost = towerDetails.getPrice();
@@ -59,6 +67,9 @@ public class CreateTowerMessage extends GameMessage {
         Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerCost, playerID, towerType.ordinal());
 
         inputState.addTower(tower, playerID);
+        
+        
+        
         return true;
     }
 

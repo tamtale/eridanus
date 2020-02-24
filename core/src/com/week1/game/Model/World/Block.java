@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -77,6 +78,7 @@ public interface Block {
         };
 
         private Array<Connection<Block>> edges;
+        
         TerrainBlock(Color color) {
             this.edges = new Array<>();
             this.model = BUILDER.createBox(1f, 1f, 1f,
@@ -84,8 +86,7 @@ public interface Block {
                     VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
         }
-
-
+        
 
         @Override
         public TextureRegion getTextureRegion() {
@@ -133,6 +134,10 @@ public interface Block {
         public TowerBlock(Vector3 coords) {
             this.coords = coords;
         }
+        Model model;
+        private static ModelBuilder BUILDER = new ModelBuilder();
+        
+        
         @Override
         public TextureRegion getTextureRegion() {
             return null;
@@ -178,6 +183,36 @@ public interface Block {
             // TODO this
             return Optional.empty();
         }
+        
+        
+        
+        public static TowerBlock WATERGUN = new TowerBlock("water2.png") {
+            @Override
+            public float getCost(){
+                return 1.5f;
+            }
+
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                ModelInstance instance = new ModelInstance(model);
+                instance.transform.setToTranslation(x, y, z);
+                return Optional.of(instance);
+            }
+        };
+
+
+        TowerBlock(String textureFilename) {
+            this.edges = new Array<>();
+//            this.model = BUILDER.createBox(1f, 1f, 1f,
+//                    new Material(ColorAttribute.createDiffuse(color)),
+//                    VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+
+            this.model = BUILDER.createBox(1f, 1f, 1f,
+                    new Material(TextureAttribute.createDiffuse(new Texture(textureFilename))),
+                    VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
+
+        }
+        
     }
 }
 
