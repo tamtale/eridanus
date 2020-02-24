@@ -24,7 +24,7 @@ public class PlayerBase extends Building {
     private static Texture skin;
     protected static final int SIDELENGTH = 8;
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
-    private Map<Vector3, Array<Connection<Vector3>>> removedEdges;
+    private Map<Vector3, Array<Connection<Vector3>>> removedEdges = new HashMap<>();
 
 
     public PlayerBase(double initialHp, float x, float y, int playerID) {

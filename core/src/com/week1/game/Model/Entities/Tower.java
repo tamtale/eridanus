@@ -21,7 +21,7 @@ public class Tower extends Building implements Damaging {
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
     private static Texture rangeCircle;
     private double hp, maxHp, dmg, range, cost;
-    private Map<Vector3, Array<Connection<Vector3>>> removedEdges;
+    private Map<Vector3, Array<Connection<Vector3>>> removedEdges = new HashMap<>();
 
     private Damage.type attackType;
 
