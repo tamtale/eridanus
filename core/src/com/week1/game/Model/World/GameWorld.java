@@ -69,8 +69,6 @@ public class GameWorld {
                         graph.setConnection(coords, new Vector3(i - 1, j, 0), blocks[i][j][heightMap[i][j]].getCost());
                     }
                     if(i < blocks.length - 1) {
-                        System.out.println(heightMap[i][j]);
-                        System.out.println(heightMap[i + 1][j]);
                         if (Math.abs(heightMap[i][j] - heightMap[i + 1][j]) <= 1) {
                             graph.setConnection(coords, new Vector3(i + 1, j, 0), blocks[i][j][heightMap[i][j]].getCost());
                         }

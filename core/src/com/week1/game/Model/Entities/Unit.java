@@ -28,6 +28,8 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     private Vector3 lastNode;
     private float distance;
     private float distanceTraveled;
+    private Vector3 goal;
+    private boolean close;
 
     public boolean isClicked() {
         return clicked;
@@ -79,6 +81,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         this.displayX = x;
         this.displayY = y;
         this.vel = new Vector3(0, 0, 0);
+        this.close = false;
     }
 
     public void draw(Batch batch, float delta, boolean showAttackRadius) {
@@ -100,7 +103,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
     public void step(float delta) {
         if (path != null) {
-            if (path.getPath().size != 0) {
+            if (path.getPath().size > 0) {
 //                this.curNode = new Vector3(this.x, this.y, 0);
 //                Line travelPath = new Line(lastNode.x, lastNode.y, curNode.x, curNode.y);
 //                Rectangle nodeRect = new Rectangle(path.get(1).x, path.get(1).y, 1, 1);
@@ -112,13 +115,11 @@ public class Unit extends Rectangle implements Damageable, Damaging {
                     turn = 0;
                     Gdx.app.setLogLevel(Application.LOG_NONE);
                     this.lastNode = new Vector3(this.x, this.y, 0);
-                    System.out.println("x " + this.x + " y " + this.y);
-                    System.out.println("finX " + path.get(1).x + " finY " + path.get(1).y);
+//                    System.out.println("finX " + path.get(1).x + " finY " + path.get(1).y);
                     float dx = path.get(0).x - this.x;
                     float dy = path.get(0).y - this.y;
                     this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
-                    System.out.println("distance from next block " + distance);
-                    double angle = Math.atan(dy/dx);
+                    double angle = Math.atan(dy / dx);
                     if (dx < 0) {
                         angle += Math.PI;
                     } else if (dy < 0) {
@@ -131,12 +132,14 @@ public class Unit extends Rectangle implements Damageable, Damaging {
                 }
 
                 move(delta);
-                turn ++;
+                turn++;
 
             }
-            if (path.getPath().size <= 1) {
+            if (path.getPath().size <= 0) {
 //                Gdx.app.log("Unit - pjb3", "Killing VELOCITY");
 //                path.removeIndex(0);
+                agent.setGoal(goal);
+//                this.close = true;
                 path = null;
                 vel.x = 0;
                 vel.y = 0;
@@ -144,14 +147,21 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 //                Gdx.app.log("Unit - pjb3", "Not Killing VELOCITY. Path len is " + path.getPath().size + " and the 0th is " + path.get(0));
             }
         }
+//        }
+//        move(delta);
     }
 
     private void move(float delta) {
 
+//        if (close){
+//            System.out.println("CLOSE");
+//            agent.update(delta);
+//        }
         this.setPosition(this.x + (vel.x * delta), this.y + (vel.y * delta));
         System.out.println("xdistTraveled " + vel.x * delta + "ydistTraveled " + vel.y * delta);
         this.distanceTraveled += Math.sqrt(Math.pow(vel.x * delta, 2) + Math.pow(vel.y * delta, 2));
         System.out.println("distance traveled" + distanceTraveled);
+
     }
 
     private void moveRender(float delta) {
@@ -246,6 +256,10 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     }
     public float getDisplayY() {
         return displayY;
+    }
+
+    public void setGoal(Vector3 goal) {
+        this.goal = goal;
     }
 }
 

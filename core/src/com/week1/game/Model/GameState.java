@@ -85,19 +85,19 @@ public class GameState {
         Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
             playerStats.add(new PlayerStat());
-
-            playerBases.add(new PlayerBase(playerBaseInitialHp, (int) startLocs[i].x, (int) startLocs[i].y, i));
-            removePlayerBase((int) startLocs[i].x, (int) startLocs[i].y);
+            PlayerBase base = new PlayerBase(playerBaseInitialHp, (int) startLocs[i].x, (int) startLocs[i].y, i);
+            playerBases.add(base);
+            removePlayerBase((int) startLocs[i].x, (int) startLocs[i].y, base);
         }
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
         fullyInitialized = true;
         postInit.run();
     }
 
-    public void removePlayerBase(int startX, int startY){
+    public void removePlayerBase(int startX, int startY, PlayerBase b){
         for(int i = startX - 4; i <= startX + 3; i++){
             for (int j = startY - 4; j <= startY + 4; j++){
-                graph.removeAllConnections(new Vector3(i, j, 0));
+                graph.removeAllConnections(new Vector3(i, j, 0), b);
             }
         }
     }
@@ -175,7 +175,7 @@ public class GameState {
             int j = 0;
             for(boolean boo: bool){
                 if(boo){
-                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0));
+                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0), t);
                 }
                 j++;
             }
@@ -186,7 +186,7 @@ public class GameState {
     public void updateGoal(Unit unit, Vector3 goal) {
         SteeringAgent agent = unit.getAgent();
         Vector3 unitPos = new Vector3((int) unit.x, (int) unit.y, 0); //TODO: make acutal z;
-
+        unit.setGoal(goal);
         OutputPath path = new OutputPath();
         Array<Building> buildings = this.getBuildings();
 

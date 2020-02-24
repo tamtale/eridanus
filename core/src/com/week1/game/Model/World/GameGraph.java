@@ -3,16 +3,11 @@ package com.week1.game.Model.World;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.PathFinder;
-import com.badlogic.gdx.ai.pfa.PathSmoother;
-import com.badlogic.gdx.ai.pfa.SmoothableGraphPath;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
-import com.badlogic.gdx.ai.utils.Collision;
-import com.badlogic.gdx.ai.utils.Ray;
-import com.badlogic.gdx.ai.utils.RaycastCollisionDetector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
+import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.OutputPath;
 
 
@@ -69,7 +64,8 @@ public class GameGraph implements IndexedGraph<Vector3> {
         edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z].add(border);
     }
 
-    public void removeAllConnections(Vector3 fromNode){
+    public void removeAllConnections(Vector3 fromNode, Building b){
+        b.setRemovedEdges(edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z]);
         edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = new Array<>();
     }
 

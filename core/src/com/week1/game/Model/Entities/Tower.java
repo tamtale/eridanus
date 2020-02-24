@@ -1,9 +1,11 @@
 package com.week1.game.Model.Entities;
 
+import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Damage;
 
 import java.util.HashMap;
@@ -180,5 +182,10 @@ public class Tower extends Building implements Damaging {
         else{
             return new Vector3(x, startY, 0);
         }
+    }
+
+    @Override
+    public void setRemovedEdges(Array<Connection<Vector3>> connections) {
+        this.removedEdges = connections;
     }
 }
