@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.Model.*;
 import com.week1.game.Model.Entities.Building;
+import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
@@ -189,29 +190,13 @@ public class GameScreen implements Screen {
 						renderer.setPanning(direction);
 					}
 
-					@Override
-					public Ray getRay(float screenX, float screenY) {
-						return renderer.getCam().getPickRay(screenX, screenY);
-					}
-
 					public Camera getCamera() {
 						return renderer.getCamera();
 					}
 
 					@Override
-					public Unit selectUnit(Vector3 position) {
-						return engine.getGameState().findUnit(position);
-					}
-
-					@Override
-					public Unit selectUnitFromRay(Ray ray) {
-					  return engine.getGameState().findUnit(ray);
-					}
-
-					@Override
-					public Vector3 selectIntersectionFromRay(Ray ray) {
-					  // TODO this
-						return null;
+					public Clickable selectClickable(float screenX, float screenY, Vector3 intersection) {
+                      return engine.getGameState().getClickableOnRay(renderer.getCam().getPickRay(screenX, screenY), intersection);
 					}
 
 					@Override

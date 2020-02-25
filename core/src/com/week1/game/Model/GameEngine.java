@@ -63,18 +63,8 @@ public class GameEngine implements RenderableProvider {
 
     public void receiveMessages(List<? extends GameMessage> messages) {
         communicationTurn += 1;
-        Gdx.app.log("ttl4 - receiveMessages", "start of communication turn: " + communicationTurn);
-
         // Modify things like mana, deal damage, moving units, and checking if the game ends
         synchronousUpdateState();
-
-        // Process the messages that come in, if there are any.
-        // prints a message whether or not it has messages to process
-        if (messages.isEmpty()) {
-            Gdx.app.log("pjb3 - message processing", "Info: queue empty!");
-        } else {
-            Gdx.app.log("pjb3 - message processing", "Info: queue nonempty!");
-        }
         for (GameMessage message : messages) {
             message.process(this, gameState, util);
         }
@@ -88,8 +78,6 @@ public class GameEngine implements RenderableProvider {
             // Time to sync up!
             adapter.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash()));
         }
-
-        Gdx.app.log("pjb3 - receiveMessages", "end of communication turn: " + communicationTurn);
     }
 
     public void synchronousUpdateState() {

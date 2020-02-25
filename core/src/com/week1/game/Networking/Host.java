@@ -61,7 +61,7 @@ public class Host {
         // Spawn a new thread to listen for messages incoming to the host
         new Thread(() -> {
             while (true) {
-                Gdx.app.log(TAG, "Host is listening for next client message.");
+//                Gdx.app.log(TAG, "Host is listening for next client message.");
                 byte[] buf = new byte[DANGEROUS_HARDCODED_MESSAGE_SIZE]; // TODO: DANGEROUS HARDCODED
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
 
@@ -79,7 +79,7 @@ public class Host {
     
     public void runUpdateLoop() {
         // spawn a new thread to broadcast updates to the registered clients
-        Gdx.app.log(TAG, "Host is about to begin running update loop.");
+//        Gdx.app.log(TAG, "Host is about to begin running update loop.");
         new Thread(() -> {
             while (true) {
                 List<String> outgoingMessages = new ArrayList<>();
@@ -101,7 +101,7 @@ public class Host {
                             prevHash = hash;
                         } else {
                             if (prevHash != hash) {
-                                Gdx.app.log("pjb3 - Host", "ERROR: The hashes do not match for two messages!!!!! Yikes.");
+                                Gdx.app.error("pjb3 - Host", "ERROR: The hashes do not match for two messages!!!!! Yikes.");
                                 // Create a SyncIssue message to send to all clients so they can know there is an issue
                                 didFail = true;
                             }
@@ -111,7 +111,7 @@ public class Host {
                 if (didFail) {
                     outgoingMessages.add(0, MessageFormatter.packageMessage(new SyncIssueMessage(-1, SYNCERR, prevHash)));
                 } else if (didCheck) {
-                    Gdx.app.log("pjb3 - Host", "Nice. The hashes match up.");
+                    // Gdx.app.log("pjb3 - Host", "Nice. The hashes match up.");
                 }
 
 
@@ -138,14 +138,14 @@ public class Host {
             }
         } else {
             // Game has started
-            Gdx.app.log(TAG, "Host received an update message from: " + packet.getAddress().getHostAddress());
+//            Gdx.app.log(TAG, "Host received an update message from: " + packet.getAddress().getHostAddress());
             incomingMessages.add(msg);
         }
     }
     
     public void broadcastToRegisteredPlayers(String msg) {
         registry.values().forEach((player) -> {
-            System.out.println("Sending message: " + msg + " to player: " + player.address);
+//            System.out.println("Sending message: " + msg + " to player: " + player.address);
             DatagramPacket p = new DatagramPacket(msg.getBytes(), msg.getBytes().length, player.address, player.port);
             try {
                 this.udpSocket.send(p);

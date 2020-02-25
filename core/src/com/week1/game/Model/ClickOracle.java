@@ -10,9 +10,9 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
+import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
-import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 import com.week1.game.Renderer.TextureUtils;
 
@@ -24,6 +24,7 @@ public class ClickOracle extends InputAdapter {
     private static final String TAG = "ClickOracle";
 
     private IClickOracleAdapter adapter;
+    private Clickable selected = Clickable.NULL;
 
     private Vector3 touchPos = new Vector3();
     private Array<Unit> multiSelected = new Array<>();
@@ -91,6 +92,12 @@ public class ClickOracle extends InputAdapter {
         Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
         return false;
     }
+
+    private void setSelectedClickable(Clickable clickable) {
+        selected.setSelected(false);
+        selected = clickable;
+        selected.setSelected(true);
+    }
     
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
@@ -117,13 +124,10 @@ public class ClickOracle extends InputAdapter {
 
         touchPos.set(screenX, screenY, 0);
         // for 3D, get the ray that the click represents.
-        pickedRay.set(adapter.getRay(screenX, screenY));
-        // TODO generalize this.
-        adapter.unproject(touchPos);
 
         int currentGameHash = adapter.getGameStateHash();
-        Gdx.app.log("pjb3 - ClickOracle", "hash int is " + currentGameHash);
-        Gdx.app.log("pjb3 - ClickOracle", "the human readable is: " + adapter.getGameStateString());
+//        Gdx.app.log("pjb3 - ClickOracle", "hash int is " + currentGameHash);
+//        Gdx.app.log("pjb3 - ClickOracle", "the human readable is: " + adapter.getGameStateString());
 
         // for 2D, just unproject.
         adapter.unproject(touchPos);
@@ -143,30 +147,43 @@ public class ClickOracle extends InputAdapter {
             } else {
 
                 // Unit unit = engineAdapter.selectUnit(touchPos);
-                Unit unit = adapter.selectUnitFromRay(pickedRay);
-                if (unit == null) {
-                    Gdx.app.log("ttl4 - ClickOracle", "nothing selected!");
-                    System.out.println("aaaaa");
-                    if (spawnType == SpawnInfo.SpawnType.UNIT) {
-                        Gdx.app.log("pjb3 - ClickOracle", "Spawn unit");
-                        adapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, adapter.getPlayerId(), currentGameHash));
-                    } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
-                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
-                        adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 0, adapter.getPlayerId(), currentGameHash));
-                    } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
-                        Gdx.app.log("pjb3 - ClickOracle", "Spawn Tower 2 tower via state");
-                        adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 1, adapter.getPlayerId(), currentGameHash));
-                    } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
-                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
-                        adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 2, adapter.getPlayerId(), currentGameHash));
-                    }
-                } else {
-                    Gdx.app.log("ttl4 - ClickOracle", "selected a unit!");
-                    deMultiSelect();
-                    selectionLocationStart.set(unit.getX(), unit.getY(), 0);
-                    selectionLocationEnd.set(unit.getX(), unit.getY(), 0);
-                    multiSelect(unit);
-                }
+              setSelectedClickable(adapter.selectClickable(screenX, screenY, touchPos));
+              selected.accept(new Clickable.ClickableVisitor<Void>() {
+                  @Override
+                  public Void acceptUnit(Unit unit) {
+                      Gdx.app.log("GOTTEM", "GOTTEM");
+                      return null;
+                  }
+
+                  @Override
+                  public Void acceptNull() {
+                    // TODO create an entity based on the pressed button.
+                      return null;
+                  }
+              });
+//                if (unit == null) {
+//                    Gdx.app.log("ttl4 - ClickOracle", "nothing selected!");
+//                    System.out.println("aaaaa");
+//                    if (spawnType == SpawnInfo.SpawnType.UNIT) {
+//                        Gdx.app.log("pjb3 - ClickOracle", "Spawn unit");
+//                        adapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, adapter.getPlayerId(), currentGameHash));
+//                    } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
+//                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+//                        adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 0, adapter.getPlayerId(), currentGameHash));
+//                    } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
+//                        Gdx.app.log("pjb3 - ClickOracle", "Spawn Tower 2 tower via state");
+//                        adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 1, adapter.getPlayerId(), currentGameHash));
+//                    } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
+//                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+//                        adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 2, adapter.getPlayerId(), currentGameHash));
+//                    }
+//                } else {
+//                    Gdx.app.log("ttl4 - ClickOracle", "selected a unit!");
+//                    deMultiSelect();
+//                    selectionLocationStart.set(unit.getX(), unit.getY(), 0);
+//                    selectionLocationEnd.set(unit.getX(), unit.getY(), 0);
+//                    multiSelect(unit);
+//                }
             }
             return false;
         }

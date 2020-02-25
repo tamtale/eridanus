@@ -2,16 +2,14 @@ package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.week1.game.AIMovement.SteeringAgent;
@@ -24,10 +22,9 @@ import java.util.Map;
 
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
-import static com.week1.game.Renderer.TextureUtils.makeTexture;
 import static java.lang.Math.abs;
 
-public class Unit implements Damageable, Damaging, RenderableProvider {
+public class Unit implements Damageable, Damaging, RenderableProvider, Clickable {
     private final int playerID;
     public OutputPath path;
     private int turn = 0;
@@ -46,6 +43,14 @@ public class Unit implements Damageable, Damaging, RenderableProvider {
     private Vector3 position = new Vector3();
     private Vector3 displayPosition = new Vector3();
 
+    /*
+     * Material to apply to a selected unit.
+     */
+    private static Material selectedMaterial = new Material() {{
+        set(ColorAttribute.createDiffuse(Color.ORANGE));
+    }};
+    private Material originalMaterial;
+
     private final static Map<Integer, Color> colorMap = new HashMap<Integer, Color>() {
         {
             put(0, Color.BLUE);
@@ -55,8 +60,6 @@ public class Unit implements Damageable, Damaging, RenderableProvider {
             put(4, Color.PINK);
         }
     };
-    private static Texture rangeCircle;
-
 
     private final static Map<Integer, Model> modelMap = new HashMap<Integer, Model>() {
         {
@@ -77,6 +80,7 @@ public class Unit implements Damageable, Damaging, RenderableProvider {
         this.model = modelMap.get(playerID);
         this.modelInstance = new ModelInstance(model);
         modelInstance.transform.setTranslation(x, y, z);
+        this.originalMaterial = model.materials.get(0);
     }
 
     public void draw(Batch batch, float delta, boolean showAttackRadius) {
@@ -229,6 +233,33 @@ public class Unit implements Damageable, Damaging, RenderableProvider {
                 ", x=" + position.x +
                 ", y=" + position.y +
                 '}';
+    }
+
+    /*
+     * BoundingBox to be reused for intersection calculation.
+     */
+    private static BoundingBox box = new BoundingBox();
+    @Override
+    public boolean intersects(Ray ray, Vector3 intersection) {
+        modelInstance.calculateBoundingBox(box);
+        box.mul(modelInstance.transform);
+        return Intersector.intersectRayBounds(ray, box, intersection);
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+        Material mat = modelInstance.materials.get(0);
+        mat.clear();
+        if (selected) {
+          mat.set(selectedMaterial);
+        } else {
+          mat.set(originalMaterial);
+        }
+    }
+
+    @Override
+    public <T> T accept(ClickableVisitor<T> clickableVisitor) {
+        return clickableVisitor.acceptUnit(this);
     }
 }
 
