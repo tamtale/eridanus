@@ -431,8 +431,8 @@ public class GameState {
         }
     }
 
-    public PackagedGameState packState() {
-        return new PackagedGameState(units, towers, playerBases, playerStats);
+    public PackagedGameState packState(int turn) {
+        return new PackagedGameState(turn, units, towers, playerBases, playerStats);
     }
 
 
@@ -446,8 +446,8 @@ public class GameState {
         int encodedhash;
         private String gameString;
 
-        public PackagedGameState (Array<Unit> units, Array<Tower> towers, Array<PlayerBase> bases, Array<PlayerStat> stats) {
-            gameString = "";
+        public PackagedGameState (int turn, Array<Unit> units, Array<Tower> towers, Array<PlayerBase> bases, Array<PlayerStat> stats) {
+            gameString = "Turn " + turn;
             Unit u;
             for (int i = 0; i < units.size; i++) {
                 u = units.get(i);

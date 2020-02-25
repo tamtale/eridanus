@@ -12,6 +12,7 @@ import com.week1.game.Networking.Messages.MessageType;
  * consistent across all clients
  */
 public class CheckSyncMessage extends GameMessage {
+
     public CheckSyncMessage(int playerID, MessageType messageTypeID, int intHash) {
         super(playerID, messageTypeID, intHash);
     }

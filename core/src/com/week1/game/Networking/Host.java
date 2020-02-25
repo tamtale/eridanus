@@ -91,11 +91,13 @@ public class Host {
                 int prevHash = 0; // This will be the hash that everything is compared to
                 boolean didFail = false;
                 boolean didCheck = false;
+                List<Integer> hashes = new ArrayList<>();
                 for (String outgoingMessage : outgoingMessages) {
                     GameMessage msg = MessageFormatter.parseMessage(outgoingMessage);
                     if (msg instanceof CheckSyncMessage) {
                         didCheck = true;
                         int hash = msg.getHashCode();
+                        hashes.add(hash);
                         if (prevHash == 0) {
                             // if it has not been set, set the standard to this one.
                             prevHash = hash;
@@ -109,7 +111,7 @@ public class Host {
                     }
                 }
                 if (didFail) {
-                    outgoingMessages.add(0, MessageFormatter.packageMessage(new SyncIssueMessage(-1, SYNCERR, prevHash)));
+                    outgoingMessages.add(0, MessageFormatter.packageMessage(new SyncIssueMessage(-1, SYNCERR, prevHash, hashes)));
                 } else if (didCheck) {
                     Gdx.app.log("pjb3 - Host", "Nice. The hashes match up.");
                 }
