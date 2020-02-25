@@ -235,6 +235,7 @@ public class GameState implements RenderableProvider {
 
     private Vector3 intersect = new Vector3(0, 0, 1);
     private Plane two = new Plane(intersect, -2);
+
     public Unit findUnit(Ray ray) {
         if (Intersector.intersectRayPlane(ray, two, intersect)) {
             Gdx.app.log("findUnit", "intersection at: " + intersect.toString());

@@ -109,7 +109,7 @@ public class ClickOracle extends InputAdapter {
             Array<Unit> unitsToSelect = adapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
 
             deMultiSelect();
-            unitsToSelect.forEach((unit) -> multiSelect(unit));
+            unitsToSelect.forEach(this::multiSelect);
 
             Gdx.app.log("lji1 - ClickOracle", "Cleared selection locations.");
             return false;
