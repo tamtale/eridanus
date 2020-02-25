@@ -58,11 +58,15 @@ public class GameEngine {
         engineToNetwork =engineToNetworkAdapter;
         this.util = util;
 
-        // Initialize and truncate the log file for the engine.
+        // Initialize and truncate the log file for the engine and Error log.
         try {
-            File logFile = new File("logs/LOCAL-SYNC-STATE-LOG.txt");
-            writer = new BufferedWriter(new FileWriter(logFile, true));
+            File logFile = new File("logs/STATE-ERROR-LOG.txt");
             FileChannel outChan = new FileOutputStream(logFile, true).getChannel();
+            outChan.truncate(0);
+
+            logFile = new File("logs/LOCAL-SYNC-STATE-LOG.txt");
+            writer = new BufferedWriter(new FileWriter(logFile, true));
+            outChan = new FileOutputStream(logFile, true).getChannel();
             outChan.truncate(0);
             writer.flush();
         } catch (IOException e) {
