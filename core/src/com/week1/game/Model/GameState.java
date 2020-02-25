@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Entities.*;
+import com.week1.game.Model.World.Block;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Model.World.IWorldBuilder;
@@ -61,6 +62,12 @@ public class GameState {
         world.getHeightMap();
         graph = world.buildGraph();
         graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
+        Unit.unit2StateAdapter = new Unit2StateAdapter() {
+            @Override
+            public Block getBlock(int i, int j, int k) {
+                return world.getBlock(i, j, k);
+            }
+        };
 //        graph.search(new Vector3(0, 0, 0), new Vector3(1, 1, 0));
 //        pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
         OutputPath path = new OutputPath();

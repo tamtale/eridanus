@@ -11,6 +11,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
+import com.week1.game.Model.Unit2StateAdapter;
+import com.week1.game.Model.World.Block;
 import javafx.scene.shape.Line;
 
 import java.util.HashMap;
@@ -24,12 +26,12 @@ import static java.lang.Math.abs;
 public class Unit extends Rectangle implements Damageable, Damaging {
     private final int playerID;
     public OutputPath path;
-    private Vector3 curNode;
-    private Vector3 lastNode;
     private float distance;
     private float distanceTraveled;
     private Vector3 goal;
     private boolean close;
+    public static Unit2StateAdapter unit2StateAdapter;
+    private float blockSpeed;
 
     public boolean isClicked() {
         return clicked;
@@ -105,9 +107,10 @@ public class Unit extends Rectangle implements Damageable, Damaging {
             if (path.getPath().size > 0) {
                 if (distanceTraveled > distance) {
                     turn = 0;
-                    this.lastNode = new Vector3(this.x, this.y, 0);
                     float dx = path.get(0).x - this.x;
                     float dy = path.get(0).y - this.y;
+                    this.blockSpeed = 1f/unit2StateAdapter.getBlock((int) this.x, (int) this.y, 0).getCost(); //TODO: 3D
+                    System.out.println(blockSpeed);
                     this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
                     double angle = Math.atan(dy / dx);
                     if (dx < 0) {
@@ -115,8 +118,8 @@ public class Unit extends Rectangle implements Damageable, Damaging {
                     } else if (dy < 0) {
                         angle += 2 * Math.PI;
                     }
-                    vel.x = (float) speed * (float) Math.cos(angle);
-                    vel.y = (float) speed * (float) Math.sin(angle);
+                    vel.x = blockSpeed * (float) speed * (float) Math.cos(angle);
+                    vel.y = blockSpeed * (float) speed * (float) Math.sin(angle);
                     path.removeIndex(0);
                     this.distanceTraveled = 0;
                 }
@@ -222,7 +225,6 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         } else if (dy < 0) {
             angle += 2 * Math.PI;
         }
-        this.lastNode = new Vector3(this.x, this.y, 0);
         this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
         vel.x = (float) speed * (float) Math.cos(angle);
         vel.y = (float) speed * (float) Math.sin(angle);
