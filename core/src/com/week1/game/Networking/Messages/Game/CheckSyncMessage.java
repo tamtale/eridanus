@@ -12,9 +12,15 @@ import com.week1.game.Networking.Messages.MessageType;
  * consistent across all clients
  */
 public class CheckSyncMessage extends GameMessage {
+    private int turn;
 
-    public CheckSyncMessage(int playerID, MessageType messageTypeID, int intHash) {
+    public CheckSyncMessage(int playerID, MessageType messageTypeID, int intHash, int turn) {
         super(playerID, messageTypeID, intHash);
+        this.turn = turn;
+    }
+
+    public int getTurn() {
+        return turn;
     }
 
     @Override

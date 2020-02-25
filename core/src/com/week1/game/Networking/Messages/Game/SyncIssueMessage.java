@@ -36,7 +36,7 @@ public class SyncIssueMessage extends GameMessage {
     public boolean process(GameEngine engine, GameState gameState, InfoUtil util) {
         Gdx.app.log("pjb3 - SyncIssueMessage", "SYNCHRONIZATION ISSUE. CHECK STATE");
         util.log("pjb3 - SyncIssueMessage", "SYNCHRONIZATION ISSUE. CHECK STATE");
-        util.log("pjb3 - SyncIssueMessage", gameState.packState().getGameString());
+        util.log("pjb3 - SyncIssueMessage", gameState.packState(engine.getTurn()).getGameString());
 
         // Create the message to append to the log file
         String fileContent = "Issue with turn " + (engine.getTurn()-1) + " hashes were:";

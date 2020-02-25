@@ -81,7 +81,7 @@ public class GameEngine {
         // prints a message whether or not it has messages to process
         if (messages.isEmpty()) {
             Gdx.app.log("pjb3 - message processing", "Info: queue empty!");
-        } else {:::
+        } else {
             Gdx.app.log("pjb3 - message processing", "Info: queue nonempty!");
         }
         for (GameMessage message : messages) {
@@ -90,9 +90,9 @@ public class GameEngine {
             Gdx.app.log("GameEngine: receiveMessages()", "done processing message");
         }
 
-        if (communicationTurn % 1 == 0) {
+        if (communicationTurn % 10 == 0) {
             // Time to sync up!
-            engineToNetwork.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash()));
+            engineToNetwork.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash(), communicationTurn));
 
             // Log the state to the file
             try {
