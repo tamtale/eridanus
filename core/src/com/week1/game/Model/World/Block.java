@@ -32,17 +32,30 @@ public interface Block {
                 return 0;
             }
 
+            @Override
+            public String toString(){
+                return "AIR";
+            }
+
         };
         public static TerrainBlock STONE = new TerrainBlock(Color.GRAY) {
             @Override
             public float getCost(){
                 return 1;
             }
+            @Override
+            public String toString(){
+                return "STONE";
+            }
         };
         public static TerrainBlock DIRT = new TerrainBlock(Color.BROWN) {
             @Override
             public float getCost(){
-                return 1.5f;
+                return 3f;
+            }
+            @Override
+            public String toString(){
+                return "DIRT";
             }
         };
 

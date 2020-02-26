@@ -41,6 +41,9 @@ public class GameWorld {
         blocks[i][j][k] = block;
         refreshHeight = true;
     }
+    public int getHeight(int i, int j){
+        return heightMap[i][j];
+    }
 
     public TiledMap toTiledMap() {
         TiledMap map = new TiledMap();

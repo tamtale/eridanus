@@ -107,10 +107,16 @@ public class Unit extends Rectangle implements Damageable, Damaging {
             if (path.getPath().size > 0) {
                 if (distanceTraveled > distance) {
                     turn = 0;
+                    Gdx.app.setLogLevel(Application.LOG_NONE);
                     float dx = path.get(0).x - this.x;
                     float dy = path.get(0).y - this.y;
-                    this.blockSpeed = 1f/unit2StateAdapter.getBlock((int) this.x, (int) this.y, 0).getCost(); //TODO: 3D
-                    System.out.println(blockSpeed);
+                    System.out.println(unit2StateAdapter.getBlock((int) this.x, (int) this.y,
+                            unit2StateAdapter.getHeight((int) this.x, (int) this.y)));
+                    this.blockSpeed = 1f/unit2StateAdapter.getBlock((int) this.x, (int) this.y,
+                            unit2StateAdapter.getHeight((int) this.x, (int) this.y)).getCost(); //TODO: 3D
+                    if(blockSpeed != 1) {
+                        System.out.println(blockSpeed);
+                    }
                     this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
                     double angle = Math.atan(dy / dx);
                     if (dx < 0) {

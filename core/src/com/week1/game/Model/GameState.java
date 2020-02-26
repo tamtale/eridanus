@@ -67,6 +67,11 @@ public class GameState {
             public Block getBlock(int i, int j, int k) {
                 return world.getBlock(i, j, k);
             }
+
+            @Override
+            public int getHeight(int i, int j) {
+                return world.getHeight(i, j);
+            }
         };
 //        graph.search(new Vector3(0, 0, 0), new Vector3(1, 1, 0));
 //        pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
