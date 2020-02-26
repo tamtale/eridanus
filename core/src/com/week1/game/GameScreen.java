@@ -254,9 +254,9 @@ public class GameScreen implements Screen {
 
 		if (!pressedStartbtn) {
 			InputMultiplexer multiplexer = new InputMultiplexer();
-			multiplexer.addProcessor(new GameCameraController(renderer.getCamera()));
-			// multiplexer.addProcessor(renderer.getButtonStage());
+			multiplexer.addProcessor(renderer.getButtonStage());
 			multiplexer.addProcessor(clickOracle);
+			multiplexer.addProcessor(new GameCameraController(renderer.getCamera()));
 			Gdx.input.setInputProcessor(multiplexer);
 
 			connectionStage.dispose();
