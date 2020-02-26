@@ -46,7 +46,7 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
     /*
      * Material to apply to a selected unit.
      */
-    private static Material selectedMaterial = new Material() {{
+    public static Material selectedMaterial = new Material() {{
         set(ColorAttribute.createDiffuse(Color.ORANGE));
     }};
     private Material originalMaterial;

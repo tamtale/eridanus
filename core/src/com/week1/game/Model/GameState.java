@@ -478,13 +478,20 @@ public class GameState implements RenderableProvider {
      * Returns null if there is no clickable.
      */
     public Clickable getClickableOnRay(Ray ray, Vector3 intersection) {
+        
+        // TODO: doesn't neccessarily find the clickable closest to the camera
+        
+        // Look through all the standard clickables
         for (Clickable clickable: clickables) {
             if (clickable.intersects(ray, intersection)) {
                 return clickable;
             }
-            Gdx.app.log("nope", "nope");
         }
-        Gdx.app.log("asdf", "none found");
-        return Clickable.NULL;
+        Gdx.app.log("GameState.getClickableOnRay", "No clickables (units) found");
+        
+        // Look through all the blocks
+        Clickable clickedBlock = world.getBlockOnRay(ray, intersection);
+        
+        return clickedBlock;
     }
 }

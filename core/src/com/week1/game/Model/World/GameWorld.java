@@ -12,10 +12,13 @@ import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
+import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
 
 public class GameWorld implements RenderableProvider {
@@ -23,7 +26,8 @@ public class GameWorld implements RenderableProvider {
     private int[][] heightMap;
     private boolean refreshHeight = true; // whether or not the map has changed, warranting a new height map.
     private GameGraph graph;
-    private Array<ModelInstance> instances = new Array<>();
+//    private Array<ModelInstance> instances = new Array<>();
+    private ModelInstance[][][] instances;
     private Model model;
     private ModelBuilder modelBuilder = new ModelBuilder();
     AssetManager assets;
@@ -48,10 +52,16 @@ public class GameWorld implements RenderableProvider {
                 new Material(ColorAttribute.createDiffuse(Color.GREEN)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
         // Build the modelinstances!
+        
+        instances = new ModelInstance[blocks.length][blocks[0].length][blocks[0][0].length];
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 for (int k = 0; k < blocks[0][0].length; k++) {
-                    blocks[i][j][k].modelInstance(i, j, k).ifPresent(modelInstance -> instances.add(modelInstance));
+                    int i_final = i;
+                    int j_final = j;
+                    int k_final = k;
+                    blocks[i][j][k].modelInstance(i, j, k)
+                            .ifPresent(modelInstance -> instances[i_final][j_final][k_final] = modelInstance);
                 }
             }
         }
@@ -63,12 +73,10 @@ public class GameWorld implements RenderableProvider {
     }
     public void setBlock(int i, int j, int k, Block block) {
         blocks[i][j][k] = block;
-
-        System.out.println("block: " + blocks[i][j][k]);
-        System.out.println("optional: " + blocks[i][j][k].modelInstance(i,j,k));
         blocks[i][j][k]
                 .modelInstance(i,j,k)
-                .ifPresent(modelInstance -> instances.add(modelInstance));
+                .ifPresent(modelInstance -> instances[i][j][k] = modelInstance);
+        
         refreshHeight = true;
     }
 
@@ -141,6 +149,76 @@ public class GameWorld implements RenderableProvider {
 
     @Override
     public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
-        instances.forEach(instance -> instance.getRenderables(renderables, pool));
+        for (int i = 0; i < instances.length; i++) {
+            for (int j = 0; j < instances[0].length; j++) {
+                for (int k = 0; k < instances[0][0].length; k++) {
+                    if (instances[i][j][k] != null) {
+                        instances[i][j][k].getRenderables(renderables, pool);
+                    }
+                }
+            }
+        }
+    }
+    
+    /*
+        Returns the closest block to the camera that intersects with the given ray.
+     */
+    public Clickable getBlockOnRay(Ray ray, Vector3 intersection) {
+        
+        // TODO: doesn't actually return the closest one right now, just the first one it finds
+        
+        BoundingBox box = new BoundingBox();
+        
+        for (int i = 0; i < blocks.length; i++) {
+            for (int j = 0; j < blocks[0].length; j++)  {
+                for (int k = 0; k < blocks[0][0].length; k++) {
+                    ModelInstance modelInstance = instances[i][j][k];
+                    // Ignore the null model instances, which correspond to empty spaces in the map
+                    if (modelInstance == null) {
+                        continue;
+                    }
+                    
+                    // Calculate the bounding box on the fly
+                    modelInstance.calculateBoundingBox(box);
+                    box.mul(modelInstance.transform);
+                    
+                    if (Intersector.intersectRayBounds(ray, box, intersection)) {
+                        Gdx.app.log("GameState.getClickableOnRay", "Returning clickable for block at i:" + i + " j: " + j + " k: " + k);
+                        return new Clickable() {
+                            private BoundingBox boundingBox = new BoundingBox(box);
+                            private Material originalMaterial = modelInstance.model.materials.get(0);
+
+                            @Override
+                            public boolean intersects(Ray ray, Vector3 intersection) {
+                                return Intersector.intersectRayBounds(ray, boundingBox, intersection);
+                            }
+
+                            @Override
+                            public void setSelected(boolean selected) {
+                                if (selected) {
+                                    Material mat = modelInstance.materials.get(0);
+                                    mat.clear();
+                                    if (selected) {
+                                        mat.set(Unit.selectedMaterial);
+                                    } else {
+                                        mat.set(originalMaterial);
+                                    }
+                                }
+
+                            }
+
+                            @Override
+                            public <T> T accept(ClickableVisitor<T> clickableVisitor) {
+                                return null;
+                            }
+                        };
+                    }
+                }
+            }
+        }
+
+        Gdx.app.log("GameState.getClickableOnRay", "No blocks clicked");
+        return Clickable.NULL;
+        
     }
 }
