@@ -30,12 +30,12 @@ import static com.week1.game.Model.StatsConfig.*;
 public class GameState implements RenderableProvider {
 
     private GameGraph graph;
-    private PathFinder<Vector3> pathFinder;
-    private Array<Unit> units;
+    private Array<Unit> units = new Array<>();
+    private Array<Clickable> clickables = new Array<>();
     private int minionCount;
-    private Array<Tower> towers;
-    private Array<PlayerBase> playerBases;
-    private Array<PlayerStat> playerStats;
+    private Array<Tower> towers = new Array<>();
+    private Array<PlayerBase> playerBases = new Array<>();
+    private Array<PlayerStat> playerStats = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
     
@@ -47,25 +47,11 @@ public class GameState implements RenderableProvider {
     private boolean fullyInitialized = false;
 
     public GameState(IWorldBuilder worldBuilder, Runnable postInit){
-        // TODO board
-        // TODO player data
-        // TODO towers
         // TODO tower types in memory after exchange
         this.worldBuilder = worldBuilder;
-        towers = new Array<>();
-        units = new Array<>();
-        Gdx.app.log("Game State - wab2", "units set");
         world = new GameWorld(worldBuilder);
-        Gdx.app.log("Game State - wab2", "world built");
         graph = world.buildGraph();
         graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
-//        graph.search(new Vector3(0, 0, 0), new Vector3(1, 1, 0));
-//        pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
-        OutputPath path = new OutputPath();
-
-        //graph.getPathFinder().searchNodePath(new Vector3(0, 0, 0), new Vector3(1, 1, 0), new GameHeuristic(), path);
-        playerBases = new Array<>();
-        playerStats = new Array<>();
         this.postInit = postInit;
     }
 
@@ -142,6 +128,7 @@ public class GameState implements RenderableProvider {
     public void addUnit(Unit u){
         u.ID = minionCount;
         units.add(u);
+        clickables.add(u);
         minionCount += 1;
     }
 
@@ -222,25 +209,6 @@ public class GameState implements RenderableProvider {
                 playerBase.draw(batch, false);
             }
         }
-    }
-
-    public Unit findUnit(Vector3 position) {
-        for (Unit unit: units) {
-           if (unit.contains(position.x, position.y))  {
-               return unit;
-           }
-        }
-        return null;
-    }
-
-    private Vector3 intersect = new Vector3(0, 0, 1);
-    private Plane two = new Plane(intersect, -2);
-
-    public Unit findUnit(Ray ray) {
-        if (Intersector.intersectRayPlane(ray, two, intersect)) {
-            Gdx.app.log("findUnit", "intersection at: " + intersect.toString());
-        }
-        return null;
     }
 
     public Array<Unit> findUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
@@ -503,5 +471,20 @@ public class GameState implements RenderableProvider {
             unit = units.get(u);
             unit.getRenderables(renderables, pool);
         }
+    }
+
+    /*
+     * Returns a clickable that lies on the ray, closest to the endpoint.
+     * Returns null if there is no clickable.
+     */
+    public Clickable getClickableOnRay(Ray ray, Vector3 intersection) {
+        for (Clickable clickable: clickables) {
+            if (clickable.intersects(ray, intersection)) {
+                return clickable;
+            }
+            Gdx.app.log("nope", "nope");
+        }
+        Gdx.app.log("asdf", "none found");
+        return Clickable.NULL;
     }
 }

@@ -45,10 +45,10 @@ public class Client {
         DatagramPacket p = new DatagramPacket(
                 msg.getBytes(), msg.getBytes().length, hostAddress, this.hostPort);
 
-        Gdx.app.log(TAG, "About to send message: " + msg + " to: " + hostAddress + ":" + this.hostPort);
+        // Gdx.app.log(TAG, "About to send message: " + msg + " to: " + hostAddress + ":" + this.hostPort);
         try {
             this.udpSocket.send(p);
-            Gdx.app.log(TAG, "Sent message");
+            // Gdx.app.log(TAG, "Sent message");
         } catch (IOException e) {
             Gdx.app.error(TAG, "Failed to send message: " + msg);
         }
@@ -68,16 +68,16 @@ public class Client {
                     udpSocket.receive(packet);
                     String messages = new String(packet.getData()).trim();
                     
-                    Gdx.app.log(TAG, "About to try parsing message: " + messages);
+                    // Gdx.app.log(TAG, "About to try parsing message: " + messages);
                     // try parsing as a control message first
                     ClientControlMessage controlMsg = MessageFormatter.parseClientControlMessage(messages);
                     if (controlMsg != null) {
-                        Gdx.app.log(TAG, "Received control message: " + controlMsg);
+                        // Gdx.app.log(TAG, "Received control message: " + controlMsg);
                         controlMsg.updateClient(this);
                         continue; // don't need to try parsing as game messages if already successfully parsed as control message
                     }
                     
-                    Gdx.app.debug(TAG, "Received update: " + messages);
+                    // Gdx.app.debug(TAG, "Received update: " + messages);
                     List<GameMessage> msgList = MessageFormatter.parseMessages(messages);
                     adapter.deliverUpdate(msgList); 
 
