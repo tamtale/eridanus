@@ -1,6 +1,9 @@
 package com.week1.game;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
@@ -14,6 +17,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
 import com.week1.game.Model.Entities.Building;
+import com.week1.game.Model.Entities.PlayerBase;
+import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Client;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
@@ -22,15 +27,16 @@ import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkUtils;
 import com.week1.game.Renderer.*;
+import com.week1.game.TowerBuilder.TowerPresets;
 
+import java.util.Arrays;
 import java.util.List;
 
 
 public class GameScreen implements Screen {
-	private static float THRESHOLD = .2f;
+	public static float THRESHOLD = .2f;
 	public static int PIXELS_PER_UNIT = 64;
 	private String[] args;
-	private float curTime = 0f;
 	private Client networkClient;
 	private GameEngine engine;
 	private Renderer renderer;
@@ -39,7 +45,8 @@ public class GameScreen implements Screen {
 	private InfoUtil util;
 	//This is a temporary stage that is displayed before connection of clients
 	private Stage connectionStage;
-	private boolean pressedStartbtn = false;
+	private boolean pressedStartbtn;
+	private boolean createdTextures;
 
 	private void makeTempStage() {
 		connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
@@ -53,8 +60,6 @@ public class GameScreen implements Screen {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 				networkClient.sendStartMessage();
-//				Gdx.input.setInputProcessor(clickOracle);
-//				connectionStage.dispose();
 			}
 		});
 	}
@@ -64,9 +69,10 @@ public class GameScreen implements Screen {
 		// Set the logging level
 		Gdx.app.setLogLevel(Application.LOG_INFO);
 
-
+		pressedStartbtn = false;
 
 		util = new InfoUtil(true);
+		
 		networkClient = NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
 			@Override
 			public void deliverUpdate(List<? extends GameMessage> messages) {
@@ -77,19 +83,43 @@ public class GameScreen implements Screen {
 			public void setPlayerId(int playerId) {
 				engine.setEnginePlayerId(playerId);
 			}
-		});
+		}, 
+				Arrays.asList(
+						TowerPresets.getTower(1).getLayout(),
+						TowerPresets.getTower(3).getLayout(),
+						TowerPresets.getTower(5).getLayout()
+						)
+	); // TODO: actually pass the towers
 
+		createNewGame();
+	}
 
+	/**
+	 * This function is called to [re]initialize the game-specific classes not
+	 * related to the network. It will be called every time you want to restart a game
+	 * TODO Need to make this reset anything within the network client that needs revision.
+	 */
+	public void createNewGame() {
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override
 			public void setDefaultLocation(Vector3 location) {
-			    renderer.setDefaultPosition(location);
-			    renderer.setCameraToDefaultPosition();
+				renderer.setDefaultPosition(location);
+				renderer.setCameraToDefaultPosition();
 			}
 
 			@Override
 			public void endGame(int winOrLoss) {
 				renderer.endGame(winOrLoss);
+			}
+
+			@Override
+			public void gameOver() {
+				renderer.showGameOver();
+			}
+		}, new IEngineToNetworkAdapter() {
+			@Override
+			public void sendMessage(AMessage msg) {
+				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
 		}, util);
 
@@ -123,15 +153,20 @@ public class GameScreen implements Screen {
 				return null;
 			}
 		},
-		new IRendererToClickOracleAdapter() {
-			@Override
-			public void render() {
-				clickOracle.render();
-			}
+				new IRendererToClickOracleAdapter() {
+					@Override
+					public void render() {
+						clickOracle.render();
+					}
 
+					@Override
+					public void setSelectedSpawnState(SpawnInfo type) {
+						clickOracle.setSpawnType(type);
+					}
+				}, new IRendererToGameScreenAdapter() {
 			@Override
-			public void setSelectedSpawnState(SpawnInfo type) {
-				clickOracle.setSpawnType(type);
+			public void restartGame() {
+				createNewGame();
 			}
 		}, util);
 		clickOracle = new ClickOracle(
@@ -143,13 +178,13 @@ public class GameScreen implements Screen {
 
 					@Override
 					public void zoom(int amount) {
-					    renderer.zoom(amount);
+						renderer.zoom(amount);
 					}
 
-                    @Override
-                    public void setTranslationDirection(Direction direction) {
-					    renderer.setPanning(direction);
-                    }
+					@Override
+					public void setTranslationDirection(Direction direction) {
+						renderer.setPanning(direction);
+					}
 
 					public Camera getCamera() {
 						return renderer.getCamera();
@@ -176,6 +211,16 @@ public class GameScreen implements Screen {
 						return engine.getBuildings();
 					}
 
+					@Override
+					public int getGameStateHash() {
+						return engine.getGameStateHash();
+					}
+
+					@Override
+					public String getGameStateString() {
+						return engine.getGameStateString();
+					}
+
 				},
 				new IClickOracleToNetworkAdapter() {
 					@Override
@@ -195,8 +240,6 @@ public class GameScreen implements Screen {
 		renderer.create();
 	}
 
-
-
 	@Override
 	public void show() {
 
@@ -206,8 +249,13 @@ public class GameScreen implements Screen {
 	public void render(float delta) {
 		if (!engine.started()) {
 			connectionStage.draw();
-//			renderer.renderInfo();
 			return;
+		}
+		if (!createdTextures) {
+			PlayerBase.createTextures();
+			Unit.makeTextures();
+			Tower.makeTextures();
+			createdTextures = true;
 		}
 
 		if (!pressedStartbtn) {
@@ -220,16 +268,10 @@ public class GameScreen implements Screen {
 			pressedStartbtn = true;
 		}
 
-
 		float time = Gdx.graphics.getDeltaTime();
-		curTime += time;
-		if (curTime > THRESHOLD) {
-			curTime = 0;
-			engine.processMessages();
-		}
-		engine.updateState(time);
 		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
-		renderer.render();
+		renderer.render(time); // Only move the units from their state position
+														   // if the threshold was not passed.
 	}
 
 	@Override

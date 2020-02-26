@@ -1,7 +1,6 @@
 package com.week1.game.TowerBuilder;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -29,7 +28,7 @@ public class TowerBuilderCamera {
     public CameraInputController camController;
     public TowerPresets presets;
     AssetManager assets;
-    private Tower currTower;
+    private TowerDetails currTowerDetails;
 
 
     TowerBuilderStage towerStage;
@@ -48,7 +47,7 @@ public class TowerBuilderCamera {
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(10f, 10f, 10f);
         cam.lookAt(0,0,0);
-        cam.near = 1f;
+        cam.near = 0.5f;
         cam.far = 300f;
         cam.update();
     }
@@ -81,7 +80,7 @@ public class TowerBuilderCamera {
         loading = true;
 
 
-        currTower = presets.getTower(1);
+        currTowerDetails = presets.getTower(1);
 
     }
 
@@ -106,11 +105,11 @@ public class TowerBuilderCamera {
         modelBatch.begin(cam);
 
         //Render the space background
-        if (space != null) {
-            modelBatch.render(space);
-        }
+//        if (space != null) {
+//            modelBatch.render(space);
+//        }
 
-        modelBatch.render(currTower.getModel(), environment);
+        modelBatch.render(currTowerDetails.getModel(), environment);
         modelBatch.end();
 
 
@@ -128,11 +127,11 @@ public class TowerBuilderCamera {
 
     }
 
-    public void setCurrTower(Tower currTower) {
-        this.currTower = currTower;
+    public void setCurrTowerDetails(TowerDetails currTowerDetails) {
+        this.currTowerDetails = currTowerDetails;
     }
 
-    public Tower getCurrTower() {
-        return this.currTower;
+    public TowerDetails getCurrTowerDetails() {
+        return this.currTowerDetails;
     }
 }

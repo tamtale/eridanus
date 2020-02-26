@@ -9,16 +9,14 @@ import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.utils.Array;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import static java.lang.Integer.max;
 
 
 public class TowerMaterials {
 
-    ModelBuilder modelBuilder = new ModelBuilder();
+    static ModelBuilder modelBuilder = new ModelBuilder();
 
     public static final Map<Integer, Model> modelMap = new HashMap<Integer, Model>();
 
@@ -30,26 +28,28 @@ public class TowerMaterials {
     public static Map<Integer, Integer> blockPrice = new HashMap<>();
 
 
-    public TowerMaterials() {
-        //Make the block types
-        addBlockType("core_block.png", "coreBlock", 1, 0, 0, 0);
+//    public TowerMaterials() {
+    static  {
+    //Make the block types
+    addBlockType("core_block.png", "coreBlock", 1, 0, 0, 0);
 
         //Materials
-        addBlockType("space_obsidian.png", "obsidian", 2, 50,5,10);
-        addBlockType("moonstone.png", "moonstone", 3, 25, 15,20);
-        addBlockType("gold_wip_6.png", "space gold", 4, 15, 40,40);
+        addBlockType("space_obsidian2.png", "obsidian", 2, 50,5,10);
+        addBlockType("moonstone3.png", "moonstone", 3, 25, 15,20);
+        addBlockType("gold2.png", "space gold", 4, 15, 40,40);
 
         //Guns
-        addBlockType("fire_wip2.png", "fire", 5, 15, 40, 35);
-        addBlockType("water_wip.png", "water", 6, 15,40, 35);
-        addBlockType("earth_wip4.png", "earth", 7, 15,40, 35);
+        addBlockType("water2.png", "water", 6, 15,40, 35);
+        addBlockType("fire2.png", "fire", 5, 15, 40, 35);
+        addBlockType("earth3.png", "earth", 7, 15,40, 35);
 
-        //Easter egg
-        addBlockType("cat_boi.png", "easter egg", 69, 10, 10,0);
+
+    //Easter egg
+    addBlockType("cat_boi.png", "easter egg", 69, 10, 10,0);
 
     }
 
-    private void addBlockType(String filename, String blockname, Integer code, Integer hp, Integer atk, Integer price) {
+    private static void addBlockType(String filename, String blockname, Integer code, Integer hp, Integer atk, Integer price) {
         blocknamekey.put(blockname, code);
 
         modelMap.put(code, modelBuilder.createBox(5f, 5f, 5f,
@@ -64,14 +64,14 @@ public class TowerMaterials {
 
 
 
-    public Tower getTower(ArrayList<BlockSpec> layout) {
+    public static TowerDetails getTower(List<BlockSpec> layout) {
         //TODO - the edge length is hardcoded as 5f right now
 
         Array<ModelInstance> towerLayout = new Array<>();
 
-        Tower tower = new Tower(layout);
+        TowerDetails towerDetails = new TowerDetails(layout);
 
-        return tower;
+        return towerDetails;
     }
 
 //    public Array<ModelInstance> readTowerFromTxt(String filename) {

@@ -13,9 +13,8 @@ public interface IWorldBuilder {
      */
     Vector3[] startLocations();
 
-
     /**
-     * TODO make this more generic
+     * Locations of crystals on the map.
      */
     Vector3[] crystalLocations();
 }

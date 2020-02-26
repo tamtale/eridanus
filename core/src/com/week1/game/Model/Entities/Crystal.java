@@ -8,6 +8,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.Damage;
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
+/*
+ * Crystals are damageable entities that give mana any time it's hit by a unit.
+ */
 public class Crystal implements Damageable {
 
     public  static int SIZE = 1;

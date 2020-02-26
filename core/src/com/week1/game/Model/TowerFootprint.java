@@ -1,30 +1,22 @@
 package com.week1.game.Model;
 
 public class TowerFootprint {
-    private final static int MAXFOOTPRINTSIZE = 8;
+    private final static int MAXFOOTPRINTSIZE = 5;
     
-    final static boolean[][] fpForBasic = {
-            {false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false},
-            {false, false, false, true, true, true, false, false, false},
-            {false, false, false, true, true, true, false, false, false},
-            {false, false, false, true, true, true, false, false, false},
-            {false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false},
-            {false, false, false, false, false, false, false, false, false}
+    public final static boolean[][] fpForBasic = {
+            {false, false, false, false, false},
+            {false, true, true, true, false},
+            {false, true, true, true, false},
+            {false, true, true, true, false},
+            {false, false, false, false, false}
     }; 
     
-    final static boolean[][] fpForBase = {
-            {true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true},
-            {true, true, true, true, true, true, true, true, true}
+    public final static boolean[][] fpForBase = {
+            {true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true},
+            {true, true, true, true, true, true, true},
     }; 
     
     private boolean[][] fp;
@@ -32,10 +24,22 @@ public class TowerFootprint {
     public TowerFootprint(boolean[][] fp) {
         this.fp = fp;
     }
+    
+    public TowerFootprint() {
+        this.fp =  new boolean[][] {
+                {false, false, false, false, false},
+                {false, false, false, false, false},
+                {false, false, false, false, false},
+                {false, false, false, false, false},
+                {false, false, false, false, false}
+        };
+    }
+    
 
     public boolean[][] getFp(){
         return this.fp;
     }
+    
     public static boolean overlap(TowerFootprint footprint1, int x1, int y1, TowerFootprint footprint2, int x2, int y2) {
         
         // assumes that maximum footprint is 5 x 5, so if further than that, just return immediately
@@ -57,5 +61,9 @@ public class TowerFootprint {
         }
         
         return false;
+    }
+    
+    public void setFootPrint(int x, int y, boolean val) {
+        this.fp[x][y] = val;
     }
 }

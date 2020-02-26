@@ -1,16 +1,25 @@
 package com.week1.game.Networking;
 
 import com.badlogic.gdx.Gdx;
+import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.net.*;
 import java.nio.channels.SocketChannel;
 import java.util.Enumeration;
+import java.util.List;
 
 public class NetworkUtils {
     private static final String TAG = "NetworkUtils - lji1";
+    private static String addr;
     public static String getLocalHostAddr() {
 //        https://stackoverflow.com/questions/40912417/java-getting-ipv4-address?fbclid=IwAR0JQ8qEf4V2bM42m-X0ATML0zf5zEyJ_gEWs9I7PskAHCmW_TNNj5cWp6I
 //        https://stackoverflow.com/questions/8462498/how-to-determine-internet-network-interface-in-java
+
+
+        if (NetworkUtils.addr != null ) {
+            return NetworkUtils.addr;
+        }
+        
         String ip;
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -28,7 +37,7 @@ public class NetworkUtils {
                     if (addr instanceof Inet6Address) continue;
 
                     // try all the ports from 8000 to 9000, in case some of them are being used
-                    for (int i = 8000; i < 9000; i++) {
+                    for (int i = 8000; i < 8050; i++) {
                         try (SocketChannel socket = SocketChannel.open()) {
                             socket.socket().setSoTimeout(3000);
                             socket.bind(new InetSocketAddress(addr, i));
@@ -37,9 +46,10 @@ public class NetworkUtils {
                             // If it works, then this ip is usable
                             socket.connect(new InetSocketAddress("google.com", 80));
                             Gdx.app.log(TAG, "Obtained local host address: " + addr.getHostAddress() + " with port: " + i);
-                            return addr.getHostAddress();
+                            NetworkUtils.addr = addr.getHostAddress();
+                            return NetworkUtils.addr;
                         } catch (Exception e) {
-                            Gdx.app.log(TAG, "Port failed: " + i);
+                            Gdx.app.log(TAG, "Port failed on: " + addr + ": " + i);
 //                            e.printStackTrace();
                         }
                     }
@@ -60,7 +70,7 @@ public class NetworkUtils {
      * @param args - Either "host" or "client <ip address> <port number> <optional - start>"
      * @return The client object
      */
-    public static Client initNetworkObjects(String[] args, INetworkClientToEngineAdapter adapter) {
+    public static Client initNetworkObjects(String[] args, INetworkClientToEngineAdapter adapter, List<List<BlockSpec>> details) {
         final String TAG = "initNetworkObjects - lji1";
         Gdx.app.log(TAG, "Local host address: " + getLocalHostAddr());
         
@@ -90,13 +100,7 @@ public class NetworkUtils {
 
                 // Now make the client stuff
                 c = new Client(localIpAddr, h.getPort(), adapter);
-
-//                if (args.length == 3 && args[2].equals("start")) {
-                    // Time to start the game
-//                    c.sendStringMessage("start");
-//                    c.sendStartMessage();
-//                }
-                
+                c.sendJoinMessage(details);
 
             } else if  (args[0].equals("client")) {
                 Gdx.app.log(TAG, "Client option chosen.");
@@ -106,12 +110,8 @@ public class NetworkUtils {
                     String hostIpAddr = args[1];
                     int hostPort = Integer.parseInt(args[2]);
                     c = new Client(hostIpAddr, hostPort, adapter);
+                    c.sendJoinMessage(details);
 
-//                    if (args.length == 4 && args[3].equals("start")) {
-                        // Time to start the game
-//                        c.sendStartMessage();
-//                        c.sendStringMessage("start");
-//                    }
                 }
                 catch (Exception e) {
                     throw new IndexOutOfBoundsException("Expected arguments in format: client <ip address> <portnumber> <start (optional)>");
