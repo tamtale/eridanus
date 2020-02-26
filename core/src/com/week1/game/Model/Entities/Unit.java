@@ -261,7 +261,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     }
 
     public void setGoal(Vector3 goal) {
-        this.goal = goal;
+        this.goal.set(goal);
     }
 
     @Override
@@ -278,4 +278,3 @@ public class Unit extends Rectangle implements Damageable, Damaging {
                 '}';
     }
 }
-
