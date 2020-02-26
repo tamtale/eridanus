@@ -28,7 +28,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     private Vector3 lastNode;
     private float distance;
     private float distanceTraveled;
-    private Vector3 goal;
+    private Vector3 goal = new Vector3();
     private boolean close;
 
     public boolean isClicked() {
