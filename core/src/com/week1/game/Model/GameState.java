@@ -1,6 +1,7 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
@@ -15,7 +16,15 @@ import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.TowerBuilder.TowerDetails;
 
+import java.sql.Time;
+import java.time.Instant;
+import java.time.Period;
+import java.util.Map;
+
+import static com.week1.game.Model.Entities.TowerType.BASIC;
+import static com.week1.game.Model.Entities.TowerType.SNIPER;
 import static com.week1.game.Model.StatsConfig.*;
+import static com.week1.game.Model.Entities.TowerType.*;
 
 
 public class GameState {
@@ -49,6 +58,7 @@ public class GameState {
         Gdx.app.log("Game State - wab2", "units set");
         world = new GameWorld(worldBuilder);
         Gdx.app.log("Game State - wab2", "world built");
+        world.getHeightMap();
         graph = world.buildGraph();
         graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
 //        graph.search(new Vector3(0, 0, 0), new Vector3(1, 1, 0));
@@ -76,18 +86,19 @@ public class GameState {
         Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
             playerStats.add(new PlayerStat());
-            playerBases.add(new PlayerBase(playerBaseInitialHp, (int) startLocs[i].x, (int) startLocs[i].y, i));
+            PlayerBase base = new PlayerBase(playerBaseInitialHp, (int) startLocs[i].x, (int) startLocs[i].y, i);
+            playerBases.add(base);
+            removePlayerBase((int) startLocs[i].x, (int) startLocs[i].y, base);
         }
-
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
         fullyInitialized = true;
         postInit.run();
     }
 
-    public void removePlayerBase(int startX, int startY){
+    public void removePlayerBase(int startX, int startY, PlayerBase b){
         for(int i = startX - 4; i <= startX + 3; i++){
             for (int j = startY - 4; j <= startY + 4; j++){
-                graph.removeAllConnections(new Vector3(i, j, 0));
+                graph.removeAllConnections(new Vector3(i, j, 0), b);
             }
         }
     }
@@ -127,11 +138,16 @@ public class GameState {
     }
 
     public void collide(Unit unit){
-        Vector3 linVel = unit.agent.getLinearVelocity();
-        unit.setX(unit.getX() - 2 * linVel.x);
-        unit.setY(unit.getY() - 2 * linVel.y);
-        unit.agent.setLinearVelocity(new Vector3(0, 0, 0));
-        unit.agent.setSteeringBehavior(null);
+//        unit.setPosition(unit.x - 2 * unit.getVelocityX(), unit.y - 2 * unit.getVelocityY());
+//        System.out.println("changing position");
+//        OutputPath path = unit.getPath();
+//        Array<Vector3> pathArray = path.getPath();
+//        Vector3 goal = pathArray.get(pathArray.size - 1);
+//        System.out.println("SEARCHING");
+//        OutputPath newPath = graph.search(new Vector3(unit.x, unit.y, 0), goal);
+//        System.out.println("SEARCHED");
+//        System.out.println(newPath);
+//        unit.setPath(newPath);
     }
     public void updateMana(float amount){
         for (PlayerStat player : playerStats) {
@@ -160,7 +176,7 @@ public class GameState {
             int j = 0;
             for(boolean boo: bool){
                 if(boo){
-                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0));
+                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0), t);
                 }
                 j++;
             }
@@ -171,7 +187,7 @@ public class GameState {
     public void updateGoal(Unit unit, Vector3 goal) {
         SteeringAgent agent = unit.getAgent();
         Vector3 unitPos = new Vector3((int) unit.x, (int) unit.y, 0); //TODO: make acutal z;
-
+        unit.setGoal(goal);
         OutputPath path = new OutputPath();
         Array<Building> buildings = this.getBuildings();
 
@@ -182,7 +198,11 @@ public class GameState {
             }
         }
         Vector3 goalPos = new Vector3((int) goal.x, (int) goal.y, (int) goal.z);
+
+        long start = System.nanoTime();
         path = graph.search(unitPos, goalPos);
+        long end = System.nanoTime();
+        Gdx.app.log("wab2 - ASTAR", "AStar completed in " + (end - start) + " nanoseconds");
         if (path != null) {
             unit.setPath(path);
         }else{
@@ -306,6 +326,10 @@ public class GameState {
 
             } else if (deadEntity.getClass() == Tower.class) {
                 towers.removeValue((Tower)deadEntity, false);
+                Map<Vector3, Array<Connection<Vector3>>> edges = ((Tower) deadEntity).getRemovedEdges();
+                for(Vector3 block: edges.keySet()){
+                    graph.setConnections(block, edges.get(block));
+                }
                 // Reward the player who destroyed the tower the mana.
                 playerStats.get(attackingPlayerId).giveMana(((Tower)deadEntity).getCost() * towerDestructionBonus);
 

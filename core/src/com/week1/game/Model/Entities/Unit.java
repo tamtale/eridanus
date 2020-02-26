@@ -1,5 +1,7 @@
 package com.week1.game.Model.Entities;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -9,6 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
+import javafx.scene.shape.Line;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +24,20 @@ import static java.lang.Math.abs;
 public class Unit extends Rectangle implements Damageable, Damaging {
     private final int playerID;
     public OutputPath path;
+    private Vector3 curNode;
+    private Vector3 lastNode;
+    private float distance;
+    private float distanceTraveled;
+    private Vector3 goal;
+    private boolean close;
+
+    public boolean isClicked() {
+        return clicked;
+    }
+
+    public void setClicked(boolean clicked) {
+        this.clicked = clicked;
+    }
     private int turn = 0;
     private double hp;
     private Vector3 vel;
@@ -29,7 +46,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     private boolean clicked = false;
     public SteeringAgent agent;
     public int ID;
-    public static double speed = 5;
+    public static double speed = 4;
     public  static int SIZE = 1;
 
     private Texture unselectedSkin;
@@ -84,48 +101,44 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     }
 
     public void step(float delta) {
-//        if (path != null) {
-//            System.out.println(path.get(0));
-//            System.out.println(this.x);
-//            System.out.println(this.y);
-//            if (this.x > path.get(0).x && this.y > path.get(0).y) {
-//                Gdx.app.log("Unit - wab2", "Updating goal");
-//                agent.setGoal(path.get(1));
-//                path.setPath(path.getPath().removeIndex(0));
-//            }
-//        }
         if (path != null) {
-            if (path.getPath().size != 1) {
-                if ((abs((int) this.x - (int) path.get(0).x) <= 1 &&
-                        abs((int) this.y - (int) path.get(0).y) <= 1)) {
+            if (path.getPath().size > 0) {
+//                this.curNode = new Vector3(this.x, this.y, 0);
+//                Line travelPath = new Line(lastNode.x, lastNode.y, curNode.x, curNode.y);
+//                Rectangle nodeRect = new Rectangle(path.get(1).x, path.get(1).y, 1, 1);
+
+//                boolean intersect = lineRect(lastNode.x, lastNode.y, curNode.x, curNode.y,
+//                        path.get(1).x, path.get(1).y, 1, 1);
+//                if (intersect){
+                if (distanceTraveled > distance) {
                     turn = 0;
-                    float dx = path.get(1).x - this.x;
-                    float dy = path.get(1).y - this.y;
-                    double angle = Math.atan(dy/dx);
+                    Gdx.app.setLogLevel(Application.LOG_NONE);
+                    this.lastNode = new Vector3(this.x, this.y, 0);
+//                    System.out.println("finX " + path.get(1).x + " finY " + path.get(1).y);
+                    float dx = path.get(0).x - this.x;
+                    float dy = path.get(0).y - this.y;
+                    this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
+                    double angle = Math.atan(dy / dx);
                     if (dx < 0) {
                         angle += Math.PI;
                     } else if (dy < 0) {
                         angle += 2 * Math.PI;
                     }
-
                     vel.x = (float) speed * (float) Math.cos(angle);
                     vel.y = (float) speed * (float) Math.sin(angle);
                     path.removeIndex(0);
+                    this.distanceTraveled = 0;
                 }
                 move(delta);
-                turn ++;
-//                if (turn == 0){
-//                    System.out.println(this.x + " " + this.y);
-//                    System.out.println(path.getPath());
-//                    path.removeIndex(0);
-//                    turn = 4;
-//                } else {
-//                    turn--;
-//                }
+                turn++;
 
             }
-            if (path.getPath().size <= 1) {
+            if (path.getPath().size <= 0) {
 //                Gdx.app.log("Unit - pjb3", "Killing VELOCITY");
+//                path.removeIndex(0);
+                agent.setGoal(goal);
+//                this.close = true;
+                path = null;
                 vel.x = 0;
                 vel.y = 0;
             } else {
@@ -146,6 +159,10 @@ public class Unit extends Rectangle implements Damageable, Damaging {
 
     private void move(float delta) {
         this.setPosition(this.x + (vel.x * delta), this.y + (vel.y * delta));
+        System.out.println("xdistTraveled " + vel.x * delta + "ydistTraveled " + vel.y * delta);
+        this.distanceTraveled += Math.sqrt(Math.pow(vel.x * delta, 2) + Math.pow(vel.y * delta, 2));
+        System.out.println("distance traveled" + distanceTraveled);
+
     }
 
     private void moveRender(float delta) {
@@ -162,10 +179,7 @@ public class Unit extends Rectangle implements Damageable, Damaging {
         return clicked ? selectedSkin : unselectedSkin;
     }
 
-    public void setClicked(boolean clicked) {
-        this.clicked = clicked;
-    }
-    
+
     @Override
     public boolean takeDamage(double dmg, Damage.type damageType) {
         this.hp -= dmg;
@@ -203,12 +217,40 @@ public class Unit extends Rectangle implements Damageable, Damaging {
                 
     }
 
+    public OutputPath getPath(){
+        return path;
+    }
+
+    public float getVelocityX(){
+        return vel.x;
+    }
+
+    public float getVelocityY(){
+        return vel.y;
+    }
+
     public void setPath(OutputPath path) {
         this.path = path;
-        float dx = path.get(0).x - this.x;
+        path.removeIndex(0);
+//        System.out.println("startX " + path.get(0).x);
+//        System.out.println("startY " + path.get(0).y);
+//        System.out.println("thisX " + this.x);
+//        System.out.println("thisY " + this.y);
+        float dx = path.get(0).x- this.x;
         float dy = path.get(0).y - this.y;
-        vel.x = dx * .333f;
-        vel.y = dy * .333f;
+        double angle = Math.atan(dy/dx);
+        if (dx < 0) {
+            angle += Math.PI;
+        } else if (dy < 0) {
+            angle += 2 * Math.PI;
+        }
+        this.lastNode = new Vector3(this.x, this.y, 0);
+        this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
+        vel.x = (float) speed * (float) Math.cos(angle);
+        vel.y = (float) speed * (float) Math.sin(angle);
+        System.out.println("vel.x " + vel.x + " vel.y " + vel.y);
+        this.distanceTraveled = 0;
+        path.removeIndex(0);
     }
 
     public float getDisplayX() {
@@ -216,6 +258,10 @@ public class Unit extends Rectangle implements Damageable, Damaging {
     }
     public float getDisplayY() {
         return displayY;
+    }
+
+    public void setGoal(Vector3 goal) {
+        this.goal.set(goal);
     }
 
     @Override
@@ -232,4 +278,3 @@ public class Unit extends Rectangle implements Damageable, Damaging {
                 '}';
     }
 }
-
