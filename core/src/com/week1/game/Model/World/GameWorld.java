@@ -29,12 +29,18 @@ public class GameWorld implements RenderableProvider {
     private GameGraph graph;
     private ModelInstance[][][] instances;
     private BoundingBox[][][] boundingBoxes;
+    
     private BoundingBox[][][] chunkBoundingBoxes;
+    private int[][][] activeBlocksPerChunk;
+    
     public static final float blockOffset = 0.5f;
 
-    private Model model;
+//    private Model model;
     private ModelBuilder modelBuilder = new ModelBuilder();
     AssetManager assets;
+    
+    private int chunkSide;
+    private int chunkHeight;
 
     public GameWorld(IWorldBuilder worldBuilder) {
         // For now, we'll make a preset 100x100x10 world.
@@ -52,10 +58,36 @@ public class GameWorld implements RenderableProvider {
             }
         }
         Gdx.app.log("Game World - wab2", "Block array built");
-        model = modelBuilder.createBox(5f, 5f, 5f,
-                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
-                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+//        model = modelBuilder.createBox(5f, 5f, 5f,
+//                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
+//                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
         
+        // Set up the chunk bounding boxes
+        chunkSide = (int)Math.pow(blocks.length * blocks[0].length * blocks[0][0].length, 1d/4d);
+        System.out.println("ChunkSize: " + chunkSide);
+        chunkHeight = 5;
+        
+        int sizeX = (int)Math.ceil(blocks.length / (double)chunkSide);
+        int sizeY = (int)Math.ceil(blocks[0].length / (double)chunkSide);
+        int sizeZ = (int)Math.ceil(blocks[0][0].length / (double)chunkHeight);
+        chunkBoundingBoxes = new BoundingBox[sizeX][sizeY][sizeZ];
+        System.out.println("numberof Chunks: " + sizeX + ", " + sizeY + ", " + sizeZ);
+        activeBlocksPerChunk = new int[sizeX][sizeY][sizeZ];
+        Vector3 minCorner = new Vector3();
+        Vector3 maxCorner = new Vector3();
+
+        for (int i = 0; i < chunkBoundingBoxes.length; i++) {
+            for (int j = 0; j < chunkBoundingBoxes[0].length; j++) {
+                for (int k = 0; k < chunkBoundingBoxes[0][0].length; k++) {
+                    minCorner.set((i * chunkSide) - blockOffset, (j * chunkSide) - blockOffset, (k * chunkHeight) - blockOffset);
+                    maxCorner.set(((i + 1) * chunkSide) - blockOffset, ((j + 1) * chunkSide) - blockOffset, ((k + 1) * chunkHeight) - blockOffset);
+                    chunkBoundingBoxes[i][j][k] = new BoundingBox(minCorner, maxCorner);
+                }
+            }
+        }
+        
+        
+
         // Build the modelinstances and precompute the bounding boxes
         instances = new ModelInstance[blocks.length][blocks[0].length][blocks[0][0].length];
         boundingBoxes = new BoundingBox[blocks.length][blocks[0].length][blocks[0][0].length];
@@ -70,29 +102,27 @@ public class GameWorld implements RenderableProvider {
                     
                     boundingBoxes[i][j][k] = new BoundingBox();
                     updateBoundingBox(i,j,k);
+                    updateActiveBlocks(i, j, k);
                 }
             }
         }
         
-        // Set up the chunk bounding boxes
-        int chunkSide = (int)Math.pow(blocks.length * blocks[0].length * blocks[0][0].length, 1d/4d);
-        System.out.println("ChunkSize: " + chunkSide);
-        int chunkHeight = 5;
-        chunkBoundingBoxes = new BoundingBox[(int)Math.ceil(blocks.length / (double)chunkSide)][(int)Math.ceil(blocks.length / (double)chunkSide)][chunkHeight];
-        Vector3 minCorner = new Vector3();
-        Vector3 maxCorner = new Vector3();
         
         
-        for (int i = 0; i < chunkBoundingBoxes.length; i++) {
-            for (int j = 0; j < chunkBoundingBoxes[0].length; j++) {
-                for (int k = 0; k < chunkBoundingBoxes[0][0].length; k++) {
-                    minCorner.set((i * chunkSide) - blockOffset, (j * chunkSide) - blockOffset, (k * chunkHeight) - blockOffset);
-                    maxCorner.set(((i + 1) * chunkSide) - blockOffset, ((j + 1) * chunkSide) - blockOffset, ((k + 1) * chunkHeight) - blockOffset);
-                    chunkBoundingBoxes[i][j][k] = new BoundingBox(minCorner, maxCorner);
-                }
-            }
+    }
+    
+    private void updateActiveBlocks(int i, int j, int k) {
+        
+        int chunkX = i / chunkSide;
+        int chunkY = j / chunkSide;
+        int chunkZ = k / chunkHeight;
+        
+        
+        if (instances[i][j][k] == null) {
+            activeBlocksPerChunk[chunkX][chunkY][chunkZ]--;
+        } else {
+            activeBlocksPerChunk[chunkX][chunkY][chunkZ]++;
         }
-        
         
     }
     
@@ -113,6 +143,7 @@ public class GameWorld implements RenderableProvider {
                 .modelInstance(i,j,k)
                 .ifPresent(modelInstance -> instances[i][j][k] = modelInstance);
         updateBoundingBox(i,j,k);
+        updateActiveBlocks(i,j,k);
         refreshHeight = true;
     }
 
@@ -223,6 +254,7 @@ public class GameWorld implements RenderableProvider {
                     }
                     nonNull++;
 
+                    numIntersections++;
                     if (Intersector.intersectRayBounds(ray, boundingBoxes[i][j][k], intermediateIntersection)) {
 
                         // Check distance between the origin of the ray and the intermediate intersection
@@ -244,11 +276,14 @@ public class GameWorld implements RenderableProvider {
             return new Pair<>(closestModelInstance, minDistance);
     }
 
-
+    private int numIntersections;
+    private int numChunkIntersections;
     /*
         Returns the closest block to the camera that intersects with the given ray.
      */
     public Clickable getBlockOnRay(Ray ray, Vector3 intersection) {
+        numIntersections = 0;
+        numChunkIntersections = 0;
         
         // If too slow again, could try maintaining a 'visible' group of blocks, which excludes blocks that are buried under others and can't be clicked
         
@@ -266,6 +301,12 @@ public class GameWorld implements RenderableProvider {
         for (int i = 0; i < chunkBoundingBoxes.length; i++) {
             for (int j = 0; j < chunkBoundingBoxes[0].length; j++) {
                 for (int k = 0; k < chunkBoundingBoxes[0][0].length; k++) {
+                    if (activeBlocksPerChunk[i][j][k] == 0) {
+//                        System.out.println("jIgnoring chunk, because it contains no active blocks.");
+                        continue;
+                    }
+
+                    numChunkIntersections++;
                     if (Intersector.intersectRayBounds(ray, chunkBoundingBoxes[i][j][k], throwAway)) {
                         System.out.println("\t(" + i + ", " + j + ", " + k + ") - " + chunkBoundingBoxes[i][j][k].min + ", " + chunkBoundingBoxes[i][j][k].max + " - " + throwAway);
                         // now check that chunk and get the closest from that chunk
@@ -298,6 +339,8 @@ public class GameWorld implements RenderableProvider {
                         " j: " + closestCoords.y +
                         " k: " + closestCoords.z +
                         " intersection: " + intersection);
+        
+        System.out.println("It took this many intersections to find the block: " + numChunkIntersections + ", " + numIntersections);
         return new Clickable() {
             private BoundingBox boundingBox = new BoundingBox(closestBox);
             private Material originalMaterial = closestModelInstance_final.model.materials.get(0);
