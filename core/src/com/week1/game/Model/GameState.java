@@ -1,6 +1,7 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -16,13 +17,14 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
-import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Model.World.IWorldBuilder;
+import com.week1.game.Model.Entities.*;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.TowerBuilder.TowerDetails;
+import java.util.Map;
 
 import static com.week1.game.Model.StatsConfig.*;
 
@@ -30,12 +32,16 @@ import static com.week1.game.Model.StatsConfig.*;
 public class GameState implements RenderableProvider {
 
     private GameGraph graph;
-    private Array<Unit> units = new Array<>();
+
     private Array<Clickable> clickables = new Array<>();
     private int minionCount;
+    private PathFinder<Vector3> pathFinder;
+    private Array<Unit> units = new Array<>();
+    private Array<Crystal> crystals = new Array<>();
     private Array<Tower> towers = new Array<>();
     private Array<PlayerBase> playerBases = new Array<>();
     private Array<PlayerStat> playerStats = new Array<>();
+    private Array<SteeringAgent> agents;
     private IWorldBuilder worldBuilder;
     private GameWorld world;
     
@@ -50,7 +56,12 @@ public class GameState implements RenderableProvider {
         // TODO tower types in memory after exchange
         this.worldBuilder = worldBuilder;
         world = new GameWorld(worldBuilder);
+        world = new GameWorld(worldBuilder);
+        world.getHeightMap();
         graph = world.buildGraph();
+        for (Vector3 loc: worldBuilder.crystalLocations()) {
+            crystals.add(new Crystal(loc.x, loc.y));
+        }
         graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
         this.postInit = postInit;
     }
@@ -69,18 +80,19 @@ public class GameState implements RenderableProvider {
         Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
             playerStats.add(new PlayerStat());
-            playerBases.add(new PlayerBase(playerBaseInitialHp, (int) startLocs[i].x, (int) startLocs[i].y, i));
+            PlayerBase base = new PlayerBase(playerBaseInitialHp, (int) startLocs[i].x, (int) startLocs[i].y, i);
+            playerBases.add(base);
+            removePlayerBase((int) startLocs[i].x, (int) startLocs[i].y, base);
         }
-
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
         fullyInitialized = true;
         postInit.run();
     }
 
-    public void removePlayerBase(int startX, int startY){
+    public void removePlayerBase(int startX, int startY, PlayerBase b){
         for(int i = startX - 4; i <= startX + 3; i++){
             for (int j = startY - 4; j <= startY + 4; j++){
-                graph.removeAllConnections(new Vector3(i, j, 0));
+                graph.removeAllConnections(new Vector3(i, j, 0), b);
             }
         }
     }
@@ -90,33 +102,6 @@ public class GameState implements RenderableProvider {
         } else {
             return PlayerStat.BLANK;
         }
-    }
-
-    public void stepUnits(float delta) {
-        for(Unit unit: units) {
-            //System.out.println("from step " + agent.getSteeringOutput().linear);
-            unit.step(delta);
-            for(Tower tower: towers) {
-                if ((unit.getX() > tower.x - (tower.getSidelength() / 2f) + 0.5f) &&
-                        (unit.getX() < tower.x + (tower.getSidelength() / 2f) + 0.5f) &&
-                        (unit.getY() > tower.y - (tower.getSidelength() / 2f) + 0.5f) &&
-                        (unit.getY() < tower.y + (tower.getSidelength() / 2f) + 0.5f)) {
-                    unit.collide();
-                    Gdx.app.log("stepUnits - wab2", "Unit " + unit.ID + " collided with " + tower);
-                }
-            }
-
-            for(PlayerBase base: playerBases) {
-                if ((unit.getX() > base.x - (base.getSidelength() / 2f)) &&
-                        (unit.getX() < base.x + (base.getSidelength() / 2f)) &&
-                        (unit.getY() > base.y - (base.getSidelength() / 2f)) &&
-                        (unit.getY() < base.y + (base.getSidelength() / 2f))) {
-                    unit.collide();
-                    Gdx.app.log("stepUnits - wab2", "Unit " + unit.ID + " collided with " + base);
-                }
-            }
-        }
-
     }
 
     public void updateMana(float amount){
@@ -143,7 +128,7 @@ public class GameState implements RenderableProvider {
             int j = 0;
             for(boolean boo: bool){
                 if(boo){
-                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0));
+                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0), t);
                 }
                 j++;
             }
@@ -154,7 +139,7 @@ public class GameState implements RenderableProvider {
     public void updateGoal(Unit unit, Vector3 goal) {
         SteeringAgent agent = unit.getAgent();
         Vector3 unitPos = new Vector3((int) unit.getX(), (int) unit.getY(), 0); //TODO: make acutal z;
-
+        unit.setGoal(goal);
         OutputPath path = new OutputPath();
         Array<Building> buildings = this.getBuildings();
 
@@ -164,12 +149,16 @@ public class GameState implements RenderableProvider {
                 break;
             }
         }
-        Vector3 goalPos = new Vector3((int) goal.x, (int) goal.y, (int) goal.z);
+        Vector3 goalPos = new Vector3(goal);
+
+        long start = System.nanoTime();
         path = graph.search(unitPos, goalPos);
+        long end = System.nanoTime();
+        Gdx.app.log("GameState - wab2", "AStar completed in " + (end - start) + " nanoseconds");
         if (path != null) {
             unit.setPath(path);
         }else{
-            Gdx.app.error("wab2 - ASTAR", "Astar broke");
+            Gdx.app.error("GameState - wab2", "Astar broke");
         }
     }
     public void render(ModelBatch modelBatch, Camera cam, RenderConfig renderConfig, int renderPlayerId) {
@@ -209,6 +198,10 @@ public class GameState implements RenderableProvider {
                 playerBase.draw(batch, false);
             }
         }
+
+        for (Crystal crystal : crystals) {
+            crystal.draw(batch);
+        }
     }
 
     public Array<Unit> findUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
@@ -239,16 +232,22 @@ public class GameState implements RenderableProvider {
         updateGoal(u, new Vector3(u.getX() + dx, u.getY() + dy, 0));
     }
 
+    private Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
+    private Array<Damaging> everythingDamaging = new Array<>();
+    private Array<Damageable> everythingDamageable = new Array<>();
     public void dealDamage(float delta) {
-        Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
 
-        Array<Damaging> everythingDamaging = new Array<>(units);
+        everythingDamaging.clear();
+        everythingDamaging.addAll(units);
         everythingDamaging.addAll(towers);
 
-        Array<Damageable> everythingDamageable = new Array<>(units);
+        everythingDamageable.clear();
+        everythingDamageable.addAll(units);
         everythingDamageable.addAll(towers);
         everythingDamageable.addAll(playerBases);
+        everythingDamageable.addAll(crystals);
 
+        deadEntities.clear();
         // Loop through all entities (units and towers) that can attack
         for (int attackerIdx = 0; attackerIdx < everythingDamaging.size; attackerIdx++) {
             Damaging attacker = everythingDamaging.get(attackerIdx);
@@ -276,25 +275,47 @@ public class GameState implements RenderableProvider {
             int attackingPlayerId = deadPair.key.getPlayerId();
             Damageable deadEntity = deadPair.value;
 
-            if (deadEntity.getClass() == Unit.class) {
-                units.removeValue((Unit)deadEntity, false);
-
-            } else if (deadEntity.getClass() == Tower.class) {
-                towers.removeValue((Tower)deadEntity, false);
-                // Reward the player who destroyed the tower the mana.
-                playerStats.get(attackingPlayerId).giveMana(((Tower)deadEntity).getCost() * towerDestructionBonus);
-
-            } else {
-                int deadPlayer = deadEntity.getPlayerId();
-                playerBases.removeIndex(deadPlayer);
-
-                playerBases.insert(deadPlayer, new DestroyedBase(0, deadEntity.getX(), deadEntity.getY(), deadPlayer));
-                // Reward the player who destroyed the base a lump sum
-                playerStats.get(attackingPlayerId).giveMana((playerBaseBonus));
-            }
-        }
+            // Reward mana.
+            playerStats.get(attackingPlayerId).giveMana(deadEntity.getReward());
+            // Do other bookkeeping related to death.
+            deadEntity.accept(deathVisitor);        }
     }
-  
+
+    /**
+     * Visitor handling when a damageable is killed.
+     */
+    private Damageable.DamageableVisitor<Void> deathVisitor = new Damageable.DamageableVisitor<Void>() {
+        @Override
+        public Void acceptTower(Tower tower) {
+            towers.removeValue(tower, false);
+            Map<Vector3, Array<Connection<Vector3>>> edges = tower.getRemovedEdges();
+            for(Vector3 block: edges.keySet()){
+                graph.setConnections(block, edges.get(block));
+            }
+            return null;
+        }
+
+        @Override
+        public Void acceptUnit(Unit unit) {
+            units.removeValue(unit, false);
+            return null;
+        }
+
+        @Override
+        public Void acceptBase(PlayerBase base) {
+            int deadPlayer = base.getPlayerId();
+            playerBases.removeIndex(deadPlayer);
+            playerBases.insert(deadPlayer, new DestroyedBase(0, base.getX(), base.getY(), deadPlayer));
+            return null;
+        }
+
+        @Override
+        public Void acceptCrystal(Crystal crystal) {
+            // crystals don't die :^)
+            return null;
+        }
+    };
+
     public boolean findNearbyStructure(float x, float y, int playerId) {
         // Check if it is near the home base
         if (Math.sqrt(Math.pow(x - playerBases.get(playerId).x, 2) + Math.pow(y - playerBases.get(playerId).y, 2)) < placementRange){
@@ -406,8 +427,8 @@ public class GameState implements RenderableProvider {
         }
     }
 
-    public PackagedGameState packState() {
-        return new PackagedGameState(units, towers, playerBases, playerStats);
+    public PackagedGameState packState(int turn) {
+        return new PackagedGameState(turn, units, towers, playerBases, playerStats);
     }
 
 
@@ -421,8 +442,8 @@ public class GameState implements RenderableProvider {
         int encodedhash;
         private String gameString;
 
-        public PackagedGameState (Array<Unit> units, Array<Tower> towers, Array<PlayerBase> bases, Array<PlayerStat> stats) {
-            gameString = "";
+        public PackagedGameState (int turn, Array<Unit> units, Array<Tower> towers, Array<PlayerBase> bases, Array<PlayerStat> stats) {
+            gameString = "Turn " + turn;
             Unit u;
             for (int i = 0; i < units.size; i++) {
                 u = units.get(i);

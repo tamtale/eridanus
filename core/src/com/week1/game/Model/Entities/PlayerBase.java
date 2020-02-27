@@ -1,16 +1,18 @@
 package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Damage;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.week1.game.Model.StatsConfig.placementRange;
+import static com.week1.game.Model.StatsConfig.*;
 
 
 public class PlayerBase extends Building {
@@ -21,6 +23,7 @@ public class PlayerBase extends Building {
     private static Texture skin;
     protected static final int SIDELENGTH = 8;
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
+    private Map<Vector3, Array<Connection<Vector3>>> removedEdges = new HashMap<>();
 
 
     public PlayerBase(double initialHp, float x, float y, int playerID) {
@@ -84,6 +87,18 @@ public class PlayerBase extends Building {
             return false;
         }
     }
+
+    @Override
+    public float getReward() {
+        return (float) playerBaseBonus;
+    }
+
+    @Override
+    public <T> T accept(DamageableVisitor<T> visitor) {
+        return visitor.acceptBase(this);
+    }
+
+
 
     @Override
     public float getX() { return this.x; }
@@ -151,6 +166,16 @@ public class PlayerBase extends Building {
         else{
             return new Vector3(x, startY, 0);
         }
+    }
+
+    @Override
+    public void putRemovedEdges(Vector3 fromNode, Array<Connection<Vector3>> connections) {
+        removedEdges.put(fromNode, connections);
+    }
+
+    @Override
+    public Map<Vector3, Array<Connection<Vector3>>> getRemovedEdges() {
+        return this.removedEdges;
     }
 
     @Override

@@ -103,7 +103,7 @@ public class GameScreen implements Screen {
 	{
 		// adding some stuff to the replayQueue to test 3D.
 		replayQueue.add(new TaggedMessage(new CreateMinionMessage(0, 0, 2, 69, 0, -1), 5));
-		replayQueue.add(new TaggedMessage(new MoveMinionMessage(1, 1, 0, -1, 0), 20));
+		replayQueue.add(new TaggedMessage(new MoveMinionMessage(4, 0, 0, -1, 0), 20));
 	}
 
 	/**
@@ -147,7 +147,6 @@ public class GameScreen implements Screen {
 				clickOracle.render();
 			}
 
-			@Override
 			public double getPlayerMana(int playerId) {
 				return engine.getGameState().getPlayerStats(playerId).getMana();
 			}
