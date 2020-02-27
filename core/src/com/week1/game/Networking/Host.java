@@ -88,19 +88,22 @@ public class Host {
                 }
 
                 // Verify game state on any messages sent this game turn
-                int prevHash = 0; // This will be the hash that everything is compared to
+                int prevHash = 0, prevTurn = 0; // This will be the hash that everything is compared to
                 boolean didFail = false;
                 boolean didCheck = false;
+                List<Integer> hashes = new ArrayList<>();
                 for (String outgoingMessage : outgoingMessages) {
                     GameMessage msg = MessageFormatter.parseMessage(outgoingMessage);
                     if (msg instanceof CheckSyncMessage) {
                         didCheck = true;
                         int hash = msg.getHashCode();
+                        hashes.add(hash);
                         if (prevHash == 0) {
                             // if it has not been set, set the standard to this one.
                             prevHash = hash;
+                            prevTurn = ((CheckSyncMessage) msg).getTurn();
                         } else {
-                            if (prevHash != hash) {
+                            if (prevHash != hash && prevTurn == ((CheckSyncMessage) msg).getTurn()) {
                                 Gdx.app.log("pjb3 - Host", "ERROR: The hashes do not match for two messages!!!!! Yikes.");
                                 // Create a SyncIssue message to send to all clients so they can know there is an issue
                                 didFail = true;
@@ -109,7 +112,7 @@ public class Host {
                     }
                 }
                 if (didFail) {
-                    outgoingMessages.add(0, MessageFormatter.packageMessage(new SyncIssueMessage(-1, SYNCERR, prevHash)));
+                    outgoingMessages.add(0, MessageFormatter.packageMessage(new SyncIssueMessage(-1, SYNCERR, prevHash, hashes)));
                 } else if (didCheck) {
                     Gdx.app.log("pjb3 - Host", "Nice. The hashes match up.");
                 }

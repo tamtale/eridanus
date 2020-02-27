@@ -130,6 +130,11 @@ public class GameScreen implements Screen {
 			}
 
 			@Override
+			public int[][] heightMap() {
+				return engine.getGameState().getWorld().getHeightMap();
+			}
+
+			@Override
 			public TiledMap getMap() {
 				return engine.getGameState().getWorld().toTiledMap();
 			}

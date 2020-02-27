@@ -1,9 +1,11 @@
 package com.week1.game.Model.Entities;
 
+import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Damage;
 
 import java.util.HashMap;
@@ -19,6 +21,7 @@ public class Tower extends Building implements Damaging {
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
     private static Texture rangeCircle;
     private double hp, maxHp, dmg, range, cost;
+    private Map<Vector3, Array<Connection<Vector3>>> removedEdges = new HashMap<>();
 
     private Damage.type attackType;
 
@@ -192,6 +195,16 @@ public class Tower extends Building implements Damaging {
         else{
             return new Vector3(x, startY, 0);
         }
+    }
+
+    @Override
+    public void putRemovedEdges(Vector3 fromNode, Array<Connection<Vector3>> connections) {
+        removedEdges.put(fromNode, connections);
+    }
+
+    @Override
+    public Map<Vector3, Array<Connection<Vector3>>> getRemovedEdges() {
+        return this.removedEdges;
     }
 
     @Override

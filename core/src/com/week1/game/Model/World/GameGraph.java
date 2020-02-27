@@ -7,6 +7,7 @@ import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
+import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.OutputPath;
 
 
@@ -50,8 +51,8 @@ public class GameGraph implements IndexedGraph<Vector3> {
 
     @Override
     public Array<Connection<Vector3>> getConnections(Vector3 fromNode) {
-        if (fromNode.x < 0 || fromNode.x > edges.length || fromNode.y < 0 || fromNode.y > edges[0].length
-         || fromNode.z < 0 || fromNode.z > edges[0][0].length){
+        if (fromNode.x < 0 || fromNode.x > edges.length - 1 || fromNode.y < 0 || fromNode.y > edges[0].length - 1
+         || fromNode.z < 0 || fromNode.z > edges[0][0].length - 1){
             return null;
         }
         return edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z];
@@ -63,7 +64,8 @@ public class GameGraph implements IndexedGraph<Vector3> {
         edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z].add(border);
     }
 
-    public void removeAllConnections(Vector3 fromNode){
+    public void removeAllConnections(Vector3 fromNode, Building b){
+        b.putRemovedEdges(fromNode, edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z]);
         edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = new Array<>();
     }
 
@@ -77,6 +79,7 @@ public class GameGraph implements IndexedGraph<Vector3> {
         OutputPath path = new OutputPath();
 
         if (pathFinder.searchNodePath(startNode, endNode, heuristic, path)) {
+            System.out.println("return path");
             return path;
         }
         return null;
@@ -88,6 +91,10 @@ public class GameGraph implements IndexedGraph<Vector3> {
 
     public void setPathFinder(PathFinder<Vector3> pathFinder) {
         this.pathFinder = pathFinder;
+    }
+
+    public void setConnections(Vector3 fromNode, Array<Connection<Vector3>> connections) {
+        edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = connections;
     }
 
 //    public Vector3 getVector3(int i, int j, int k) {
