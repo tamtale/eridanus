@@ -1,20 +1,15 @@
 package com.week1.game.Networking.Messages.Game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Entities.Tower;
-import com.week1.game.Model.Initializer;
 import com.week1.game.Model.World.Block;
 import com.week1.game.Networking.Messages.MessageType;
-import com.week1.game.Model.Entities.TowerType;
 import com.week1.game.InfoUtil;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
-
-import java.util.List;
 
 
 public class CreateTowerMessage extends GameMessage {
@@ -54,8 +49,8 @@ public class CreateTowerMessage extends GameMessage {
         }
         
         // The tower can't be hanging off the edge of the map
-        if (!completelyOnMap(inputState, towerDetails)){
-            util.log("lji1 - CreateTowerMessage", "Can't build tower off the map.");
+        // The tower can't be overlapping with an existing structure
+        if (!checkTowerBlockPlacement(inputState, towerDetails, util)){
             return false;
         }
 
@@ -65,11 +60,12 @@ public class CreateTowerMessage extends GameMessage {
 //            return false;
 //        }
         
-        // TODO: The tower can't be overlapping with an existing friendly structure
 //        if(inputState.overlapsExistingStructure(this.playerID, towerType, (int)x, (int)y)) {
 //            util.log("lji1 - CreateTowerMessage", "Overlapping with existing structure.");
 //            return false;
 //        }
+        
+        // TODO: The tower can't be overlapping with an existing minion
 
         // Deduct the mana cost from the creating player
         util.log("pjb3 - CreateTowerMessage", "Used " + towerCost + " mana to create tower.");
@@ -98,8 +94,9 @@ public class CreateTowerMessage extends GameMessage {
     
     /*
         Checks that the tower is completely supported by the map
+        and that it doesn't overlap with an existing blocks
      */
-    private boolean completelyOnMap(GameState inputState, TowerDetails towerDetails) {
+    private boolean checkTowerBlockPlacement(GameState inputState, TowerDetails towerDetails, InfoUtil util) {
         int[] dimensions = inputState.getWorld().getWorldDimensions();
         int maxX = dimensions[0];
         int maxY = dimensions[1];
@@ -113,9 +110,17 @@ public class CreateTowerMessage extends GameMessage {
             tempX = (int)(x + bs.getX());
             tempY = (int)(y + bs.getZ()); // Notice that x,z are the flat coords and y is for height
             tempZ = (int)(z + bs.getY());
+            
             if (!((0 <= tempX && tempX < maxX) &&
                     (0 <= tempY && tempY < maxY) &&
                     (0 <= tempZ && tempZ < maxZ))) {
+                util.log("lji1 - CreateTowerMessage", "Can't build tower off the map.");
+                return false;
+            }
+            
+//            System.out.println("Existing block: " + inputState.getWorld().getBlock(tempX, tempY, tempZ));
+            if (inputState.getWorld().getBlock(tempX, tempY, tempZ) != Block.TerrainBlock.AIR) {
+                util.log("lji1 - CreateTowerMessage", "Can't build a tower overlapping with existing blocks");
                 return false;
             }
         }
