@@ -20,7 +20,7 @@ import java.util.List;
 public class CreateTowerMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.CREATETOWER;
 
-    private float x, y, z;
+    private float x, y, z; // The coordinates of the center of the tower
     private int towerType;
 
 
@@ -48,8 +48,8 @@ public class CreateTowerMessage extends GameMessage {
         
         for(BlockSpec bs : towerDetails.getLayout()) {
 //            System.out.println("x: " + bs.getX() + " y: " + bs.getY() + " z: " + bs.getZ());
-            System.out.println("x: " + (int)(x + bs.getX()) + " y: " + (int)(y + bs.getZ()) + " z : " + bs.getY());
-            System.out.println("Block type: " + bs.getBlockCode().toString());
+            System.out.println("placing block at x: " + (int)(x + bs.getX()) + " y: " + (int)(y + bs.getZ()) + " z : " + bs.getY());
+            System.out.println("\tBlock type: " + bs.getBlockCode().toString());
             inputState.getWorld().setBlock(
                     (int)(x + bs.getX()), 
                     (int)(y + bs.getZ()), 

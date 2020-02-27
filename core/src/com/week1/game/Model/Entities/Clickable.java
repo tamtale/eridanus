@@ -25,6 +25,7 @@ public interface Clickable {
 
   interface ClickableVisitor<T> {
     T acceptUnit(Unit unit);
+    T acceptBlockLocation(Vector3 vector);
     T acceptNull();
   }
 

@@ -236,7 +236,7 @@ public class GameWorld implements RenderableProvider {
 
             @Override
             public <T> T accept(ClickableVisitor<T> clickableVisitor) {
-                return null;
+                return clickableVisitor.acceptBlockLocation(closestCoords);
             }
         };
         
