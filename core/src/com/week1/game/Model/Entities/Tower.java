@@ -5,36 +5,56 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.Damage;
+import com.week1.game.TowerBuilder.BlockSpec;
+import com.week1.game.TowerBuilder.TowerDetails;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.week1.game.Model.StatsConfig.*;
 
 public class Tower extends Building implements Damaging {
     private static final int SIDELENGTH = 3;
-    public float x, y;
+    public float x, y, z;
     private static Texture skin; // TODO change this when we go to 3D to actually use the model of the tower.
     private int playerID, towerType;
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
     private static Texture rangeCircle;
     private double hp, maxHp, dmg, range, cost;
+    
+    private List<BlockSpec> layout;
 
-    private Damage.type attackType;
+//    private Damage.type attackType;
 
 
-    public Tower(float x, float y, double hp, double dmg, double range, Damage.type attackType, double cost, int playerID, int towerType) {
+//    public Tower(float x, float y, double hp, double dmg, double range, double cost, int playerID, int towerType) {
+//        this.x = x;
+//        this.y = y;
+//        this.hp = hp;
+//        this.maxHp = hp;
+//        this.dmg = dmg;
+//        this.cost = cost;
+//        this.range = range;
+//        this.playerID = playerID;
+//        this.towerType = towerType;
+//    }
+    
+    public Tower(float x, float y, float z, TowerDetails towerDetails, int playerID, int towerType) {
         this.x = x;
         this.y = y;
-        this.hp = hp;
+        this.z = z;
+        this.hp = towerDetails.getHp();
         this.maxHp = hp;
-        this.dmg = dmg;
-        this.cost = cost;
-        this.range = range;
+        this.dmg = towerDetails.getAtk();
+        this.cost = towerDetails.getPrice();
+        this.range = towerDetails.getRange();
         this.playerID = playerID;
-        this.attackType = attackType;
         this.towerType = towerType;
+        
+        this.layout = towerDetails.getLayout();
     }
+    
 
     public static void makeTextures() {
         Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, sniperTexture.getFormat());
@@ -98,6 +118,8 @@ public class Tower extends Building implements Damaging {
     public int getTowerType() {
         return towerType;
     }
+
+    public double getHp() { return hp; }
 
     @Override
     public boolean takeDamage(double dmg, Damage.type damageType) {
@@ -181,6 +203,10 @@ public class Tower extends Building implements Damaging {
         else{
             return new Vector3(x, startY, 0);
         }
+    }
+
+    public List<BlockSpec> getLayout() {
+        return layout;
     }
 
     @Override

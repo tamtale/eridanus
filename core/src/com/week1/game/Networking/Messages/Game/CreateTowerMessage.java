@@ -55,10 +55,10 @@ public class CreateTowerMessage extends GameMessage {
         }
 
         // TODO: The tower can't be too far from an existing friendly structure
-//        if (!inputState.findNearbyStructure(x, y, playerID)) {
-//            util.log("pjb3 - CreateTowerMessage", "Not close enough to an existing tower or home base");
-//            return false;
-//        }
+        if (!inputState.findNearbyStructure(x, y, z, playerID)) {
+            util.log("pjb3 - CreateTowerMessage", "Not close enough to an existing tower or home base");
+            return false;
+        }
         
 //        if(inputState.overlapsExistingStructure(this.playerID, towerType, (int)x, (int)y)) {
 //            util.log("lji1 - CreateTowerMessage", "Overlapping with existing structure.");
@@ -72,17 +72,10 @@ public class CreateTowerMessage extends GameMessage {
         inputState.getPlayerStats(playerID).useMana(towerCost);
 
         // Only create the tower once we're sure it's safe to do so
-        Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerCost, playerID, towerType);
-        inputState.addTower(tower, playerID);
+//        Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerCost, playerID, towerType);
+        Tower tower = new Tower((int) x, (int) y, (int) z, towerDetails, playerID, towerType);
+        inputState.addTower(tower, playerID, false);
         
-        for(BlockSpec bs : towerDetails.getLayout()) {
-            inputState.getWorld().setBlock(
-                    (int)(x + bs.getX()),
-                    (int)(y + bs.getZ()),
-                    (int)(z + bs.getY()),
-                    Block.TowerBlock.towerBlockMap.get(bs.getBlockCode()));
-        }
-
         return true;
     }
 

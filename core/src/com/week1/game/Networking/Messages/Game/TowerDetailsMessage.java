@@ -28,9 +28,6 @@ public class TowerDetailsMessage extends GameMessage {
         Gdx.app.log("TowerDetailsMessage", "Processing TowerDetailsMessage!");
         inputState.setTowerInfo(new TowerLoadouts(details));
         
-        // The tower details message is the last initialization message sent by the host, so
-        // start the engine
-        engine.start();
         
         return true;
     }

@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.week1.game.Model.Entities.Building;
-import com.week1.game.Model.Entities.PlayerBase;
+import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.World.Basic4WorldBuilder;
 import com.week1.game.Model.World.SmallWorldBuilder;
 import com.week1.game.Networking.Messages.Game.GameMessage;
@@ -48,8 +48,8 @@ public class GameEngine implements RenderableProvider {
                 SmallWorldBuilder.ONLY,
                 () -> {
                     Vector3 position = new Vector3();
-                    PlayerBase myBase = null;
-                    for (PlayerBase playerBase: gameState.getPlayerBases()) {
+                    Tower myBase = null;
+                    for (Tower playerBase: gameState.getPlayerBases()) {
                         if (playerBase.getPlayerId() == enginePlayerId) {
                             myBase = playerBase;
                         }

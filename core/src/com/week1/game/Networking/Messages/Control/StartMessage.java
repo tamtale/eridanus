@@ -51,8 +51,8 @@ public class StartMessage extends HostControlMessage {
         System.out.println("About to broadcast init messages.");
         h.broadcastToRegisteredPlayers(MessageFormatter.packageMessage(
                 new Update(Arrays.asList(
-                        MessageFormatter.packageMessage(new InitMessage(h.registry.size(), -1, 0)),
                         MessageFormatter.packageMessage(new TowerDetailsMessage(-1, h.towerDetails, 0)),
+                        MessageFormatter.packageMessage(new InitMessage(h.registry.size(), -1, 0)),
 //                        MessageFormatter.packageMessage(new CreateTowerMessage(4, 4, 2, 0, 0, 0)),
 //                        MessageFormatter.packageMessage(new CreateTowerMessage(10, 4, 1, 1, 0, 0)),
 //                        MessageFormatter.packageMessage(new CreateTowerMessage(20, 4, 1, 2, 0, 0)),

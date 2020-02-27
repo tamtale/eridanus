@@ -22,14 +22,15 @@ public class PlayerBase extends Building {
     protected static final int SIDELENGTH = 8;
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
 
-
-    public PlayerBase(double initialHp, float x, float y, int playerID) {
-        this.hp = initialHp;
-        this.maxHp = initialHp;
-        this.playerID = playerID;
-        this.x = x;
-        this.y = y;
-    }
+ // TODO: unused - remove
+    
+//    public PlayerBase(double initialHp, float x, float y, int playerID) {
+//        this.hp = initialHp;
+//        this.maxHp = initialHp;
+//        this.playerID = playerID;
+//        this.x = x;
+//        this.y = y;
+//    }
 
     public static void createTextures() {
         Pixmap towerUnscaled = new Pixmap(Gdx.files.internal("basetop.png"));

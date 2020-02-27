@@ -13,7 +13,7 @@ public class SmallWorldBuilder implements IWorldBuilder {
     @Override
     public Block[][][] terrain() {
         // empty block
-        Block[][][] blocks = new Block[58][30][15];
+        Block[][][] blocks = new Block[90][30][15];
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 blocks[i][j][0] = Block.TerrainBlock.STONE;
@@ -40,7 +40,8 @@ public class SmallWorldBuilder implements IWorldBuilder {
     @Override
     public Vector3[] startLocations() {
         return new Vector3[] {
-                new Vector3(5, 5, 0),
+                new Vector3(10, 10, 1),
+                new Vector3(20, 20, 1),
         };
     }
 }

@@ -8,7 +8,6 @@ public class TowerPresets {
 
 //    private static TowerMaterials twrMat = new TowerMaterials();
 
-    public static final Integer NUM_PRESETS = 6;
 
     private static TowerDetails towerDetails1 = new TowerDetails(Arrays.asList(
             new BlockSpec(BlockType.OBSIDIAN, 0,0,0),
@@ -93,8 +92,63 @@ public class TowerPresets {
             new BlockSpec(BlockType.MOONSTONE, -1, 2, 0),
             new BlockSpec(BlockType.MOONSTONE, 0, 2, 1),
             new BlockSpec(BlockType.MOONSTONE, -1, 2, 1)));
+    
+    public static TowerDetails base = new TowerDetails(Arrays.asList(
+            new BlockSpec(BlockType.OBSIDIAN,-2, 0, -2),
+            new BlockSpec(BlockType.OBSIDIAN,-2, 0,  -1),
+            new BlockSpec(BlockType.OBSIDIAN,-2, 0, 0),
+            new BlockSpec(BlockType.OBSIDIAN,-2, 0, 1),
+            new BlockSpec(BlockType.OBSIDIAN,-2, 0, 2),
+            new BlockSpec(BlockType.OBSIDIAN, -1, 0, -2),
+            new BlockSpec(BlockType.OBSIDIAN, -1, 0,  -1),
+            new BlockSpec(BlockType.OBSIDIAN, -1, 0, 0),
+            new BlockSpec(BlockType.OBSIDIAN, -1, 0, 1),
+            new BlockSpec(BlockType.OBSIDIAN, -1, 0, 2),
+            new BlockSpec(BlockType.OBSIDIAN, 0, 0, -2),
+            new BlockSpec(BlockType.OBSIDIAN, 0, 0,  -1),
+            new BlockSpec(BlockType.OBSIDIAN, 0, 0, 0),
+            new BlockSpec(BlockType.OBSIDIAN, 0, 0, 1),
+            new BlockSpec(BlockType.OBSIDIAN, 0, 0, 2),
+            new BlockSpec(BlockType.OBSIDIAN, 1, 0, -2),
+            new BlockSpec(BlockType.OBSIDIAN, 1, 0,  -1),
+            new BlockSpec(BlockType.OBSIDIAN, 1, 0, 0),
+            new BlockSpec(BlockType.OBSIDIAN, 1, 0, 1),
+            new BlockSpec(BlockType.OBSIDIAN, 1, 0, 2),
+            new BlockSpec(BlockType.OBSIDIAN, 2, 0, -2),
+            new BlockSpec(BlockType.OBSIDIAN, 2, 0,  -1),
+            new BlockSpec(BlockType.OBSIDIAN, 2, 0, 0),
+            new BlockSpec(BlockType.OBSIDIAN, 2, 0, 1),
+            new BlockSpec(BlockType.OBSIDIAN, 2, 0, 2),
+
+            new BlockSpec(BlockType.OBSIDIAN,-2, 1, -2),
+            new BlockSpec(BlockType.OBSIDIAN,-2, 1,  -1),
+            new BlockSpec(BlockType.OBSIDIAN,-2, 1, 0),
+            new BlockSpec(BlockType.OBSIDIAN,-2, 1, 1),
+            new BlockSpec(BlockType.OBSIDIAN,-2, 1, 2),
+            new BlockSpec(BlockType.OBSIDIAN, -1, 1, -2),
+            new BlockSpec(BlockType.OBSIDIAN, -1, 1,  -1),
+            new BlockSpec(BlockType.OBSIDIAN, -1, 1, 0),
+            new BlockSpec(BlockType.OBSIDIAN, -1, 1, 1),
+            new BlockSpec(BlockType.OBSIDIAN, -1, 1, 2),
+            new BlockSpec(BlockType.OBSIDIAN, 0, 1, -2),
+            new BlockSpec(BlockType.OBSIDIAN, 0, 1,  -1),
+            new BlockSpec(BlockType.OBSIDIAN, 0, 1, 0),
+            new BlockSpec(BlockType.OBSIDIAN, 0, 1, 1),
+            new BlockSpec(BlockType.OBSIDIAN, 0, 1, 2),
+            new BlockSpec(BlockType.OBSIDIAN, 1, 1, -2),
+            new BlockSpec(BlockType.OBSIDIAN, 1, 1,  -1),
+            new BlockSpec(BlockType.OBSIDIAN, 1, 1, 0),
+            new BlockSpec(BlockType.OBSIDIAN, 1, 1, 1),
+            new BlockSpec(BlockType.OBSIDIAN, 1, 1, 2),
+            new BlockSpec(BlockType.OBSIDIAN, 2, 1, -2),
+            new BlockSpec(BlockType.OBSIDIAN, 2, 1,  -1),
+            new BlockSpec(BlockType.OBSIDIAN, 2, 1, 0),
+            new BlockSpec(BlockType.OBSIDIAN, 2, 1, 1),
+            new BlockSpec(BlockType.OBSIDIAN, 2, 1, 2)
+    ));
 
     public static List<TowerDetails> presets = Arrays.asList(towerDetails1, towerDetails2, towerDetails3, towerDetails4, towerDetails5, towerDetails6);
+    public static final Integer NUM_PRESETS = 6;
 
     public static TowerDetails getTower(int towernum) {
         if (towernum < 1 || towernum > NUM_PRESETS) {
