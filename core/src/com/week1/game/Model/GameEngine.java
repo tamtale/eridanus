@@ -14,6 +14,8 @@ import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Renderer.RenderConfig;
 
+import java.io.*;
+import java.nio.channels.FileChannel;
 import java.util.List;
 
 import static com.week1.game.GameScreen.THRESHOLD;
@@ -29,13 +31,13 @@ public class GameEngine {
     private InfoUtil util;
     private boolean sentWinLoss = false, sentGameOver = false;
     private boolean isStarted = false;
+    BufferedWriter writer;
 
     public Batch getBatch() {
         return batch;
     }
 
     public GameEngine(IEngineToRendererAdapter engineToRendererAdapter,IEngineToNetworkAdapter engineToNetworkAdapter, InfoUtil util) {
-
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
         gameState = new GameState(
                 Basic4WorldBuilder.ONLY,
@@ -55,6 +57,21 @@ public class GameEngine {
         engineToRenderer = engineToRendererAdapter;
         engineToNetwork =engineToNetworkAdapter;
         this.util = util;
+
+        // Initialize and truncate the log file for the engine and Error log.
+        try {
+            File logFile = new File("logs/STATE-ERROR-LOG.txt");
+            FileChannel outChan = new FileOutputStream(logFile, true).getChannel();
+            outChan.truncate(0);
+
+            logFile = new File("logs/LOCAL-SYNC-STATE-LOG.txt");
+            writer = new BufferedWriter(new FileWriter(logFile, true));
+            outChan = new FileOutputStream(logFile, true).getChannel();
+            outChan.truncate(0);
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void receiveMessages(List<? extends GameMessage> messages) {
@@ -79,7 +96,16 @@ public class GameEngine {
 
         if (communicationTurn % 10 == 0) {
             // Time to sync up!
-            engineToNetwork.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash()));
+            engineToNetwork.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash(), communicationTurn));
+
+            // Log the state to the file
+            try {
+                String newContent = "Turn: " + communicationTurn + " hash: " + getGameStateHash() + " String: " + getGameStateString() + "\n";
+                writer.append(newContent);
+                writer.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         Gdx.app.log("pjb3 - receiveMessages", "end of communication turn: " + communicationTurn);
@@ -149,14 +175,18 @@ public class GameEngine {
      * @return
      */
     public int getGameStateHash() {
-        GameState.PackagedGameState wrapped = gameState.packState();
+        GameState.PackagedGameState wrapped = gameState.packState(communicationTurn);
 //        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
         return wrapped.getHash();
     }
 
     public String getGameStateString() {
-        GameState.PackagedGameState wrapped = gameState.packState();
+        GameState.PackagedGameState wrapped = gameState.packState(communicationTurn);
 //        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
         return wrapped.getGameString();
+    }
+
+    public int getTurn() {
+        return communicationTurn;
     }
 }
