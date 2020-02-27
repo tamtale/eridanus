@@ -15,7 +15,6 @@ public class TowerBuilderScreen implements Screen {
         towerStage = new TowerBuilderStage(game, this, mainMenuScreen);
         towerCam = new TowerBuilderCamera(towerStage);
         towerStage.setTowerBuilder(towerCam);
-
     }
 
     @Override

@@ -117,7 +117,6 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
             if (path.getPath().size > 0) {
                 if (distanceTraveled > distance) {
                     turn = 0;
-                    Gdx.app.setLogLevel(Application.LOG_NONE);
                     this.lastNode = new Vector3(this.position.x, this.position.y, 0);
                     float dx = path.get(0).x - this.position.x;
                     float dy = path.get(0).y - this.position.y;
