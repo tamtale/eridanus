@@ -21,6 +21,8 @@ import com.week1.game.InfoUtil;
 import com.week1.game.Networking.Messages.Game.TaggedMessage;
 import com.week1.game.Renderer.RenderConfig;
 
+import java.io.*;
+import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Queue;
 import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
@@ -39,6 +41,7 @@ public class GameEngine implements RenderableProvider {
     private boolean sentWinLoss = false, sentGameOver = false;
     private Queue<TaggedMessage> replayQueue;
     private boolean isStarted = false;
+    BufferedWriter writer;
 
     public GameEngine(IEngineAdapter adapter, Queue<TaggedMessage> replayQueue, InfoUtil util) {
         this.replayQueue = replayQueue;
@@ -60,6 +63,21 @@ public class GameEngine implements RenderableProvider {
         Gdx.app.log("wab2- GameEngine", "gameState built");
         spriteBatch = new SpriteBatch();
         this.util = util;
+
+        // Initialize and truncate the log file for the engine and Error log.
+        try {
+            File logFile = new File("logs/STATE-ERROR-LOG.txt");
+            FileChannel outChan = new FileOutputStream(logFile, true).getChannel();
+            outChan.truncate(0);
+
+            logFile = new File("logs/LOCAL-SYNC-STATE-LOG.txt");
+            writer = new BufferedWriter(new FileWriter(logFile, true));
+            outChan = new FileOutputStream(logFile, true).getChannel();
+            outChan.truncate(0);
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void receiveMessages(List<? extends GameMessage> messages) {
@@ -77,7 +95,16 @@ public class GameEngine implements RenderableProvider {
 
         if (communicationTurn % 10 == 0) {
             // Time to sync up!
-            adapter.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash()));
+            adapter.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash(), communicationTurn));
+
+            // Log the state to the file
+            try {
+                String newContent = "Turn: " + communicationTurn + " hash: " + getGameStateHash() + " String: " + getGameStateString() + "\n";
+                writer.append(newContent);
+                writer.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -149,14 +176,18 @@ public class GameEngine implements RenderableProvider {
      * @return
      */
     public int getGameStateHash() {
-        GameState.PackagedGameState wrapped = gameState.packState();
+        GameState.PackagedGameState wrapped = gameState.packState(communicationTurn);
 //        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
         return wrapped.getHash();
     }
 
     public String getGameStateString() {
-        GameState.PackagedGameState wrapped = gameState.packState();
+        GameState.PackagedGameState wrapped = gameState.packState(communicationTurn);
 //        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
         return wrapped.getGameString();
+    }
+
+    public int getTurn() {
+        return communicationTurn;
     }
 }

@@ -1,9 +1,11 @@
 package com.week1.game.Model.Entities;
 
+import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Damage;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
@@ -22,23 +24,8 @@ public class Tower extends Building implements Damaging {
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
     private static Texture rangeCircle;
     private double hp, maxHp, dmg, range, cost;
-    
     private List<BlockSpec> layout;
-
-//    private Damage.type attackType;
-
-
-//    public Tower(float x, float y, double hp, double dmg, double range, double cost, int playerID, int towerType) {
-//        this.x = x;
-//        this.y = y;
-//        this.hp = hp;
-//        this.maxHp = hp;
-//        this.dmg = dmg;
-//        this.cost = cost;
-//        this.range = range;
-//        this.playerID = playerID;
-//        this.towerType = towerType;
-//    }
+    private Map<Vector3, Array<Connection<Vector3>>> removedEdges = new HashMap<>();
     
     public Tower(float x, float y, float z, TowerDetails towerDetails, int playerID, int towerType) {
         this.x = x;
@@ -159,6 +146,17 @@ public class Tower extends Building implements Damaging {
 
     @Override
     public int getPlayerId(){return playerID;}
+
+    @Override
+    public float getReward() {
+        return (float) cost * (float) towerDestructionBonus;
+    }
+
+    @Override
+    public <T> T accept(DamageableVisitor<T> visitor) {
+        return visitor.acceptTower(this);
+    }
+
     public int getSidelength(){
         return SIDELENGTH;
     }
@@ -207,6 +205,16 @@ public class Tower extends Building implements Damaging {
 
     public List<BlockSpec> getLayout() {
         return layout;
+    }
+
+    @Override
+    public void putRemovedEdges(Vector3 fromNode, Array<Connection<Vector3>> connections) {
+        removedEdges.put(fromNode, connections);
+    }
+
+    @Override
+    public Map<Vector3, Array<Connection<Vector3>>> getRemovedEdges() {
+        return this.removedEdges;
     }
 
     @Override

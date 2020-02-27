@@ -44,4 +44,9 @@ public class SmallWorldBuilder implements IWorldBuilder {
                 new Vector3(20, 20, 1),
         };
     }
+
+    @Override
+    public Vector3[] crystalLocations() {
+        return new Vector3[0];
+    }
 }
