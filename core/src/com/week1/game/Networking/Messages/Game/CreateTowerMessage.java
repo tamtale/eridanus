@@ -50,20 +50,17 @@ public class CreateTowerMessage extends GameMessage {
         
         // The tower can't be hanging off the edge of the map
         // The tower can't be overlapping with an existing structure
+        // The tower's base must be fully supported by terrain blocks
         if (!checkTowerBlockPlacement(inputState, towerDetails, util)){
             return false;
         }
 
-        // TODO: The tower can't be too far from an existing friendly structure
+        // The tower can't be too far from an existing friendly structure
         if (!inputState.findNearbyStructure(x, y, z, playerID)) {
             util.log("pjb3 - CreateTowerMessage", "Not close enough to an existing tower or home base");
             return false;
         }
         
-//        if(inputState.overlapsExistingStructure(this.playerID, towerType, (int)x, (int)y)) {
-//            util.log("lji1 - CreateTowerMessage", "Overlapping with existing structure.");
-//            return false;
-//        }
         
         // TODO: The tower can't be overlapping with an existing minion
 
@@ -101,8 +98,8 @@ public class CreateTowerMessage extends GameMessage {
 
         for(BlockSpec bs : towerDetails.getLayout()) {
             tempX = (int)(x + bs.getX());
-            tempY = (int)(y + bs.getZ()); // Notice that x,z are the flat coords and y is for height
-            tempZ = (int)(z + bs.getY());
+            tempY = (int)(y + bs.getZ()); 
+            tempZ = (int)(z + bs.getY()); // Notice that x,z are the flat coords and y is for height
             
             if (!((0 <= tempX && tempX < maxX) &&
                     (0 <= tempY && tempY < maxY) &&
@@ -114,6 +111,12 @@ public class CreateTowerMessage extends GameMessage {
 //            System.out.println("Existing block: " + inputState.getWorld().getBlock(tempX, tempY, tempZ));
             if (inputState.getWorld().getBlock(tempX, tempY, tempZ) != Block.TerrainBlock.AIR) {
                 util.log("lji1 - CreateTowerMessage", "Can't build a tower overlapping with existing blocks");
+                return false;
+            }
+            
+            if (bs.getY() == 0 && !(inputState.getWorld().getBlock(tempX, tempY, tempZ - 1).canSupportTower())) {
+//                System.out.println("blah");
+                util.log("lji1 - CreateTowerMessage", "Tower not fully supported by terrain");
                 return false;
             }
         }
