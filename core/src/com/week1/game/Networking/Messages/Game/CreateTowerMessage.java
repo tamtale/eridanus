@@ -115,7 +115,6 @@ public class CreateTowerMessage extends GameMessage {
             }
             
             if (bs.getY() == 0 && !(inputState.getWorld().getBlock(tempX, tempY, tempZ - 1).canSupportTower())) {
-//                System.out.println("blah");
                 util.log("lji1 - CreateTowerMessage", "Tower not fully supported by terrain");
                 return false;
             }
