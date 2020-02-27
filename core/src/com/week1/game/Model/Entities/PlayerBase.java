@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Damage;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 import java.util.HashMap;
 import java.util.Map;

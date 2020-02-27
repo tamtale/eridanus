@@ -127,4 +127,5 @@ Thumbs.db
 /ios-moe/xcode/native/
 
 #Patrick
-/core/assets/logs/
+/core/assets/logs/LOCAL-SYNC-STATE-LOG.txt
+/core/assets/logs/STATE-ERROR-LOG.txt
