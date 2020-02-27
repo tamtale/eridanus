@@ -487,7 +487,7 @@ public class GameState implements RenderableProvider {
                 return clickable;
             }
         }
-        Gdx.app.log("GameState.getClickableOnRay", "No clickables (units) found");
+//        Gdx.app.log("GameState.getClickableOnRay", "No clickables (units) found");
         
         // Look through all the blocks
         Clickable clickedBlock = world.getBlockOnRay(ray, intersection);

@@ -25,6 +25,7 @@ public class ClickOracle extends InputAdapter {
 
     private IClickOracleAdapter adapter;
     private Clickable selected = Clickable.NULL;
+    private Clickable passiveSelected = Clickable.NULL;
 
     private Vector3 touchPos = new Vector3();
     private Array<Unit> multiSelected = new Array<>();
@@ -91,6 +92,18 @@ public class ClickOracle extends InputAdapter {
         adapter.unproject(selectionLocationEnd);
         Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
         return false;
+    }
+
+    @Override
+    public boolean mouseMoved (int screenX, int screenY) {
+        setPassiveClickable(adapter.selectClickable(screenX, screenY, touchPos));
+        return true;
+    }
+
+    private void setPassiveClickable (Clickable clickable) {
+        passiveSelected.setSelected(false);
+        passiveSelected = clickable;
+        passiveSelected.setSelected(true);
     }
 
     private void setSelectedClickable(Clickable clickable) {

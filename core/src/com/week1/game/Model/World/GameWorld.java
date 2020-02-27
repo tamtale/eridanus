@@ -167,7 +167,15 @@ public class GameWorld implements RenderableProvider {
         
         // TODO: doesn't actually return the closest one right now, just the first one it finds
         
-        BoundingBox box = new BoundingBox();
+//        BoundingBox box = new BoundingBox();
+        
+        Vector3 intermediateIntersection = new Vector3();
+        BoundingBox intermediateBox = new BoundingBox();
+        Vector3 closestIntersection = new Vector3();
+        BoundingBox closestBox = new BoundingBox();
+        ModelInstance closestModelInstance = null;
+        float minDistance = Float.MAX_VALUE;
+        Vector3 closestCoords = new Vector3();
         
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++)  {
@@ -179,46 +187,59 @@ public class GameWorld implements RenderableProvider {
                     }
                     
                     // Calculate the bounding box on the fly
-                    modelInstance.calculateBoundingBox(box);
-                    box.mul(modelInstance.transform);
+                    modelInstance.calculateBoundingBox(intermediateBox);
+                    intermediateBox.mul(modelInstance.transform);
                     
-                    if (Intersector.intersectRayBounds(ray, box, intersection)) {
-                        Gdx.app.log("GameState.getClickableOnRay", "Returning clickable for block at i:" + i + " j: " + j + " k: " + k);
-                        return new Clickable() {
-                            private BoundingBox boundingBox = new BoundingBox(box);
-                            private Material originalMaterial = modelInstance.model.materials.get(0);
-
-                            @Override
-                            public boolean intersects(Ray ray, Vector3 intersection) {
-                                return Intersector.intersectRayBounds(ray, boundingBox, intersection);
-                            }
-
-                            @Override
-                            public void setSelected(boolean selected) {
-                                if (selected) {
-                                    Material mat = modelInstance.materials.get(0);
-                                    mat.clear();
-                                    if (selected) {
-                                        mat.set(Unit.selectedMaterial);
-                                    } else {
-                                        mat.set(originalMaterial);
-                                    }
-                                }
-
-                            }
-
-                            @Override
-                            public <T> T accept(ClickableVisitor<T> clickableVisitor) {
-                                return null;
-                            }
-                        };
+                    if (Intersector.intersectRayBounds(ray, intermediateBox, intermediateIntersection)) {
+                        
+                        // Check distance between the origin of the ray and the intermediate intersection
+                        float intermediateDistance = ray.origin.dst(intermediateIntersection);
+                        if (intermediateDistance < minDistance) {
+                            closestIntersection.set(intermediateIntersection);
+                            closestBox.set(closestBox);
+                            minDistance = intermediateDistance;
+                            closestModelInstance = modelInstance;
+                            closestCoords.set(i,j,k);
+                        }
                     }
                 }
             }
         }
-
-        Gdx.app.log("GameState.getClickableOnRay", "No blocks clicked");
-        return Clickable.NULL;
         
+        if (closestModelInstance == null) {
+//            Gdx.app.log("GameState.getClickableOnRay", "No blocks clicked");
+            return Clickable.NULL;
+        }
+
+//        Gdx.app.log("GameState.getClickableOnRay", "Returning clickable for block at i: " + closestCoords.x + " j: " + closestCoords.y + " k: " + closestCoords.z);
+        ModelInstance closestModelInstance_final = closestModelInstance;
+        return new Clickable() {
+            private BoundingBox boundingBox = new BoundingBox(closestBox);
+            private Material originalMaterial = closestModelInstance_final.model.materials.get(0);
+
+            @Override
+            public boolean intersects(Ray ray, Vector3 intersection) {
+                return Intersector.intersectRayBounds(ray, boundingBox, intersection);
+            }
+
+            @Override
+            public void setSelected(boolean selected) {
+                Material mat = closestModelInstance_final.materials.get(0);
+                mat.clear();
+                if (selected) {
+                    mat.set(Unit.selectedMaterial);
+                } else {
+                    mat.set(originalMaterial);
+                }
+
+            }
+
+            @Override
+            public <T> T accept(ClickableVisitor<T> clickableVisitor) {
+                return null;
+            }
+        };
+        
+
     }
 }
