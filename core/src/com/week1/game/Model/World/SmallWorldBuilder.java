@@ -13,7 +13,7 @@ public class SmallWorldBuilder implements IWorldBuilder {
     @Override
     public Block[][][] terrain() {
         // empty block
-        Block[][][] blocks = new Block[60][30][15];
+        Block[][][] blocks = new Block[58][30][15];
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 blocks[i][j][0] = Block.TerrainBlock.STONE;

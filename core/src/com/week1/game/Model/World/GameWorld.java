@@ -20,14 +20,18 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
+import com.week1.game.Pair;
 
 public class GameWorld implements RenderableProvider {
     private Block[][][] blocks;
     private int[][] heightMap;
     private boolean refreshHeight = true; // whether or not the map has changed, warranting a new height map.
     private GameGraph graph;
-//    private Array<ModelInstance> instances = new Array<>();
     private ModelInstance[][][] instances;
+    private BoundingBox[][][] boundingBoxes;
+    private BoundingBox[][][] chunkBoundingBoxes;
+    public static final float blockOffset = 0.5f;
+
     private Model model;
     private ModelBuilder modelBuilder = new ModelBuilder();
     AssetManager assets;
@@ -51,9 +55,10 @@ public class GameWorld implements RenderableProvider {
         model = modelBuilder.createBox(5f, 5f, 5f,
                 new Material(ColorAttribute.createDiffuse(Color.GREEN)),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
-        // Build the modelinstances!
         
+        // Build the modelinstances and precompute the bounding boxes
         instances = new ModelInstance[blocks.length][blocks[0].length][blocks[0][0].length];
+        boundingBoxes = new BoundingBox[blocks.length][blocks[0].length][blocks[0][0].length];
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 for (int k = 0; k < blocks[0][0].length; k++) {
@@ -62,8 +67,39 @@ public class GameWorld implements RenderableProvider {
                     int k_final = k;
                     blocks[i][j][k].modelInstance(i, j, k)
                             .ifPresent(modelInstance -> instances[i_final][j_final][k_final] = modelInstance);
+                    
+                    boundingBoxes[i][j][k] = new BoundingBox();
+                    updateBoundingBox(i,j,k);
                 }
             }
+        }
+        
+        // Set up the chunk bounding boxes
+        int chunkSide = (int)Math.pow(blocks.length * blocks[0].length * blocks[0][0].length, 1d/4d);
+        System.out.println("ChunkSize: " + chunkSide);
+        int chunkHeight = 5;
+        chunkBoundingBoxes = new BoundingBox[(int)Math.ceil(blocks.length / (double)chunkSide)][(int)Math.ceil(blocks.length / (double)chunkSide)][chunkHeight];
+        Vector3 minCorner = new Vector3();
+        Vector3 maxCorner = new Vector3();
+        
+        
+        for (int i = 0; i < chunkBoundingBoxes.length; i++) {
+            for (int j = 0; j < chunkBoundingBoxes[0].length; j++) {
+                for (int k = 0; k < chunkBoundingBoxes[0][0].length; k++) {
+                    minCorner.set((i * chunkSide) - blockOffset, (j * chunkSide) - blockOffset, (k * chunkHeight) - blockOffset);
+                    maxCorner.set(((i + 1) * chunkSide) - blockOffset, ((j + 1) * chunkSide) - blockOffset, ((k + 1) * chunkHeight) - blockOffset);
+                    chunkBoundingBoxes[i][j][k] = new BoundingBox(minCorner, maxCorner);
+                }
+            }
+        }
+        
+        
+    }
+    
+    private void updateBoundingBox(int i, int j, int k) {
+        if (instances[i][j][k] != null) {
+            instances[i][j][k].calculateBoundingBox(boundingBoxes[i][j][k]);
+            boundingBoxes[i][j][k].mul(instances[i][j][k].transform);
         }
     }
 
@@ -76,7 +112,7 @@ public class GameWorld implements RenderableProvider {
         blocks[i][j][k]
                 .modelInstance(i,j,k)
                 .ifPresent(modelInstance -> instances[i][j][k] = modelInstance);
-        
+        updateBoundingBox(i,j,k);
         refreshHeight = true;
     }
 
@@ -159,60 +195,104 @@ public class GameWorld implements RenderableProvider {
             }
         }
     }
-    
+
+
+    public Pair<ModelInstance, Float> getBlockOnRayByChunk(
+            Ray ray, 
+            float minDistance, 
+            Vector3 closestIntersection,
+            BoundingBox closestBox, 
+            ModelInstance closestModelInstance, 
+            Vector3 closestCoords, 
+            int minx, int miny, int minz, 
+            int maxx, int maxy, int maxz) {
+        // max is exclusive
+
+        Vector3 intermediateIntersection = new Vector3();
+
+        for (int i = minx; i < maxx; i++) {
+            for (int j = miny; j < maxy; j++) {
+                for (int k = minz; k < maxz; k++) {
+//                    System.out.println("(" + i + ", " + j + ", " + k + ")");
+                    ModelInstance modelInstance = instances[i][j][k];
+                    // Ignore the null model instances, which correspond to empty spaces in the map
+                    if (modelInstance == null) {
+                        continue;
+                    }
+
+                    if (Intersector.intersectRayBounds(ray, boundingBoxes[i][j][k], intermediateIntersection)) {
+
+                        // Check distance between the origin of the ray and the intermediate intersection
+                        float intermediateDistance = ray.origin.dst(intermediateIntersection);
+                        if (intermediateDistance < minDistance) {
+                            closestIntersection.set(intermediateIntersection);
+                            closestBox.set(boundingBoxes[i][j][k]);
+                            minDistance = intermediateDistance;
+                            closestModelInstance = modelInstance;
+                            closestCoords.set(i, j, k);
+                        }
+                    }
+                }
+            }
+        }
+
+            return new Pair<>(closestModelInstance, minDistance);
+    }
+
+
     /*
         Returns the closest block to the camera that intersects with the given ray.
      */
     public Clickable getBlockOnRay(Ray ray, Vector3 intersection) {
         
-        // TODO: doesn't actually return the closest one right now, just the first one it finds
+        // If too slow again, could try maintaining a 'visible' group of blocks, which excludes blocks that are buried under others and can't be clicked
         
-//        BoundingBox box = new BoundingBox();
-        
-        Vector3 intermediateIntersection = new Vector3();
-        BoundingBox intermediateBox = new BoundingBox();
+        // Search in chunks
+//        Vector3 intermediateIntersection = new Vector3();
         Vector3 closestIntersection = new Vector3();
         BoundingBox closestBox = new BoundingBox();
         ModelInstance closestModelInstance = null;
         float minDistance = Float.MAX_VALUE;
         Vector3 closestCoords = new Vector3();
         
-        for (int i = 0; i < blocks.length; i++) {
-            for (int j = 0; j < blocks[0].length; j++)  {
-                for (int k = 0; k < blocks[0][0].length; k++) {
-                    ModelInstance modelInstance = instances[i][j][k];
-                    // Ignore the null model instances, which correspond to empty spaces in the map
-                    if (modelInstance == null) {
-                        continue;
-                    }
-                    
-                    // Calculate the bounding box on the fly
-                    modelInstance.calculateBoundingBox(intermediateBox);
-                    intermediateBox.mul(modelInstance.transform);
-                    
-                    if (Intersector.intersectRayBounds(ray, intermediateBox, intermediateIntersection)) {
+        
+        System.out.println("Chunks: ");
+        Vector3 throwAway = new Vector3();
+        for (int i = 0; i < chunkBoundingBoxes.length; i++) {
+            for (int j = 0; j < chunkBoundingBoxes[0].length; j++) {
+                for (int k = 0; k < chunkBoundingBoxes[0][0].length; k++) {
+                    if (Intersector.intersectRayBounds(ray, chunkBoundingBoxes[i][j][k], throwAway)) {
+                        System.out.println("\t(" + i + ", " + j + ", " + k + ") - " + chunkBoundingBoxes[i][j][k].min + ", " + chunkBoundingBoxes[i][j][k].max + " - " + throwAway);
+                        // now check that chunk and get the closest from that chunk
+                        Pair<ModelInstance, Float> chunkResult = getBlockOnRayByChunk(ray, 
+                                minDistance, closestIntersection, closestBox, closestModelInstance, closestCoords,
+                                (int)(chunkBoundingBoxes[i][j][k].min.x + blockOffset),
+                                (int)(chunkBoundingBoxes[i][j][k].min.y + blockOffset),
+                                (int)(chunkBoundingBoxes[i][j][k].min.z + blockOffset),
+                                Math.min((int)(chunkBoundingBoxes[i][j][k].max.x + blockOffset), blocks.length),
+                                Math.min((int)(chunkBoundingBoxes[i][j][k].max.y + blockOffset), blocks[0].length),
+                                Math.min((int)(chunkBoundingBoxes[i][j][k].max.z + blockOffset), blocks[0][0].length));
+                        closestModelInstance = chunkResult.key;
+                        minDistance = chunkResult.value;
                         
-                        // Check distance between the origin of the ray and the intermediate intersection
-                        float intermediateDistance = ray.origin.dst(intermediateIntersection);
-                        if (intermediateDistance < minDistance) {
-                            closestIntersection.set(intermediateIntersection);
-                            closestBox.set(closestBox);
-                            minDistance = intermediateDistance;
-                            closestModelInstance = modelInstance;
-                            closestCoords.set(i,j,k);
-                        }
                     }
                 }
             }
         }
-        
+
         if (closestModelInstance == null) {
-//            Gdx.app.log("GameState.getClickableOnRay", "No blocks clicked");
             return Clickable.NULL;
         }
 
-//        Gdx.app.log("GameState.getClickableOnRay", "Returning clickable for block at i: " + closestCoords.x + " j: " + closestCoords.y + " k: " + closestCoords.z);
+
         ModelInstance closestModelInstance_final = closestModelInstance;
+        intersection.set(closestIntersection);
+
+        Gdx.app.log("GameState.getClickableOnRay",
+                "Returning clickable for block at i: " + closestCoords.x +
+                        " j: " + closestCoords.y +
+                        " k: " + closestCoords.z +
+                        " intersection: " + intersection);
         return new Clickable() {
             private BoundingBox boundingBox = new BoundingBox(closestBox);
             private Material originalMaterial = closestModelInstance_final.model.materials.get(0);
