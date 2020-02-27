@@ -45,6 +45,7 @@ public class GameWorld implements RenderableProvider {
     public GameWorld(IWorldBuilder worldBuilder) {
         // For now, we'll make a preset 100x100x10 world.
         blocks = worldBuilder.terrain();
+        
         this.graph = new GameGraph(blocks);
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
@@ -64,14 +65,14 @@ public class GameWorld implements RenderableProvider {
         
         // Set up the chunk bounding boxes
         chunkSide = (int)Math.pow(blocks.length * blocks[0].length * blocks[0][0].length, 1d/4d);
-        System.out.println("ChunkSize: " + chunkSide);
+//        System.out.println("ChunkSize: " + chunkSide);
         chunkHeight = 5;
         
         int sizeX = (int)Math.ceil(blocks.length / (double)chunkSide);
         int sizeY = (int)Math.ceil(blocks[0].length / (double)chunkSide);
         int sizeZ = (int)Math.ceil(blocks[0][0].length / (double)chunkHeight);
         chunkBoundingBoxes = new BoundingBox[sizeX][sizeY][sizeZ];
-        System.out.println("numberof Chunks: " + sizeX + ", " + sizeY + ", " + sizeZ);
+//        System.out.println("numberof Chunks: " + sizeX + ", " + sizeY + ", " + sizeZ);
         activeBlocksPerChunk = new int[sizeX][sizeY][sizeZ];
         Vector3 minCorner = new Vector3();
         Vector3 maxCorner = new Vector3();
@@ -271,7 +272,7 @@ public class GameWorld implements RenderableProvider {
             }
         }
 
-        System.out.println("\tNonnull: " + nonNull);
+//        System.out.println("\tNonnull: " + nonNull);
         
             return new Pair<>(closestModelInstance, minDistance);
     }
@@ -296,7 +297,7 @@ public class GameWorld implements RenderableProvider {
         Vector3 closestCoords = new Vector3();
         
         
-        System.out.println("Chunks: ");
+//        System.out.println("Chunks: ");
         Vector3 throwAway = new Vector3();
         for (int i = 0; i < chunkBoundingBoxes.length; i++) {
             for (int j = 0; j < chunkBoundingBoxes[0].length; j++) {
@@ -308,7 +309,7 @@ public class GameWorld implements RenderableProvider {
 
                     numChunkIntersections++;
                     if (Intersector.intersectRayBounds(ray, chunkBoundingBoxes[i][j][k], throwAway)) {
-                        System.out.println("\t(" + i + ", " + j + ", " + k + ") - " + chunkBoundingBoxes[i][j][k].min + ", " + chunkBoundingBoxes[i][j][k].max + " - " + throwAway);
+//                        System.out.println("\t(" + i + ", " + j + ", " + k + ") - " + chunkBoundingBoxes[i][j][k].min + ", " + chunkBoundingBoxes[i][j][k].max + " - " + throwAway);
                         // now check that chunk and get the closest from that chunk
                         Pair<ModelInstance, Float> chunkResult = getBlockOnRayByChunk(ray, 
                                 minDistance, closestIntersection, closestBox, closestModelInstance, closestCoords,
@@ -369,5 +370,10 @@ public class GameWorld implements RenderableProvider {
         };
         
 
+    }
+    
+    
+    public int[] getWorldDimensions() {
+       return new int[]{blocks.length, blocks[0].length, blocks[0][0].length};
     }
 }

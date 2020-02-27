@@ -96,8 +96,22 @@ public class ClickOracle extends InputAdapter {
         return false;
     }
 
+    long startTime = 0;
+    long endTime = 0;
+    int events = 0;
+    int sum = 0;
+    
     @Override
     public boolean mouseMoved (int screenX, int screenY) {
+        endTime = System.nanoTime();
+        int diff = (int)((endTime - startTime) / 1000000);
+        if (diff < 1000) {
+            events++;
+            sum += diff;
+        }
+        System.out.println("Time between mouse move events: " + diff + ", average: " + ((events == 0) ? 0 : (sum / events)));
+        startTime = System.nanoTime();
+        
         setPassiveClickable(adapter.selectClickable(screenX, screenY, touchPos));
         return true;
     }

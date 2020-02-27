@@ -45,7 +45,7 @@ public class GameEngine implements RenderableProvider {
         this.adapter = adapter;
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
         gameState = new GameState(
-                Basic4WorldBuilder.ONLY,
+                SmallWorldBuilder.ONLY,
                 () -> {
                     Vector3 position = new Vector3();
                     PlayerBase myBase = null;
