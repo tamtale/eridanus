@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
-import javafx.scene.shape.Line;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +18,6 @@ import java.util.Map;
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
-import static java.lang.Math.abs;
 
 public class Unit extends Rectangle implements Damageable, Damaging {
     private final int playerID;

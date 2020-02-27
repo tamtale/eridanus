@@ -63,8 +63,10 @@ public class MessageFormatter {
         System.out.println("About to parse as host control message: " + jsonString);
         
         if (parsedMsg != null) {
-            if (parsedMsg.messageTypeID == MessageType.JOIN) {
-                return g.fromJson(jsonString, JoinMessage.class);
+            if (parsedMsg.messageTypeID == MessageType.UDPJOIN) {
+                return g.fromJson(jsonString, UdpJoinMessage.class);
+            } else if (parsedMsg.messageTypeID == MessageType.TCPJOIN) {
+                    return g.fromJson(jsonString, TcpJoinMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.START) {
                 return g.fromJson(jsonString, StartMessage.class);
             }

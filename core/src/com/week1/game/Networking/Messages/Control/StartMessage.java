@@ -1,16 +1,18 @@
 package com.week1.game.Networking.Messages.Control;
 
 import com.badlogic.gdx.Gdx;
-import com.week1.game.Networking.Host;
+import com.week1.game.Networking.NetworkObjects.AHost;
+import com.week1.game.Networking.NetworkObjects.Udp.UdpHost;
 import com.week1.game.Networking.Messages.Game.InitMessage;
 import com.week1.game.Networking.Messages.Game.TowerDetailsMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Networking.Messages.Update;
-import com.week1.game.Networking.Player;
+import com.week1.game.Networking.NetworkObjects.Player;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.util.Arrays;
 
 public class StartMessage extends HostControlMessage {
@@ -22,21 +24,15 @@ public class StartMessage extends HostControlMessage {
     }
 
     @Override 
-    public void updateHost(Host h, DatagramPacket p) {
+    public void updateHost(AHost h, InetAddress addr, int port) {
         h.gameStarted = true;
-        Gdx.app.log(TAG, "Host received a 'start' message from: " + p.getAddress().getHostAddress());
+        Gdx.app.log(TAG, "Host received a 'start' message from: " + addr.getHostAddress());
 
         // tell each player what their id is
 //                int playerId = 0;
         for (Player player : h.registry.values()) {
             String playerIdMessage = MessageFormatter.packageMessage(new PlayerIdMessage(player.playerId));
-            DatagramPacket packet = new DatagramPacket(playerIdMessage.getBytes(), playerIdMessage.getBytes().length, player.address, player.port);
-            try {
-                h.udpSocket.send(packet);
-            } catch (IOException e) {
-                Gdx.app.error(TAG, "Failed to send message to: " + player.address);
-                e.printStackTrace();
-            }
+            h.sendMessage(playerIdMessage, player);
         }
         try {
             Thread.sleep(2000);

@@ -1,6 +1,6 @@
 package com.week1.game.Networking.Messages.Control;
 
-import com.week1.game.Networking.Client;
+import com.week1.game.Networking.NetworkObjects.AClient;
 import com.week1.game.Networking.Messages.MessageType;
 
 public class PlayerIdMessage extends ClientControlMessage {
@@ -11,7 +11,7 @@ public class PlayerIdMessage extends ClientControlMessage {
     }
 
     @Override 
-    public void updateClient(Client c) {
+    public void updateClient(AClient c) {
         c.setPlayerId(this.playerID);
     }
     

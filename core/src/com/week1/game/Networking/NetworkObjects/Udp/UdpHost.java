@@ -1,4 +1,4 @@
-package com.week1.game.Networking;
+package com.week1.game.Networking.NetworkObjects.Udp;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.Networking.Messages.Control.HostControlMessage;
@@ -7,48 +7,40 @@ import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.Game.SyncIssueMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.Update;
-import com.week1.game.TowerBuilder.BlockSpec;
+import com.week1.game.Networking.NetworkObjects.AHost;
+import com.week1.game.Networking.NetworkObjects.Player;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.week1.game.Networking.Messages.MessageFormatter.parseHostControlMessage;
 import static com.week1.game.Networking.Messages.MessageType.SYNCERR;
 
-public class Host {
-    public static final int DANGEROUS_HARDCODED_MESSAGE_SIZE = 10000;
+public class UdpHost extends AHost {
 
     private static final String TAG = "Host - lji1";
     private static final int UPDATE_INTERVAL = 200;
     private int port;
     public DatagramSocket udpSocket;
     
-    public Map<InetAddress, Player> registry = new HashMap<>();
     
-    public boolean gameStarted = false;
-//    private StringBuilder aggregateMessage = new StringBuilder();
     
     private ConcurrentLinkedQueue<String> incomingMessages = new ConcurrentLinkedQueue<>();
     
-    public List<List<List<BlockSpec>>> towerDetails = new ArrayList<>(); // first index is implicitly the player id
-    public int runningPlayerId = 0;
     
     
-    public Host(int port) throws IOException {
+    public UdpHost(int port) throws IOException {
         this.udpSocket = new DatagramSocket(port);
         udpSocket.setReuseAddress(true);
 //        this.port = udpSocket.getLocalPort();
         this.port = port;
         
         Gdx.app.log(TAG, "Creating socket for host instance with address: " +
-                NetworkUtils.getLocalHostAddr() + " on port: " + this.port);
+                UdpNetworkUtils.getLocalHostAddr() + " on port: " + this.port);
         
     }
     
@@ -127,7 +119,8 @@ public class Host {
             }
         }).start();
     }
-    
+
+
     private void processMessage(DatagramPacket packet) {
         String msg = new String(packet.getData()).trim();
         
@@ -135,7 +128,7 @@ public class Host {
             // Game has not started
             HostControlMessage ctrlMsg = parseHostControlMessage(msg);
             if (ctrlMsg != null) {
-                ctrlMsg.updateHost(this, packet);
+                ctrlMsg.updateHost(this, packet.getAddress(), packet.getPort());
             } else {
                 Gdx.app.error(TAG, "Unrecognized message before start of game.");
             }
@@ -149,13 +142,19 @@ public class Host {
     public void broadcastToRegisteredPlayers(String msg) {
         registry.values().forEach((player) -> {
             System.out.println("Sending message: " + msg + " to player: " + player.address);
-            DatagramPacket p = new DatagramPacket(msg.getBytes(), msg.getBytes().length, player.address, player.port);
-            try {
-                this.udpSocket.send(p);
-            } catch (IOException e) {
-                Gdx.app.error(TAG, "Failed to send message to: " + player.address);
-                e.printStackTrace();
-            }
+            sendMessage(msg, player);
         });
+    }
+    
+    @Override
+    public void sendMessage(String msg, Player player) {
+
+        DatagramPacket packet = new DatagramPacket(msg.getBytes(), msg.getBytes().length, player.address, player.port);
+        try {
+            this.udpSocket.send(packet);
+        } catch (IOException e) {
+            Gdx.app.error(TAG, "Failed to send message to: " + player.address);
+            e.printStackTrace();
+        }
     }
 }
