@@ -207,6 +207,8 @@ public class GameWorld implements RenderableProvider {
             int minx, int miny, int minz, 
             int maxx, int maxy, int maxz) {
         // max is exclusive
+        
+        int nonNull = 0;
 
         Vector3 intermediateIntersection = new Vector3();
 
@@ -219,6 +221,7 @@ public class GameWorld implements RenderableProvider {
                     if (modelInstance == null) {
                         continue;
                     }
+                    nonNull++;
 
                     if (Intersector.intersectRayBounds(ray, boundingBoxes[i][j][k], intermediateIntersection)) {
 
@@ -236,6 +239,8 @@ public class GameWorld implements RenderableProvider {
             }
         }
 
+        System.out.println("\tNonnull: " + nonNull);
+        
             return new Pair<>(closestModelInstance, minDistance);
     }
 
