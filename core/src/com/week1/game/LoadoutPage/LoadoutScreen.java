@@ -52,7 +52,7 @@ public class LoadoutScreen implements Screen {
         loadoutSelector.setSize(200,64);
         loadoutSelector.setPosition(
                 GameController.VIRTUAL_WIDTH / 2 - loadoutSelector.getWidth(),
-                GameController.VIRTUAL_HEIGHT / 2 - loadoutSelector.getHeight());
+                GameController.VIRTUAL_HEIGHT / 2 - 80 - loadoutSelector.getHeight());
         loadoutStage.addActor(loadoutSelector);
 
         loadoutSelector.addListener(new ClickListener() {
@@ -64,6 +64,8 @@ public class LoadoutScreen implements Screen {
                         TowerPresets.getTower(5).getLayout()));
             }
         });
+
+        Gdx.input.setInputProcessor(loadoutStage);
     }
 
 
@@ -90,7 +92,8 @@ public class LoadoutScreen implements Screen {
 
     @Override
     public void render(float delta) {
-
+        Gdx.app.log("pjb3 - LoadoutScreen", "rendering");
+        loadoutStage.draw();
     }
 
     @Override

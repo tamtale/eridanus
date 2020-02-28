@@ -20,8 +20,9 @@ public class ConnectionScreen implements Screen {
 //        private boolean sentTowers = false;
     private GameController game;
     private boolean hosting;
-    TextButton hostGameButton, joinGameButton;
+    TextButton hostGameButton, joinGameButton, launchGameButton;
     TextField ipField;
+    TextField waitJoinMsg;
 
 
     public ConnectionScreen(GameController game) {
@@ -31,10 +32,8 @@ public class ConnectionScreen implements Screen {
 
         hostGameButton= new TextButton("Begin Hosting", new Skin(Gdx.files.internal("uiskin.json")));
         hostGameButton.setSize(200,64);
-        hostGameButton.setPosition(GameController.VIRTUAL_WIDTH/2 - hostGameButton.getWidth(), GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight());
+        hostGameButton.setPosition(GameController.VIRTUAL_WIDTH/2 - 20 - hostGameButton.getWidth(), GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight());
         connectionStage.addActor(hostGameButton);
-
-
         hostGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -47,19 +46,35 @@ public class ConnectionScreen implements Screen {
         });
 
 
+        // Make the joinGameButton
         joinGameButton = new TextButton("JoinGame", new Skin(Gdx.files.internal("uiskin.json")));
         joinGameButton.setSize(200,64);
-        joinGameButton.setPosition(
-                GameController.VIRTUAL_WIDTH / 2 - joinGameButton.getWidth(),
-                GameController.VIRTUAL_HEIGHT / 2 - joinGameButton.getHeight());
+        joinGameButton.setPosition(GameController.VIRTUAL_WIDTH / 2 + 20 ,GameController.VIRTUAL_HEIGHT / 2 + joinGameButton.getHeight());
         connectionStage.addActor(joinGameButton);
-
         joinGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 joinGame(ipField.getMessageText());
             }
         });
+
+        launchGameButton = new TextButton("Press when done waiting for players", new Skin(Gdx.files.internal("uiskin.json")));
+        launchGameButton.setSize(200,64);
+        launchGameButton.setPosition(
+                GameController.VIRTUAL_WIDTH / 2 - launchGameButton.getWidth(),
+                GameController.VIRTUAL_HEIGHT / 2 - 80);
+        launchGameButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                progressToLoadouts();
+            }
+        });
+
+        waitJoinMsg = new TextField("Waiting for all players to join and for the host to start...", new Skin(Gdx.files.internal("uiskin.json")));
+        waitJoinMsg.setSize(200,64);
+        waitJoinMsg.setPosition(GameController.VIRTUAL_WIDTH / 2 - waitJoinMsg.getWidth(), GameController.VIRTUAL_HEIGHT / 2 - 80);
+
+        Gdx.input.setInputProcessor(connectionStage);
     }
 
     private void joinGame(String ip) {
@@ -72,6 +87,7 @@ public class ConnectionScreen implements Screen {
         } else {
             hostGameButton.remove();
             joinGameButton.remove();
+            connectionStage.addActor(waitJoinMsg);
         }
     }
 
@@ -80,11 +96,14 @@ public class ConnectionScreen implements Screen {
         hostGameButton.remove();
         joinGameButton.remove();
         networkClient = TcpNetworkUtils.initNetworkObjects(true, null, 42069);
+        Gdx.app.log("pjb3 - ConnectionScreen", "Created the Host network object");
+        connectionStage.addActor(launchGameButton);
+
     }
 
     private void progressToLoadouts() {
         if (!hosting) {
-            Gdx.app.log("pjb3 - ConnectionScreen", "no. You must be host to move the game onward.");
+            Gdx.app.log("pjb3 - ConnectionScreen", "No. You must be host to move the game onward. How did you even click this");
             return;
         }
         game.setScreen(new LoadoutScreen(game, networkClient));
@@ -97,7 +116,8 @@ public class ConnectionScreen implements Screen {
 
     @Override
     public void render(float delta) {
-
+        Gdx.app.log("pjb3 - ConnectionStage", "rendering");
+        connectionStage.draw();
     }
 
     @Override

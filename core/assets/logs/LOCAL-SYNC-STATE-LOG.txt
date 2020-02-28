@@ -1,0 +1,43 @@
+Turn: 10 hash: 170444811 String: Turn 10
+
+PlayerBase{x=25.0, y=25.0, hp=500.0, maxHp=500.0, playerID=0}
+
+PlayerStat{mana=1009.0, regen_rate=1.0}
+Turn: 20 hash: -144545479 String: Turn 20Unit{playerID=0, turn=0, hp=50.0, vel=(0.0,0.0,0.0), maxHp=50.0, ID=0, x=21.474998, y=35.049995}
+Unit{playerID=0, turn=0, hp=50.0, vel=(0.0,0.0,0.0), maxHp=50.0, ID=1, x=33.6625, y=28.112497}
+Unit{playerID=0, turn=0, hp=50.0, vel=(0.0,0.0,0.0), maxHp=50.0, ID=2, x=14.199999, y=21.587498}
+
+
+PlayerBase{x=25.0, y=25.0, hp=500.0, maxHp=500.0, playerID=0}
+
+PlayerStat{mana=959.0, regen_rate=1.0}
+Turn: 30 hash: -1472877327 String: Turn 30Unit{playerID=0, turn=0, hp=50.0, vel=(0.0,0.0,0.0), maxHp=50.0, ID=0, x=21.474998, y=35.049995}
+Unit{playerID=0, turn=0, hp=50.0, vel=(0.0,0.0,0.0), maxHp=50.0, ID=1, x=33.6625, y=28.112497}
+Unit{playerID=0, turn=0, hp=50.0, vel=(0.0,0.0,0.0), maxHp=50.0, ID=2, x=14.199999, y=21.587498}
+Unit{playerID=0, turn=0, hp=50.0, vel=(0.0,0.0,0.0), maxHp=50.0, ID=3, x=30.812498, y=18.587498}
+Unit{playerID=0, turn=0, hp=50.0, vel=(0.0,0.0,0.0), maxHp=50.0, ID=4, x=36.699997, y=22.337498}
+
+
+PlayerBase{x=25.0, y=25.0, hp=500.0, maxHp=500.0, playerID=0}
+
+PlayerStat{mana=929.0, regen_rate=1.0}
+Turn: 40 hash: -1730035618 String: Turn 40Unit{playerID=0, turn=0, hp=50.0, vel=(0.0,0.0,0.0), maxHp=50.0, ID=0, x=21.474998, y=35.049995}
+Unit{playerID=0, turn=2, hp=50.0, vel=(-3.998984,-0.09014128,0.0), maxHp=50.0, ID=1, x=28.371298, y=30.985828}
+Unit{playerID=0, turn=0, hp=50.0, vel=(0.0,0.0,0.0), maxHp=50.0, ID=2, x=14.199999, y=21.587498}
+Unit{playerID=0, turn=0, hp=50.0, vel=(0.0,0.0,0.0), maxHp=50.0, ID=3, x=30.812498, y=18.587498}
+Unit{playerID=0, turn=1, hp=50.0, vel=(-3.9290416,-0.7500879,0.0), maxHp=50.0, ID=4, x=30.438087, y=21.892727}
+
+
+PlayerBase{x=25.0, y=25.0, hp=500.0, maxHp=500.0, playerID=0}
+
+PlayerStat{mana=939.0, regen_rate=1.0}
+Turn: 50 hash: 1560331917 String: Turn 50Unit{playerID=0, turn=0, hp=50.0, vel=(0.0,0.0,0.0), maxHp=50.0, ID=0, x=21.474998, y=35.049995}
+Unit{playerID=0, turn=2, hp=50.0, vel=(-4.0,-7.84723E-6,0.0), maxHp=50.0, ID=1, x=20.372242, y=30.999998}
+Unit{playerID=0, turn=0, hp=50.0, vel=(0.0,0.0,0.0), maxHp=50.0, ID=2, x=14.199999, y=21.587498}
+Unit{playerID=0, turn=0, hp=50.0, vel=(0.0,0.0,0.0), maxHp=50.0, ID=3, x=30.812498, y=18.587498}
+Unit{playerID=0, turn=1, hp=50.0, vel=(-3.9792504,-0.40689796,0.0), maxHp=50.0, ID=4, x=23.724098, y=19.971788}
+
+
+PlayerBase{x=25.0, y=25.0, hp=500.0, maxHp=500.0, playerID=0}
+
+PlayerStat{mana=949.0, regen_rate=1.0}

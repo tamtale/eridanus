@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
 import com.week1.game.Model.Entities.Building;
@@ -37,35 +38,20 @@ public class GameScreen implements Screen {
 	private AI ai;
 	private InfoUtil util;
 	//This is a temporary stage that is displayed before connection of clients
-	private Stage connectionStage;
+	private Stage gameStage;
 	private boolean pressedStartbtn;
 	private boolean createdTextures;
 
-//	private void makeTempStage() {
-//		connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
-//
-//		TextButton startbtn = new TextButton("Send Start Message", new Skin(Gdx.files.internal("uiskin.json")));
-//		startbtn.setSize(200,64);
-//		startbtn.setPosition(GameController.VIRTUAL_WIDTH/2 - startbtn.getWidth(), GameController.VIRTUAL_HEIGHT/2 - startbtn.getHeight());
-//		connectionStage.addActor(startbtn);
-//
-//		startbtn.addListener(new ClickListener() {
-//			@Override
-//			public void clicked(InputEvent event, float x, float y) {
-//				networkClient.sendStartMessage();
-//			}
-//		});
-//	}
-
-	public GameScreen(TcpClient networkClient) {
-//		this.args = args;
+	public GameScreen(TcpClient givenNetworkClient) {
 		// Set the logging level
 		Gdx.app.setLogLevel(Application.LOG_INFO);
 
-//		pressedStartbtn = false;
+		gameStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 		util = new InfoUtil(true);
 
+
 		// Finish setting up the client.
+		this.networkClient = givenNetworkClient;
 		networkClient.addAdapter( new INetworkClientToEngineAdapter() {
 			  @Override
 			  public void deliverUpdate(List<? extends GameMessage> messages) {
@@ -228,7 +214,7 @@ public class GameScreen implements Screen {
 
 		ai = new AI();
 
-		Gdx.input.setInputProcessor(connectionStage);
+		Gdx.input.setInputProcessor(gameStage);
 		renderer.create();
 
 		networkClient.sendStartMessage();
@@ -242,7 +228,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		if (!engine.started()) {
-			connectionStage.draw();
+			gameStage.draw();
 			return;
 		}
 		if (!createdTextures) {
@@ -258,7 +244,7 @@ public class GameScreen implements Screen {
 			multiplexer.addProcessor(clickOracle);
 			Gdx.input.setInputProcessor(multiplexer);
 
-			connectionStage.dispose();
+			gameStage.dispose();
 			pressedStartbtn = true;
 		}
 
@@ -272,7 +258,7 @@ public class GameScreen implements Screen {
 	public void resize(int width, int height) {
 		renderer.resize(width, height);
 		if (!engine.started()) {
-			connectionStage.getViewport().update(width, height);
+			gameStage.getViewport().update(width, height);
 		}
 	}
 

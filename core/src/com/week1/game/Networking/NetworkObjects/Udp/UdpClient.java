@@ -106,7 +106,12 @@ public class UdpClient extends AClient {
         // the client doesn't know its player id until later, so just use -1
         this.sendStringMessage(MessageFormatter.packageMessage(new StartMessage(-1)));
     }
-    
+
+    @Override
+    public void addAdapter(INetworkClientToEngineAdapter iNetworkClientToEngineAdapter) {
+        this.adapter = iNetworkClientToEngineAdapter; // sad but idk
+    }
+
     public void sendJoinMessage(List<List<BlockSpec>> details) {
         Gdx.app.log(TAG, "Sending join message.");
         // the client doesn't know its player id until later, so just use -1

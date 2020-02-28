@@ -16,7 +16,7 @@ import com.week1.game.TowerBuilder.TowerBuilderScreen;
 
 public class MainMenuScreen implements Screen {
     GameController game;
-    Stage stage;
+    public Stage stage;
 
     //Widgets
     TextButton playButton, buildTowersButton;

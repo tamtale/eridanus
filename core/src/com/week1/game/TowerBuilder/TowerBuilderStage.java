@@ -105,8 +105,8 @@ public class TowerBuilderStage {
         startGame.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("pjb3 - TowerBuilderStage", " Making a new loadoutscreen. Setting it as the screen now.");
-                gameController.setScreen(mainMenuScreen);
+                Gdx.app.log("pjb3 - TowerBuilderStage", "Trying to go back to the main Menu Screen");
+                gameController.setScreen(new MainMenuScreen(gameController));
             }
         });
     }
