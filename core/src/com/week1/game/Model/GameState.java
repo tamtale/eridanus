@@ -47,7 +47,7 @@ public class GameState implements RenderableProvider {
     private Array<Unit> units = new Array<>();
     private Array<Crystal> crystals = new Array<>();
     private Array<Tower> towers = new Array<>();
-    private Map<Integer, Tower> playerBases = new HashMap<>(); // bases are just special towers, not their own class
+    private Map<Integer, PlayerBase> playerBases = new HashMap<>(); // bases are just special towers, not an entirely separate class
     private Array<PlayerStat> playerStats = new Array<>();
     private Array<SteeringAgent> agents;
     private IWorldBuilder worldBuilder;
@@ -90,9 +90,9 @@ public class GameState implements RenderableProvider {
             playerStats.add(new PlayerStat());
             
             // Create and add a base for each player
-            Tower newBase = new Tower((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z, 
+            PlayerBase newBase = new PlayerBase((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z, 
                     towerLoadouts.getTowerDetails(i,-1), i, -1);
-            addTower(newBase, i, true);
+            addBase(newBase, i);
         }
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
         fullyInitialized = true;
@@ -128,13 +128,17 @@ public class GameState implements RenderableProvider {
         minionCount += 1;
     }
 
-    public void addTower(Tower t, int playerID, boolean isBase) {
-        if (isBase) {
-            playerBases.put(playerID, t);
-        } else {
-            towers.add(t);
-        }
+    public void addTower(Tower t, int playerID) {
+        towers.add(t);
+        addBuilding(t, playerID);
+    }
+    
+    public void addBase(PlayerBase pb, int playerID) {
+        playerBases.put(playerID, pb);
+        addBuilding(pb, playerID);
+    }
         
+    public void addBuilding(Tower t, int playerID) {
         int startX = (int) t.x - 4;
         int startY = (int) t.y - 4;
         TowerFootprint footprint = towerLoadouts.getTowerDetails(playerID, t.getTowerType()).getFootprint();
@@ -326,13 +330,12 @@ public class GameState implements RenderableProvider {
         }
 
   
-//        @Override
-//        public Void acceptBase(PlayerBase base) {
-//            int deadPlayer = base.getPlayerId();
-//            playerBases.removeIndex(deadPlayer);
-//            playerBases.insert(deadPlayer, new DestroyedBase(0, base.getX(), base.getY(), deadPlayer));
-//            return null;
-//        }
+        @Override
+        public Void acceptBase(PlayerBase base) {
+            int deadPlayer = base.getPlayerId();
+            playerBases.remove(deadPlayer);
+            return null;
+        }
 
         @Override
         public Void acceptCrystal(Crystal crystal) {
