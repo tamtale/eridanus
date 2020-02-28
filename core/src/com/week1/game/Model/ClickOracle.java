@@ -183,7 +183,7 @@ public class ClickOracle extends InputAdapter {
 //                      if (unit == null) {
                           if (spawnType == SpawnInfo.SpawnType.UNIT) {
                               Gdx.app.log("pjb3 - ClickOracle", "Spawn unit");
-                              adapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, adapter.getPlayerId(), currentGameHash));
+                              adapter.sendMessage(new CreateMinionMessage(vector.x, vector.y, vector.z + 1, 69, adapter.getPlayerId(), currentGameHash));
                           } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
                               Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
                               adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 0, adapter.getPlayerId(), currentGameHash));
