@@ -96,8 +96,6 @@ public class TowerPresets {
             return presets.get(0);
         }
 
-//        Gdx.app.log("skv2", "Tower " + (towernum) + " footprint: \n" + presets.get(towernum - 1).getFootprint().toString());
-
         return presets.get(towernum - 1);
     }
 

@@ -6,19 +6,19 @@ import javafx.scene.PerspectiveCamera;
 
 public class BuilderInputProcessor extends InputAdapter {
 
-    private TowerBuilderCamera camera;
+    private TowerBuilderScreen screen;
 //
 //    //field for constructor -- camera -- so that it can unproject
-    public BuilderInputProcessor(TowerBuilderCamera cam) {
-        this.camera = cam;
+    public BuilderInputProcessor(TowerBuilderScreen screen) {
+        this.screen = screen;
     }
 
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
         System.out.println("builder things registered click " + screenX +  " "+ screenY );
 
-        if (camera.towerStage.isBuildMode){
-            camera.getObject(screenX, screenY);
+        if (screen.towerStage.isBuildMode){
+            screen.towerCam.getObject(screenX, screenY);
         }
         //if click loc is in build area
         //add a block

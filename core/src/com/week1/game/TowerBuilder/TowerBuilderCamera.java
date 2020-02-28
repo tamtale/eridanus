@@ -1,10 +1,7 @@
 package com.week1.game.TowerBuilder;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -15,11 +12,9 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
-import com.week1.game.Model.Entities.Tower;
-import com.week1.game.Model.World.Block;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,24 +30,31 @@ import java.util.List;
 
 public class TowerBuilderCamera {
 
-
-
-    public PerspectiveCamera cam;
+    private PerspectiveCamera cam;
     public ModelBatch modelBatch;
     public Environment environment;
-    public CameraInputController camController;
     public TowerPresets presets;
     AssetManager assets;
     private TowerDetails currTowerDetails;
     private Array<ModelInstance> instances;
     private Vector3 position = new Vector3();
-    private Array<ModelInstance> InvisiBlox; //tower boundary
+    private CameraInputController camController;
 
 
-    TowerBuilderStage towerStage;
+//    TowerBuilderStage towerStage;
+    TowerBuilderScreen towerScreen;
     ModelInstance space;
     Boolean loading;
     private List<ThreeD> poses;
+
+    public PerspectiveCamera getCam() {
+        return cam;
+    }
+
+    public void setCamController(CameraInputController camController) {
+        this.camController = camController;
+    }
+
 
     //keep a 3d internal representation of the grid and store whether each block is
     public static class ThreeD{
@@ -115,14 +117,6 @@ public class TowerBuilderCamera {
         }
         this.poses = poses;
 
-//        System.out.println(blox);
-//        System.out.println(poses);
-
-//        for (ThreeD p: poses) {
-//            ModelInstance cur = new ModelInstance(TowerMaterials.modelMap.get(1));
-//            InvisiBlox.add();
-//
-//        }
     }
 
     private void initEnvironment() {
@@ -132,14 +126,12 @@ public class TowerBuilderCamera {
 
     }
 
-    private void initPersCamera() {
+    public void initPersCamera() {
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-//        cam = new OrthographicCamera(30, 30 * (Gdx.graphics.getWidth()/ Gdx.graphics.getHeight()));
         cam.position.set(20f, 20f, 20f);
         cam.lookAt(0,0,0);
         cam.near = 0.5f;
         cam.far = 300f;
-//        cam.position.set(cam.viewportWidth / 2f, cam.viewportHeight / 2f, 0);
         cam.update();
     }
 
@@ -147,25 +139,14 @@ public class TowerBuilderCamera {
         modelBatch = new ModelBatch();
     }
 
-    private void setInputProc() {
-        //Init the camera
-        camController = new CameraInputController(cam);
-        InputMultiplexer multiplexer = new InputMultiplexer();
-        BuilderInputProcessor bip = new BuilderInputProcessor(this);
-
-        multiplexer.addProcessor(towerStage.stage);
-        multiplexer.addProcessor(bip);
-        multiplexer.addProcessor(camController);
-        Gdx.input.setInputProcessor(multiplexer);
-    }
 
 
-    public TowerBuilderCamera(TowerBuilderStage towerStage) {
-        this.towerStage = towerStage;
+
+    public TowerBuilderCamera(TowerBuilderScreen towerScreen) {
+        this.towerScreen = towerScreen;
         initEnvironment();
         initModelBatch();
         initPersCamera();
-        setInputProc();
 
         presets = new TowerPresets();
 
@@ -192,8 +173,8 @@ public class TowerBuilderCamera {
     }
 
     public void render() {
-        if (loading && assets.update())
-            doneLoading();
+//        if (loading && assets.update())
+//            doneLoading();
 
         camController.update();
 
@@ -234,38 +215,13 @@ public class TowerBuilderCamera {
         int result = -1;
         float distance = -1;
 
-//        for (int i = 0; i < currTowerDetails.getLayout().size(); ++i) {
-//
-//            //we just need to translation of the block from the origin
-//            BlockSpec cur = currTowerDetails.getLayout().get(i);
-//            int x = cur.getX();
-//            int y = cur.getY();
-//            int z = cur.getZ();
-
         for (int i = 0; i < poses.size(); i++) {
             ThreeD curblock = poses.get(i);
             int x = curblock.x;
             int y = curblock.y;
             int z = curblock.z;
             position = new Vector3(x * 5f, y * 5f, z * 5f);
-//            final ModelInstance instance = instances.get(i);
-//
-//            BoundingBox temp_box = new BoundingBox();
-//            Vector3 center = new Vector3(0,0,0);
             Vector3 dimensions = new Vector3(5,5,5);
-//            instance.transform.getTranslation(position);
-//
-//            instance.calculateBoundingBox(temp_box);
-////            temp_box.getCenter(center);
-//
-//
-//            position.add(center);
-////            temp_box.getDimensions(dimensions);
-//            System.out.println(i);
-//            System.out.println(center);
-//            System.out.println(dimensions.len()/2f);
-//            System.out.println(position);
-//
 
 
             float dist2 = ray.origin.dst2(position);
