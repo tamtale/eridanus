@@ -123,7 +123,7 @@ public class ClickOracle extends InputAdapter {
 
     private void setSelectedClickable(Clickable clickable) {
         Gdx.app.log("setSelectedClickable", "set selected: " + clickable.toString());
-        selected.setSelected(false);
+        deMultiSelect();
         selected = clickable;
         selected.setSelected(true);
     }
@@ -145,7 +145,7 @@ public class ClickOracle extends InputAdapter {
             Array<Unit> unitsToSelect = adapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
 
             deMultiSelect();
-            unitsToSelect.forEach(this::multiSelect);
+            // unitsToSelect.forEach(this::multiSelect);
 
             Gdx.app.log("lji1 - ClickOracle", "Cleared selection locations.");
             return false;
@@ -160,40 +160,40 @@ public class ClickOracle extends InputAdapter {
 
         // for 2D, just unproject.
         adapter.unproject(touchPos);
+        Clickable selectedClickable = adapter.selectClickable(screenX, screenY, touchPos);
         if (button == Input.Buttons.LEFT) {
             Gdx.app.log("lji1 - ClickOracle", "Left click.");
+            deMultiSelect();
+            setSelectedClickable(selectedClickable);
+            selected.accept(new Clickable.ClickableVisitor<Void>() {
+                @Override
+                public Void acceptUnit(Unit unit) {
+                  multiSelected.add(unit);
+                  return null;
+                }
+                @Override
+                public Void acceptBlockLocation(Vector3 vector) {
+                    Gdx.app.log("ClickOracle", "Accepting block location.");
 
-              setSelectedClickable(adapter.selectClickable(screenX, screenY, touchPos));
-              System.out.println("selected: " + selected);
-              selected.accept(new Clickable.ClickableVisitor<Void>() {
-                  @Override
-                  public Void acceptUnit(Unit unit) {
-                      return null;
-                  }
-                  
-                  @Override
-                  public Void acceptBlockLocation(Vector3 vector) {
-                      Gdx.app.log("ClickOracle", "Accepting block location.");
-                      
 //                      // TODO: only using this becasue buttons are broken
 //                      spawnType = SpawnInfo.SpawnType.TOWER1; // TODO: remove me !
-                      
-                        System.out.println("Sending message to spawn tower at: " + vector);
-                      
+
+                    System.out.println("Sending message to spawn tower at: " + vector);
+
 //                      if (unit == null) {
-                          if (spawnType == SpawnInfo.SpawnType.UNIT) {
-                              Gdx.app.log("pjb3 - ClickOracle", "Spawn unit");
-                              adapter.sendMessage(new CreateMinionMessage(vector.x, vector.y, vector.z + 1, 69, adapter.getPlayerId(), currentGameHash));
-                          } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
-                              Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
-                              adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 0, adapter.getPlayerId(), currentGameHash));
-                          } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
-                              Gdx.app.log("pjb3 - ClickOracle", "Spawn Tower 2 tower via state");
-                              adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 1, adapter.getPlayerId(), currentGameHash));
-                          } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
-                              Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
-                              adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 2, adapter.getPlayerId(), currentGameHash));
-                          }
+                    if (spawnType == SpawnInfo.SpawnType.UNIT) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn unit");
+                        adapter.sendMessage(new CreateMinionMessage(vector.x, vector.y, vector.z + 1, 69, adapter.getPlayerId(), currentGameHash));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+                        adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 0, adapter.getPlayerId(), currentGameHash));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn Tower 2 tower via state");
+                        adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 1, adapter.getPlayerId(), currentGameHash));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+                        adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 2, adapter.getPlayerId(), currentGameHash));
+                    }
 //                      } else {
 //                          Gdx.app.log("ttl4 - ClickOracle", "selected a unit!");
 //                          deMultiSelect();
@@ -201,47 +201,54 @@ public class ClickOracle extends InputAdapter {
 //                          selectionLocationEnd.set(unit.getX(), unit.getY(), 0);
 //                          multiSelect(unit);
 //                      }
-                  
-                      return null;
-                  }
 
-                  @Override
-                  public Void acceptNull() {
-                    // TODO create an entity based on the pressed button.
-                      return null;
-                  }
-              });
+                    return null;
+                }
+
+                @Override
+                public Void acceptNull() {
+                    return null;
+                }
+            });
             return false;
         }
         // Right click
-        if (multiSelected.notEmpty() && button == Input.Buttons.RIGHT) {
-            System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
-                adapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y,
-                        adapter.getPlayerId(), multiSelected, currentGameHash));
-//            }
-            return false;
+        if (button == Input.Buttons.RIGHT && multiSelected.notEmpty()) {
+            selectedClickable.accept(new Clickable.ClickableVisitor<Void>() {
+                @Override
+                public Void acceptUnit(Unit unit) {
+                  // TODO attack a different unit
+                    return null;
+                }
 
+                @Override
+                public Void acceptBlockLocation(Vector3 vector) {
+                    adapter.sendMessage(new MoveMinionMessage(vector.x, vector.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+                    return null;
+                }
+
+                @Override
+                public Void acceptNull() {
+                    return null;
+                }
+            });
         }
-        
+
         deMultiSelect();
         return false;
     }
 
 
     private void deMultiSelect() {
-        if (multiSelected.notEmpty()) {
-            multiSelected.forEach((u) -> u.setClicked(false));
-            multiSelected.clear();
-        }
+        // TODO 3D
+//        if (multiSelected.notEmpty()) {
+//            multiSelected.forEach((u) -> u.setClicked(false));
+//            multiSelected.clear();
+//        }
+        multiSelected.forEach(clickable -> clickable.setSelected(false));
+        multiSelected.clear();
     }
     
-    private void multiSelect(Unit unit) {
-        if (unit.getPlayerId() == adapter.getPlayerId()) {
-            multiSelected.add(unit);
-            unit.setClicked(true);
-        }
-    }
-
     public void setSpawnType(SpawnInfo newInfo) {
         spawnType = newInfo.getType();
     }
