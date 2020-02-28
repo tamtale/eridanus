@@ -1,11 +1,10 @@
 package com.week1.game.Networking.NetworkObjects.Tcp;
 
 import com.badlogic.gdx.Gdx;
+import com.week1.game.GameControllerSetScreenAdapter;
+import com.week1.game.LoadoutPage.LoadoutScreen;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
-import com.week1.game.Networking.Messages.Control.ClientControlMessage;
-import com.week1.game.Networking.Messages.Control.SendChosenTowersMessage;
-import com.week1.game.Networking.Messages.Control.StartMessage;
-import com.week1.game.Networking.Messages.Control.TcpJoinMessage;
+import com.week1.game.Networking.Messages.Control.*;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkObjects.AClient;
@@ -31,12 +30,13 @@ public class TcpClient extends AClient {
     private INetworkClientToEngineAdapter adapter;
     
     private int playerId = -1;
+    private GameControllerSetScreenAdapter game; // This is needed so that the network can change the stage of the game back to the TowerLoadout
     
     
-    public TcpClient(String hostIpAddr, int hostPort) throws IOException {
+    public TcpClient(String hostIpAddr, int hostPort, GameControllerSetScreenAdapter game) throws IOException {
         this.hostAddress = InetAddress.getByName(hostIpAddr);
         this.hostPort = hostPort;
-        
+        this.game = game;
         this.tcpSocket = new Socket(hostAddress, hostPort);
         this.in = new DataInputStream(tcpSocket.getInputStream());
         this.out = new DataOutputStream(tcpSocket.getOutputStream());
@@ -131,7 +131,12 @@ public class TcpClient extends AClient {
         this.adapter = networkClientToEngineAdapter;
     }
 
-    public void addTowers (List<List<BlockSpec>> details) {
-        details= details;
+    @Override
+    public void sendGoToLoadout() {
+        sendStringMessage(MessageFormatter.packageMessage(new RequestGoToLoadoutMessage(-1)));
+    }
+
+    public void createNewLoadoutScreen() {
+        game.setScreen(new LoadoutScreen(game, this));
     }
 }

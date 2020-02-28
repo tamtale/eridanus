@@ -2,13 +2,18 @@ package com.week1.game.LoadoutPage;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
+import com.week1.game.GameControllerSetScreenAdapter;
 import com.week1.game.GameScreen;
 import com.week1.game.Networking.NetworkObjects.Tcp.TcpClient;
 import com.week1.game.TowerBuilder.BlockSpec;
@@ -21,10 +26,10 @@ public class LoadoutScreen implements Screen {
     private Stage loadoutStage;
     private TcpClient networkClient;
     private boolean sentTowers = false;
-    private GameController game;
+    private GameControllerSetScreenAdapter gameAdapter;
 
-    public LoadoutScreen(GameController game, TcpClient client) {
-        this.game = game;
+    public LoadoutScreen(GameControllerSetScreenAdapter gameAdapter, TcpClient client) {
+        this.gameAdapter = gameAdapter;
         this.networkClient = client;
 
         Gdx.app.log("pjb3 - LoadoutScreen.java", "creating Loadout Screen. In contructor");
@@ -65,12 +70,24 @@ public class LoadoutScreen implements Screen {
             }
         });
 
+        // Make the font for the title
+        Label.LabelStyle label1Style = new Label.LabelStyle();
+        BitmapFont myFont = new BitmapFont();
+        label1Style.font = myFont;
+        label1Style.fontColor = Color.WHITE;
+
+        Label label1 = new Label("Connection Stage. Choose Host OR Join",label1Style);
+        label1.setSize(200, 64);
+        label1.setPosition(GameController.VIRTUAL_WIDTH / 2 - 60,GameController.VIRTUAL_HEIGHT * 3 / 4 );
+        label1.setAlignment(Align.center);
+        loadoutStage.addActor(label1);
+
         Gdx.input.setInputProcessor(loadoutStage);
     }
 
 
     public void startNewGame() {
-        game.setScreen(new GameScreen(networkClient));
+        gameAdapter.setScreen(new GameScreen(networkClient));
     }
 
 //    public void makeHost() {

@@ -66,9 +66,11 @@ public class MessageFormatter {
             if (parsedMsg.messageTypeID == MessageType.UDPJOIN) {
                 return g.fromJson(jsonString, UdpJoinMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.TCPJOIN) {
-                    return g.fromJson(jsonString, TcpJoinMessage.class);
+                return g.fromJson(jsonString, TcpJoinMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.START) {
                 return g.fromJson(jsonString, StartMessage.class);
+            } else if (parsedMsg.messageTypeID == MessageType.REQUESTGOTOLOADOUT) {
+                return g.fromJson(jsonString, RequestGoToLoadoutMessage.class);
             }
         }
 
@@ -81,6 +83,8 @@ public class MessageFormatter {
         if (parsedMsg != null) {
             if (parsedMsg.messageTypeID == MessageType.PLAYERID) {
                 return g.fromJson(jsonString, PlayerIdMessage.class);
+            } else if (parsedMsg.messageTypeID == MessageType.GOTOLOADOUT) {
+                return g.fromJson(jsonString, GoToLoadoutMessage.class);
             }
         }
         

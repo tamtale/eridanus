@@ -56,7 +56,7 @@ public class TowerBuilderStage {
                     new Skin(Gdx.files.internal("uiskin.json"))));
         }
 
-        startGame = new TextButton("Start Game", new Skin(Gdx.files.internal("uiskin.json")));
+        startGame = new TextButton("Main Menu", new Skin(Gdx.files.internal("uiskin.json")));
     }
 
     private void configureWidgets() {

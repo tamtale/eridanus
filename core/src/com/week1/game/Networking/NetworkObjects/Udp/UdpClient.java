@@ -112,6 +112,26 @@ public class UdpClient extends AClient {
         this.adapter = iNetworkClientToEngineAdapter; // sad but idk
     }
 
+    @Override
+    public void sendGoToLoadout() {
+        // Should not be used anymore. I want to remove udp forever
+        try {
+            throw new Exception();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void createNewLoadoutScreen() {
+        // Should not be used anymore. I want to remove udp forever
+        try {
+            throw new Exception();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendJoinMessage(List<List<BlockSpec>> details) {
         Gdx.app.log(TAG, "Sending join message.");
         // the client doesn't know its player id until later, so just use -1

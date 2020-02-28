@@ -1,6 +1,7 @@
 package com.week1.game.Networking.NetworkObjects.Tcp;
 
 import com.badlogic.gdx.Gdx;
+import com.week1.game.GameControllerSetScreenAdapter;
 
 import java.net.*;
 import java.nio.channels.SocketChannel;
@@ -66,7 +67,7 @@ public class TcpNetworkUtils {
      * act as a client. (Even when hosting, the instance also behaves as a client.)
      * @return The client object
      */
-    public static TcpClient initNetworkObjects(boolean isHost, String hostIP, Integer port) {
+    public static TcpClient initNetworkObjects(boolean isHost, String hostIP, Integer port, GameControllerSetScreenAdapter gameAdapter) {
         final String TAG = "initNetworkObjects - lji1";
         Gdx.app.log(TAG, "Local host address: " + getLocalHostAddr());
 
@@ -84,7 +85,7 @@ public class TcpNetworkUtils {
 
 
                 // Now make the client stuff
-                c = new TcpClient(localIpAddr, h.getPort());
+                c = new TcpClient(localIpAddr, h.getPort(), gameAdapter);
                 c.sendJoinMessage();
 
             } else {
@@ -92,7 +93,7 @@ public class TcpNetworkUtils {
                 // host ip is the number listed under ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address
 
                 try {
-                    c = new TcpClient(hostIP, port);
+                    c = new TcpClient(hostIP, port, gameAdapter);
                     c.sendJoinMessage();
                 }
                 catch (Exception e) {

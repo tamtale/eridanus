@@ -11,4 +11,7 @@ public abstract class AClient {
     public abstract void sendStartMessage();
 
     public abstract void addAdapter(INetworkClientToEngineAdapter iNetworkClientToEngineAdapter);
+
+    public abstract void sendGoToLoadout();
+    public abstract void createNewLoadoutScreen();
 }

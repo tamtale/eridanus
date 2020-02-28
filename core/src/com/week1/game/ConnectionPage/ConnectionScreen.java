@@ -2,27 +2,31 @@ package com.week1.game.ConnectionPage;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
-import com.week1.game.LoadoutPage.LoadoutScreen;
 import com.week1.game.Networking.NetworkObjects.Tcp.TcpClient;
 import com.week1.game.Networking.NetworkObjects.Tcp.TcpNetworkUtils;
 
 public class ConnectionScreen implements Screen {
     private Stage connectionStage;
     private TcpClient networkClient;
-//        private boolean sentTowers = false;
     private GameController game;
     private boolean hosting;
     TextButton hostGameButton, joinGameButton, launchGameButton;
+    Label waitJoinMsg;
     TextField ipField;
-    TextField waitJoinMsg;
+    Label.LabelStyle labelStyle;
+
 
 
     public ConnectionScreen(GameController game) {
@@ -70,17 +74,34 @@ public class ConnectionScreen implements Screen {
             }
         });
 
-        waitJoinMsg = new TextField("Waiting for all players to join and for the host to start...", new Skin(Gdx.files.internal("uiskin.json")));
-        waitJoinMsg.setSize(200,64);
+
+        // Make the font for the title
+        labelStyle = new Label.LabelStyle();
+        BitmapFont myFont = new BitmapFont();
+        labelStyle.font = myFont;
+        labelStyle.fontColor = Color.WHITE;
+
+        waitJoinMsg = new Label("Waiting for all players to join and for the host to start...", labelStyle);
+        waitJoinMsg.setSize(300,64);
         waitJoinMsg.setPosition(GameController.VIRTUAL_WIDTH / 2 - waitJoinMsg.getWidth(), GameController.VIRTUAL_HEIGHT / 2 - 80);
+
+        ipField = new TextField("10.122.178.55", new Skin(Gdx.files.internal("uiskin.json")));
+        ipField.setSize(200,64);
+        ipField.setPosition(GameController.VIRTUAL_WIDTH / 2 + ipField.getWidth(), GameController.VIRTUAL_HEIGHT * 3 / 4 - 80);
+        connectionStage.addActor(ipField);
+
+
+        Label label1 = new Label("Connection Stage. Choose Host OR Join", labelStyle);
+        label1.setSize(200, 64);
+        label1.setPosition(GameController.VIRTUAL_WIDTH / 2 - 60,GameController.VIRTUAL_HEIGHT * 3 / 4 );
+        label1.setAlignment(Align.center);
+        connectionStage.addActor(label1);
 
         Gdx.input.setInputProcessor(connectionStage);
     }
 
     private void joinGame(String ip) {
-        hosting = false;
-
-        networkClient = TcpNetworkUtils.initNetworkObjects(false, ip, 42069);
+        networkClient = TcpNetworkUtils.initNetworkObjects(false, ip, 42069, newScreen -> game.setScreen(newScreen));
         if (networkClient == null) {
             // Something was wrong in the input
             Gdx.app.log("pjb3 - ConnectionScreen", "Ruh roh. Something is wrong, with the IP probably");
@@ -95,7 +116,14 @@ public class ConnectionScreen implements Screen {
         hosting = true;
         hostGameButton.remove();
         joinGameButton.remove();
-        networkClient = TcpNetworkUtils.initNetworkObjects(true, null, 42069);
+        ipField.remove();
+        Label label1 = new Label("Your Ip is " + TcpNetworkUtils.getLocalHostAddr(), labelStyle);
+        label1.setSize(200, 64);
+        label1.setPosition(GameController.VIRTUAL_WIDTH/2 - 20 - hostGameButton.getWidth(), GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight() + 64 );
+        label1.setAlignment(Align.center);
+        connectionStage.addActor(label1);
+//        10.122.178.55
+        networkClient = TcpNetworkUtils.initNetworkObjects(true, null, 42069, newScreen -> game.setScreen(newScreen));
         Gdx.app.log("pjb3 - ConnectionScreen", "Created the Host network object");
         connectionStage.addActor(launchGameButton);
 
@@ -106,7 +134,8 @@ public class ConnectionScreen implements Screen {
             Gdx.app.log("pjb3 - ConnectionScreen", "No. You must be host to move the game onward. How did you even click this");
             return;
         }
-        game.setScreen(new LoadoutScreen(game, networkClient));
+        Gdx.app.log("pjb3 - ConnectionScreen", "Trying to send the GoToLoadout command");
+        networkClient.sendGoToLoadout(); // Send the request for everyone to move to the loadout screen.
     }
 
     @Override
@@ -116,7 +145,6 @@ public class ConnectionScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.app.log("pjb3 - ConnectionStage", "rendering");
         connectionStage.draw();
     }
 
