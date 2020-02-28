@@ -81,7 +81,7 @@ public class LoadoutScreen implements Screen {
         label1Style.font = myFont;
         label1Style.fontColor = Color.WHITE;
 
-        Label label1 = new Label("Connection Stage. Choose Host OR Join",label1Style);
+        Label label1 = new Label("LOADOUT Stage. Currently nonfunctional",label1Style);
         label1.setSize(200, 64);
         label1.setPosition(GameController.VIRTUAL_WIDTH / 2 - 60,GameController.VIRTUAL_HEIGHT * 3 / 4 );
         label1.setAlignment(Align.center);
@@ -94,7 +94,8 @@ public class LoadoutScreen implements Screen {
 
     public void createNewGame() {
         Screen futureGame = new GameScreen(networkClient, gameAdapter);
-        Gdx.app.log("pjb3 - LoutoutScreen", "the GameScreen is being created NOW");
+        networkClient.setGameScreen(futureGame);
+        Gdx.app.log("pjb3 - LoutoutScreen", "the GameScreen is being created NOW. It has been added to the client");
     }
 
     public void sendTowerChoices(List<List<BlockSpec>> details) {

@@ -1,5 +1,6 @@
 package com.week1.game.Networking.NetworkObjects;
 
+import com.badlogic.gdx.Screen;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 
 public abstract class AClient {
@@ -14,4 +15,8 @@ public abstract class AClient {
 
     public abstract void sendGoToLoadout();
     public abstract void createNewLoadoutScreen();
+
+    public abstract Screen getGameScreen();
+
+    public abstract void goToGameScreen(Screen gameScreen);
 }

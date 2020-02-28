@@ -1,8 +1,8 @@
 package com.week1.game.Networking.NetworkObjects.Tcp;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.week1.game.GameControllerSetScreenAdapter;
-import com.week1.game.GameScreen;
 import com.week1.game.LoadoutPage.LoadoutScreen;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.Control.*;
@@ -33,14 +33,14 @@ public class TcpClient extends AClient {
     private int playerId = -1;
     private boolean isHostingClient;
     private boolean playerIDReady = false;
-    private GameControllerSetScreenAdapter game; // This is needed so that the network can change the stage of the game back to the TowerLoadout
+    private GameControllerSetScreenAdapter gameAdapter; // This is needed so that the network can change the stage of the game back to the TowerLoadout
+    private Screen newGame;
     
-    
-    public TcpClient(String hostIpAddr, int hostPort, boolean isHostingClient, GameControllerSetScreenAdapter game) throws IOException {
+    public TcpClient(String hostIpAddr, int hostPort, boolean isHostingClient, GameControllerSetScreenAdapter gameAdapter) throws IOException {
         this.hostAddress = InetAddress.getByName(hostIpAddr);
         this.hostPort = hostPort;
         this.isHostingClient = isHostingClient;
-        this.game = game;
+        this.gameAdapter = gameAdapter;
         this.tcpSocket = new Socket(hostAddress, hostPort);
         this.in = new DataInputStream(tcpSocket.getInputStream());
         this.out = new DataOutputStream(tcpSocket.getOutputStream());
@@ -154,11 +154,18 @@ public class TcpClient extends AClient {
 
     public void createNewLoadoutScreen() {
         // Set the Screen to the Loadout screen when the render thread is ready
-        Gdx.app.postRunnable(() -> game.setScreen(new LoadoutScreen(game, this, isHostingClient)));
+        Gdx.app.postRunnable(() -> gameAdapter.setScreen(new LoadoutScreen(gameAdapter, this, isHostingClient)));
     }
 
-    public void goToGameScreen(GameScreen newGame) {
-        Gdx.app.postRunnable(() -> game.setScreen(newGame));
+    public void setGameScreen(Screen gameScreen) {
+        this.newGame = gameScreen;
+    }
 
+    public Screen getGameScreen() {
+        return newGame;
+    }
+
+    public void goToGameScreen(Screen newGame) {
+        Gdx.app.postRunnable(() -> gameAdapter.setScreen(newGame));
     }
 }

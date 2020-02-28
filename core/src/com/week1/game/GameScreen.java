@@ -214,11 +214,9 @@ public class GameScreen implements Screen {
 				});
 
 		ai = new AI();
-
-		Gdx.input.setInputProcessor(gameStage);
 		renderer.create();
 
-		networkClient.sendStartMessage();
+//		networkClient.sendStartMessage();
 	}
 
 	@Override
@@ -248,7 +246,6 @@ public class GameScreen implements Screen {
 			gameStage.dispose();
 			pressedStartbtn = true;
 		}
-
 		float time = Gdx.graphics.getDeltaTime();
 		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
 		renderer.render(time); // Only move the units from their state position

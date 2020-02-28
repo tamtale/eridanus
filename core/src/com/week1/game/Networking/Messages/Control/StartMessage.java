@@ -1,17 +1,14 @@
 package com.week1.game.Networking.Messages.Control;
 
 import com.badlogic.gdx.Gdx;
-import com.week1.game.Networking.NetworkObjects.AHost;
-import com.week1.game.Networking.NetworkObjects.Udp.UdpHost;
 import com.week1.game.Networking.Messages.Game.InitMessage;
 import com.week1.game.Networking.Messages.Game.TowerDetailsMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Networking.Messages.Update;
+import com.week1.game.Networking.NetworkObjects.AHost;
 import com.week1.game.Networking.NetworkObjects.Player;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.Arrays;
 
