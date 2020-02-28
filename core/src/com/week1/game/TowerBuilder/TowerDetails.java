@@ -1,5 +1,6 @@
 package com.week1.game.TowerBuilder;
 
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerFootprint;
@@ -132,7 +133,7 @@ public class TowerDetails {
         //populate the fields
         this.atk += TowerMaterials.blockAtk.get(code);
         this.hp += TowerMaterials.blockHp.get(code);
-        this.range = max((int) this.range, 3 * y);
+        this.range = Integer.max((int) this.range, 3 * y);
         this.price += TowerMaterials.blockPrice.get(code);
 
 
