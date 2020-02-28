@@ -190,8 +190,8 @@ public class ClickOracle extends InputAdapter {
                   public Void acceptBlockLocation(Vector3 vector) {
                       Gdx.app.log("ClickOracle", "Accepting block location.");
                       
-                      // TODO: only using this becasue buttons are broken
-                      spawnType = SpawnInfo.SpawnType.TOWER1; // TODO: remove me !
+//                      // TODO: only using this becasue buttons are broken
+//                      spawnType = SpawnInfo.SpawnType.TOWER1; // TODO: remove me !
                       
                         System.out.println("Sending message to spawn tower at: " + vector);
                       
