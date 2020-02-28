@@ -13,10 +13,11 @@ public abstract class AClient {
 
     public abstract void addAdapter(INetworkClientToEngineAdapter iNetworkClientToEngineAdapter);
 
-    public abstract void sendGoToLoadout();
     public abstract void createNewLoadoutScreen();
 
     public abstract Screen getGameScreen();
 
     public abstract void goToGameScreen(Screen gameScreen);
+
+    public abstract AClient getScreenManager();
 }

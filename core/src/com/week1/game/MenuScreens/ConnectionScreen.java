@@ -1,4 +1,4 @@
-package com.week1.game.ConnectionPage;
+package com.week1.game.MenuScreens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -14,13 +14,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
+import com.week1.game.GameControllerSetScreenAdapter;
 import com.week1.game.Networking.NetworkObjects.Tcp.TcpClient;
 import com.week1.game.Networking.NetworkObjects.Tcp.TcpNetworkUtils;
 
 public class ConnectionScreen implements Screen {
     private Stage connectionStage;
     private TcpClient networkClient;
-    private GameController game;
+    private GameControllerSetScreenAdapter gameAdapter;
     private boolean hosting;
     TextButton hostGameButton, joinGameButton, launchGameButton;
     Label waitJoinMsg;
@@ -29,8 +30,8 @@ public class ConnectionScreen implements Screen {
 
 
 
-    public ConnectionScreen(GameController game) {
-        this.game = game;
+    public ConnectionScreen(GameControllerSetScreenAdapter gameAdapter) {
+        this.gameAdapter = gameAdapter;
         Gdx.app.log("pjb3 - LoadoutScreen.java", "creating Loadout Screen. In contructor");
         connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 
@@ -103,13 +104,14 @@ public class ConnectionScreen implements Screen {
     }
 
     private void joinGame(String ip) {
-        networkClient = TcpNetworkUtils.initNetworkObjects(false, ip, 42069, newScreen -> game.setScreen(newScreen));
+        networkClient = TcpNetworkUtils.initNetworkObjects(false, ip, 42069, gameAdapter);
         if (networkClient == null) {
             // Something was wrong in the input
             Gdx.app.log("pjb3 - ConnectionScreen", "Ruh roh. Something is wrong, with the IP probably");
         } else {
             hostGameButton.remove();
             joinGameButton.remove();
+            ipField.setDisabled(true);
             connectionStage.addActor(waitJoinMsg);
         }
     }
@@ -125,7 +127,7 @@ public class ConnectionScreen implements Screen {
         label1.setAlignment(Align.center);
         connectionStage.addActor(label1);
 //        10.122.178.55
-        networkClient = TcpNetworkUtils.initNetworkObjects(true, null, 42069, newScreen -> game.setScreen(newScreen));
+        networkClient = TcpNetworkUtils.initNetworkObjects(true, null, 42069, gameAdapter);
         Gdx.app.log("pjb3 - ConnectionScreen", "Created the Host network object");
         connectionStage.addActor(launchGameButton);
 

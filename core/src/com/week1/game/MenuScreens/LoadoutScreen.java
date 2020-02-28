@@ -1,4 +1,4 @@
-package com.week1.game.LoadoutPage;
+package com.week1.game.MenuScreens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;

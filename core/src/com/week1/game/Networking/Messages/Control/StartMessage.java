@@ -26,7 +26,6 @@ public class StartMessage extends HostControlMessage {
         Gdx.app.log(TAG, "Host received a 'start' message from: " + addr.getHostAddress());
 
         // tell each player what their id is
-//                int playerId = 0;
         for (Player player : h.registry.values()) {
             String playerIdMessage = MessageFormatter.packageMessage(new PlayerIdMessage(player.playerId));
             h.sendMessage(playerIdMessage, player);

@@ -3,7 +3,8 @@ package com.week1.game.Networking.NetworkObjects.Tcp;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.week1.game.GameControllerSetScreenAdapter;
-import com.week1.game.LoadoutPage.LoadoutScreen;
+import com.week1.game.MenuScreens.LoadoutScreen;
+import com.week1.game.MenuScreens.ScreenManager;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.Control.*;
 import com.week1.game.Networking.Messages.Game.GameMessage;
@@ -31,16 +32,13 @@ public class TcpClient extends AClient {
     private INetworkClientToEngineAdapter adapter;
     
     private int playerId = -1;
-    private boolean isHostingClient;
-    private boolean playerIDReady = false;
-    private GameControllerSetScreenAdapter gameAdapter; // This is needed so that the network can change the stage of the game back to the TowerLoadout
-    private Screen newGame;
+    private boolean playerIDReady = false; // TODO should make this unnecessary. May be already.
+    private ScreenManager screenManager;
     
-    public TcpClient(String hostIpAddr, int hostPort, boolean isHostingClient, GameControllerSetScreenAdapter gameAdapter) throws IOException {
+    public TcpClient(String hostIpAddr, int hostPort, ScreenManager screenManager) throws IOException {
         this.hostAddress = InetAddress.getByName(hostIpAddr);
         this.hostPort = hostPort;
-        this.isHostingClient = isHostingClient;
-        this.gameAdapter = gameAdapter;
+        this.screenManager = screenManager;
         this.tcpSocket = new Socket(hostAddress, hostPort);
         this.in = new DataInputStream(tcpSocket.getInputStream());
         this.out = new DataOutputStream(tcpSocket.getOutputStream());
@@ -167,5 +165,10 @@ public class TcpClient extends AClient {
 
     public void goToGameScreen(Screen newGame) {
         Gdx.app.postRunnable(() -> gameAdapter.setScreen(newGame));
+    }
+
+    @Override
+    public AClient getScreenManager() {
+        return screenManager;
     }
 }

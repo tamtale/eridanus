@@ -13,6 +13,6 @@ public class GoToLoadoutMessage extends ClientControlMessage {
 
     @Override
     public void updateClient(AClient c) {
-        c.createNewLoadoutScreen();
+        c.getScreenManager().createNewLoadoutScreen();
     }
 }
