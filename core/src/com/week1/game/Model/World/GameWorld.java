@@ -345,7 +345,6 @@ public class GameWorld implements RenderableProvider {
                         " k: " + closestCoords.z +
                         " intersection: " + intersection);
         
-        System.out.println("It took this many intersections to find the block: " + numChunkIntersections + ", " + numIntersections);
         return new Clickable() {
             private BoundingBox boundingBox = new BoundingBox(closestBox);
             private Material originalMaterial = closestModelInstance_final.model.materials.get(0);
@@ -365,6 +364,17 @@ public class GameWorld implements RenderableProvider {
                     mat.set(originalMaterial);
                 }
 
+            }
+
+            @Override
+            public void setHovered(boolean hovered) {
+                Material mat = closestModelInstance_final.materials.get(0);
+                mat.clear();
+                if (hovered) {
+                    mat.set(Unit.hoveredMaterial);
+                } else {
+                    mat.set(originalMaterial);
+                }
             }
 
             @Override

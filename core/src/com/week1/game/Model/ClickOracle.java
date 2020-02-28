@@ -109,7 +109,6 @@ public class ClickOracle extends InputAdapter {
             events++;
             sum += diff;
         }
-        System.out.println("Time between mouse move events: " + diff + ", average: " + ((events == 0) ? 0 : (sum / events)));
         startTime = System.nanoTime();
         
         setPassiveClickable(adapter.selectClickable(screenX, screenY, touchPos));
@@ -117,12 +116,13 @@ public class ClickOracle extends InputAdapter {
     }
 
     private void setPassiveClickable (Clickable clickable) {
-        passiveSelected.setSelected(false);
+        passiveSelected.setHovered(false);
         passiveSelected = clickable;
-        passiveSelected.setSelected(true);
+        passiveSelected.setHovered(true);
     }
 
     private void setSelectedClickable(Clickable clickable) {
+        Gdx.app.log("setSelectedClickable", "set selected: " + clickable.toString());
         selected.setSelected(false);
         selected = clickable;
         selected.setSelected(true);
@@ -163,26 +163,11 @@ public class ClickOracle extends InputAdapter {
         if (button == Input.Buttons.LEFT) {
             Gdx.app.log("lji1 - ClickOracle", "Left click.");
 
-            // Create tower with left click and numberkey down.
-            // For advanced users, we will keep this as the first check, then defer to the other users
-//            if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
-//                Gdx.app.log("lji1 - ClickOracle", "Spawn basic tower.");
-//                adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 0, adapter.getPlayerId(), currentGameHash));
-//            } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
-//                Gdx.app.log("lji1 - ClickOracle", "Spawn sniper tower.");
-//                adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 1, adapter.getPlayerId(), currentGameHash));
-//            } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
-//                Gdx.app.log("lji1 - ClickOracle", "Spawn tank tower.");
-//                adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 2, adapter.getPlayerId(), currentGameHash));
-//            } else {
-
-                // Unit unit = engineAdapter.selectUnit(touchPos);
               setSelectedClickable(adapter.selectClickable(screenX, screenY, touchPos));
               System.out.println("selected: " + selected);
               selected.accept(new Clickable.ClickableVisitor<Void>() {
                   @Override
                   public Void acceptUnit(Unit unit) {
-                      Gdx.app.log("GOTTEM", "GOTTEM");
                       return null;
                   }
                   
