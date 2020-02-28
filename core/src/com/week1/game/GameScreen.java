@@ -28,6 +28,7 @@ import java.util.List;
 
 
 public class GameScreen implements Screen {
+	GameControllerSetScreenAdapter gameAdapter;
 	public static float THRESHOLD = .2f;
 	public static int PIXELS_PER_UNIT = 64;
 	private String[] args;
@@ -42,10 +43,10 @@ public class GameScreen implements Screen {
 	private boolean pressedStartbtn;
 	private boolean createdTextures;
 
-	public GameScreen(TcpClient givenNetworkClient) {
+	public GameScreen(TcpClient givenNetworkClient, GameControllerSetScreenAdapter gameAdapter) {
 		// Set the logging level
 		Gdx.app.setLogLevel(Application.LOG_INFO);
-
+		this.gameAdapter = gameAdapter;
 		gameStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 		util = new InfoUtil(true);
 

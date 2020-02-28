@@ -2,11 +2,10 @@ package com.week1.game.Networking.Messages.Control;
 
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.MessageType;
-import com.week1.game.Networking.Messages.Update;
 import com.week1.game.Networking.NetworkObjects.AHost;
+import com.week1.game.Networking.NetworkObjects.Player;
 
 import java.net.InetAddress;
-import java.util.Arrays;
 
 public class RequestGoToLoadoutMessage extends HostControlMessage {
     private final  static MessageType type = MessageType.REQUESTGOTOLOADOUT;
@@ -17,10 +16,8 @@ public class RequestGoToLoadoutMessage extends HostControlMessage {
 
     @Override
     public void updateHost(AHost h, InetAddress addr, int port) {
-
-        h.broadcastToRegisteredPlayers(MessageFormatter.packageMessage(
-                new Update(Arrays.asList(
-                        MessageFormatter.packageMessage(new GoToLoadoutMessage(-1))
-                ))));
+        for (Player player : h.registry.values()) {
+            h.sendMessage(MessageFormatter.packageMessage(new GoToLoadoutMessage(-1)), player);
+        }
     }
 }

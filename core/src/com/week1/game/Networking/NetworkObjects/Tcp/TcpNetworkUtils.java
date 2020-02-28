@@ -85,7 +85,7 @@ public class TcpNetworkUtils {
 
 
                 // Now make the client stuff
-                c = new TcpClient(localIpAddr, h.getPort(), gameAdapter);
+                c = new TcpClient(localIpAddr, h.getPort(), true, gameAdapter);
                 c.sendJoinMessage();
 
             } else {
@@ -93,7 +93,7 @@ public class TcpNetworkUtils {
                 // host ip is the number listed under ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address
 
                 try {
-                    c = new TcpClient(hostIP, port, gameAdapter);
+                    c = new TcpClient(hostIP, port, false, gameAdapter);
                     c.sendJoinMessage();
                 }
                 catch (Exception e) {

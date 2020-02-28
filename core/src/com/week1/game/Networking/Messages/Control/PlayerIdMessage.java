@@ -13,6 +13,7 @@ public class PlayerIdMessage extends ClientControlMessage {
     @Override 
     public void updateClient(AClient c) {
         c.setPlayerId(this.playerID);
+        c.goToGameScreen()
     }
     
     @Override

@@ -36,7 +36,8 @@ public class ConnectionScreen implements Screen {
 
         hostGameButton= new TextButton("Begin Hosting", new Skin(Gdx.files.internal("uiskin.json")));
         hostGameButton.setSize(200,64);
-        hostGameButton.setPosition(GameController.VIRTUAL_WIDTH/2 - 20 - hostGameButton.getWidth(), GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight());
+        hostGameButton.setPosition(GameController.VIRTUAL_WIDTH/2 - 20 - hostGameButton.getWidth(),
+                GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight());
         connectionStage.addActor(hostGameButton);
         hostGameButton.addListener(new ClickListener() {
             @Override
@@ -53,7 +54,8 @@ public class ConnectionScreen implements Screen {
         // Make the joinGameButton
         joinGameButton = new TextButton("JoinGame", new Skin(Gdx.files.internal("uiskin.json")));
         joinGameButton.setSize(200,64);
-        joinGameButton.setPosition(GameController.VIRTUAL_WIDTH / 2 + 20 ,GameController.VIRTUAL_HEIGHT / 2 + joinGameButton.getHeight());
+        joinGameButton.setPosition(GameController.VIRTUAL_WIDTH / 2 + 20 ,
+                GameController.VIRTUAL_HEIGHT / 2 - joinGameButton.getHeight());
         connectionStage.addActor(joinGameButton);
         joinGameButton.addListener(new ClickListener() {
             @Override
@@ -87,7 +89,7 @@ public class ConnectionScreen implements Screen {
 
         ipField = new TextField("10.122.178.55", new Skin(Gdx.files.internal("uiskin.json")));
         ipField.setSize(200,64);
-        ipField.setPosition(GameController.VIRTUAL_WIDTH / 2 + ipField.getWidth(), GameController.VIRTUAL_HEIGHT * 3 / 4 - 80);
+        ipField.setPosition(GameController.VIRTUAL_WIDTH / 2 + 20 ,GameController.VIRTUAL_HEIGHT / 2);
         connectionStage.addActor(ipField);
 
 

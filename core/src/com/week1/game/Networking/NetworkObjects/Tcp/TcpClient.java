@@ -2,6 +2,7 @@ package com.week1.game.Networking.NetworkObjects.Tcp;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.GameControllerSetScreenAdapter;
+import com.week1.game.GameScreen;
 import com.week1.game.LoadoutPage.LoadoutScreen;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.Control.*;
@@ -30,12 +31,15 @@ public class TcpClient extends AClient {
     private INetworkClientToEngineAdapter adapter;
     
     private int playerId = -1;
+    private boolean isHostingClient;
+    private boolean playerIDReady = false;
     private GameControllerSetScreenAdapter game; // This is needed so that the network can change the stage of the game back to the TowerLoadout
     
     
-    public TcpClient(String hostIpAddr, int hostPort, GameControllerSetScreenAdapter game) throws IOException {
+    public TcpClient(String hostIpAddr, int hostPort, boolean isHostingClient, GameControllerSetScreenAdapter game) throws IOException {
         this.hostAddress = InetAddress.getByName(hostIpAddr);
         this.hostPort = hostPort;
+        this.isHostingClient = isHostingClient;
         this.game = game;
         this.tcpSocket = new Socket(hostAddress, hostPort);
         this.in = new DataInputStream(tcpSocket.getInputStream());
@@ -99,7 +103,14 @@ public class TcpClient extends AClient {
     
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
-        adapter.setPlayerId(playerId);
+        if (adapter == null) {
+            // This means the adapter has not been set yet. Set a variable so it is hit when the adapter comes in
+            // and then recalls this.
+            // TODO probably sketchy to do this. Need a better idea for the future.
+            playerIDReady = true;
+        } else {
+            adapter.setPlayerId(playerId);
+        }
     }
     
     public int getPlayerId() {
@@ -129,6 +140,11 @@ public class TcpClient extends AClient {
      */
     public void addAdapter(INetworkClientToEngineAdapter networkClientToEngineAdapter) {
         this.adapter = networkClientToEngineAdapter;
+        if (playerIDReady) {
+            // This means the message already came in and now the adapter is here it should be added
+            setPlayerId(playerId);
+            playerIDReady = false;
+        }
     }
 
     @Override
@@ -137,6 +153,12 @@ public class TcpClient extends AClient {
     }
 
     public void createNewLoadoutScreen() {
-        game.setScreen(new LoadoutScreen(game, this));
+        // Set the Screen to the Loadout screen when the render thread is ready
+        Gdx.app.postRunnable(() -> game.setScreen(new LoadoutScreen(game, this, isHostingClient)));
+    }
+
+    public void goToGameScreen(GameScreen newGame) {
+        Gdx.app.postRunnable(() -> game.setScreen(newGame));
+
     }
 }
