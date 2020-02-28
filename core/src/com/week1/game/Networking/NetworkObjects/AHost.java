@@ -4,7 +4,6 @@ import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +11,7 @@ import java.util.Map;
 public abstract class AHost {
     public static final int DANGEROUS_HARDCODED_MESSAGE_SIZE = 4096;
 
-    public List<List<List<BlockSpec>>> towerDetails = new ArrayList<>(); // first index is implicitly the player id
+    public Map<Integer, List<List<BlockSpec>>> towerDetails = new HashMap<>(); // first index is implicitly the player id
     public Map<InetAddress, Player> registry = new HashMap<>();
 
     public int runningPlayerId = 0;

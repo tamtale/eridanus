@@ -1,9 +1,7 @@
 package com.week1.game.TowerBuilder;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.week1.game.GameController;
-import com.week1.game.GameScreen;
 
 public class TowerBuilderScreen implements Screen {
 
@@ -13,7 +11,7 @@ public class TowerBuilderScreen implements Screen {
 
     public TowerBuilderScreen(GameController game) {
         this.game = game;
-        towerStage = new TowerBuilderStage(this);
+        towerStage = new TowerBuilderStage(this, game);
         towerCam = new TowerBuilderCamera(towerStage);
         towerStage.setTowerBuilder(towerCam);
 
@@ -57,12 +55,5 @@ public class TowerBuilderScreen implements Screen {
     @Override
     public void dispose() {
 
-
     }
-
-    public void startGame() {
-        Gdx.app.log("Tower Builder Screen skv2", "starting game");
-        game.setScreen(new GameScreen(game.gameArgs));
-    }
-
 }

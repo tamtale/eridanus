@@ -1,13 +1,10 @@
 package com.week1.game.Networking.NetworkObjects.Tcp;
 
 import com.badlogic.gdx.Gdx;
-import com.week1.game.Networking.INetworkClientToEngineAdapter;
-import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.net.*;
 import java.nio.channels.SocketChannel;
 import java.util.Enumeration;
-import java.util.List;
 
 public class TcpNetworkUtils {
     private static final String TAG = "NetworkUtils - lji1";
@@ -67,52 +64,36 @@ public class TcpNetworkUtils {
     /**
      * Accepts arguments that determine whether this instance will host the game or just
      * act as a client. (Even when hosting, the instance also behaves as a client.)
-     *
-     * @param args - Either "host" or "client <ip address> <port number> <optional - start>"
      * @return The client object
      */
-    public static TcpClient initNetworkObjects(String[] args, INetworkClientToEngineAdapter adapter, List<List<BlockSpec>> details) {
+    public static TcpClient initNetworkObjects(boolean isHost, Integer hostIP, Integer port) {
         final String TAG = "initNetworkObjects - lji1";
         Gdx.app.log(TAG, "Local host address: " + getLocalHostAddr());
-        
-        Gdx.app.log(TAG, "Arguments: ");
-        for (int i = 0; i < args.length; i++) {
-            Gdx.app.log(TAG, "\t" + args[i]);
-        }
 
         TcpClient c =  null;
         try {
-            if (args[0].equals("host")) {
+            if (isHost) {
                 Gdx.app.log(TAG, "Host option chosen.");
 
                 String localIpAddr = InetAddress.getLocalHost().getHostAddress();
 
                 // create the host instance
-                int port;
-                try {
-                    port = Integer.parseInt(args[1]);
-                } catch (Exception e) {
-                    throw new IndexOutOfBoundsException("Expected arguments in format: host <portnumber> <start (optional)>");
-                }
                 TcpHost h = new TcpHost(port);
                 // start listening for messages from clients
                 h.listenForClientMessages();
 
 
                 // Now make the client stuff
-                c = new TcpClient(localIpAddr, h.getPort(), adapter);
-                c.sendJoinMessage(details);
+                c = new TcpClient(localIpAddr, h.getPort());
+                c.sendJoinMessage();
 
-            } else if  (args[0].equals("client")) {
+            } else {
                 Gdx.app.log(TAG, "Client option chosen.");
                 // host ip is the number listed under ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address
 
                 try {
-                    String hostIpAddr = args[1];
-                    int hostPort = Integer.parseInt(args[2]);
-                    c = new TcpClient(hostIpAddr, hostPort, adapter);
-                    c.sendJoinMessage(details);
-
+                    c = new TcpClient(hostIP.toString(), port);
+                    c.sendJoinMessage();
                 }
                 catch (Exception e) {
                     throw new IndexOutOfBoundsException("Expected arguments in format: client <ip address> <portnumber> <start (optional)>");

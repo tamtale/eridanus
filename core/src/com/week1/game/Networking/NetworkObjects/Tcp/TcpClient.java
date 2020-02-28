@@ -3,6 +3,7 @@ package com.week1.game.Networking.NetworkObjects.Tcp;
 import com.badlogic.gdx.Gdx;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.Control.ClientControlMessage;
+import com.week1.game.Networking.Messages.Control.SendChosenTowersMessage;
 import com.week1.game.Networking.Messages.Control.StartMessage;
 import com.week1.game.Networking.Messages.Control.TcpJoinMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
@@ -32,10 +33,9 @@ public class TcpClient extends AClient {
     private int playerId = -1;
     
     
-    public TcpClient(String hostIpAddr, int hostPort, INetworkClientToEngineAdapter adapter) throws IOException {
+    public TcpClient(String hostIpAddr, int hostPort) throws IOException {
         this.hostAddress = InetAddress.getByName(hostIpAddr);
         this.hostPort = hostPort;
-        this.adapter = adapter;
         
         this.tcpSocket = new Socket(hostAddress, hostPort);
         this.in = new DataInputStream(tcpSocket.getInputStream());
@@ -112,9 +112,26 @@ public class TcpClient extends AClient {
         this.sendStringMessage(MessageFormatter.packageMessage(new StartMessage(-1)));
     }
     
-    public void sendJoinMessage(List<List<BlockSpec>> details) {
+    public void sendJoinMessage() {
         Gdx.app.log(TAG, "Sending join message.");
         // the client doesn't know its player id until later, so just use -1
-        sendStringMessage(MessageFormatter.packageMessage(new TcpJoinMessage(-1, details)));
+        sendStringMessage(MessageFormatter.packageMessage(new TcpJoinMessage(-1)));
+    }
+
+    public void sendTowersMessage(List<List<BlockSpec>> details) {
+        sendStringMessage(MessageFormatter.packageMessage(new SendChosenTowersMessage(-1, details)));
+    }
+
+    /**
+     * This is needed because I don't want to add the adapter during creation because connection
+     * should ha[pen before the game is created
+     * @param networkClientToEngineAdapter
+     */
+    public void addAdapter(INetworkClientToEngineAdapter networkClientToEngineAdapter) {
+        this.adapter = networkClientToEngineAdapter;
+    }
+
+    public void addTowers (List<List<BlockSpec>> details) {
+        details= details;
     }
 }

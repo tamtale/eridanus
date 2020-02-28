@@ -9,10 +9,8 @@ public class GameController implements ApplicationListener {
     Screen currScreen;
     public static final float VIRTUAL_WIDTH = 800;
     public static final float VIRTUAL_HEIGHT = 800;
-    public String[] gameArgs;
 
-    public GameController(String[] args) {
-        this.gameArgs = args;
+    public GameController() {
     }
 
     @Override

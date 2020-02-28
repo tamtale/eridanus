@@ -1,13 +1,11 @@
 package com.week1.game.Networking.Messages.Control;
 
 import com.badlogic.gdx.Gdx;
-import com.week1.game.Networking.NetworkObjects.AHost;
-import com.week1.game.Networking.NetworkObjects.Udp.UdpHost;
 import com.week1.game.Networking.Messages.MessageType;
+import com.week1.game.Networking.NetworkObjects.AHost;
 import com.week1.game.Networking.NetworkObjects.Player;
 import com.week1.game.TowerBuilder.BlockSpec;
 
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.List;
 
@@ -26,7 +24,7 @@ public class UdpJoinMessage extends HostControlMessage {
     public void updateHost(AHost h, InetAddress addr, int port) {
         Gdx.app.log(TAG, "Host received a 'join' message from: " + addr.getHostAddress());
 
-        h.towerDetails.add(details);
+        h.towerDetails.put(playerID, details);
         h.registry.put(addr, new Player(h.runningPlayerId++, addr, port));
 
         Gdx.app.log(TAG, "List of Players: ");

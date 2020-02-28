@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
+import com.week1.game.LoadoutPage.LoadoutScreen;
 
 import java.util.ArrayList;
 
@@ -21,9 +22,11 @@ public class TowerBuilderStage {
     private ArrayList<TextButton> towerButtons = new ArrayList<>();
     public TowerBuilderCamera builder;
     private TextButton startGame;
+    private GameController gameController;
 
-    public TowerBuilderStage(TowerBuilderScreen towerscreen) {
+    public TowerBuilderStage(TowerBuilderScreen towerscreen, GameController game) {
         this.towerscreen =towerscreen;
+        this.gameController = game;
         stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
     }
 
@@ -107,7 +110,8 @@ public class TowerBuilderStage {
         startGame.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                towerscreen.startGame();
+                Gdx.app.log("pjb3 - TowerBuilderStage", " Making a new loadoutscreen. Setting it as the screen now.");
+                gameController.setScreen(new LoadoutScreen());
             }
         });
     }

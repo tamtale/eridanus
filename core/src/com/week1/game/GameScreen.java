@@ -7,31 +7,22 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.AIMovement.AI;
 import com.week1.game.Model.*;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.PlayerBase;
 import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.Entities.Unit;
-import com.week1.game.Networking.NetworkObjects.AClient;
-import com.week1.game.Networking.NetworkObjects.Tcp.TcpNetworkUtils;
-import com.week1.game.Networking.NetworkObjects.Udp.UdpClient;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
-import com.week1.game.Networking.NetworkObjects.Udp.UdpNetworkUtils;
+import com.week1.game.Networking.NetworkObjects.AClient;
+import com.week1.game.Networking.NetworkObjects.Tcp.TcpClient;
 import com.week1.game.Renderer.*;
-import com.week1.game.TowerBuilder.TowerPresets;
 
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -50,48 +41,43 @@ public class GameScreen implements Screen {
 	private boolean pressedStartbtn;
 	private boolean createdTextures;
 
-	private void makeTempStage() {
-		connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
+//	private void makeTempStage() {
+//		connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
+//
+//		TextButton startbtn = new TextButton("Send Start Message", new Skin(Gdx.files.internal("uiskin.json")));
+//		startbtn.setSize(200,64);
+//		startbtn.setPosition(GameController.VIRTUAL_WIDTH/2 - startbtn.getWidth(), GameController.VIRTUAL_HEIGHT/2 - startbtn.getHeight());
+//		connectionStage.addActor(startbtn);
+//
+//		startbtn.addListener(new ClickListener() {
+//			@Override
+//			public void clicked(InputEvent event, float x, float y) {
+//				networkClient.sendStartMessage();
+//			}
+//		});
+//	}
 
-		TextButton startbtn = new TextButton("Send Start Message", new Skin(Gdx.files.internal("uiskin.json")));
-		startbtn.setSize(200,64);
-		startbtn.setPosition(GameController.VIRTUAL_WIDTH/2 - startbtn.getWidth(), GameController.VIRTUAL_HEIGHT/2 - startbtn.getHeight());
-		connectionStage.addActor(startbtn);
-
-		startbtn.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				networkClient.sendStartMessage();
-			}
-		});
-	}
-
-	public GameScreen(String[] args) {
-		this.args = args;
+	public GameScreen(TcpClient networkClient) {
+//		this.args = args;
 		// Set the logging level
 		Gdx.app.setLogLevel(Application.LOG_INFO);
 
-		pressedStartbtn = false;
-
+//		pressedStartbtn = false;
 		util = new InfoUtil(true);
-		
-		networkClient = TcpNetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
-			@Override
-			public void deliverUpdate(List<? extends GameMessage> messages) {
-				engine.receiveMessages(messages);
-			}
 
-			@Override
-			public void setPlayerId(int playerId) {
-				engine.setEnginePlayerId(playerId);
-			}
-		}, 
-				Arrays.asList(
-						TowerPresets.getTower(1).getLayout(),
-						TowerPresets.getTower(3).getLayout(),
-						TowerPresets.getTower(5).getLayout()
-						)
-	); // TODO: actually pass the towers
+		// Finish setting up the client.
+		networkClient.addAdapter( new INetworkClientToEngineAdapter() {
+			  @Override
+			  public void deliverUpdate(List<? extends GameMessage> messages) {
+				  engine.receiveMessages(messages);
+			  }
+
+			  @Override
+			  public void setPlayerId(int playerId) {
+					  engine.setEnginePlayerId(playerId);
+				  }
+		});
+		//TODO actually pass the towers.
 
 		createNewGame();
 	}
@@ -241,10 +227,11 @@ public class GameScreen implements Screen {
 				});
 
 		ai = new AI();
-		makeTempStage();
-		Gdx.input.setInputProcessor(connectionStage);
 
+		Gdx.input.setInputProcessor(connectionStage);
 		renderer.create();
+
+		networkClient.sendStartMessage();
 	}
 
 	@Override
