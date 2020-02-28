@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.week1.game.ConnectionPage.ConnectionScreen;
 import com.week1.game.TowerBuilder.TowerBuilderScreen;
 
 public class MainMenuScreen implements Screen {
@@ -18,11 +19,15 @@ public class MainMenuScreen implements Screen {
     Stage stage;
 
     //Widgets
-    TextButton playButton;
+    TextButton playButton, buildTowersButton;
+
+    // Janky way to be able to pass 'this' into a lambda. Probably a better way to do it.
+    MainMenuScreen selfRef;
 
 
     public MainMenuScreen(GameController game) {
         this.game = game;
+        this.selfRef = this;
         stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
         setWidgets();
         configureWidgets();
@@ -33,23 +38,36 @@ public class MainMenuScreen implements Screen {
     }
 
     private void setWidgets() {
-        playButton = new TextButton("play", new Skin(Gdx.files.internal("uiskin.json")));
+        buildTowersButton = new TextButton("Build Towers", new Skin(Gdx.files.internal("uiskin.json")));
+        playButton = new TextButton( "Play Game!", new Skin(Gdx.files.internal("uiskin.json")));
+
     }
 
     private void configureWidgets() {
-        playButton.setSize(128,64);
-        playButton.setPosition(GameController.VIRTUAL_WIDTH/2 - playButton.getWidth()/2 - 10, 24);
         //Set the background image
         stage.addActor(new Image(new TextureRegionDrawable(new Texture("nova_menu.png"))));
-        stage.addActor(playButton);
 
+        buildTowersButton.setSize(128,64);
+        buildTowersButton.setPosition(GameController.VIRTUAL_WIDTH/2 - playButton.getWidth()/2 - 110, 24);
+        stage.addActor(buildTowersButton);
+
+        playButton.setSize(128,64);
+        playButton.setPosition(GameController.VIRTUAL_WIDTH/2 - playButton.getWidth()/2  + 90, 24);
+        stage.addActor(playButton);
     }
 
     private void setListeners() {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new TowerBuilderScreen(game));
+                game.setScreen(new ConnectionScreen(game));
+            }
+        });
+
+        buildTowersButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new TowerBuilderScreen(game, selfRef));
             }
         });
     }

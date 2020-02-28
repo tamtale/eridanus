@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
-import com.week1.game.LoadoutPage.LoadoutScreen;
+import com.week1.game.MainMenuScreen;
 
 import java.util.ArrayList;
 
@@ -23,9 +23,11 @@ public class TowerBuilderStage {
     public TowerBuilderCamera builder;
     private TextButton startGame;
     private GameController gameController;
+    private MainMenuScreen mainMenuScreen;
 
-    public TowerBuilderStage(TowerBuilderScreen towerscreen, GameController game) {
-        this.towerscreen =towerscreen;
+    public TowerBuilderStage(GameController game, TowerBuilderScreen towerscreen, MainMenuScreen mainMenuScreen) {
+        this.towerscreen = towerscreen;
+        this.mainMenuScreen = mainMenuScreen;
         this.gameController = game;
         stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
     }
@@ -77,10 +79,6 @@ public class TowerBuilderStage {
         startGame.setSize(128, 48);
         startGame.setPosition(64, GameController.VIRTUAL_HEIGHT - 200);
         stage.addActor(startGame);
-
-
-
-
     }
 
     private void setListeners() {
@@ -102,16 +100,13 @@ public class TowerBuilderStage {
                     );
                 }
             });
-
-
         }
-
 
         startGame.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("pjb3 - TowerBuilderStage", " Making a new loadoutscreen. Setting it as the screen now.");
-                gameController.setScreen(new LoadoutScreen());
+                gameController.setScreen(mainMenuScreen);
             }
         });
     }
@@ -119,7 +114,6 @@ public class TowerBuilderStage {
     public void render() {
         stage.draw();
     }
-
 
 }
 

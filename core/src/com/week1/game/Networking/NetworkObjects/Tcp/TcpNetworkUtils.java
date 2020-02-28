@@ -66,7 +66,7 @@ public class TcpNetworkUtils {
      * act as a client. (Even when hosting, the instance also behaves as a client.)
      * @return The client object
      */
-    public static TcpClient initNetworkObjects(boolean isHost, Integer hostIP, Integer port) {
+    public static TcpClient initNetworkObjects(boolean isHost, String hostIP, Integer port) {
         final String TAG = "initNetworkObjects - lji1";
         Gdx.app.log(TAG, "Local host address: " + getLocalHostAddr());
 
@@ -92,7 +92,7 @@ public class TcpNetworkUtils {
                 // host ip is the number listed under ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address
 
                 try {
-                    c = new TcpClient(hostIP.toString(), port);
+                    c = new TcpClient(hostIP, port);
                     c.sendJoinMessage();
                 }
                 catch (Exception e) {

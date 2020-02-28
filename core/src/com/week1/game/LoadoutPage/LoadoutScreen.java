@@ -23,8 +23,10 @@ public class LoadoutScreen implements Screen {
     private boolean sentTowers = false;
     private GameController game;
 
-    public LoadoutScreen(GameController game) {
+    public LoadoutScreen(GameController game, TcpClient client) {
         this.game = game;
+        this.networkClient = client;
+
         Gdx.app.log("pjb3 - LoadoutScreen.java", "creating Loadout Screen. In contructor");
         loadoutStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 
