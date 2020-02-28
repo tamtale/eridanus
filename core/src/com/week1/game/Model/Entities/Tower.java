@@ -140,6 +140,17 @@ public class Tower extends Building implements Damaging {
 
     @Override
     public int getPlayerId(){return playerID;}
+
+    @Override
+    public float getReward() {
+        return (float) cost * (float) towerDestructionBonus;
+    }
+
+    @Override
+    public <T> T accept(DamageableVisitor<T> visitor) {
+        return visitor.acceptTower(this);
+    }
+
     public int getSidelength(){
         return SIDELENGTH;
     }

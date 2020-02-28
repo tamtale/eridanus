@@ -8,10 +8,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
-import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Model.World.IWorldBuilder;
+import com.week1.game.Model.Entities.*;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.TowerBuilder.TowerDetails;
@@ -31,11 +31,12 @@ public class GameState {
 
     private GameGraph graph;
     private PathFinder<Vector3> pathFinder;
-    private Array<Unit> units;
+    private Array<Unit> units = new Array<>();
     private int minionCount;
-    private Array<Tower> towers;
-    private Array<PlayerBase> playerBases;
-    private Array<PlayerStat> playerStats;
+    private Array<Crystal> crystals = new Array<>();
+    private Array<Tower> towers = new Array<>();
+    private Array<PlayerBase> playerBases = new Array<>();
+    private Array<PlayerStat> playerStats = new Array<>();
     private Array<SteeringAgent> agents;
     private IWorldBuilder worldBuilder;
     private GameWorld world;
@@ -53,22 +54,15 @@ public class GameState {
         // TODO towers
         // TODO tower types in memory after exchange
         this.worldBuilder = worldBuilder;
-        towers = new Array<>();
-        units = new Array<>();
         Gdx.app.log("Game State - wab2", "units set");
         world = new GameWorld(worldBuilder);
         Gdx.app.log("Game State - wab2", "world built");
         world.getHeightMap();
         graph = world.buildGraph();
+        for (Vector3 loc: worldBuilder.crystalLocations()) {
+            crystals.add(new Crystal(loc.x, loc.y));
+        }
         graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
-//        graph.search(new Vector3(0, 0, 0), new Vector3(1, 1, 0));
-//        pathFinder = new WarrenIndexedAStarPathFinder<>(graph);
-        OutputPath path = new OutputPath();
-
-        //graph.getPathFinder().searchNodePath(new Vector3(0, 0, 0), new Vector3(1, 1, 0), new GameHeuristic(), path);
-        playerBases = new Array<>();
-        playerStats = new Array<>();
-        agents = new Array<>();
         this.postInit = postInit;
     }
 
@@ -210,9 +204,6 @@ public class GameState {
         }
         agent.setGoal(goal);
     }
-    public void addAgent(SteeringAgent a){
-        agents.add(a);
-    }
 
     public void render(Batch batch, RenderConfig renderConfig, int renderPlayerId){
         boolean showAttackRadius = renderConfig.isShowAttackRadius();
@@ -244,6 +235,10 @@ public class GameState {
             } else {
                 playerBase.draw(batch, false);
             }
+        }
+
+        for (Crystal crystal : crystals) {
+            crystal.draw(batch);
         }
     }
 
@@ -284,16 +279,22 @@ public class GameState {
         updateGoal(u, new Vector3(u.x + dx, u.y + dy, 0));
     }
 
+    private Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
+    private Array<Damaging> everythingDamaging = new Array<>();
+    private Array<Damageable> everythingDamageable = new Array<>();
     public void dealDamage(float delta) {
-        Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
 
-        Array<Damaging> everythingDamaging = new Array<>(units);
+        everythingDamaging.clear();
+        everythingDamaging.addAll(units);
         everythingDamaging.addAll(towers);
 
-        Array<Damageable> everythingDamageable = new Array<>(units);
+        everythingDamageable.clear();
+        everythingDamageable.addAll(units);
         everythingDamageable.addAll(towers);
         everythingDamageable.addAll(playerBases);
+        everythingDamageable.addAll(crystals);
 
+        deadEntities.clear();
         // Loop through all entities (units and towers) that can attack
         for (int attackerIdx = 0; attackerIdx < everythingDamaging.size; attackerIdx++) {
             Damaging attacker = everythingDamaging.get(attackerIdx);
@@ -321,29 +322,47 @@ public class GameState {
             int attackingPlayerId = deadPair.key.getPlayerId();
             Damageable deadEntity = deadPair.value;
 
-            if (deadEntity.getClass() == Unit.class) {
-                units.removeValue((Unit)deadEntity, false);
-
-            } else if (deadEntity.getClass() == Tower.class) {
-                towers.removeValue((Tower)deadEntity, false);
-                Map<Vector3, Array<Connection<Vector3>>> edges = ((Tower) deadEntity).getRemovedEdges();
-                for(Vector3 block: edges.keySet()){
-                    graph.setConnections(block, edges.get(block));
-                }
-                // Reward the player who destroyed the tower the mana.
-                playerStats.get(attackingPlayerId).giveMana(((Tower)deadEntity).getCost() * towerDestructionBonus);
-
-            } else {
-                int deadPlayer = deadEntity.getPlayerId();
-                playerBases.removeIndex(deadPlayer);
-
-                playerBases.insert(deadPlayer, new DestroyedBase(0, deadEntity.getX(), deadEntity.getY(), deadPlayer));
-                // Reward the player who destroyed the base a lump sum
-                playerStats.get(attackingPlayerId).giveMana((playerBaseBonus));
-            }
-        }
+            // Reward mana.
+            playerStats.get(attackingPlayerId).giveMana(deadEntity.getReward());
+            // Do other bookkeeping related to death.
+            deadEntity.accept(deathVisitor);        }
     }
-  
+
+    /**
+     * Visitor handling when a damageable is killed.
+     */
+    private Damageable.DamageableVisitor<Void> deathVisitor = new Damageable.DamageableVisitor<Void>() {
+        @Override
+        public Void acceptTower(Tower tower) {
+            towers.removeValue(tower, false);
+            Map<Vector3, Array<Connection<Vector3>>> edges = tower.getRemovedEdges();
+            for(Vector3 block: edges.keySet()){
+                graph.setConnections(block, edges.get(block));
+            }
+            return null;
+        }
+
+        @Override
+        public Void acceptUnit(Unit unit) {
+            units.removeValue(unit, false);
+            return null;
+        }
+
+        @Override
+        public Void acceptBase(PlayerBase base) {
+            int deadPlayer = base.getPlayerId();
+            playerBases.removeIndex(deadPlayer);
+            playerBases.insert(deadPlayer, new DestroyedBase(0, base.getX(), base.getY(), deadPlayer));
+            return null;
+        }
+
+        @Override
+        public Void acceptCrystal(Crystal crystal) {
+            // crystals don't die :^)
+            return null;
+        }
+    };
+
     public boolean findNearbyStructure(float x, float y, int playerId) {
         // Check if it is near the home base
         if (Math.sqrt(Math.pow(x - playerBases.get(playerId).x, 2) + Math.pow(y - playerBases.get(playerId).y, 2)) < placementRange){

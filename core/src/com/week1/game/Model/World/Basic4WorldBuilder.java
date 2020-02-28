@@ -50,4 +50,10 @@ public class Basic4WorldBuilder implements IWorldBuilder {
                 new Vector3(175, 175, 0)
         };
     }
+    @Override
+    public Vector3[] crystalLocations() {
+        return new Vector3[] {
+                new Vector3(100, 100, 0),
+        };
+    }
 }
