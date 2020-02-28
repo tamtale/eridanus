@@ -1,27 +1,40 @@
 package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Damage;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.week1.game.Model.StatsConfig.placementRange;
+import static com.week1.game.Model.StatsConfig.*;
 
 
 public class PlayerBase extends Building {
     public float x, y;
     private double hp, maxHp;
     private int playerID;
+
     private static Texture skin;
     protected static final int SIDELENGTH = 8;
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
+    private Map<Vector3, Array<Connection<Vector3>>> removedEdges = new HashMap<>();
 
-    static {
+
+    public PlayerBase(double initialHp, float x, float y, int playerID) {
+        this.hp = initialHp;
+        this.maxHp = initialHp;
+        this.playerID = playerID;
+        this.x = x;
+        this.y = y;
+    }
+
+    public static void createTextures() {
         Pixmap towerUnscaled = new Pixmap(Gdx.files.internal("basetop.png"));
         Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, Pixmap.Format.RGBA8888);
         towerScaled.drawPixmap(towerUnscaled, 0, 0, towerUnscaled.getWidth(), towerUnscaled.getHeight(), 0, 0, SIDELENGTH, SIDELENGTH);
@@ -53,20 +66,12 @@ public class PlayerBase extends Building {
         circlePixmap.dispose();
     }
 
-    public PlayerBase(double initialHp, float x, float y, int playerID) {
-        this.hp = initialHp;
-        this.maxHp = initialHp;
-        this.playerID = playerID;
-        this.x = x;
-        this.y = y;
-
-    }
-
     public void draw(Batch batch, boolean showSpawnRadius) {
         if (showSpawnRadius) {
             batch.draw(colorMap.get(playerID), x - (float)placementRange, y - (float)placementRange, (float)placementRange * 2, (float)placementRange * 2);
         }
         batch.draw(getSkin(), this.x - (SIDELENGTH / 2f), this.y - (SIDELENGTH / 2f), SIDELENGTH, SIDELENGTH);
+
         drawHealthBar(batch, x, y, 0, SIDELENGTH, hp, maxHp);
     }
     
@@ -82,6 +87,18 @@ public class PlayerBase extends Building {
             return false;
         }
     }
+
+    @Override
+    public float getReward() {
+        return (float) playerBaseBonus;
+    }
+
+    @Override
+    public <T> T accept(DamageableVisitor<T> visitor) {
+        return visitor.acceptBase(this);
+    }
+
+
 
     @Override
     public float getX() { return this.x; }
@@ -149,5 +166,26 @@ public class PlayerBase extends Building {
         else{
             return new Vector3(x, startY, 0);
         }
+    }
+
+    @Override
+    public void putRemovedEdges(Vector3 fromNode, Array<Connection<Vector3>> connections) {
+        removedEdges.put(fromNode, connections);
+    }
+
+    @Override
+    public Map<Vector3, Array<Connection<Vector3>>> getRemovedEdges() {
+        return this.removedEdges;
+    }
+
+    @Override
+    public String toString() {
+        return "PlayerBase{" +
+                "x=" + x +
+                ", y=" + y +
+                ", hp=" + hp +
+                ", maxHp=" + maxHp +
+                ", playerID=" + playerID +
+                '}';
     }
 }

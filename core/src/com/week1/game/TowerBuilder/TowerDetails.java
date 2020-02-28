@@ -5,11 +5,7 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerFootprint;
 import com.week1.game.Model.World.Block;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static java.lang.Integer.max;
-import static java.lang.Math.min;
 
 public class TowerDetails {
     private double hp = 0;
@@ -24,7 +20,6 @@ public class TowerDetails {
     private TowerFootprint footprint;
     private String name = "";
     private Array<ModelInstance> invisiBlox = new Array<>();
-    
     
     public List<BlockSpec> getLayout() {
         return layout;

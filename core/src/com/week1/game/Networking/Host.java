@@ -1,18 +1,26 @@
 package com.week1.game.Networking;
 
 import com.badlogic.gdx.Gdx;
-import com.week1.game.Networking.Messages.*;
 import com.week1.game.Networking.Messages.Control.HostControlMessage;
+import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
+import com.week1.game.Networking.Messages.Game.GameMessage;
+import com.week1.game.Networking.Messages.Game.SyncIssueMessage;
+import com.week1.game.Networking.Messages.MessageFormatter;
+import com.week1.game.Networking.Messages.Update;
 import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.week1.game.Networking.Messages.MessageFormatter.parseHostControlMessage;
+import static com.week1.game.Networking.Messages.MessageType.SYNCERR;
 
 public class Host {
     public static final int DANGEROUS_HARDCODED_MESSAGE_SIZE = 10000;
@@ -79,6 +87,37 @@ public class Host {
                     outgoingMessages.add(incomingMessages.poll());
                 }
 
+                // Verify game state on any messages sent this game turn
+                int prevHash = 0, prevTurn = 0; // This will be the hash that everything is compared to
+                boolean didFail = false;
+                boolean didCheck = false;
+                List<Integer> hashes = new ArrayList<>();
+                for (String outgoingMessage : outgoingMessages) {
+                    GameMessage msg = MessageFormatter.parseMessage(outgoingMessage);
+                    if (msg instanceof CheckSyncMessage) {
+                        didCheck = true;
+                        int hash = msg.getHashCode();
+                        hashes.add(hash);
+                        if (prevHash == 0) {
+                            // if it has not been set, set the standard to this one.
+                            prevHash = hash;
+                            prevTurn = ((CheckSyncMessage) msg).getTurn();
+                        } else {
+                            if (prevHash != hash && prevTurn == ((CheckSyncMessage) msg).getTurn()) {
+                                Gdx.app.log("pjb3 - Host", "ERROR: The hashes do not match for two messages!!!!! Yikes.");
+                                // Create a SyncIssue message to send to all clients so they can know there is an issue
+                                didFail = true;
+                            }
+                        }
+                    }
+                }
+                if (didFail) {
+                    outgoingMessages.add(0, MessageFormatter.packageMessage(new SyncIssueMessage(-1, SYNCERR, prevHash, hashes)));
+                } else if (didCheck) {
+                    Gdx.app.log("pjb3 - Host", "Nice. The hashes match up.");
+                }
+
+
                 Gdx.app.debug(TAG, "Host is about to broadcast update message to registered clients.");
                 broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(outgoingMessages)));
                 
@@ -93,7 +132,7 @@ public class Host {
         String msg = new String(packet.getData()).trim();
         
         if (!gameStarted) {
-//             Game has not started
+            // Game has not started
             HostControlMessage ctrlMsg = parseHostControlMessage(msg);
             if (ctrlMsg != null) {
                 ctrlMsg.updateHost(this, packet);
@@ -105,8 +144,6 @@ public class Host {
             Gdx.app.log(TAG, "Host received an update message from: " + packet.getAddress().getHostAddress());
             incomingMessages.add(msg);
         }
-        
-        
     }
     
     public void broadcastToRegisteredPlayers(String msg) {
