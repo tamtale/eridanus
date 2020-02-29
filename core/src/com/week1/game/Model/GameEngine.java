@@ -37,18 +37,21 @@ public class GameEngine {
         return batch;
     }
 
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter,IEngineToNetworkAdapter engineToNetworkAdapter, InfoUtil util) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter,IEngineToNetworkAdapter engineToNetworkAdapter, int playerId, InfoUtil util) {
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
+        this.enginePlayerId = playerId;
         gameState = new GameState(
                 Basic4WorldBuilder.ONLY,
                 () -> {
                     Vector3 position = new Vector3();
                     PlayerBase myBase = null;
                     for (PlayerBase playerBase: gameState.getPlayerBases()) {
+                        Gdx.app.log("pjb3- DEBUGGING 234GameEngine", "" + playerBase.toString());
                         if (playerBase.getPlayerId() == enginePlayerId) {
                             myBase = playerBase;
                         }
                     }
+                    Gdx.app.log("pjb3- DEBUGGING GameEngine", "" + myBase + "   " + gameState.getPlayerBases().size + enginePlayerId);
                     position.set(myBase.getX(), myBase.getY(), 0);
                     engineToRenderer.setDefaultLocation(position);
                 });
@@ -163,8 +166,6 @@ public class GameEngine {
         }
         return gameState.isPlayerAlive(enginePlayerId);
     }
-
-    public void setEnginePlayerId(int playerId) { this.enginePlayerId = playerId; }
 
     public Array<Building> getBuildings() {
         return gameState.getBuildings();

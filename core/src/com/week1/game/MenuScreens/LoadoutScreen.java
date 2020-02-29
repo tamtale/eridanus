@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
-import com.week1.game.GameControllerSetScreenAdapter;
 import com.week1.game.GameScreen;
 import com.week1.game.Networking.NetworkObjects.Tcp.TcpClient;
 import com.week1.game.TowerBuilder.BlockSpec;
@@ -26,10 +25,8 @@ public class LoadoutScreen implements Screen {
     private Stage loadoutStage;
     private TcpClient networkClient;
     private boolean sentTowers = false, isHostingClient;
-    private GameControllerSetScreenAdapter gameAdapter;
 
-    public LoadoutScreen(GameControllerSetScreenAdapter gameAdapter, TcpClient client, boolean isHostingClient) {
-        this.gameAdapter = gameAdapter;
+    public LoadoutScreen(TcpClient client, boolean isHostingClient) {
         this.networkClient = client;
         this.isHostingClient = client.getScreenManager().getIsHost();
 
@@ -92,7 +89,7 @@ public class LoadoutScreen implements Screen {
 
 
     public void createNewGame() {
-        GameScreen futureGame = new GameScreen(networkClient, gameAdapter);
+        GameScreen futureGame = new GameScreen(networkClient);
         networkClient.getScreenManager().setGameScreen(futureGame);
         Gdx.app.log("pjb3 - LoutoutScreen", "the GameScreen is being created NOW. It has been added to the client");
     }
@@ -137,6 +134,6 @@ public class LoadoutScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        loadoutStage.dispose();
     }
 }

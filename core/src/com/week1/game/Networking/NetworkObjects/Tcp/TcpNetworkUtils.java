@@ -3,6 +3,7 @@ package com.week1.game.Networking.NetworkObjects.Tcp;
 import com.badlogic.gdx.Gdx;
 import com.week1.game.GameControllerSetScreenAdapter;
 import com.week1.game.MenuScreens.ScreenManager;
+import com.week1.game.Networking.NetworkObjects.Host;
 
 import java.net.*;
 import java.nio.channels.SocketChannel;
@@ -80,7 +81,7 @@ public class TcpNetworkUtils {
                 String localIpAddr = InetAddress.getLocalHost().getHostAddress();
 
                 // create the host instance
-                TcpHost h = new TcpHost(port);
+                Host h = new Host(port);
                 // start listening for messages from clients
                 h.listenForClientMessages();
 
@@ -88,7 +89,6 @@ public class TcpNetworkUtils {
                 // Now make the client stuff
                 ScreenManager sm = new ScreenManager(gameAdapter, true);
                 c = new TcpClient(localIpAddr, h.getPort(), sm);
-                c.sendJoinMessage();
 
             } else {
                 Gdx.app.log(TAG, "Client option chosen.");
@@ -97,7 +97,6 @@ public class TcpNetworkUtils {
                 try {
                     ScreenManager sm = new ScreenManager(gameAdapter, false);
                     c = new TcpClient(hostIP, port, sm);
-                    c.sendJoinMessage();
                 }
                 catch (Exception e) {
                     throw new IndexOutOfBoundsException("Expected arguments in format: client <ip address> <portnumber> <start (optional)>");

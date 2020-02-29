@@ -1,8 +1,12 @@
 package com.week1.game.Networking.Messages;
 
 import com.badlogic.gdx.Gdx;
-import com.google.gson.*;
-import com.week1.game.Networking.Messages.Control.*;
+import com.google.gson.Gson;
+import com.week1.game.Networking.Messages.Control.ClientControl.ClientControlMessage;
+import com.week1.game.Networking.Messages.Control.ClientControl.GoToGameMessage;
+import com.week1.game.Networking.Messages.Control.ClientControl.GoToLoadoutMessage;
+import com.week1.game.Networking.Messages.Control.ClientControl.PlayerIdMessage;
+import com.week1.game.Networking.Messages.Control.HostControl.*;
 import com.week1.game.Networking.Messages.Game.*;
 
 import java.util.ArrayList;
@@ -63,14 +67,12 @@ public class MessageFormatter {
         System.out.println("About to parse as host control message: " + jsonString);
         
         if (parsedMsg != null) {
-            if (parsedMsg.messageTypeID == MessageType.UDPJOIN) {
-                return g.fromJson(jsonString, UdpJoinMessage.class);
-            } else if (parsedMsg.messageTypeID == MessageType.TCPJOIN) {
-                return g.fromJson(jsonString, TcpJoinMessage.class);
-            } else if (parsedMsg.messageTypeID == MessageType.START) {
+            if (parsedMsg.messageTypeID == MessageType.START) {
                 return g.fromJson(jsonString, StartMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.REQUESTGOTOLOADOUT) {
                 return g.fromJson(jsonString, RequestGoToLoadoutMessage.class);
+            } else if (parsedMsg.messageTypeID == MessageType.SENDLOADOUT) {
+                return g.fromJson(jsonString, SendLoadoutMessage.class);
             }
         }
 
@@ -85,6 +87,8 @@ public class MessageFormatter {
                 return g.fromJson(jsonString, PlayerIdMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.GOTOLOADOUT) {
                 return g.fromJson(jsonString, GoToLoadoutMessage.class);
+            } else if (parsedMsg.messageTypeID == MessageType.GOTOGAME) {
+                return g.fromJson(jsonString, GoToGameMessage.class);
             }
         }
         

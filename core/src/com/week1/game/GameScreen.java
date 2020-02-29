@@ -28,7 +28,6 @@ import java.util.List;
 
 
 public class GameScreen implements Screen {
-	GameControllerSetScreenAdapter gameAdapter;
 	public static float THRESHOLD = .2f;
 	public static int PIXELS_PER_UNIT = 64;
 	private String[] args;
@@ -43,38 +42,24 @@ public class GameScreen implements Screen {
 	private boolean pressedStartbtn;
 	private boolean createdTextures;
 
-	public GameScreen(TcpClient givenNetworkClient, GameControllerSetScreenAdapter gameAdapter) {
+	public GameScreen(TcpClient givenNetworkClient) {
 		// Set the logging level
 		Gdx.app.setLogLevel(Application.LOG_INFO);
-		this.gameAdapter = gameAdapter;
 		gameStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 		util = new InfoUtil(true);
 
 
 		// Finish setting up the client.
 		this.networkClient = givenNetworkClient;
-		networkClient.addAdapter( new INetworkClientToEngineAdapter() {
-			  @Override
-			  public void deliverUpdate(List<? extends GameMessage> messages) {
-				  engine.receiveMessages(messages);
-			  }
 
-			  @Override
-			  public void setPlayerId(int playerId) {
-					  engine.setEnginePlayerId(playerId);
-				  }
-		});
 		//TODO actually pass the towers.
+		networkClient.addAdapter( new INetworkClientToEngineAdapter() {
+			@Override
+			public void deliverUpdate(List<? extends GameMessage> messages) {
+				engine.receiveMessages(messages);
+			}
+		});
 
-		createNewGame();
-	}
-
-	/**
-	 * This function is called to [re]initialize the game-specific classes not
-	 * related to the network. It will be called every time you want to restart a game
-	 * TODO Need to make this reset anything within the network client that needs revision.
-	 */
-	public void createNewGame() {
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override
 			public void setDefaultLocation(Vector3 location) {
@@ -96,7 +81,7 @@ public class GameScreen implements Screen {
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
-		}, util);
+		}, networkClient.getPlayerId(), util);
 
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
@@ -146,7 +131,7 @@ public class GameScreen implements Screen {
 				}, new IRendererToGameScreenAdapter() {
 			@Override
 			public void restartGame() {
-				createNewGame();
+				Gdx.app.log("pjb3 - GameScreen", "TODO restart not implemented");
 			}
 		}, util);
 		clickOracle = new ClickOracle(
@@ -215,8 +200,6 @@ public class GameScreen implements Screen {
 
 		ai = new AI();
 		renderer.create();
-
-//		networkClient.sendStartMessage();
 	}
 
 	@Override

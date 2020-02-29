@@ -3,7 +3,10 @@ package com.week1.game.Networking.NetworkObjects.Tcp;
 import com.badlogic.gdx.Gdx;
 import com.week1.game.MenuScreens.ScreenManager;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
-import com.week1.game.Networking.Messages.Control.*;
+import com.week1.game.Networking.Messages.Control.ClientControl.ClientControlMessage;
+import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToLoadoutMessage;
+import com.week1.game.Networking.Messages.Control.HostControl.SendLoadoutMessage;
+import com.week1.game.Networking.Messages.Control.HostControl.StartMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkObjects.AClient;
@@ -98,14 +101,6 @@ public class TcpClient extends AClient {
     
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
-        if (adapter == null) {
-            // This means the adapter has not been set yet. Set a variable so it is hit when the adapter comes in
-            // and then recalls this.
-            // TODO probably sketchy to do this. Need a better idea for the future.
-            playerIDReady = true;
-        } else {
-            adapter.setPlayerId(playerId);
-        }
     }
     
     public int getPlayerId() {
@@ -119,13 +114,13 @@ public class TcpClient extends AClient {
     }
     
     public void sendJoinMessage() {
-        Gdx.app.log(TAG, "Sending join message.");
+//        Gdx.app.log(TAG, "Sending join message.");
         // the client doesn't know its player id until later, so just use -1
-        sendStringMessage(MessageFormatter.packageMessage(new TcpJoinMessage(-1)));
+//        sendStringMessage(MessageFormatter.packageMessage(new TcpJoinMessage(-1)));
     }
 
     public void sendTowersMessage(List<List<BlockSpec>> details) {
-        sendStringMessage(MessageFormatter.packageMessage(new SendChosenTowersMessage(-1, details)));
+        sendStringMessage(MessageFormatter.packageMessage(new SendLoadoutMessage(playerId, details)));
     }
 
     public void sendGoToLoadout() {

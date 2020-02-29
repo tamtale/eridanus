@@ -1,8 +1,8 @@
-package com.week1.game.Networking.Messages.Control;
+package com.week1.game.Networking.Messages.Control.HostControl;
 
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.MessageType;
-import com.week1.game.Networking.NetworkObjects.AHost;
+import com.week1.game.Networking.NetworkObjects.Host;
 
 import java.net.InetAddress;
 
@@ -11,5 +11,5 @@ public abstract class HostControlMessage extends AMessage {
         super(playerID, messageTypeID);
     }
     
-    public abstract void updateHost(AHost h, InetAddress addr, int port);
+    public abstract void updateHost(Host h, InetAddress addr, int port);
 }

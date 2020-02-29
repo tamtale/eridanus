@@ -1,4 +1,4 @@
-package com.week1.game.Networking.Messages.Control;
+package com.week1.game.Networking.Messages.Control.ClientControl;
 
 import com.week1.game.Networking.NetworkObjects.AClient;
 import com.week1.game.Networking.Messages.AMessage;

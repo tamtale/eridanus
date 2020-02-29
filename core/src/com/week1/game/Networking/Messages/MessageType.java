@@ -14,10 +14,12 @@ public enum MessageType {
     // Client Control Messages
     PLAYERID,
     GOTOLOADOUT,
+    GOTOGAME,
     
     // Host Control Messages
     TCPJOIN,
     UDPJOIN,
     START,
+    SENDLOADOUT,
     REQUESTGOTOLOADOUT,
 }

@@ -1,8 +1,11 @@
-package com.week1.game.Networking.Messages.Control;
+package com.week1.game.Networking.Messages.Control.ClientControl;
 
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Networking.NetworkObjects.AClient;
 
+/**
+ * This message is sent to a player right after they connect to the Host with a TCPJoinMessage
+ */
 public class PlayerIdMessage extends ClientControlMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.PLAYERID;
 
@@ -13,7 +16,6 @@ public class PlayerIdMessage extends ClientControlMessage {
     @Override 
     public void updateClient(AClient c) {
         c.setPlayerId(this.playerID);
-        c.getScreenManager().setScreen(c.getScreenManager().getGameScreen());
     }
     
     @Override

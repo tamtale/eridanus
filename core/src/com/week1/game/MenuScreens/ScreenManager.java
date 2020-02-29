@@ -7,7 +7,8 @@ import com.week1.game.GameScreen;
 import com.week1.game.Networking.NetworkObjects.Tcp.TcpClient;
 
 /**
- * This class is passed around and helps unify the changing of screens during menu progressions.
+ * This class helps unify the changing of screens during menu progressions.
+ * It is stored within the TcpClient instance.
  */
 public class ScreenManager {
     private GameControllerSetScreenAdapter gameControllerSetScreenAdapter;
@@ -37,6 +38,6 @@ public class ScreenManager {
 
     public void createNewLoadoutScreen(TcpClient tcpClient) {
         // Set the Screen to the Loadout screen when the render thread is ready
-        Gdx.app.postRunnable(() -> gameControllerSetScreenAdapter.setScreen(new LoadoutScreen(gameControllerSetScreenAdapter, tcpClient, isHostScreenManager)));
+        Gdx.app.postRunnable(() -> gameControllerSetScreenAdapter.setScreen(new LoadoutScreen(tcpClient, isHostScreenManager)));
     }
 }

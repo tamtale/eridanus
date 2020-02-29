@@ -28,11 +28,9 @@ public class ConnectionScreen implements Screen {
     TextField ipField;
     Label.LabelStyle labelStyle;
 
-
-
     public ConnectionScreen(GameControllerSetScreenAdapter gameAdapter) {
         this.gameAdapter = gameAdapter;
-        Gdx.app.log("pjb3 - LoadoutScreen.java", "creating Loadout Screen. In contructor");
+//        Gdx.app.log("pjb3 - LoadoutScreen.java", "creating Loadout Screen. In constructor");
         connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 
         hostGameButton= new TextButton("Begin Hosting", new Skin(Gdx.files.internal("uiskin.json")));
@@ -128,7 +126,7 @@ public class ConnectionScreen implements Screen {
         connectionStage.addActor(label1);
 //        10.122.178.55
         networkClient = TcpNetworkUtils.initNetworkObjects(true, null, 42069, gameAdapter);
-        Gdx.app.log("pjb3 - ConnectionScreen", "Created the Host network object");
+//        Gdx.app.log("pjb3 - ConnectionScreen", "Created the Host network object");
         connectionStage.addActor(launchGameButton);
 
     }
@@ -138,7 +136,7 @@ public class ConnectionScreen implements Screen {
             Gdx.app.log("pjb3 - ConnectionScreen", "No. You must be host to move the game onward. How did you even click this");
             return;
         }
-        Gdx.app.log("pjb3 - ConnectionScreen", "Trying to send the GoToLoadout command");
+//        Gdx.app.log("pjb3 - ConnectionScreen", "Trying to send the GoToLoadout command");
         networkClient.sendGoToLoadout(); // Send the request for everyone to move to the loadout screen.
     }
 
@@ -174,6 +172,6 @@ public class ConnectionScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        connectionStage.dispose();
     }
 }
