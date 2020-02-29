@@ -48,6 +48,8 @@ public class TowerBuilderStage {
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("574053")), new BitmapFont());
 
     public boolean isBuildMode = false;
+    public boolean isAddMode = false;
+
 
     public TowerBuilderStage(TowerBuilderScreen screen) {
         this.screen = screen;
@@ -151,6 +153,7 @@ public class TowerBuilderStage {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("clicked add block button");
+                isAddMode = !isAddMode;
                 if (addBlock.isChecked()) {
                     addBlock.setStyle(pressedStyle);
                 } else {

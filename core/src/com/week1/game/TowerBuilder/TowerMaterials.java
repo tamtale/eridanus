@@ -1,14 +1,19 @@
 package com.week1.game.TowerBuilder;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.utils.Array;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +35,7 @@ public class TowerMaterials {
 
 //    public TowerMaterials() {
     static  {
+
     //Make the block types
     addBlockType("core_block.png", "coreBlock", 1, 0, 0, 0);
 
@@ -46,6 +52,16 @@ public class TowerMaterials {
 
     //Easter egg
     addBlockType("cat_boi.png", "easter egg", 69, 10, 10,0);
+
+    //Make a highlighted block type
+    Material mat = new Material();
+    mat.set(new ColorAttribute(ColorAttribute.Diffuse, 84, 68, 79, 1f));
+    mat.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.8f));
+
+    Model highlighted = modelBuilder.createBox(5f, 5f ,5f,
+            mat,
+            VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
+    modelMap.put(0, highlighted);
 
     }
 

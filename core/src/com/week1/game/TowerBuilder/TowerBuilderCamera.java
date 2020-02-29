@@ -2,6 +2,7 @@ package com.week1.game.TowerBuilder;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -39,6 +40,7 @@ public class TowerBuilderCamera {
     private Array<ModelInstance> instances;
     private Vector3 position = new Vector3();
     private CameraInputController camController;
+    private  ModelInstance highlightedBlock = null;
 
 
     TowerBuilderScreen towerScreen;
@@ -54,6 +56,8 @@ public class TowerBuilderCamera {
     public void setCamController(CameraInputController camController) {
         this.camController = camController;
     }
+
+
 
 
     //keep a 3d internal representation of the grid and store whether each block is
@@ -169,20 +173,20 @@ public class TowerBuilderCamera {
         cam.viewportWidth = width;
     }
 
-    private void doneLoading() {
-        space = new ModelInstance(assets.get("spacesphere.obj", Model.class));
-        loading = false;
-    }
+
 
     public void render() {
-//        if (loading && assets.update())
-//            doneLoading();
 
+        Gdx.gl.glClear(GL20.GL_ALPHA_BITS);
         camController.update();
 
 
         modelBatch.begin(cam);
         modelBatch.render(currTowerDetails.getModel(), environment);
+        if (highlightedBlock != null) {
+            modelBatch.render(highlightedBlock, environment);
+        }
+
         modelBatch.end();
 
 
@@ -211,41 +215,7 @@ public class TowerBuilderCamera {
     }
 
 
-    public int getObject(int screenX, int screenY) {
-        Ray ray = cam.getPickRay(screenX, screenY);
-
-        int result = -1;
-        float distance = -1;
-
-        for (int i = 0; i < poses.size(); i++) {
-            ThreeD curblock = poses.get(i);
-            int x = curblock.x;
-            int y = curblock.y;
-            int z = curblock.z;
-            position = new Vector3(x * 5f, y * 5f, z * 5f);
-            Vector3 dimensions = new Vector3(5,5,5);
-
-
-            float dist2 = ray.origin.dst2(position);
-            if (distance >= 0f && dist2 > distance)
-                continue;
-
-            if (Intersector.intersectRaySphere(ray, position, dimensions.len()/2f, null)) {
-                result = i;
-                distance = dist2;
-            }
-        }
-
-        System.out.println("poses size: " + poses.size() + " result: " + result);
-        if (result > -1) {
-            System.out.println(poses.get(result));
-
-        }
-//        System.out.println(instances.get(result).transform.getValues());
-        return result;
-    }
-
-    public int getInvisiObject(int screenX, int screenY) {
+    private int getInvisiObject(int screenX, int screenY) {
         Ray ray = cam.getPickRay(screenX, screenY);
 
         int result = -1;
@@ -269,6 +239,12 @@ public class TowerBuilderCamera {
                 distance = dist2;
             }
         }
+        return  result;
+    }
+
+    public  void addBlock(int screenX, int screenY) {
+        highlightedBlock = null;
+        int result = getInvisiObject(screenX, screenY);
 
         System.out.println("poses size: " + invisiPoses.size() + " result: " + result);
         if (result > -1) {
@@ -277,9 +253,56 @@ public class TowerBuilderCamera {
             newbloc.transform.setToTranslation(invisiPoses.get(result).x * 5f, invisiPoses.get(result).y * 5f, invisiPoses.get(result).z * 5f);
             //TODO -- this changes the preset permanently. need to fix that
             instances.add(newbloc);
+
+            //update invisiblox
+            updateInvisibloxOnAdd(invisiPoses.get(result));
+            System.out.println("Added a block");
+            highlightBlock(screenX, screenY);
+        } else {
+            System.out.println("did not add a block");
         }
-//        System.out.println(instances.get(result).transform.getValues());
-        return result;
+
+
+    }
+
+    private void updateInvisibloxOnAdd(ThreeD addedBlock) {
+        this.invisiPoses.remove(addedBlock);
+        this.poses.add(addedBlock);
+        int oldX = addedBlock.x;
+        int oldY = addedBlock.y;
+        int oldZ = addedBlock.z;
+        for (int i= -1 ; i < 2; i += 2) {
+            ThreeD newX = new ThreeD(oldX + i, oldY, oldZ);
+            if (!this.invisiPoses.contains(newX) & !this.poses.contains(newX) & oldX + i < 3 & oldX + i > -3) {
+                this.invisiPoses.add(newX);
+            }
+
+            ThreeD newY = new ThreeD(oldX, oldY + i, oldZ);
+            if (!this.invisiPoses.contains(newY) & !this.poses.contains(newY) & oldY + i < 8 & oldY + i > 0) {
+                this.invisiPoses.add(newY);
+            }
+
+            ThreeD newZ = new ThreeD(oldX, oldY, oldZ + i);
+            if (!this.invisiPoses.contains(newZ) & !this.poses.contains(newZ) & oldZ + i < 3 & oldZ + i > -3) {
+                this.invisiPoses.add(newZ);
+            }
+        }
+
+        System.out.println(this.invisiPoses);
+
+    }
+
+    public void highlightBlock(int screenX, int screenY) {
+        int result = getInvisiObject(screenX, screenY);
+        if (result != -1) {
+            System.out.println(invisiPoses.get(result));
+
+            ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(0));
+            newbloc.transform.setToTranslation(invisiPoses.get(result).x * 5f, invisiPoses.get(result).y * 5f, invisiPoses.get(result).z * 5f);
+            //TODO -- this changes the preset permanently. need to fix that
+            highlightedBlock = newbloc;
+
+        }
     }
 
 }

@@ -99,7 +99,17 @@ public class TowerBuilderScreen implements Screen {
     }
 
 
-    public void getInvisiObject(int screenX, int screenY) {
-        towerCam.getInvisiObject(screenX, screenY);
+
+    public boolean isAddMode() {
+        return towerStage.isBuildMode & towerStage.isAddMode;
+    }
+
+
+    public void addBlock(int screenX, int screenY) {
+        towerCam.addBlock(screenX, screenY);
+    }
+
+    public void highlightBlock(int screenX, int screenY) {
+        towerCam.highlightBlock(screenX, screenY);
     }
 }
