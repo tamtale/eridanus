@@ -41,10 +41,10 @@ public class TowerBuilderCamera {
     private CameraInputController camController;
 
 
-//    TowerBuilderStage towerStage;
     TowerBuilderScreen towerScreen;
     ModelInstance space;
     Boolean loading;
+    private List<ThreeD> invisiPoses;
     private List<ThreeD> poses;
 
     public PerspectiveCamera getCam() {
@@ -71,7 +71,7 @@ public class TowerBuilderCamera {
         @Override
         public String toString() {
 
-            return new String(Integer.toString(x) + " " + y + " " + z);
+            return x + " " + y + " " + z;
         }
 
         @Override
@@ -88,34 +88,36 @@ public class TowerBuilderCamera {
     }
 
     private void calcInvisiBlox() {
-        List<ThreeD> poses = new ArrayList<>();
+        List<ThreeD> invisiPoses = new ArrayList<>();
         List<ThreeD> blox = new ArrayList<>();
         for (BlockSpec b: currTowerDetails.getLayout()) {
             ThreeD curpos = new ThreeD(b.getX(), b.getY(), b.getZ());
 //            poses.add();
             blox.add(curpos);
         }
+        this.poses = blox;
 
         for (ThreeD p : blox) {
 
             for (int i = -1; i < 2; i += 2) {
                 ThreeD nbr = new ThreeD(p.x + i, p.y , p.z);
-                if (nbr.x <3 & nbr.x > -3 & !blox.contains(nbr) & !poses.contains(nbr)) {
-                    poses.add(nbr);
+                if (nbr.x <3 & nbr.x > -3 & !blox.contains(nbr) & !invisiPoses.contains(nbr)) {
+                    invisiPoses.add(nbr);
                 }
 
                 nbr = new ThreeD(p.x , p.y + i, p.z);
-                if (nbr.y > -1 & nbr.y < 8 & !blox.contains(nbr) & !poses.contains(nbr)) {
-                    poses.add(nbr);
+                if (nbr.y > -1 & nbr.y < 8 & !blox.contains(nbr) & !invisiPoses.contains(nbr)) {
+                    invisiPoses.add(nbr);
                 }
 
                 nbr = new ThreeD(p.x , p.y , p.z + i);
-                if (nbr.z > -3 & nbr.z < 3 & !blox.contains(nbr)& !poses.contains(nbr)) {
-                    poses.add(nbr);
+                if (nbr.z > -3 & nbr.z < 3 & !blox.contains(nbr)& !invisiPoses.contains(nbr)) {
+                    invisiPoses.add(nbr);
                 }
             }
         }
-        this.poses = poses;
+        this.invisiPoses = invisiPoses;
+        System.out.println(invisiPoses);
 
     }
 
@@ -201,15 +203,15 @@ public class TowerBuilderCamera {
     public void setCurrTowerDetails(TowerDetails currTowerDetails) {
         this.currTowerDetails = currTowerDetails;
         this.instances = currTowerDetails.getModel();
+        this.calcInvisiBlox();
     }
 
     public TowerDetails getCurrTowerDetails() {
         return this.currTowerDetails;
     }
 
-    //Some way to register clicks
 
-    public int getObject (int screenX, int screenY) {
+    public int getObject(int screenX, int screenY) {
         Ray ray = cam.getPickRay(screenX, screenY);
 
         int result = -1;
@@ -237,8 +239,43 @@ public class TowerBuilderCamera {
         System.out.println("poses size: " + poses.size() + " result: " + result);
         if (result > -1) {
             System.out.println(poses.get(result));
+
+        }
+//        System.out.println(instances.get(result).transform.getValues());
+        return result;
+    }
+
+    public int getInvisiObject(int screenX, int screenY) {
+        Ray ray = cam.getPickRay(screenX, screenY);
+
+        int result = -1;
+        float distance = -1;
+
+        for (int i = 0; i < invisiPoses.size(); i++) {
+            ThreeD curblock = invisiPoses.get(i);
+            int x = curblock.x;
+            int y = curblock.y;
+            int z = curblock.z;
+            position = new Vector3(x * 5f, y * 5f, z * 5f);
+            Vector3 dimensions = new Vector3(5,5,5);
+
+
+            float dist2 = ray.origin.dst2(position);
+            if (distance >= 0f && dist2 > distance)
+                continue;
+
+            if (Intersector.intersectRaySphere(ray, position, dimensions.len()/2f, null)) {
+                result = i;
+                distance = dist2;
+            }
+        }
+
+        System.out.println("poses size: " + invisiPoses.size() + " result: " + result);
+        if (result > -1) {
+            System.out.println(invisiPoses.get(result));
             ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(1));
-            newbloc.transform.setToTranslation(poses.get(result).x * 5f, poses.get(result).y * 5f, poses.get(result).z * 5f);
+            newbloc.transform.setToTranslation(invisiPoses.get(result).x * 5f, invisiPoses.get(result).y * 5f, invisiPoses.get(result).z * 5f);
+            //TODO -- this changes the preset permanently. need to fix that
             instances.add(newbloc);
         }
 //        System.out.println(instances.get(result).transform.getValues());

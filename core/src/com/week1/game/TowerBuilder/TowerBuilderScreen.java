@@ -10,10 +10,10 @@ import com.week1.game.GameScreen;
 public class TowerBuilderScreen implements Screen {
 
     private GameController game;
-    public TowerBuilderStage towerStage;
-    TowerBuilderCamera towerCam;
-    InputMultiplexer multiplexer;
-    CameraInputController camController;
+    private TowerBuilderStage towerStage;
+    private TowerBuilderCamera towerCam;
+    private InputMultiplexer multiplexer;
+    private CameraInputController camController;
 
     public void setInputProc() {
         camController = new CameraInputController(towerCam.getCam());
@@ -85,5 +85,21 @@ public class TowerBuilderScreen implements Screen {
         game.setScreen(new GameScreen(game.gameArgs));
     }
 
+    public void setCamTower(TowerDetails tower) {
+        towerCam.setCurrTowerDetails(tower);
+    }
 
+    public String getTowerStats() {
+        TowerDetails curr = towerCam.getCurrTowerDetails();
+        return "HP: " + curr.getHp() +"\n Atk: " + curr.getAtk() + " \n Range: " + curr.getRange() + "\n Price: " + curr.getPrice();
+    }
+
+    public boolean isBuildMode(){
+        return towerStage.isBuildMode;
+    }
+
+
+    public void getInvisiObject(int screenX, int screenY) {
+        towerCam.getInvisiObject(screenX, screenY);
+    }
 }

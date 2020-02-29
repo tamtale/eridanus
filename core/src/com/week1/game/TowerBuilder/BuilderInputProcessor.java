@@ -1,8 +1,6 @@
 package com.week1.game.TowerBuilder;
 
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.graphics.Camera;
-import javafx.scene.PerspectiveCamera;
 
 public class BuilderInputProcessor extends InputAdapter {
 
@@ -15,10 +13,10 @@ public class BuilderInputProcessor extends InputAdapter {
 
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
-        System.out.println("builder things registered click " + screenX +  " "+ screenY );
+//        System.out.println("builder things registered click " + screenX +  " "+ screenY );
 
-        if (screen.towerStage.isBuildMode){
-            screen.towerCam.getObject(screenX, screenY);
+        if (screen.isBuildMode()){
+            screen.getInvisiObject(screenX, screenY);
         }
         //if click loc is in build area
         //add a block
