@@ -2,6 +2,7 @@ package com.week1.game.Networking.NetworkObjects.Tcp;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.GameControllerSetScreenAdapter;
+import com.week1.game.MenuScreens.ScreenManager;
 
 import java.net.*;
 import java.nio.channels.SocketChannel;
@@ -85,7 +86,8 @@ public class TcpNetworkUtils {
 
 
                 // Now make the client stuff
-                c = new TcpClient(localIpAddr, h.getPort(), true, gameAdapter);
+                ScreenManager sm = new ScreenManager(gameAdapter, true);
+                c = new TcpClient(localIpAddr, h.getPort(), sm);
                 c.sendJoinMessage();
 
             } else {
@@ -93,7 +95,8 @@ public class TcpNetworkUtils {
                 // host ip is the number listed under ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address
 
                 try {
-                    c = new TcpClient(hostIP, port, false, gameAdapter);
+                    ScreenManager sm = new ScreenManager(gameAdapter, false);
+                    c = new TcpClient(hostIP, port, sm);
                     c.sendJoinMessage();
                 }
                 catch (Exception e) {

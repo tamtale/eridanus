@@ -1,9 +1,6 @@
 package com.week1.game.Networking.NetworkObjects.Tcp;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.week1.game.GameControllerSetScreenAdapter;
-import com.week1.game.MenuScreens.LoadoutScreen;
 import com.week1.game.MenuScreens.ScreenManager;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.Control.*;
@@ -131,6 +128,10 @@ public class TcpClient extends AClient {
         sendStringMessage(MessageFormatter.packageMessage(new SendChosenTowersMessage(-1, details)));
     }
 
+    public void sendGoToLoadout() {
+        sendStringMessage(MessageFormatter.packageMessage(new RequestGoToLoadoutMessage(-1)));
+    }
+
     /**
      * This is needed because I don't want to add the adapter during creation because connection
      * should ha[pen before the game is created
@@ -146,29 +147,7 @@ public class TcpClient extends AClient {
     }
 
     @Override
-    public void sendGoToLoadout() {
-        sendStringMessage(MessageFormatter.packageMessage(new RequestGoToLoadoutMessage(-1)));
-    }
-
-    public void createNewLoadoutScreen() {
-        // Set the Screen to the Loadout screen when the render thread is ready
-        Gdx.app.postRunnable(() -> gameAdapter.setScreen(new LoadoutScreen(gameAdapter, this, isHostingClient)));
-    }
-
-    public void setGameScreen(Screen gameScreen) {
-        this.newGame = gameScreen;
-    }
-
-    public Screen getGameScreen() {
-        return newGame;
-    }
-
-    public void goToGameScreen(Screen newGame) {
-        Gdx.app.postRunnable(() -> gameAdapter.setScreen(newGame));
-    }
-
-    @Override
-    public AClient getScreenManager() {
+    public ScreenManager getScreenManager() {
         return screenManager;
     }
 }

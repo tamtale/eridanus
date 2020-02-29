@@ -2,6 +2,7 @@ package com.week1.game.Networking.Messages.Control;
 
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Networking.NetworkObjects.AClient;
+import com.week1.game.Networking.NetworkObjects.Tcp.TcpClient;
 
 public class GoToLoadoutMessage extends ClientControlMessage {
 
@@ -13,6 +14,6 @@ public class GoToLoadoutMessage extends ClientControlMessage {
 
     @Override
     public void updateClient(AClient c) {
-        c.getScreenManager().createNewLoadoutScreen();
+        c.getScreenManager().createNewLoadoutScreen((TcpClient)c);
     }
 }

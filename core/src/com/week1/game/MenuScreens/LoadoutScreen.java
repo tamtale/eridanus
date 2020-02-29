@@ -25,14 +25,13 @@ import java.util.List;
 public class LoadoutScreen implements Screen {
     private Stage loadoutStage;
     private TcpClient networkClient;
-    private boolean sentTowers = false;
-    private boolean isHostingClient;
+    private boolean sentTowers = false, isHostingClient;
     private GameControllerSetScreenAdapter gameAdapter;
 
     public LoadoutScreen(GameControllerSetScreenAdapter gameAdapter, TcpClient client, boolean isHostingClient) {
         this.gameAdapter = gameAdapter;
         this.networkClient = client;
-        this.isHostingClient = isHostingClient;
+        this.isHostingClient = client.getScreenManager().getIsHost();
 
         Gdx.app.log("pjb3 - LoadoutScreen.java", "creating Loadout Screen. In contructor");
         loadoutStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
@@ -93,8 +92,8 @@ public class LoadoutScreen implements Screen {
 
 
     public void createNewGame() {
-        Screen futureGame = new GameScreen(networkClient, gameAdapter);
-        networkClient.setGameScreen(futureGame);
+        GameScreen futureGame = new GameScreen(networkClient, gameAdapter);
+        networkClient.getScreenManager().setGameScreen(futureGame);
         Gdx.app.log("pjb3 - LoutoutScreen", "the GameScreen is being created NOW. It has been added to the client");
     }
 
