@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
+import com.week1.game.Model.Entities.Tower;
 
 
 import java.util.ArrayList;
@@ -22,9 +23,6 @@ import java.util.List;
 
 
 //Next things
-// Programmatic generation of tower stats for gameplay--
-    //top down view (static of all presets)
-    //tower footprint on ground -> 5 x 5,  and in all dimension
 // Fill out ui -> need to assets, stage, etc classes
 // tower building
 
@@ -40,11 +38,10 @@ public class TowerBuilderCamera {
     private Array<ModelInstance> instances;
     private Vector3 position = new Vector3();
     private CameraInputController camController;
-    private  ModelInstance highlightedBlock = null;
+    private  ModelInstance highlightedAddBlock = null;
 
 
     TowerBuilderScreen towerScreen;
-    ModelInstance space;
     Boolean loading;
     private List<ThreeD> invisiPoses;
     private List<ThreeD> poses;
@@ -56,8 +53,6 @@ public class TowerBuilderCamera {
     public void setCamController(CameraInputController camController) {
         this.camController = camController;
     }
-
-
 
 
     //keep a 3d internal representation of the grid and store whether each block is
@@ -96,7 +91,6 @@ public class TowerBuilderCamera {
         List<ThreeD> blox = new ArrayList<>();
         for (BlockSpec b: currTowerDetails.getLayout()) {
             ThreeD curpos = new ThreeD(b.getX(), b.getY(), b.getZ());
-//            poses.add();
             blox.add(curpos);
         }
         this.poses = blox;
@@ -183,8 +177,8 @@ public class TowerBuilderCamera {
 
         modelBatch.begin(cam);
         modelBatch.render(currTowerDetails.getModel(), environment);
-        if (highlightedBlock != null) {
-            modelBatch.render(highlightedBlock, environment);
+        if (highlightedAddBlock != null) {
+            modelBatch.render(highlightedAddBlock, environment);
         }
 
         modelBatch.end();
@@ -215,7 +209,7 @@ public class TowerBuilderCamera {
     }
 
 
-    private int getInvisiObject(int screenX, int screenY) {
+    private int selectInvisiblock(int screenX, int screenY) {
         Ray ray = cam.getPickRay(screenX, screenY);
 
         int result = -1;
@@ -242,14 +236,40 @@ public class TowerBuilderCamera {
         return  result;
     }
 
-    public  void addBlock(int screenX, int screenY) {
-        highlightedBlock = null;
-        int result = getInvisiObject(screenX, screenY);
+    private int selectBlock(int screenX, int screenY) {
+        Ray ray = cam.getPickRay(screenX, screenY);
 
-        System.out.println("poses size: " + invisiPoses.size() + " result: " + result);
+        int result = -1;
+        float distance = -1;
+
+        for (int i = 0; i < poses.size(); i++) {
+            ThreeD curblock = poses.get(i);
+            int x = curblock.x;
+            int y = curblock.y;
+            int z = curblock.z;
+            position = new Vector3(x * 5f, y * 5f, z * 5f);
+            Vector3 dimensions = new Vector3(5,5,5);
+
+
+            float dist2 = ray.origin.dst2(position);
+            if (distance >= 0f && dist2 > distance)
+                continue;
+
+            if (Intersector.intersectRaySphere(ray, position, dimensions.len()/2f, null)) {
+                result = i;
+                distance = dist2;
+            }
+        }
+        return  result;
+    }
+
+    public  void addBlock(int screenX, int screenY) {
+        highlightedAddBlock = null;
+        int result = selectInvisiblock(screenX, screenY);
+
         if (result > -1) {
-            System.out.println(invisiPoses.get(result));
-            ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(1));
+//            System.out.println(invisiPoses.get(result));
+            ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(2));
             newbloc.transform.setToTranslation(invisiPoses.get(result).x * 5f, invisiPoses.get(result).y * 5f, invisiPoses.get(result).z * 5f);
             //TODO -- this changes the preset permanently. need to fix that
             instances.add(newbloc);
@@ -288,21 +308,52 @@ public class TowerBuilderCamera {
             }
         }
 
-        System.out.println(this.invisiPoses);
+//        System.out.println(this.invisiPoses);
 
     }
 
     public void highlightBlock(int screenX, int screenY) {
-        int result = getInvisiObject(screenX, screenY);
+        int result = selectInvisiblock(screenX, screenY);
         if (result != -1) {
-            System.out.println(invisiPoses.get(result));
+//            System.out.println(invisiPoses.get(result));
 
             ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(0));
             newbloc.transform.setToTranslation(invisiPoses.get(result).x * 5f, invisiPoses.get(result).y * 5f, invisiPoses.get(result).z * 5f);
-            //TODO -- this changes the preset permanently. need to fix that
-            highlightedBlock = newbloc;
+            highlightedAddBlock = newbloc;
 
         }
     }
+
+    public void changeBlock(int screenX, int screenY, String materialSelection) {
+        int result = selectBlock(screenX, screenY);
+
+        if (result != -1) {
+            System.out.println("Changing block material");
+            ThreeD selectedPos = poses.get(result);
+            for (int i = 0; i < this.instances.size; i++) {
+                ModelInstance block = this.instances.get(i);
+
+                Vector3 translation = new Vector3();
+                block.transform.getTranslation(translation);
+                if (translation.x == selectedPos.x * 5f & translation.y == selectedPos.y * 5f & translation.z == selectedPos.z * 5f) {
+                    System.out.println("changing mat");
+                    this.instances.removeValue(block, true);
+
+                    ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(TowerMaterials.materialCodes.get(materialSelection)));
+                    newbloc.transform.setToTranslation(translation);
+                    instances.add(newbloc);
+
+                    break;
+                }
+            }
+        }
+
+    }
+
+    public void stopHighlightingAddBlock() {
+        highlightedAddBlock = null;
+        return;
+    }
+
 
 }

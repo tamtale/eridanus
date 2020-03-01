@@ -12,6 +12,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
+import com.week1.game.Model.Entities.Tower;
+
+import javax.xml.crypto.dsig.keyinfo.KeyValue;
+import java.util.Map;
 
 public class TowerBuilderStage {
     //TODO - cleanup + make things static
@@ -20,7 +24,7 @@ public class TowerBuilderStage {
     public Stage stage;
     public StatsWidget sw;
     private TextButton startGame;
-    private SelectBox<TowerDetails> selectBox;
+    private SelectBox<TowerDetails> displaySelection;
     private TextButton displayButton;
 
     //add a build button
@@ -33,7 +37,7 @@ public class TowerBuilderStage {
     private TextButton addBlock;
     private TextButton removeBlock;
     private TextButton changeMaterial;
-    private SelectBox<String> materials;
+    private SelectBox<String> materialSelection;
 
     //make skins
     private TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
@@ -49,6 +53,8 @@ public class TowerBuilderStage {
 
     public boolean isBuildMode = false;
     public boolean isAddMode = false;
+    public boolean isDelMode = false;
+    public boolean isChangeMode = false;
 
 
     public TowerBuilderStage(TowerBuilderScreen screen) {
@@ -71,16 +77,25 @@ public class TowerBuilderStage {
         //select and display presets
         displayButton = new TextButton("Display", normalStyle);
 
-        selectBox =new SelectBox(new Skin(Gdx.files.internal("uiskin.json")));
+        displaySelection =new SelectBox(new Skin(Gdx.files.internal("uiskin.json")));
         Array<TowerDetails> presets = new Array<>();
         for (TowerDetails p: TowerPresets.presets) {
             presets.add(p);
         }
-        selectBox.setItems(presets);
+        displaySelection.setItems(presets);
 
         //Build mode buttons
+        materialSelection = new SelectBox<String>(new Skin(Gdx.files.internal("uiskin.json")));
+        Array<String> materials = new Array<>();
+        for (String material: TowerMaterials.materialNames.keySet()) {
+            materials.add(material);
+        }
+        materialSelection.setItems(materials);
+
         buildMode = new TextButton("Build Mode", normalStyle);
         addBlock = new TextButton("Add block", normalStyle);
+        removeBlock = new TextButton("Remove Block", normalStyle);
+        changeMaterial = new TextButton("Change block \n material", normalStyle);
 
         startGame = new TextButton("Start Game", normalStyle);
     }
@@ -96,9 +111,9 @@ public class TowerBuilderStage {
         stage.addActor(sw);
 
         //Select present and display
-        selectBox.setSize(128, 48);
-        selectBox.setPosition(0, 0);
-        stage.addActor(selectBox);
+        displaySelection.setSize(128, 48);
+        displaySelection.setPosition(0, 0);
+        stage.addActor(displaySelection);
 
         displayButton.setSize(128, 48);
         displayButton.setPosition(128, 0);
@@ -114,6 +129,19 @@ public class TowerBuilderStage {
         stage.addActor(addBlock);
         addBlock.setVisible(false);
 
+        changeMaterial.setSize(128, 48);
+        changeMaterial.setPosition(512, 0);
+        stage.addActor(changeMaterial);
+        changeMaterial.setVisible(false);
+
+        materialSelection.setSize(128, 48);
+        materialSelection.setPosition(640, 0);
+        stage.addActor(materialSelection);
+        materialSelection.setVisible(false);
+
+
+
+
         //Start Game button
         startGame.setSize(128, 48);
         startGame.setPosition(64, GameController.VIRTUAL_HEIGHT - 200);
@@ -127,7 +155,7 @@ public class TowerBuilderStage {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!isBuildMode) {
-                    TowerDetails selectedTower = selectBox.getSelected();
+                    TowerDetails selectedTower = displaySelection.getSelected();
                     screen.setCamTower(selectedTower);
                     sw.setLblTxt(screen.getTowerStats());
                 }
@@ -152,16 +180,40 @@ public class TowerBuilderStage {
         addBlock.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("clicked add block button");
                 isAddMode = !isAddMode;
                 if (addBlock.isChecked()) {
                     addBlock.setStyle(pressedStyle);
+
+                    //uncheck other buttons
+                    isChangeMode = false;
+                    changeMaterial.setChecked(false);
+                    changeMaterial.setStyle(normalStyle);
+
                 } else {
                     addBlock.setStyle(normalStyle);
                 }
              }
         });
 
+        changeMaterial.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                isChangeMode = !isChangeMode;
+                if (changeMaterial.isChecked()) {
+                    changeMaterial.setStyle(pressedStyle);
+
+                    //uncheck other modes
+                    isAddMode = false;
+                    addBlock.setStyle(normalStyle);
+                    addBlock.setChecked(false);
+                    screen.stopAddHighlight();
+
+
+                } else {
+                    changeMaterial.setStyle(normalStyle);
+                }
+            }
+        });
 
 
         startGame.addListener(new ClickListener() {
@@ -181,12 +233,31 @@ public class TowerBuilderStage {
 
     private void addBuildButtons() {
         addBlock.setVisible(true);
+        changeMaterial.setVisible(true);
+        materialSelection.setVisible(true);
     }
 
     private void removeBuildButtons() {
+        //Hide buttons
         addBlock.setVisible(false);
+        changeMaterial.setVisible(false);
+        materialSelection.setVisible(false);
+
+        //Change modes
+        isAddMode = false;
+        isChangeMode = false;
+
+        //set unpressed styles
+        addBlock.setStyle(normalStyle);
+        changeMaterial.setStyle(normalStyle);
+
+        //unhighlight blocks
+        screen.stopAddHighlight();
     }
 
+    public String getMaterialSelection() {
+        return materialSelection.getSelected();
+    }
 }
 
 

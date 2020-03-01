@@ -26,18 +26,18 @@ public class TowerMaterials {
     public static final Map<Integer, Model> modelMap = new HashMap<Integer, Model>();
 
     //Just for sanity -- so we can see what codes correspond to what blocks
-    public static final Map<String, Integer> blocknamekey = new HashMap<>();
+    public static final Map<String, Integer> materialCodes = new HashMap<>();
+    public static final Map<String, Material> materialNames = new HashMap<>();
 
     public static Map<Integer, Integer> blockHp = new HashMap<>();
     public static Map<Integer, Integer> blockAtk = new HashMap<>();
     public static Map<Integer, Integer> blockPrice = new HashMap<>();
 
 
-//    public TowerMaterials() {
     static  {
 
     //Make the block types
-    addBlockType("core_block.png", "coreBlock", 1, 0, 0, 0);
+//    addBlockType("core_block.png", "coreBlock", 1, 0, 0, 0);
 
         //Materials
         addBlockType("space_obsidian2.png", "obsidian", 2, 50,5,10);
@@ -51,9 +51,9 @@ public class TowerMaterials {
 
 
     //Easter egg
-    addBlockType("cat_boi.png", "easter egg", 69, 10, 10,0);
+//    addBlockType("cat_boi.png", "easter egg", 69, 10, 10,0);
 
-    //Make a highlighted block type
+    //Highlighted block type
     Material mat = new Material();
     mat.set(new ColorAttribute(ColorAttribute.Diffuse, 84, 68, 79, 1f));
     mat.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.8f));
@@ -62,15 +62,17 @@ public class TowerMaterials {
             mat,
             VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
     modelMap.put(0, highlighted);
+//    blocknamekey.put("highlighted", 0);
 
     }
 
     private static void addBlockType(String filename, String blockname, Integer code, Integer hp, Integer atk, Integer price) {
-        blocknamekey.put(blockname, code);
+        materialCodes.put(blockname, code);
 
-        modelMap.put(code, modelBuilder.createBox(5f, 5f, 5f,
-                new Material(TextureAttribute.createDiffuse(new Texture(filename))),
+        Material mat = new Material(TextureAttribute.createDiffuse(new Texture(filename)));
+        modelMap.put(code, modelBuilder.createBox(5f, 5f, 5f, mat,
                 VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal));
+        materialNames.put(blockname, mat);
 
         blockHp.put(code, hp);
         blockAtk.put(code, atk);
