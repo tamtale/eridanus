@@ -121,7 +121,19 @@ public class TowerBuilderScreen implements Screen {
         towerCam.changeBlock(screenX, screenY, towerStage.getMaterialSelection());
     }
 
-    public void stopAddHighlight() {
-        towerCam.stopHighlightingAddBlock();
+    public void stopHighlighting() {
+        towerCam.stopHighlighting();
+    }
+
+    public void highlightTowerBlock(int screenX, int screenY) {
+        towerCam.highlightTowerBlock(screenX, screenY);
+    }
+
+    public boolean isDelMode() {
+        return towerStage.isDelMode;
+    }
+
+    public void deleteBlock(int screenX, int screenY) {
+        towerCam.deleteBlock(screenX, screenY);
     }
 }

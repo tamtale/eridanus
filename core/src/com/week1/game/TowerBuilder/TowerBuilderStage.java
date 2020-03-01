@@ -12,10 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
-import com.week1.game.Model.Entities.Tower;
-
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
-import java.util.Map;
 
 public class TowerBuilderStage {
     //TODO - cleanup + make things static
@@ -139,6 +135,11 @@ public class TowerBuilderStage {
         stage.addActor(materialSelection);
         materialSelection.setVisible(false);
 
+        removeBlock.setSize(128, 48);
+        removeBlock.setPosition(384, 48 );
+        stage.addActor(removeBlock);
+        removeBlock.setVisible(false);
+
 
 
 
@@ -188,6 +189,11 @@ public class TowerBuilderStage {
                     isChangeMode = false;
                     changeMaterial.setChecked(false);
                     changeMaterial.setStyle(normalStyle);
+                    screen.stopHighlighting();
+
+                    isDelMode = false;
+                    removeBlock.setChecked(false);
+                    removeBlock.setStyle(normalStyle);
 
                 } else {
                     addBlock.setStyle(normalStyle);
@@ -206,8 +212,12 @@ public class TowerBuilderStage {
                     isAddMode = false;
                     addBlock.setStyle(normalStyle);
                     addBlock.setChecked(false);
-                    screen.stopAddHighlight();
 
+                    isDelMode = false;
+                    removeBlock.setStyle(normalStyle);
+                    removeBlock.setChecked(false);
+
+                    screen.stopHighlighting();
 
                 } else {
                     changeMaterial.setStyle(normalStyle);
@@ -215,6 +225,28 @@ public class TowerBuilderStage {
             }
         });
 
+        removeBlock.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                isDelMode = !isDelMode;
+                if (removeBlock.isChecked()) {
+                    removeBlock.setStyle(pressedStyle);
+
+                    //uncheck other buttons
+                    isChangeMode = false;
+                    changeMaterial.setChecked(false);
+                    changeMaterial.setStyle(normalStyle);
+                    screen.stopHighlighting();
+
+                    isAddMode = false;
+                    addBlock.setChecked(false);
+                    addBlock.setStyle(normalStyle);
+
+                } else {
+                    removeBlock.setStyle(normalStyle);
+                }
+            }
+        });
 
         startGame.addListener(new ClickListener() {
             @Override
@@ -235,6 +267,7 @@ public class TowerBuilderStage {
         addBlock.setVisible(true);
         changeMaterial.setVisible(true);
         materialSelection.setVisible(true);
+        removeBlock.setVisible(true);
     }
 
     private void removeBuildButtons() {
@@ -242,17 +275,20 @@ public class TowerBuilderStage {
         addBlock.setVisible(false);
         changeMaterial.setVisible(false);
         materialSelection.setVisible(false);
+        removeBlock.setVisible(false);
 
         //Change modes
         isAddMode = false;
         isChangeMode = false;
+        isDelMode = false;
 
         //set unpressed styles
         addBlock.setStyle(normalStyle);
         changeMaterial.setStyle(normalStyle);
+        removeBlock.setStyle(normalStyle);
 
         //unhighlight blocks
-        screen.stopAddHighlight();
+        screen.stopHighlighting();
     }
 
     public String getMaterialSelection() {

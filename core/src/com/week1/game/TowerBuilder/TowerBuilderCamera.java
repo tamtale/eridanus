@@ -4,10 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
@@ -18,7 +16,9 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Entities.Tower;
 
 
+import java.awt.event.InputEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -38,7 +38,8 @@ public class TowerBuilderCamera {
     private Array<ModelInstance> instances;
     private Vector3 position = new Vector3();
     private CameraInputController camController;
-    private  ModelInstance highlightedAddBlock = null;
+    private ModelInstance highlightedAddBlock = null;
+    private ModelInstance highlightedTowerBlock = null;
 
 
     TowerBuilderScreen towerScreen;
@@ -55,8 +56,10 @@ public class TowerBuilderCamera {
     }
 
 
+
+
     //keep a 3d internal representation of the grid and store whether each block is
-    public static class ThreeD{
+    public static class ThreeD {
         public int x;
         public int y;
         public int z;
@@ -76,7 +79,7 @@ public class TowerBuilderCamera {
         @Override
         public boolean equals(Object obj) {
             if (obj instanceof ThreeD) {
-                if((((ThreeD) obj).x == x) & (((ThreeD) obj).y == y) & (((ThreeD) obj).z == z) ) {
+                if ((((ThreeD) obj).x == x) & (((ThreeD) obj).y == y) & (((ThreeD) obj).z == z)) {
                     return true;
                 }
                 return false;
@@ -89,7 +92,7 @@ public class TowerBuilderCamera {
     private void calcInvisiBlox() {
         List<ThreeD> invisiPoses = new ArrayList<>();
         List<ThreeD> blox = new ArrayList<>();
-        for (BlockSpec b: currTowerDetails.getLayout()) {
+        for (BlockSpec b : currTowerDetails.getLayout()) {
             ThreeD curpos = new ThreeD(b.getX(), b.getY(), b.getZ());
             blox.add(curpos);
         }
@@ -98,18 +101,18 @@ public class TowerBuilderCamera {
         for (ThreeD p : blox) {
 
             for (int i = -1; i < 2; i += 2) {
-                ThreeD nbr = new ThreeD(p.x + i, p.y , p.z);
-                if (nbr.x <3 & nbr.x > -3 & !blox.contains(nbr) & !invisiPoses.contains(nbr)) {
+                ThreeD nbr = new ThreeD(p.x + i, p.y, p.z);
+                if (nbr.x < 3 & nbr.x > -3 & !blox.contains(nbr) & !invisiPoses.contains(nbr)) {
                     invisiPoses.add(nbr);
                 }
 
-                nbr = new ThreeD(p.x , p.y + i, p.z);
+                nbr = new ThreeD(p.x, p.y + i, p.z);
                 if (nbr.y > -1 & nbr.y < 8 & !blox.contains(nbr) & !invisiPoses.contains(nbr)) {
                     invisiPoses.add(nbr);
                 }
 
-                nbr = new ThreeD(p.x , p.y , p.z + i);
-                if (nbr.z > -3 & nbr.z < 3 & !blox.contains(nbr)& !invisiPoses.contains(nbr)) {
+                nbr = new ThreeD(p.x, p.y, p.z + i);
+                if (nbr.z > -3 & nbr.z < 3 & !blox.contains(nbr) & !invisiPoses.contains(nbr)) {
                     invisiPoses.add(nbr);
                 }
             }
@@ -129,7 +132,7 @@ public class TowerBuilderCamera {
     public void initPersCamera() {
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(20f, 20f, 20f);
-        cam.lookAt(0,0,0);
+        cam.lookAt(0, 0, 0);
         cam.near = 0.5f;
         cam.far = 300f;
         cam.update();
@@ -138,8 +141,6 @@ public class TowerBuilderCamera {
     private void initModelBatch() {
         modelBatch = new ModelBatch();
     }
-
-
 
 
     public TowerBuilderCamera(TowerBuilderScreen towerScreen) {
@@ -168,7 +169,6 @@ public class TowerBuilderCamera {
     }
 
 
-
     public void render() {
 
         Gdx.gl.glClear(GL20.GL_ALPHA_BITS);
@@ -179,6 +179,10 @@ public class TowerBuilderCamera {
         modelBatch.render(currTowerDetails.getModel(), environment);
         if (highlightedAddBlock != null) {
             modelBatch.render(highlightedAddBlock, environment);
+        }
+
+        if (highlightedTowerBlock != null) {
+            modelBatch.render(highlightedTowerBlock);
         }
 
         modelBatch.end();
@@ -221,19 +225,19 @@ public class TowerBuilderCamera {
             int y = curblock.y;
             int z = curblock.z;
             position = new Vector3(x * 5f, y * 5f, z * 5f);
-            Vector3 dimensions = new Vector3(5,5,5);
+            Vector3 dimensions = new Vector3(5, 5, 5);
 
 
             float dist2 = ray.origin.dst2(position);
             if (distance >= 0f && dist2 > distance)
                 continue;
 
-            if (Intersector.intersectRaySphere(ray, position, dimensions.len()/2f, null)) {
+            if (Intersector.intersectRaySphere(ray, position, dimensions.len() / 2f, null)) {
                 result = i;
                 distance = dist2;
             }
         }
-        return  result;
+        return result;
     }
 
     private int selectBlock(int screenX, int screenY) {
@@ -248,22 +252,22 @@ public class TowerBuilderCamera {
             int y = curblock.y;
             int z = curblock.z;
             position = new Vector3(x * 5f, y * 5f, z * 5f);
-            Vector3 dimensions = new Vector3(5,5,5);
+            Vector3 dimensions = new Vector3(5, 5, 5);
 
 
             float dist2 = ray.origin.dst2(position);
             if (distance >= 0f && dist2 > distance)
                 continue;
 
-            if (Intersector.intersectRaySphere(ray, position, dimensions.len()/2f, null)) {
+            if (Intersector.intersectRaySphere(ray, position, dimensions.len() / 2f, null)) {
                 result = i;
                 distance = dist2;
             }
         }
-        return  result;
+        return result;
     }
 
-    public  void addBlock(int screenX, int screenY) {
+    public void addBlock(int screenX, int screenY) {
         highlightedAddBlock = null;
         int result = selectInvisiblock(screenX, screenY);
 
@@ -291,7 +295,7 @@ public class TowerBuilderCamera {
         int oldX = addedBlock.x;
         int oldY = addedBlock.y;
         int oldZ = addedBlock.z;
-        for (int i= -1 ; i < 2; i += 2) {
+        for (int i = -1; i < 2; i += 2) {
             ThreeD newX = new ThreeD(oldX + i, oldY, oldZ);
             if (!this.invisiPoses.contains(newX) & !this.poses.contains(newX) & oldX + i < 3 & oldX + i > -3) {
                 this.invisiPoses.add(newX);
@@ -350,10 +354,113 @@ public class TowerBuilderCamera {
 
     }
 
-    public void stopHighlightingAddBlock() {
+    public void stopHighlighting() {
         highlightedAddBlock = null;
+        highlightedTowerBlock = null;
         return;
     }
 
+    public void highlightTowerBlock(int screenX, int screenY) {
+        int result = selectBlock(screenX, screenY);
+        if (result != -1) {
+            System.out.println("Changing block material");
+            ThreeD selectedPos = poses.get(result);
+            for (int i = 0; i < this.instances.size; i++) {
+                ModelInstance block = this.instances.get(i);
 
+                Vector3 translation = new Vector3();
+                block.transform.getTranslation(translation);
+                if (translation.x == selectedPos.x * 5f & translation.y == selectedPos.y * 5f & translation.z == selectedPos.z * 5f) {
+
+                    ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(0));
+                    newbloc.transform.setToTranslation(translation);
+                    highlightedAddBlock = newbloc;
+
+                    break;
+                }
+            }
+        } else {
+            highlightedTowerBlock = null;
+        }
+
+
+    }
+
+    public void deleteBlock(int screenX, int screenY) {
+        int result = selectBlock(screenX, screenY);
+        if (result != -1) {
+            System.out.println("Changing block material");
+            ThreeD selectedPos = poses.get(result);
+            for (int i = 0; i < this.instances.size; i++) {
+                ModelInstance block = this.instances.get(i);
+
+                Vector3 translation = new Vector3();
+                block.transform.getTranslation(translation);
+                if (translation.x == selectedPos.x * 5f & translation.y == selectedPos.y * 5f & translation.z == selectedPos.z * 5f) {
+
+                    this.instances.removeValue(block, true);
+                    updateInvisibloxOnDel(selectedPos);
+
+
+                    break;
+                }
+            }
+
+            highlightTowerBlock(screenX, screenY);
+        }
+
+    }
+
+    private boolean isNbr(ThreeD pos1, ThreeD pos2) {
+        if (pos1.x == pos2.x & pos1.y == pos2.y) {
+            if (Math.abs(pos1.z - pos2.z) == 1) {
+                return true;
+            }
+        } else if (pos1.y == pos2.y & pos1.z == pos2.z) {
+            if (Math.abs(pos1.x - pos2.x) == 1) {
+                return true;
+            }
+        } else if (pos1.x == pos2.x & pos1.z == pos2.z) {
+            if (Math.abs(pos1.y - pos2.y) == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    private void updateInvisibloxOnDel(ThreeD selectedPos) {
+        poses.remove(selectedPos);
+        invisiPoses.add(selectedPos);
+
+//        int x = selectedPos.x;
+//        int y = selectedPos.y;
+//        int z = selectedPos.z;
+
+        List<ThreeD> nbrs = new ArrayList<>();
+        for (int i = 0; i < invisiPoses.size(); i ++) {
+            if (isNbr(selectedPos, invisiPoses.get(i))) {
+                nbrs.add(invisiPoses.get(i));
+            }
+        }
+
+        List<Integer> nbrRemovals = new ArrayList<>();
+        for (int i = 0; i < nbrs.size(); i++) {
+            for (int j = 0; j < invisiPoses.size(); j++) {
+                if (isNbr(nbrs.get(i), invisiPoses.get(j))) {
+                    nbrRemovals.add(i);
+                    break;
+                }
+            }
+        }
+
+        for (Integer idx: nbrRemovals) {
+            nbrs.remove(idx);
+        }
+
+        for (ThreeD pos: nbrs) {
+            invisiPoses.remove(pos);
+        }
+
+    }
 }

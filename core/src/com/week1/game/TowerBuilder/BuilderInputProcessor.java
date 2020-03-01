@@ -22,6 +22,8 @@ public class BuilderInputProcessor extends InputAdapter {
                 }
             } else if (screen.isChangeMode()) {
                 screen.changeBlock(screenX, screenY);
+            } else if (screen.isDelMode()) {
+                screen.deleteBlock(screenX, screenY);
             }
         }
 
@@ -34,6 +36,8 @@ public class BuilderInputProcessor extends InputAdapter {
             screen.highlightBlock(screenX, screenY);
 
             return true;
+        } else if (screen.isChangeMode() || screen.isDelMode()) {
+            screen.highlightTowerBlock(screenX, screenY);
         }
         return false;
     }
