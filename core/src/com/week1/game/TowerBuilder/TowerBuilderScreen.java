@@ -130,4 +130,7 @@ public class TowerBuilderScreen implements Screen {
         towerCam.stopHighlighting();
     }
 
+    public void displayBuildCore() {
+        towerCam.setCurrTowerDetails(TowerPresets.getBuildingCore());
+    }
 }

@@ -145,8 +145,7 @@ public class TowerBuilderStage {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!isBuildMode) {
-                    TowerDetails selectedTower = displaySelection.getSelected();
-                    screen.setCamTower(selectedTower);
+                    screen.setCamTower(displaySelection.getSelected());
                     sw.setLblTxt(screen.getTowerStats());
                 }
             }
@@ -156,10 +155,16 @@ public class TowerBuilderStage {
            @Override
            public void clicked(InputEvent event, float x, float y) {
                isBuildMode = !isBuildMode;
-               if (isBuildMode) {
+               if (buildMode.isChecked()) {
+                   screen.displayBuildCore();
+                   sw.setLblTxt(screen.getTowerStats());
+
                    buildMode.setStyle(pressedStyle);
                    addBuildButtons();
                } else {
+                   screen.setCamTower(displaySelection.getSelected());
+                   sw.setLblTxt(screen.getTowerStats());
+
                    buildMode.setStyle(normalStyle);
                    removeBuildButtons();
                }

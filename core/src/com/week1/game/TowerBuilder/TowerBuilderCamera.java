@@ -28,8 +28,6 @@ public class TowerBuilderCamera {
     private PerspectiveCamera cam;
     public ModelBatch modelBatch;
     public Environment environment;
-    public TowerPresets presets;
-    AssetManager assets;
     private TowerDetails currTowerDetails;
     private Array<ModelInstance> instances;
     private Vector3 position = new Vector3();
@@ -39,7 +37,6 @@ public class TowerBuilderCamera {
 
 
     TowerBuilderScreen towerScreen;
-    Boolean loading;
     private List<Vector3> invisiPoses = new ArrayList<>();
     private List<Vector3> poses = new ArrayList<>();
 
@@ -51,10 +48,15 @@ public class TowerBuilderCamera {
         this.camController = camController;
     }
 
-    public void setCurrTowerDetails(TowerDetails currTowerDetails) {
-        this.currTowerDetails = currTowerDetails;
-        this.instances = currTowerDetails.getModel();
-        this.calcInvisiBlox();
+    public void setCurrTowerDetails(TowerDetails newTower) {
+        this.currTowerDetails = newTower;
+
+        instances = new Array<>();
+        for (ModelInstance i: currTowerDetails.getModel()) {
+            this.instances.add(new ModelInstance(i));
+        }
+
+        calcInvisiBlox();
     }
 
     public TowerDetails getCurrTowerDetails() {
@@ -88,16 +90,7 @@ public class TowerBuilderCamera {
         initModelBatch();
         initPersCamera();
 
-        presets = new TowerPresets();
-
-        assets = new AssetManager();
-        assets.load("spacesphere.obj", Model.class);
-        loading = true;
-
-
-        currTowerDetails = presets.getTower(1);
-        instances = currTowerDetails.getModel();
-        calcInvisiBlox();
+        setCurrTowerDetails(TowerPresets.getTower(1));
 
     }
 
@@ -115,7 +108,12 @@ public class TowerBuilderCamera {
 
 
         modelBatch.begin(cam);
-        modelBatch.render(currTowerDetails.getModel(), environment);
+        if (towerScreen.isBuildMode()) {
+            modelBatch.render(instances, environment);
+        } else {
+            modelBatch.render(currTowerDetails.getModel(), environment);
+        }
+
         if (highlightedAddBlock != null) {
             modelBatch.render(highlightedAddBlock, environment);
         }
@@ -146,6 +144,9 @@ public class TowerBuilderCamera {
     //Tower Editor methods
 
     private void calcInvisiBlox() {
+
+        poses.clear();
+        invisiPoses.clear();
 
         for (BlockSpec b : currTowerDetails.getLayout()) {
             Vector3 curpos = new Vector3(b.getX(), b.getY(), b.getZ());
@@ -215,7 +216,6 @@ public class TowerBuilderCamera {
         int result = selectInvisiblock(screenX, screenY);
 
         if (result > -1) {
-//            System.out.println(invisiPoses.get(result));
             ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(TowerMaterials.materialCodes.get(materialSelection)));
             newbloc.transform.setToTranslation(invisiPoses.get(result).x * 5f, invisiPoses.get(result).y * 5f, invisiPoses.get(result).z * 5f);
             //TODO -- this changes the preset permanently. need to fix that
@@ -223,11 +223,12 @@ public class TowerBuilderCamera {
 
             //update invisiblox
             updateInvisibloxOnAdd(invisiPoses.get(result));
-            System.out.println("Added a block");
+//            Gdx.app.log("skv2", "Tower editor added a block");
             highlightBlock(screenX, screenY);
-        } else {
-            System.out.println("did not add a block");
         }
+//        else {
+//            Gdx.app.log("skv2", "Tower editor did not add a block");
+//        }
 
 
     }
@@ -255,11 +256,15 @@ public class TowerBuilderCamera {
             }
         }
 
-//        System.out.println(this.invisiPoses);
 
     }
 
     public void deleteBlock(int screenX, int screenY) {
+        if (poses.size() == 1) {
+            //Don't remove the last block
+            return;
+        }
+
         int result = selectBlock(screenX, screenY);
         if (result != -1) {
             Vector3 selectedPos = poses.get(result);

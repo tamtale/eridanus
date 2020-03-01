@@ -51,7 +51,7 @@ public class TowerMaterials {
 
 
     //Easter egg
-//    addBlockType("cat_boi.png", "easter egg", 69, 10, 10,0);
+    addBlockType("cat_boi.png", "easter egg", 69, 10, 10,0);
 
     //Highlighted block type
     Material mat = new Material();
@@ -62,17 +62,19 @@ public class TowerMaterials {
             mat,
             VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
     modelMap.put(0, highlighted);
-//    blocknamekey.put("highlighted", 0);
 
     }
 
     private static void addBlockType(String filename, String blockname, Integer code, Integer hp, Integer atk, Integer price) {
-        materialCodes.put(blockname, code);
 
         Material mat = new Material(TextureAttribute.createDiffuse(new Texture(filename)));
         modelMap.put(code, modelBuilder.createBox(5f, 5f, 5f, mat,
                 VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal));
-        materialNames.put(blockname, mat);
+
+        if (code != 69) {
+            materialNames.put(blockname, mat);
+            materialCodes.put(blockname, code);
+        }
 
         blockHp.put(code, hp);
         blockAtk.put(code, atk);
