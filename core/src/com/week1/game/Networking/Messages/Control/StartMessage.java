@@ -51,13 +51,13 @@ public class StartMessage extends HostControlMessage {
         System.out.println("About to broadcast init messages.");
         h.broadcastToRegisteredPlayers(MessageFormatter.packageMessage(
                 new Update(Arrays.asList(
-                        MessageFormatter.packageMessage(new InitMessage(h.registry.size(), -1, 0)),
                         MessageFormatter.packageMessage(new TowerDetailsMessage(-1, h.towerDetails, 0)),
-                        MessageFormatter.packageMessage(new CreateTowerMessage(4, 4, 2, 0, 0, 0)),
-                        MessageFormatter.packageMessage(new CreateTowerMessage(10, 4, 1, 1, 0, 0)),
-                        MessageFormatter.packageMessage(new CreateTowerMessage(20, 4, 1, 2, 0, 0)),
-                        MessageFormatter.packageMessage(new CreateTowerMessage(25, 15, 1, 3, 0, 0)),
-                        MessageFormatter.packageMessage(new CreateTowerMessage(5, 15, 1, 4, 0, 0)),
+                        MessageFormatter.packageMessage(new InitMessage(h.registry.size(), -1, 0)),
+//                        MessageFormatter.packageMessage(new CreateTowerMessage(4, 4, 2, 0, 0, 0)),
+//                        MessageFormatter.packageMessage(new CreateTowerMessage(10, 4, 1, 1, 0, 0)),
+//                        MessageFormatter.packageMessage(new CreateTowerMessage(20, 4, 1, 2, 0, 0)),
+//                        MessageFormatter.packageMessage(new CreateTowerMessage(25, 15, 1, 3, 0, 0)),
+//                        MessageFormatter.packageMessage(new CreateTowerMessage(5, 15, 1, 4, 0, 0)),
                         MessageFormatter.packageMessage(new CreateTowerMessage(15, 15, 1, 5, 0, 0))
                 ))
         ));

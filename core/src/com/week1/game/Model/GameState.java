@@ -17,13 +17,21 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
+import com.week1.game.Model.Entities.*;
+import com.week1.game.Model.World.Block;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Model.World.IWorldBuilder;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
+import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
+import com.week1.game.TowerBuilder.TowerPresets;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.week1.game.Model.StatsConfig.*;
@@ -39,7 +47,7 @@ public class GameState implements RenderableProvider {
     private Array<Unit> units = new Array<>();
     private Array<Crystal> crystals = new Array<>();
     private Array<Tower> towers = new Array<>();
-    private Array<PlayerBase> playerBases = new Array<>();
+    private Map<Integer, PlayerBase> playerBases = new HashMap<>(); // bases are just special towers, not an entirely separate class
     private Array<PlayerStat> playerStats = new Array<>();
     private Array<SteeringAgent> agents;
     private IWorldBuilder worldBuilder;
@@ -80,22 +88,25 @@ public class GameState implements RenderableProvider {
         Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
             playerStats.add(new PlayerStat());
-            PlayerBase base = new PlayerBase(playerBaseInitialHp, (int) startLocs[i].x, (int) startLocs[i].y, i);
-            playerBases.add(base);
-            removePlayerBase((int) startLocs[i].x, (int) startLocs[i].y, base);
+            
+            // Create and add a base for each player
+            PlayerBase newBase = new PlayerBase((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z, 
+                    towerLoadouts.getTowerDetails(i,-1), i, -1);
+            addBase(newBase, i);
         }
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
         fullyInitialized = true;
         postInit.run();
     }
 
-    public void removePlayerBase(int startX, int startY, PlayerBase b){
-        for(int i = startX - 4; i <= startX + 3; i++){
-            for (int j = startY - 4; j <= startY + 4; j++){
-                graph.removeAllConnections(new Vector3(i, j, 0), b);
-            }
-        }
-    }
+//    public void removePlayerBase(int startX, int startY, PlayerBase b){
+//        for(int i = startX - 4; i <= startX + 3; i++){
+//            for (int j = startY - 4; j <= startY + 4; j++){
+//                graph.removeAllConnections(new Vector3(i, j, 0), b);
+//            }
+//        }
+//    }
+    
     public PlayerStat getPlayerStats(int playerNum) {
         if (isInitialized()) {
             return playerStats.get(playerNum);
@@ -119,6 +130,15 @@ public class GameState implements RenderableProvider {
 
     public void addTower(Tower t, int playerID) {
         towers.add(t);
+        addBuilding(t, playerID);
+    }
+    
+    public void addBase(PlayerBase pb, int playerID) {
+        playerBases.put(playerID, pb);
+        addBuilding(pb, playerID);
+    }
+        
+    public void addBuilding(Tower t, int playerID) {
         int startX = (int) t.x - 4;
         int startY = (int) t.y - 4;
         TowerFootprint footprint = towerLoadouts.getTowerDetails(playerID, t.getTowerType()).getFootprint();
@@ -134,6 +154,15 @@ public class GameState implements RenderableProvider {
             }
             i++;
         }
+
+        for(BlockSpec bs : t.getLayout()) {
+            this.world.setBlock(
+                    (int)(t.x + bs.getX()),
+                    (int)(t.y + bs.getZ()),
+                    (int)(t.z + bs.getY()),
+                    Block.TowerBlock.towerBlockMap.get(bs.getBlockCode()));
+        }
+
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
@@ -188,14 +217,12 @@ public class GameState implements RenderableProvider {
             }
         }
 
-        PlayerBase playerBase;
-        for (int i = 0; i < playerBases.size; i++) {
-            playerBase = playerBases.get(i);
+        for (Tower playerBase : playerBases.values()) {
             if (playerBase.getPlayerId() == renderPlayerId) {
                 // only show the spawn radius for your own base
-                playerBase.draw(batch, showSpawnRadius);
+                playerBase.draw(batch, false, showSpawnRadius);
             } else {
-                playerBase.draw(batch, false);
+                playerBase.draw(batch, false, false);
             }
         }
 
@@ -244,7 +271,7 @@ public class GameState implements RenderableProvider {
         everythingDamageable.clear();
         everythingDamageable.addAll(units);
         everythingDamageable.addAll(towers);
-        everythingDamageable.addAll(playerBases);
+        everythingDamageable.addAll(getPlayerBases());
         everythingDamageable.addAll(crystals);
 
         deadEntities.clear();
@@ -278,7 +305,8 @@ public class GameState implements RenderableProvider {
             // Reward mana.
             playerStats.get(attackingPlayerId).giveMana(deadEntity.getReward());
             // Do other bookkeeping related to death.
-            deadEntity.accept(deathVisitor);        }
+            deadEntity.accept(deathVisitor);        
+        }
     }
 
     /**
@@ -301,11 +329,11 @@ public class GameState implements RenderableProvider {
             return null;
         }
 
+  
         @Override
         public Void acceptBase(PlayerBase base) {
             int deadPlayer = base.getPlayerId();
-            playerBases.removeIndex(deadPlayer);
-            playerBases.insert(deadPlayer, new DestroyedBase(0, base.getX(), base.getY(), deadPlayer));
+            playerBases.remove(deadPlayer);
             return null;
         }
 
@@ -316,16 +344,19 @@ public class GameState implements RenderableProvider {
         }
     };
 
-    public boolean findNearbyStructure(float x, float y, int playerId) {
+public boolean findNearbyStructure(float x, float y, float z, int playerId) {
         // Check if it is near the home base
-        if (Math.sqrt(Math.pow(x - playerBases.get(playerId).x, 2) + Math.pow(y - playerBases.get(playerId).y, 2)) < placementRange){
+        if (Math.sqrt(
+                Math.pow(x - playerBases.get(playerId).x, 2) + 
+                Math.pow(y - playerBases.get(playerId).y, 2) + 
+                Math.pow(z - playerBases.get(playerId).z, 2)) < placementRange){
             return true;
         }
 
         // Check if it is near any of your towers
         for (Tower t : towers) {
             if (t.getPlayerId() == playerId) {
-                if (Math.sqrt(Math.pow(x - t.x, 2) + Math.pow(y - t.y, 2)) < placementRange){
+                if (Math.sqrt(Math.pow(x - t.x, 2) + Math.pow(y - t.y, 2) + Math.pow(z - t.z, 2)) < placementRange){
                     return true;
                 }
             }
@@ -342,7 +373,7 @@ public class GameState implements RenderableProvider {
             }
         }
         
-        for (PlayerBase pb: playerBases) {
+        for (Tower pb: playerBases.values()) {
             // use -1 as towerType for the player base
             if (TowerFootprint.overlap(footprint, x, y, towerLoadouts.getTowerDetails(-1, -1).getFootprint(), (int)pb.x, (int)pb.y)) {
                 return true;
@@ -378,13 +409,15 @@ public class GameState implements RenderableProvider {
         }
 
         // Check if you are the last base alive
-        for (int playerIndex = 0; playerIndex < playerBases.size; playerIndex += 1) {
-            if (playerIndex != playerId && !playerBases.get(playerIndex).isDead()) {
-                // Since there is another placers base that is not dead yet, you have not won.
-                return false;
-            }
-        }
-        return true;
+        return playerBases.values().size() == 1;
+        
+//        for (int playerIndex = 0; playerIndex < playerBases.size; playerIndex += 1) {
+//            if (playerIndex != playerId && !playerBases.get(playerIndex).isDead()) {
+//                // Since there is another placers base that is not dead yet, you have not won.
+//                return false;
+//            }
+//        }
+//        return true;
     }
     
     public void setTowerInfo(TowerLoadouts info) {
@@ -399,24 +432,27 @@ public class GameState implements RenderableProvider {
             return false; // Can't win if you're dead lol or if the game has not started
         }
 
-        int numPlayersAlive = 0;
-        // Check if you are the last base alive
-        for (int playerIndex = 0; playerIndex < playerBases.size; playerIndex += 1) {
-            if (!playerBases.get(playerIndex).isDead()) {
-                // Since there is another placers base that is not dead yet, you have not won.
-                numPlayersAlive += 1;
-            }
-        }
+        int numPlayersAlive = playerBases.values().size();
+//        // Check if you are the last base alive
+//        for (int playerIndex = 0; playerIndex < playerBases.size; playerIndex += 1) {
+//            if (!playerBases.get(playerIndex).isDead()) {
+//                // Since there is another placers base that is not dead yet, you have not won.
+//                numPlayersAlive += 1;
+//            }
+//        }
         return numPlayersAlive <= 1;
     }
 
-    Array<PlayerBase> getPlayerBases() {
-        return playerBases;
+    // TODO: Maps from java.util don't play well with gdx arrays
+    Array<Tower> getPlayerBases() {
+        Tower[] pbs = new Tower[playerBases.size()];
+        playerBases.values().toArray(pbs);
+        return new Array<>(pbs);
     }
 
     public Array<Building> getBuildings() {
         Array<Building> buildings = new Array<>();
-        buildings.addAll(playerBases);
+        buildings.addAll(getPlayerBases());
         buildings.addAll(towers);
         return buildings;
     }
@@ -428,7 +464,7 @@ public class GameState implements RenderableProvider {
     }
 
     public PackagedGameState packState(int turn) {
-        return new PackagedGameState(turn, units, towers, playerBases, playerStats);
+        return new PackagedGameState(turn, units, towers, getPlayerBases(), playerStats);
     }
 
 
@@ -442,7 +478,7 @@ public class GameState implements RenderableProvider {
         int encodedhash;
         private String gameString;
 
-        public PackagedGameState (int turn, Array<Unit> units, Array<Tower> towers, Array<PlayerBase> bases, Array<PlayerStat> stats) {
+        public PackagedGameState (int turn, Array<Unit> units, Array<Tower> towers, Array<Tower> bases, Array<PlayerStat> stats) {
             gameString = "Turn " + turn;
             Unit u;
             for (int i = 0; i < units.size; i++) {
@@ -458,7 +494,7 @@ public class GameState implements RenderableProvider {
             }
             gameString += "\n";
 
-            PlayerBase pb;
+            Tower pb;
             for (int i = 0; i < bases.size; i ++) {
                 pb = bases.get(i);
                 gameString += pb.toString() + "\n";
@@ -499,13 +535,20 @@ public class GameState implements RenderableProvider {
      * Returns null if there is no clickable.
      */
     public Clickable getClickableOnRay(Ray ray, Vector3 intersection) {
+        
+        // TODO: doesn't neccessarily find the clickable closest to the camera
+        
+        // Look through all the standard clickables
         for (Clickable clickable: clickables) {
             if (clickable.intersects(ray, intersection)) {
                 return clickable;
             }
-            Gdx.app.log("nope", "nope");
         }
-        Gdx.app.log("asdf", "none found");
-        return Clickable.NULL;
+//        Gdx.app.log("GameState.getClickableOnRay", "No clickables (units) found");
+        
+        // Look through all the blocks
+        Clickable clickedBlock = world.getBlockOnRay(ray, intersection);
+        
+        return clickedBlock;
     }
 }

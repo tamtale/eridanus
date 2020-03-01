@@ -65,8 +65,9 @@ public class GameGraph implements IndexedGraph<Vector3> {
     }
 
     public void removeAllConnections(Vector3 fromNode, Building b){
-        b.putRemovedEdges(fromNode, edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z]);
-        edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = new Array<>();
+        // TODO: throwing exceptions, so I commented this out (lji1)???
+//        b.putRemovedEdges(fromNode, edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z]);
+//        edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = new Array<>();
     }
 
     public void addVector3(Vector3 Vector3) {
@@ -97,8 +98,5 @@ public class GameGraph implements IndexedGraph<Vector3> {
         edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = connections;
     }
 
-//    public Vector3 getVector3(int i, int j, int k) {
-//        return vecCoords[i][j][k];
-//    }
 
 }

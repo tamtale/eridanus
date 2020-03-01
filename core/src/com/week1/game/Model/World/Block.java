@@ -22,6 +22,7 @@ import java.util.Optional;
 public interface Block {
     float getCost();
     Optional<ModelInstance> modelInstance(float x, float y, float z);
+    boolean canSupportTower();
 
     abstract class TerrainBlock implements Block {
         Model model;
@@ -34,6 +35,11 @@ public interface Block {
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
         }
+        
+        @Override
+        public boolean canSupportTower() {
+            return true;
+        }
 
         @Override
         public float getCost() {
@@ -45,6 +51,11 @@ public interface Block {
             @Override
             public Optional<ModelInstance> modelInstance(float x, float y, float z) {
                 return Optional.empty();
+            }
+            @Override
+            public boolean canSupportTower() {
+                // Air shouldn't be able to hold up a tower
+                return false;
             }
         };
         public static TerrainBlock STONE = new TerrainBlock(Color.GRAY, 1) {
@@ -74,6 +85,11 @@ public interface Block {
 
         TowerBlock(Model model) {
             this.model = model;
+        }
+        
+        @Override
+        public boolean canSupportTower() {
+            return false;
         }
 
         @Override

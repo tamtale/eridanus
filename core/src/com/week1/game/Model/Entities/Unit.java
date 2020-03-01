@@ -34,6 +34,7 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
     private float distanceTraveled;
     private Vector3 goal = new Vector3();
     private boolean close;
+    private boolean selected;
 
     public boolean isClicked() {
         return clicked;
@@ -61,9 +62,16 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
     /*
      * Material to apply to a selected unit.
      */
-    private static Material selectedMaterial = new Material() {{
+    public static Material selectedMaterial = new Material() {{
         set(ColorAttribute.createDiffuse(Color.ORANGE));
     }};
+    /*
+     * Material to apply to a hovered unit.
+     */
+    public static Material hoveredMaterial = new Material() {{
+        set(ColorAttribute.createDiffuse(Color.YELLOW));
+    }};
+
     private Material originalMaterial;
 
     private final static Map<Integer, Color> colorMap = new HashMap<Integer, Color>() {
@@ -298,15 +306,26 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
         return Intersector.intersectRayBounds(ray, box, intersection);
     }
 
-    @Override
-    public void setSelected(boolean selected) {
+    public void setMaterial(Material newMat, boolean changeToMat) {
         Material mat = modelInstance.materials.get(0);
         mat.clear();
-        if (selected) {
-          mat.set(selectedMaterial);
+        if (changeToMat) {
+            mat.set(newMat);
         } else {
-          mat.set(originalMaterial);
+            mat.set(originalMaterial);
         }
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+        setMaterial(selectedMaterial, selected);
+    }
+
+    @Override
+    public void setHovered(boolean hovered) {
+        if (this.selected) return;
+        setMaterial(hoveredMaterial, hovered);
     }
 
     @Override

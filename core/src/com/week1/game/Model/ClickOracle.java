@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
+import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 import com.week1.game.Renderer.TextureUtils;
@@ -25,6 +26,7 @@ public class ClickOracle extends InputAdapter {
 
     private IClickOracleAdapter adapter;
     private Clickable selected = Clickable.NULL;
+    private Clickable passiveSelected = Clickable.NULL;
 
     private Vector3 touchPos = new Vector3();
     private Array<Unit> multiSelected = new Array<>();
@@ -54,6 +56,7 @@ public class ClickOracle extends InputAdapter {
 
     public ClickOracle(IClickOracleAdapter adapter) {
         this.adapter = adapter;
+        
     }
 
     @Override
@@ -93,8 +96,34 @@ public class ClickOracle extends InputAdapter {
         return false;
     }
 
+    long startTime = 0;
+    long endTime = 0;
+    int events = 0;
+    int sum = 0;
+    
+    @Override
+    public boolean mouseMoved (int screenX, int screenY) {
+        endTime = System.nanoTime();
+        int diff = (int)((endTime - startTime) / 1000000);
+        if (diff < 1000) {
+            events++;
+            sum += diff;
+        }
+        startTime = System.nanoTime();
+        
+        setPassiveClickable(adapter.selectClickable(screenX, screenY, touchPos));
+        return true;
+    }
+
+    private void setPassiveClickable (Clickable clickable) {
+        passiveSelected.setHovered(false);
+        passiveSelected = clickable;
+        passiveSelected.setHovered(true);
+    }
+
     private void setSelectedClickable(Clickable clickable) {
-        selected.setSelected(false);
+        Gdx.app.log("setSelectedClickable", "set selected: " + clickable.toString());
+        deMultiSelect();
         selected = clickable;
         selected.setSelected(true);
     }
@@ -116,7 +145,7 @@ public class ClickOracle extends InputAdapter {
             Array<Unit> unitsToSelect = adapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
 
             deMultiSelect();
-            unitsToSelect.forEach(this::multiSelect);
+            // unitsToSelect.forEach(this::multiSelect);
 
             Gdx.app.log("lji1 - ClickOracle", "Cleared selection locations.");
             return false;
@@ -131,91 +160,95 @@ public class ClickOracle extends InputAdapter {
 
         // for 2D, just unproject.
         adapter.unproject(touchPos);
+        Clickable selectedClickable = adapter.selectClickable(screenX, screenY, touchPos);
         if (button == Input.Buttons.LEFT) {
+            Gdx.app.log("lji1 - ClickOracle", "Left click.");
+            deMultiSelect();
+            setSelectedClickable(selectedClickable);
+            selected.accept(new Clickable.ClickableVisitor<Void>() {
+                @Override
+                public Void acceptUnit(Unit unit) {
+                  multiSelected.add(unit);
+                  return null;
+                }
+                @Override
+                public Void acceptBlockLocation(Vector3 vector) {
+                    Gdx.app.log("ClickOracle", "Accepting block location.");
 
-            // Create tower with left click and numberkey down.
-            // For advanced users, we will keep this as the first check, then defer to the other users
-            if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
-                Gdx.app.log("lji1 - ClickOracle", "Spawn basic tower.");
-                adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 0, adapter.getPlayerId(), currentGameHash));
-            } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
-                Gdx.app.log("lji1 - ClickOracle", "Spawn sniper tower.");
-                adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 1, adapter.getPlayerId(), currentGameHash));
-            } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
-                Gdx.app.log("lji1 - ClickOracle", "Spawn tank tower.");
-                adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 2, adapter.getPlayerId(), currentGameHash));
-            } else {
+//                      // TODO: only using this becasue buttons are broken
+//                      spawnType = SpawnInfo.SpawnType.TOWER1; // TODO: remove me !
 
-                // Unit unit = engineAdapter.selectUnit(touchPos);
-              setSelectedClickable(adapter.selectClickable(screenX, screenY, touchPos));
-              selected.accept(new Clickable.ClickableVisitor<Void>() {
-                  @Override
-                  public Void acceptUnit(Unit unit) {
-                      Gdx.app.log("GOTTEM", "GOTTEM");
-                      return null;
-                  }
+                    System.out.println("Sending message to spawn tower at: " + vector);
 
-                  @Override
-                  public Void acceptNull() {
-                    // TODO create an entity based on the pressed button.
-                      return null;
-                  }
-              });
-//                if (unit == null) {
-//                    Gdx.app.log("ttl4 - ClickOracle", "nothing selected!");
-//                    System.out.println("aaaaa");
-//                    if (spawnType == SpawnInfo.SpawnType.UNIT) {
-//                        Gdx.app.log("pjb3 - ClickOracle", "Spawn unit");
-//                        adapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, adapter.getPlayerId(), currentGameHash));
-//                    } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
-//                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
-//                        adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 0, adapter.getPlayerId(), currentGameHash));
-//                    } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
-//                        Gdx.app.log("pjb3 - ClickOracle", "Spawn Tower 2 tower via state");
-//                        adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 1, adapter.getPlayerId(), currentGameHash));
-//                    } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
-//                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
-//                        adapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, 1, 2, adapter.getPlayerId(), currentGameHash));
-//                    }
-//                } else {
-//                    Gdx.app.log("ttl4 - ClickOracle", "selected a unit!");
-//                    deMultiSelect();
-//                    selectionLocationStart.set(unit.getX(), unit.getY(), 0);
-//                    selectionLocationEnd.set(unit.getX(), unit.getY(), 0);
-//                    multiSelect(unit);
-//                }
-            }
+//                      if (unit == null) {
+                    if (spawnType == SpawnInfo.SpawnType.UNIT) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn unit");
+                        adapter.sendMessage(new CreateMinionMessage(vector.x, vector.y, vector.z + 1, 69, adapter.getPlayerId(), currentGameHash));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+                        adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 0, adapter.getPlayerId(), currentGameHash));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn Tower 2 tower via state");
+                        adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 1, adapter.getPlayerId(), currentGameHash));
+                    } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
+                        Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+                        adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 2, adapter.getPlayerId(), currentGameHash));
+                    }
+//                      } else {
+//                          Gdx.app.log("ttl4 - ClickOracle", "selected a unit!");
+//                          deMultiSelect();
+//                          selectionLocationStart.set(unit.getX(), unit.getY(), 0);
+//                          selectionLocationEnd.set(unit.getX(), unit.getY(), 0);
+//                          multiSelect(unit);
+//                      }
+
+                    return null;
+                }
+
+                @Override
+                public Void acceptNull() {
+                    return null;
+                }
+            });
             return false;
         }
         // Right click
-        if (multiSelected.notEmpty() && button == Input.Buttons.RIGHT) {
-            System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
-                adapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y,
-                        adapter.getPlayerId(), multiSelected, currentGameHash));
-//            }
-            return false;
+        if (button == Input.Buttons.RIGHT && multiSelected.notEmpty()) {
+            selectedClickable.accept(new Clickable.ClickableVisitor<Void>() {
+                @Override
+                public Void acceptUnit(Unit unit) {
+                  // TODO attack a different unit
+                    return null;
+                }
 
+                @Override
+                public Void acceptBlockLocation(Vector3 vector) {
+                    adapter.sendMessage(new MoveMinionMessage(vector.x, vector.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+                    return null;
+                }
+
+                @Override
+                public Void acceptNull() {
+                    return null;
+                }
+            });
         }
-        
+
         deMultiSelect();
         return false;
     }
 
 
     private void deMultiSelect() {
-        if (multiSelected.notEmpty()) {
-            multiSelected.forEach((u) -> u.setClicked(false));
-            multiSelected.clear();
-        }
+        // TODO 3D
+//        if (multiSelected.notEmpty()) {
+//            multiSelected.forEach((u) -> u.setClicked(false));
+//            multiSelected.clear();
+//        }
+        multiSelected.forEach(clickable -> clickable.setSelected(false));
+        multiSelected.clear();
     }
     
-    private void multiSelect(Unit unit) {
-        if (unit.getPlayerId() == adapter.getPlayerId()) {
-            multiSelected.add(unit);
-            unit.setClicked(true);
-        }
-    }
-
     public void setSpawnType(SpawnInfo newInfo) {
         spawnType = newInfo.getType();
     }
