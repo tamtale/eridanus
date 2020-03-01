@@ -17,11 +17,11 @@ import java.util.Arrays;
  * This message is sent to the Host when the hosting client send it. It will only
  * have an effect if all players have sent in their towerloadouts.
  */
-public class StartMessage extends HostControlMessage {
+public class RequestGoToGameMessage extends HostControlMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.START;
     private final static String TAG = "StartMessage";
     
-    public StartMessage(int playerID){
+    public RequestGoToGameMessage(int playerID) {
         super(playerID, MESSAGE_TYPE);
     }
 

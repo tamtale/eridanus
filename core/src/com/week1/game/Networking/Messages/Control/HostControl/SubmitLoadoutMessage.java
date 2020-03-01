@@ -1,6 +1,6 @@
 package com.week1.game.Networking.Messages.Control.HostControl;
 
-import com.week1.game.Networking.Messages.Control.ClientControl.ReadyToStart;
+import com.week1.game.Networking.Messages.Control.ClientControl.ReadyToStartMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Networking.NetworkObjects.Host;
@@ -13,13 +13,13 @@ import java.util.List;
 /**
  * This is the message that sends a players chosen loadout to the host.
  */
-public class SendLoadoutMessage extends HostControlMessage {
+public class SubmitLoadoutMessage extends HostControlMessage {
 
     private final static MessageType MESSAGE_TYPE = MessageType.SENDLOADOUT;
 
     private List<List<BlockSpec>> details;
 
-    public SendLoadoutMessage(int playerID, List<List<BlockSpec>> details){
+    public SubmitLoadoutMessage(int playerID, List<List<BlockSpec>> details){
         super(playerID, MESSAGE_TYPE);
         this.details = details;
     }
@@ -37,7 +37,7 @@ public class SendLoadoutMessage extends HostControlMessage {
 
         // Tell all clients that all players are ready to go if they want to do any rendering showing people are ready
         for (Player p : h.registry.values()) {
-            h.sendMessage(MessageFormatter.packageMessage(new ReadyToStart(-1)), p);
+            h.sendMessage(MessageFormatter.packageMessage(new ReadyToStartMessage(-1)), p);
         }
     }
 

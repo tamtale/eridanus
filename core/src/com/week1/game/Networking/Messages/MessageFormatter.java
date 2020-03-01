@@ -65,11 +65,11 @@ public class MessageFormatter {
         
         if (parsedMsg != null) {
             if (parsedMsg.messageTypeID == MessageType.START) {
-                return g.fromJson(jsonString, StartMessage.class);
+                return g.fromJson(jsonString, RequestGoToGameMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.REQUESTGOTOLOADOUT) {
                 return g.fromJson(jsonString, RequestGoToLoadoutMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.SENDLOADOUT) {
-                return g.fromJson(jsonString, SendLoadoutMessage.class);
+                return g.fromJson(jsonString, SubmitLoadoutMessage.class);
             }
         }
 
@@ -87,7 +87,7 @@ public class MessageFormatter {
             } else if (parsedMsg.messageTypeID == MessageType.GOTOGAME) {
                 return g.fromJson(jsonString, GoToGameMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.READYTOSTART) {
-                return g.fromJson(jsonString, ReadyToStart.class);
+                return g.fromJson(jsonString, ReadyToStartMessage.class);
             }
         }
         

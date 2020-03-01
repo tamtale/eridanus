@@ -7,10 +7,10 @@ import com.week1.game.Networking.NetworkObjects.Client;
  * This is send to the 'hosting' client indicating all players have sent in
  * their tower loadout and the game can now be started
  */
-public class ReadyToStart extends ClientControlMessage {
+public class ReadyToStartMessage extends ClientControlMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.READYTOSTART;
 
-    public ReadyToStart(int playerID) {
+    public ReadyToStartMessage(int playerID) {
         super(playerID, MESSAGE_TYPE);
     }
 

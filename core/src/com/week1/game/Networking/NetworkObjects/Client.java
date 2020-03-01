@@ -5,8 +5,8 @@ import com.week1.game.MenuScreens.ScreenManager;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.Control.ClientControl.ClientControlMessage;
 import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToLoadoutMessage;
-import com.week1.game.Networking.Messages.Control.HostControl.SendLoadoutMessage;
-import com.week1.game.Networking.Messages.Control.HostControl.StartMessage;
+import com.week1.game.Networking.Messages.Control.HostControl.SubmitLoadoutMessage;
+import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToGameMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.TowerBuilder.BlockSpec;
@@ -109,12 +109,12 @@ public class Client {
     
     public void sendStartMessage() {
         // the client doesn't know its player id until later, so just use -1
-        this.sendStringMessage(MessageFormatter.packageMessage(new StartMessage(-1)));
+        this.sendStringMessage(MessageFormatter.packageMessage(new RequestGoToGameMessage(-1)));
     }
 
     public void sendLoadout(List<List<BlockSpec>> details) {
         // This is sent in the LoadoutScreen.
-        sendStringMessage(MessageFormatter.packageMessage(new SendLoadoutMessage(playerId, details)));
+        sendStringMessage(MessageFormatter.packageMessage(new SubmitLoadoutMessage(playerId, details)));
     }
 
     public void sendGoToLoadout() {
