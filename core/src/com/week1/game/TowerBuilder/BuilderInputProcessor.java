@@ -20,8 +20,6 @@ public class BuilderInputProcessor extends InputAdapter {
                 if (!Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) & !Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)){
                     screen.addBlock(screenX, screenY);
                 }
-            } else if (screen.isChangeMode()) {
-                screen.changeBlock(screenX, screenY);
             } else if (screen.isDelMode()) {
                 screen.deleteBlock(screenX, screenY);
             }
@@ -36,7 +34,7 @@ public class BuilderInputProcessor extends InputAdapter {
             screen.highlightBlock(screenX, screenY);
 
             return true;
-        } else if (screen.isChangeMode() || screen.isDelMode()) {
+        } else if (screen.isDelMode()) {
             screen.highlightTowerBlock(screenX, screenY);
         }
         return false;

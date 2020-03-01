@@ -94,46 +94,40 @@ public class TowerBuilderScreen implements Screen {
         return "HP: " + curr.getHp() +"\n Atk: " + curr.getAtk() + " \n Range: " + curr.getRange() + "\n Price: " + curr.getPrice();
     }
 
+    //Builder Input Proc to stage methods
     public boolean isBuildMode(){
         return towerStage.isBuildMode;
     }
 
-
-
     public boolean isAddMode() {
         return towerStage.isBuildMode & towerStage.isAddMode;
-    }
-
-
-    public void addBlock(int screenX, int screenY) {
-        towerCam.addBlock(screenX, screenY);
-    }
-
-    public void highlightBlock(int screenX, int screenY) {
-        towerCam.highlightBlock(screenX, screenY);
-    }
-
-    public boolean isChangeMode() {
-        return towerStage.isChangeMode & towerStage.isBuildMode;
-    }
-
-    public void changeBlock(int screenX, int screenY) {
-        towerCam.changeBlock(screenX, screenY, towerStage.getMaterialSelection());
-    }
-
-    public void stopHighlighting() {
-        towerCam.stopHighlighting();
-    }
-
-    public void highlightTowerBlock(int screenX, int screenY) {
-        towerCam.highlightTowerBlock(screenX, screenY);
     }
 
     public boolean isDelMode() {
         return towerStage.isDelMode;
     }
 
+
+
+    //Builder Input proc to cam methods
+    public void addBlock(int screenX, int screenY) {
+        towerCam.addBlock(screenX, screenY, towerStage.getMaterialSelection());
+    }
+
     public void deleteBlock(int screenX, int screenY) {
         towerCam.deleteBlock(screenX, screenY);
     }
+
+    public void highlightBlock(int screenX, int screenY) {
+        towerCam.highlightBlock(screenX, screenY);
+    }
+
+    public void highlightTowerBlock(int screenX, int screenY) {
+        towerCam.highlightTowerBlock(screenX, screenY);
+    }
+
+    public void stopHighlighting() {
+        towerCam.stopHighlighting();
+    }
+
 }

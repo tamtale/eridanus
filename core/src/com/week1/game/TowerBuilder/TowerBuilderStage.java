@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
 
 public class TowerBuilderStage {
-    //TODO - cleanup + make things static
+    //TODO - make things static?
 
     private TowerBuilderScreen screen;
     public Stage stage;
@@ -23,16 +23,11 @@ public class TowerBuilderStage {
     private SelectBox<TowerDetails> displaySelection;
     private TextButton displayButton;
 
-    //add a build button
-    //when clicked(selected) add a save button and a change material button and remove block button and add block button
-
-
     //Build mode buttons
     private TextButton buildMode;
     private TextButton saveTower;
     private TextButton addBlock;
     private TextButton removeBlock;
-    private TextButton changeMaterial;
     private SelectBox<String> materialSelection;
 
     //make skins
@@ -50,7 +45,6 @@ public class TowerBuilderStage {
     public boolean isBuildMode = false;
     public boolean isAddMode = false;
     public boolean isDelMode = false;
-    public boolean isChangeMode = false;
 
 
     public TowerBuilderStage(TowerBuilderScreen screen) {
@@ -91,7 +85,6 @@ public class TowerBuilderStage {
         buildMode = new TextButton("Build Mode", normalStyle);
         addBlock = new TextButton("Add block", normalStyle);
         removeBlock = new TextButton("Remove Block", normalStyle);
-        changeMaterial = new TextButton("Change block \n material", normalStyle);
 
         startGame = new TextButton("Start Game", normalStyle);
     }
@@ -125,18 +118,14 @@ public class TowerBuilderStage {
         stage.addActor(addBlock);
         addBlock.setVisible(false);
 
-        changeMaterial.setSize(128, 48);
-        changeMaterial.setPosition(512, 0);
-        stage.addActor(changeMaterial);
-        changeMaterial.setVisible(false);
 
         materialSelection.setSize(128, 48);
-        materialSelection.setPosition(640, 0);
+        materialSelection.setPosition(512, 0);
         stage.addActor(materialSelection);
         materialSelection.setVisible(false);
 
         removeBlock.setSize(128, 48);
-        removeBlock.setPosition(384, 48 );
+        removeBlock.setPosition(640, 0);
         stage.addActor(removeBlock);
         removeBlock.setVisible(false);
 
@@ -186,9 +175,6 @@ public class TowerBuilderStage {
                     addBlock.setStyle(pressedStyle);
 
                     //uncheck other buttons
-                    isChangeMode = false;
-                    changeMaterial.setChecked(false);
-                    changeMaterial.setStyle(normalStyle);
                     screen.stopHighlighting();
 
                     isDelMode = false;
@@ -201,29 +187,6 @@ public class TowerBuilderStage {
              }
         });
 
-        changeMaterial.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                isChangeMode = !isChangeMode;
-                if (changeMaterial.isChecked()) {
-                    changeMaterial.setStyle(pressedStyle);
-
-                    //uncheck other modes
-                    isAddMode = false;
-                    addBlock.setStyle(normalStyle);
-                    addBlock.setChecked(false);
-
-                    isDelMode = false;
-                    removeBlock.setStyle(normalStyle);
-                    removeBlock.setChecked(false);
-
-                    screen.stopHighlighting();
-
-                } else {
-                    changeMaterial.setStyle(normalStyle);
-                }
-            }
-        });
 
         removeBlock.addListener(new ClickListener() {
             @Override
@@ -233,9 +196,6 @@ public class TowerBuilderStage {
                     removeBlock.setStyle(pressedStyle);
 
                     //uncheck other buttons
-                    isChangeMode = false;
-                    changeMaterial.setChecked(false);
-                    changeMaterial.setStyle(normalStyle);
                     screen.stopHighlighting();
 
                     isAddMode = false;
@@ -265,7 +225,6 @@ public class TowerBuilderStage {
 
     private void addBuildButtons() {
         addBlock.setVisible(true);
-        changeMaterial.setVisible(true);
         materialSelection.setVisible(true);
         removeBlock.setVisible(true);
     }
@@ -273,18 +232,15 @@ public class TowerBuilderStage {
     private void removeBuildButtons() {
         //Hide buttons
         addBlock.setVisible(false);
-        changeMaterial.setVisible(false);
         materialSelection.setVisible(false);
         removeBlock.setVisible(false);
 
         //Change modes
         isAddMode = false;
-        isChangeMode = false;
         isDelMode = false;
 
         //set unpressed styles
         addBlock.setStyle(normalStyle);
-        changeMaterial.setStyle(normalStyle);
         removeBlock.setStyle(normalStyle);
 
         //unhighlight blocks
