@@ -13,6 +13,10 @@ import com.week1.game.Networking.NetworkObjects.Player;
 import java.net.InetAddress;
 import java.util.Arrays;
 
+/**
+ * This message is sent to the Host when the hosting client send it. It will only
+ * have an effect if all players have sent in their towerloadouts.
+ */
 public class StartMessage extends HostControlMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.START;
     private final static String TAG = "StartMessage";
