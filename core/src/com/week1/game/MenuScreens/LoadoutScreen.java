@@ -65,13 +65,8 @@ public class LoadoutScreen implements Screen {
             startButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                /*
-                TODO MUST block here until all people have selected their towers.
-                    Ideas: Since we know how many players there are, the host can send out a 'good to go' message when all towers are in.
-                */
-
                     Gdx.app.log("pjb3 LoadoutScreen", "About to send start message.");
-                    networkClient.sendStartMessage();
+                    networkClient.sendGoToGame();
                 }
             });
         }

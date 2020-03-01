@@ -64,11 +64,11 @@ public class MessageFormatter {
         System.out.println("About to parse as host control message: " + jsonString);
         
         if (parsedMsg != null) {
-            if (parsedMsg.messageTypeID == MessageType.START) {
+            if (parsedMsg.messageTypeID == MessageType.REQUESTGOTOGAME) {
                 return g.fromJson(jsonString, RequestGoToGameMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.REQUESTGOTOLOADOUT) {
                 return g.fromJson(jsonString, RequestGoToLoadoutMessage.class);
-            } else if (parsedMsg.messageTypeID == MessageType.SENDLOADOUT) {
+            } else if (parsedMsg.messageTypeID == MessageType.SUBMITLOADOUT) {
                 return g.fromJson(jsonString, SubmitLoadoutMessage.class);
             }
         }
@@ -103,7 +103,6 @@ public class MessageFormatter {
      */
     public static String packageMessage(Object msg) {
         String jsonString = g.toJson(msg);
-//        Gdx.app.log(TAG, "Packaged message: " + jsonString);
         return jsonString;
     }
     

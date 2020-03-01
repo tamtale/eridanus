@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class SubmitLoadoutMessage extends HostControlMessage {
 
-    private final static MessageType MESSAGE_TYPE = MessageType.SENDLOADOUT;
+    private final static MessageType MESSAGE_TYPE = MessageType.SUBMITLOADOUT;
 
     private List<List<BlockSpec>> details;
 

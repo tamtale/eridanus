@@ -18,7 +18,7 @@ public enum MessageType {
     READYTOSTART,
     
     // Host Control Messages
-    START,
-    SENDLOADOUT,
+    REQUESTGOTOGAME,
+    SUBMITLOADOUT,
     REQUESTGOTOLOADOUT,
 }

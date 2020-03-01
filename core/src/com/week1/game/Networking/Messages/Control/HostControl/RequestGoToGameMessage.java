@@ -18,7 +18,7 @@ import java.util.Arrays;
  * have an effect if all players have sent in their towerloadouts.
  */
 public class RequestGoToGameMessage extends HostControlMessage {
-    private final static MessageType MESSAGE_TYPE = MessageType.START;
+    private final static MessageType MESSAGE_TYPE = MessageType.REQUESTGOTOGAME;
     private final static String TAG = "StartMessage";
     
     public RequestGoToGameMessage(int playerID) {
