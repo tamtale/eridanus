@@ -21,8 +21,10 @@ import com.badlogic.gdx.utils.Pool;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Pair;
+import com.week1.game.Renderer.GameRenderable;
+import com.week1.game.Renderer.RenderConfig;
 
-public class GameWorld implements RenderableProvider {
+public class GameWorld implements GameRenderable {
     private Block[][][] blocks;
     private int[][] heightMap;
     private boolean refreshHeight = true; // whether or not the map has changed, warranting a new height map.
@@ -219,7 +221,6 @@ public class GameWorld implements RenderableProvider {
         return heightMap;
     }
 
-    @Override
     public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
         for (int i = 0; i < instances.length; i++) {
             for (int j = 0; j < instances[0].length; j++) {
@@ -389,5 +390,23 @@ public class GameWorld implements RenderableProvider {
     
     public int[] getWorldDimensions() {
        return new int[]{blocks.length, blocks[0].length, blocks[0][0].length};
+    }
+
+    @Override
+    public void render(RenderConfig config) {
+        ModelBatch batch = config.getModelBatch();
+        Environment env = config.getEnv();
+        batch.begin(config.getCam());
+        for (ModelInstance[][] instanceArr2: instances) {
+            for (ModelInstance[] instanceArr: instanceArr2) {
+                for (ModelInstance instance: instanceArr) {
+                    if (instance != null) {
+                        batch.render(instance, env);
+                    }
+                }
+            }
+        }
+        batch.end();
+
     }
 }

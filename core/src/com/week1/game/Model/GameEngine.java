@@ -19,6 +19,7 @@ import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.InfoUtil;
 import com.week1.game.Networking.Messages.Game.TaggedMessage;
+import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 
 import java.io.*;
@@ -30,7 +31,7 @@ import com.week1.game.Networking.Messages.MessageType;
 
 import static com.week1.game.GameScreen.THRESHOLD;
 
-public class GameEngine implements RenderableProvider {
+public class GameEngine implements GameRenderable {
 
     private GameState gameState;
     private int communicationTurn = 0;
@@ -128,11 +129,9 @@ public class GameEngine implements RenderableProvider {
         }
     }
 
-    public void render(RenderConfig renderConfig, ModelBatch modelBatch, Camera cam, Environment env) {
-      // TODO use the renderConfig to interpolate movement
-        modelBatch.begin(cam);
-        modelBatch.render(gameState, env);
-        modelBatch.end();
+    @Override
+    public void render(RenderConfig renderConfig) {
+        gameState.render(renderConfig);
     }
 
     public GameState getGameState() {
@@ -167,10 +166,6 @@ public class GameEngine implements RenderableProvider {
         return gameState.getBuildings();
     }
 
-    @Override
-    public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
-        gameState.getRenderables(renderables, pool);
-    }
     /**
      * Gets the hash associated with the current state of the game.
      * @return

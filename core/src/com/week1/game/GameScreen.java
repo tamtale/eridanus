@@ -114,11 +114,6 @@ public class GameScreen implements Screen {
 	public void createNewGame() {
 		engine = new GameEngine(new IEngineAdapter() {
 			@Override
-			public void sendToModelBatch(RenderableProvider provider) {
-			    renderer.render3D(provider);
-			}
-
-			@Override
 			public void setDefaultLocation(Vector3 location) {
 				renderer.setDefaultPosition(location);
 				renderer.setCameraToDefaultPosition();
@@ -143,7 +138,7 @@ public class GameScreen implements Screen {
 		renderer = new Renderer(new IRendererAdapter() {
 			@Override
 			public void renderSystem(RenderConfig renderConfig) {
-				engine.render(renderConfig, renderer.getModelBatch(), renderer.getCam(), renderer.getEnv());
+				engine.render(renderConfig);
 				clickOracle.render();
 			}
 

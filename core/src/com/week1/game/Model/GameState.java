@@ -6,6 +6,7 @@ import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
@@ -24,6 +25,7 @@ import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Model.World.IWorldBuilder;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.Pair;
+import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
@@ -37,7 +39,7 @@ import java.util.Map;
 import static com.week1.game.Model.StatsConfig.*;
 
 
-public class GameState implements RenderableProvider {
+public class GameState implements GameRenderable {
 
     private GameGraph graph;
 
@@ -189,11 +191,6 @@ public class GameState implements RenderableProvider {
         }else{
             Gdx.app.error("GameState - wab2", "Astar broke");
         }
-    }
-    public void render(ModelBatch modelBatch, Camera cam, RenderConfig renderConfig, int renderPlayerId) {
-        modelBatch.begin(cam);
-        modelBatch.render(world);
-        modelBatch.end();
     }
 
     public void render(Batch batch, RenderConfig renderConfig, int renderPlayerId){
@@ -467,6 +464,18 @@ public boolean findNearbyStructure(float x, float y, float z, int playerId) {
         return new PackagedGameState(turn, units, towers, getPlayerBases(), playerStats);
     }
 
+    @Override
+    public void render(RenderConfig config) {
+        world.render(config);
+        ModelBatch batch = config.getModelBatch();
+        Environment env = config.getEnv();
+        batch.begin(config.getCam());
+        for (Unit unit: units) {
+          batch.render(unit, env);
+        }
+        batch.end();
+    }
+
 
     /**
      * This inner class maintains the wrapper information for creating the wrapped version of the gamestate
@@ -517,16 +526,6 @@ public boolean findNearbyStructure(float x, float y, float z, int playerId) {
 
         public String getGameString() {
             return this.gameString;
-        }
-    }
-
-    @Override
-    public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
-        world.getRenderables(renderables, pool);
-        Unit unit;
-        for (int u = 0; u < units.size; u++) {
-            unit = units.get(u);
-            unit.getRenderables(renderables, pool);
         }
     }
 
