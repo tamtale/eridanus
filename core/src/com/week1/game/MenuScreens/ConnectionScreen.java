@@ -15,12 +15,16 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
 import com.week1.game.GameControllerSetScreenAdapter;
-import com.week1.game.Networking.NetworkObjects.Tcp.TcpClient;
-import com.week1.game.Networking.NetworkObjects.Tcp.TcpNetworkUtils;
+import com.week1.game.Networking.NetworkObjects.Client;
+import com.week1.game.Networking.NetworkObjects.NetworkUtils;
 
+/**
+ * This is the Screen where people chose to host or to join someone who is already hosting.
+ * It is preceded by the MainMenu and followed by the LoadOut Screen.
+ */
 public class ConnectionScreen implements Screen {
     private Stage connectionStage;
-    private TcpClient networkClient;
+    private Client networkClient;
     private GameControllerSetScreenAdapter gameAdapter;
     private boolean hosting;
     TextButton hostGameButton, joinGameButton, launchGameButton;
@@ -64,7 +68,7 @@ public class ConnectionScreen implements Screen {
         });
 
         launchGameButton = new TextButton("Press when done waiting for players", new Skin(Gdx.files.internal("uiskin.json")));
-        launchGameButton.setSize(200,64);
+        launchGameButton.setSize(300,64);
         launchGameButton.setPosition(
                 GameController.VIRTUAL_WIDTH / 2 - launchGameButton.getWidth(),
                 GameController.VIRTUAL_HEIGHT / 2 - 80);
@@ -102,7 +106,7 @@ public class ConnectionScreen implements Screen {
     }
 
     private void joinGame(String ip) {
-        networkClient = TcpNetworkUtils.initNetworkObjects(false, ip, 42069, gameAdapter);
+        networkClient = NetworkUtils.initNetworkObjects(false, ip, 42069, gameAdapter);
         if (networkClient == null) {
             // Something was wrong in the input
             Gdx.app.log("pjb3 - ConnectionScreen", "Ruh roh. Something is wrong, with the IP probably");
@@ -119,13 +123,13 @@ public class ConnectionScreen implements Screen {
         hostGameButton.remove();
         joinGameButton.remove();
         ipField.remove();
-        Label label1 = new Label("Your Ip is " + TcpNetworkUtils.getLocalHostAddr(), labelStyle);
+        Label label1 = new Label("Your Ip is " + NetworkUtils.getLocalHostAddr(), labelStyle);
         label1.setSize(200, 64);
         label1.setPosition(GameController.VIRTUAL_WIDTH/2 - 20 - hostGameButton.getWidth(), GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight() + 64 );
         label1.setAlignment(Align.center);
         connectionStage.addActor(label1);
 //        10.122.178.55
-        networkClient = TcpNetworkUtils.initNetworkObjects(true, null, 42069, gameAdapter);
+        networkClient = NetworkUtils.initNetworkObjects(true, null, 42069, gameAdapter);
 //        Gdx.app.log("pjb3 - ConnectionScreen", "Created the Host network object");
         connectionStage.addActor(launchGameButton);
 

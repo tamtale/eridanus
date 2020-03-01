@@ -1,15 +1,14 @@
-package com.week1.game.Networking.NetworkObjects.Tcp;
+package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.GameControllerSetScreenAdapter;
 import com.week1.game.MenuScreens.ScreenManager;
-import com.week1.game.Networking.NetworkObjects.Host;
 
 import java.net.*;
 import java.nio.channels.SocketChannel;
 import java.util.Enumeration;
 
-public class TcpNetworkUtils {
+public class NetworkUtils {
     private static final String TAG = "NetworkUtils - lji1";
     private static String addr;
     public static String getLocalHostAddr() {
@@ -17,8 +16,8 @@ public class TcpNetworkUtils {
 //        https://stackoverflow.com/questions/8462498/how-to-determine-internet-network-interface-in-java
 
 
-        if (TcpNetworkUtils.addr != null ) {
-            return TcpNetworkUtils.addr;
+        if (NetworkUtils.addr != null ) {
+            return NetworkUtils.addr;
         }
         
         String ip;
@@ -47,8 +46,8 @@ public class TcpNetworkUtils {
                             // If it works, then this ip is usable
                             socket.connect(new InetSocketAddress("google.com", 80));
                             Gdx.app.log(TAG, "Obtained local host address: " + addr.getHostAddress() + " with port: " + i);
-                            TcpNetworkUtils.addr = addr.getHostAddress();
-                            return TcpNetworkUtils.addr;
+                            NetworkUtils.addr = addr.getHostAddress();
+                            return NetworkUtils.addr;
                         } catch (Exception e) {
                             Gdx.app.log(TAG, "Port failed on: " + addr + ": " + i);
 //                            e.printStackTrace();
@@ -69,11 +68,11 @@ public class TcpNetworkUtils {
      * act as a client. (Even when hosting, the instance also behaves as a client.)
      * @return The client object
      */
-    public static TcpClient initNetworkObjects(boolean isHost, String hostIP, Integer port, GameControllerSetScreenAdapter gameAdapter) {
+    public static Client initNetworkObjects(boolean isHost, String hostIP, Integer port, GameControllerSetScreenAdapter gameAdapter) {
         final String TAG = "initNetworkObjects - lji1";
         Gdx.app.log(TAG, "Local host address: " + getLocalHostAddr());
 
-        TcpClient c =  null;
+        Client c =  null;
         try {
             if (isHost) {
                 Gdx.app.log(TAG, "Host option chosen.");
@@ -88,7 +87,7 @@ public class TcpNetworkUtils {
 
                 // Now make the client stuff
                 ScreenManager sm = new ScreenManager(gameAdapter, true);
-                c = new TcpClient(localIpAddr, h.getPort(), sm);
+                c = new Client(localIpAddr, h.getPort(), sm);
 
             } else {
                 Gdx.app.log(TAG, "Client option chosen.");
@@ -96,7 +95,7 @@ public class TcpNetworkUtils {
 
                 try {
                     ScreenManager sm = new ScreenManager(gameAdapter, false);
-                    c = new TcpClient(hostIP, port, sm);
+                    c = new Client(hostIP, port, sm);
                 }
                 catch (Exception e) {
                     throw new IndexOutOfBoundsException("Expected arguments in format: client <ip address> <portnumber> <start (optional)>");

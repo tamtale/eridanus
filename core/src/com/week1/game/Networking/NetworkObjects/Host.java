@@ -5,7 +5,6 @@ import com.week1.game.Networking.Messages.Control.ClientControl.PlayerIdMessage;
 import com.week1.game.Networking.Messages.Control.HostControl.HostControlMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.Update;
-import com.week1.game.Networking.NetworkObjects.Tcp.TcpNetworkUtils;
 import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.io.DataInputStream;
@@ -22,6 +21,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.week1.game.Networking.Messages.MessageFormatter.parseHostControlMessage;
 
+/**
+ * This is the Host that receives and broadcasts messages to all of the clients.
+ */
 public class Host {
 
     private static final String TAG = "Host - lji1/pjb3";
@@ -44,7 +46,7 @@ public class Host {
         this.serverSocket = new ServerSocket(port);
         
         Gdx.app.log(TAG, "Creating socket for host instance with address: " +
-                TcpNetworkUtils.getLocalHostAddr() + " on port: " + this.port);
+                NetworkUtils.getLocalHostAddr() + " on port: " + this.port);
         
     }
     

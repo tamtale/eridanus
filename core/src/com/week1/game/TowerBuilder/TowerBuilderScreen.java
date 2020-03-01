@@ -2,7 +2,7 @@ package com.week1.game.TowerBuilder;
 
 import com.badlogic.gdx.Screen;
 import com.week1.game.GameController;
-import com.week1.game.MainMenuScreen;
+import com.week1.game.MenuScreens.MainMenuScreen;
 
 public class TowerBuilderScreen implements Screen {
 

@@ -8,7 +8,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector3;
 
-import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
+import static com.week1.game.MenuScreens.GameScreen.PIXELS_PER_UNIT;
 
 public class GameWorld {
     private Block[][][] blocks;

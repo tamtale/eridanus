@@ -1,6 +1,6 @@
 package com.week1.game.Networking.Messages.Control.ClientControl;
 
-import com.week1.game.Networking.NetworkObjects.AClient;
+import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.MessageType;
 
@@ -9,5 +9,5 @@ public abstract class ClientControlMessage extends AMessage {
         super(playerID, messageTypeID);
     }
     
-    public abstract void updateClient(AClient c);
+    public abstract void updateClient(Client c);
 }

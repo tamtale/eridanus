@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -13,8 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
-import com.week1.game.GameScreen;
-import com.week1.game.Networking.NetworkObjects.Tcp.TcpClient;
+import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerPresets;
 
@@ -23,10 +23,28 @@ import java.util.List;
 
 public class LoadoutScreen implements Screen {
     private Stage loadoutStage;
-    private TcpClient networkClient;
+    private Client networkClient;
     private boolean sentTowers = false, isHostingClient;
 
-    public LoadoutScreen(TcpClient client, boolean isHostingClient) {
+    private TextButton startButton;
+
+    private static TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down"),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down"),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down"), new BitmapFont());
+
+    private static TextButton.TextButtonStyle pressedStyle = new TextButton.TextButtonStyle(
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.DARK_GRAY),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.DARK_GRAY),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.DARK_GRAY), new BitmapFont());
+
+
+    private static TextButton.TextButtonStyle disabledStyle = new TextButton.TextButtonStyle(
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLACK),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLACK),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLACK), new BitmapFont());
+
+    public LoadoutScreen(Client client, boolean isHostingClient) {
         this.networkClient = client;
         this.isHostingClient = client.getScreenManager().getIsHost();
 
@@ -34,12 +52,15 @@ public class LoadoutScreen implements Screen {
         loadoutStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 
         if (isHostingClient) {
-            TextButton startbtn = new TextButton("Launch Game! [ONLY FOR HOST]", new Skin(Gdx.files.internal("uiskin.json")));
-            startbtn.setSize(200, 64);
-            startbtn.setPosition(GameController.VIRTUAL_WIDTH / 2 - startbtn.getWidth(), GameController.VIRTUAL_HEIGHT / 2 - startbtn.getHeight());
-            loadoutStage.addActor(startbtn);
+            startButton = new TextButton("Waiting for all players to chose loadouts...", disabledStyle);
+            startButton.setTouchable(Touchable.disabled);
+            startButton.setDisabled(true);
+            startButton.setSize(200, 64);
+            startButton.setPosition(
+                    GameController.VIRTUAL_WIDTH / 2 - startButton.getWidth(),
+                    GameController.VIRTUAL_HEIGHT / 2 - 80 - startButton.getHeight());loadoutStage.addActor(startButton);
 
-            startbtn.addListener(new ClickListener() {
+            startButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                 /*
@@ -53,18 +74,22 @@ public class LoadoutScreen implements Screen {
             });
         }
 
-
         TextButton loadoutSelector = new TextButton("Confirm Your Loadout!", new Skin(Gdx.files.internal("uiskin.json")));
         loadoutSelector.setSize(200,64);
         loadoutSelector.setPosition(
                 GameController.VIRTUAL_WIDTH / 2 - loadoutSelector.getWidth(),
-                GameController.VIRTUAL_HEIGHT / 2 - 80 - loadoutSelector.getHeight());
+                GameController.VIRTUAL_HEIGHT / 2 - loadoutSelector.getHeight());
+
         loadoutStage.addActor(loadoutSelector);
+
 
         loadoutSelector.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                sendTowerChoices(Arrays.asList(
+                loadoutSelector.setStyle(pressedStyle);
+                loadoutSelector.setText("Loadout confirmed.");
+                loadoutSelector.setTouchable(Touchable.disabled);
+                sendLoadout(Arrays.asList(
                         TowerPresets.getTower(1).getLayout(),
                         TowerPresets.getTower(3).getLayout(),
                         TowerPresets.getTower(5).getLayout()));
@@ -83,6 +108,15 @@ public class LoadoutScreen implements Screen {
         label1.setAlignment(Align.center);
         loadoutStage.addActor(label1);
 
+        networkClient.getScreenManager().setGameReadySequence(()-> {
+            if (isHostingClient) {
+                startButton.setDisabled(false);
+                startButton.setStyle(normalStyle);
+                startButton.setTouchable(Touchable.enabled);
+                startButton.setText("Launch Game");
+            }
+        });
+
         createNewGame(); // MAKE the game but dont start it yet.
         Gdx.input.setInputProcessor(loadoutStage);
     }
@@ -94,9 +128,9 @@ public class LoadoutScreen implements Screen {
         Gdx.app.log("pjb3 - LoutoutScreen", "the GameScreen is being created NOW. It has been added to the client");
     }
 
-    public void sendTowerChoices(List<List<BlockSpec>> details) {
+    public void sendLoadout(List<List<BlockSpec>> details) {
         if (!sentTowers) {
-            networkClient.sendTowersMessage( details);
+            networkClient.sendLoadout(details);
             sentTowers = false;
         }
     }

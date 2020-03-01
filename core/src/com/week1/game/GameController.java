@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.week1.game.MenuScreens.MainMenuScreen;
 
 public class GameController implements ApplicationListener {
     Screen currScreen;

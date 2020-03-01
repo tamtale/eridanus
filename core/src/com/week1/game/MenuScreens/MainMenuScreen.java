@@ -1,4 +1,4 @@
-package com.week1.game;
+package com.week1.game.MenuScreens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -11,9 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.week1.game.MenuScreens.ConnectionScreen;
+import com.week1.game.GameController;
 import com.week1.game.TowerBuilder.TowerBuilderScreen;
 
+/**
+ * Spashscreen of the game
+ */
 public class MainMenuScreen implements Screen {
     GameController game;
     public Stage stage;

@@ -1,4 +1,4 @@
-package com.week1.game.Networking.NetworkObjects.Tcp;
+package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.MenuScreens.ScreenManager;
@@ -9,7 +9,6 @@ import com.week1.game.Networking.Messages.Control.HostControl.SendLoadoutMessage
 import com.week1.game.Networking.Messages.Control.HostControl.StartMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
-import com.week1.game.Networking.NetworkObjects.AClient;
 import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.io.DataInputStream;
@@ -19,7 +18,10 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
 
-public class TcpClient extends AClient {
+/**
+ * This is a player of the game. There is also a Client on the computer that has the host.
+ */
+public class Client {
     private static final String TAG = "Client - lji1";
  
     private Socket tcpSocket;
@@ -32,10 +34,9 @@ public class TcpClient extends AClient {
     private INetworkClientToEngineAdapter adapter;
     
     private int playerId = -1;
-    private boolean playerIDReady = false; // TODO should make this unnecessary. May be already.
     private ScreenManager screenManager;
     
-    public TcpClient(String hostIpAddr, int hostPort, ScreenManager screenManager) throws IOException {
+    public Client(String hostIpAddr, int hostPort, ScreenManager screenManager) throws IOException {
         this.hostAddress = InetAddress.getByName(hostIpAddr);
         this.hostPort = hostPort;
         this.screenManager = screenManager;
@@ -61,7 +62,6 @@ public class TcpClient extends AClient {
         }
         
     }
-    
     
     public void awaitUpdates() {
         
@@ -108,18 +108,12 @@ public class TcpClient extends AClient {
     }
     
     public void sendStartMessage() {
-        System.out.println("Trying to send start message.");
         // the client doesn't know its player id until later, so just use -1
         this.sendStringMessage(MessageFormatter.packageMessage(new StartMessage(-1)));
     }
-    
-    public void sendJoinMessage() {
-//        Gdx.app.log(TAG, "Sending join message.");
-        // the client doesn't know its player id until later, so just use -1
-//        sendStringMessage(MessageFormatter.packageMessage(new TcpJoinMessage(-1)));
-    }
 
-    public void sendTowersMessage(List<List<BlockSpec>> details) {
+    public void sendLoadout(List<List<BlockSpec>> details) {
+        // This is sent in the LoadoutScreen.
         sendStringMessage(MessageFormatter.packageMessage(new SendLoadoutMessage(playerId, details)));
     }
 
@@ -134,14 +128,8 @@ public class TcpClient extends AClient {
      */
     public void addAdapter(INetworkClientToEngineAdapter networkClientToEngineAdapter) {
         this.adapter = networkClientToEngineAdapter;
-        if (playerIDReady) {
-            // This means the message already came in and now the adapter is here it should be added
-            setPlayerId(playerId);
-            playerIDReady = false;
-        }
     }
 
-    @Override
     public ScreenManager getScreenManager() {
         return screenManager;
     }

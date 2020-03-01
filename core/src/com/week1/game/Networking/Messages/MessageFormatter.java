@@ -2,10 +2,7 @@ package com.week1.game.Networking.Messages;
 
 import com.badlogic.gdx.Gdx;
 import com.google.gson.Gson;
-import com.week1.game.Networking.Messages.Control.ClientControl.ClientControlMessage;
-import com.week1.game.Networking.Messages.Control.ClientControl.GoToGameMessage;
-import com.week1.game.Networking.Messages.Control.ClientControl.GoToLoadoutMessage;
-import com.week1.game.Networking.Messages.Control.ClientControl.PlayerIdMessage;
+import com.week1.game.Networking.Messages.Control.ClientControl.*;
 import com.week1.game.Networking.Messages.Control.HostControl.*;
 import com.week1.game.Networking.Messages.Game.*;
 
@@ -89,6 +86,8 @@ public class MessageFormatter {
                 return g.fromJson(jsonString, GoToLoadoutMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.GOTOGAME) {
                 return g.fromJson(jsonString, GoToGameMessage.class);
+            } else if (parsedMsg.messageTypeID == MessageType.READYTOSTART) {
+                return g.fromJson(jsonString, ReadyToStart.class);
             }
         }
         

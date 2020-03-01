@@ -1,4 +1,4 @@
-package com.week1.game;
+package com.week1.game.MenuScreens;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
@@ -11,27 +11,27 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.AIMovement.AI;
+import com.week1.game.GameController;
+import com.week1.game.InfoUtil;
 import com.week1.game.Model.*;
-import com.week1.game.Model.Entities.Building;
-import com.week1.game.Model.Entities.PlayerBase;
-import com.week1.game.Model.Entities.Tower;
-import com.week1.game.Model.Entities.Unit;
+import com.week1.game.Model.Entities.*;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
-import com.week1.game.Networking.NetworkObjects.AClient;
-import com.week1.game.Networking.NetworkObjects.Tcp.TcpClient;
+import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Renderer.*;
 
 import java.util.List;
 
-
+/**
+ * This is the Screen that holds the actual game that is being played.
+ */
 public class GameScreen implements Screen {
 	public static float THRESHOLD = .2f;
 	public static int PIXELS_PER_UNIT = 64;
 	private String[] args;
-	private AClient networkClient;
+	private Client networkClient;
 	private GameEngine engine;
 	private Renderer renderer;
 	private ClickOracle clickOracle;
@@ -42,7 +42,7 @@ public class GameScreen implements Screen {
 	private boolean pressedStartbtn;
 	private boolean createdTextures;
 
-	public GameScreen(TcpClient givenNetworkClient) {
+	public GameScreen(Client givenNetworkClient) {
 		// Set the logging level
 		Gdx.app.setLogLevel(Application.LOG_INFO);
 		gameStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));

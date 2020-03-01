@@ -15,6 +15,7 @@ public enum MessageType {
     PLAYERID,
     GOTOLOADOUT,
     GOTOGAME,
+    READYTOSTART,
     
     // Host Control Messages
     TCPJOIN,

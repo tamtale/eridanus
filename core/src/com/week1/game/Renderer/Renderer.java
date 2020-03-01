@@ -16,7 +16,7 @@ import com.week1.game.InfoUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
+import static com.week1.game.MenuScreens.GameScreen.PIXELS_PER_UNIT;
 
 public class Renderer {
     private Batch batch;

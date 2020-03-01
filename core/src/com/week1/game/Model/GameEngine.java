@@ -18,7 +18,7 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
-import static com.week1.game.GameScreen.THRESHOLD;
+import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
 
 public class GameEngine {
 
@@ -46,12 +46,10 @@ public class GameEngine {
                     Vector3 position = new Vector3();
                     PlayerBase myBase = null;
                     for (PlayerBase playerBase: gameState.getPlayerBases()) {
-                        Gdx.app.log("pjb3- DEBUGGING 234GameEngine", "" + playerBase.toString());
                         if (playerBase.getPlayerId() == enginePlayerId) {
                             myBase = playerBase;
                         }
                     }
-                    Gdx.app.log("pjb3- DEBUGGING GameEngine", "" + myBase + "   " + gameState.getPlayerBases().size + enginePlayerId);
                     position.set(myBase.getX(), myBase.getY(), 0);
                     engineToRenderer.setDefaultLocation(position);
                 });
@@ -84,13 +82,7 @@ public class GameEngine {
         // Modify things like mana, deal damage, moving units, and checking if the game ends
         synchronousUpdateState();
 
-        // Process the messages that come in, if there are any.
-        // prints a message whether or not it has messages to process
-        if (messages.isEmpty()) {
-            Gdx.app.log("pjb3 - message processing", "Info: queue empty!");
-        } else {
-            Gdx.app.log("pjb3 - message processing", "Info: queue nonempty!");
-        }
+        // Process the messages that come in, if there are any
         for (GameMessage message : messages) {
             Gdx.app.log("GameEngine: receiveMessages()", "processing message");
             message.process(this, gameState, util);
