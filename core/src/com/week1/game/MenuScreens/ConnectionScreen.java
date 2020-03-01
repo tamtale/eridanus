@@ -45,10 +45,6 @@ public class ConnectionScreen implements Screen {
         hostGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                /*
-                TODO MUST block here until all people have selected their towers.
-                    Ideas: Since we know how many players there are, the host can send out a 'good to go' message when all towers are in.
-                */
                 hostGame();
             }
         });
@@ -140,7 +136,6 @@ public class ConnectionScreen implements Screen {
             Gdx.app.log("pjb3 - ConnectionScreen", "No. You must be host to move the game onward. How did you even click this");
             return;
         }
-//        Gdx.app.log("pjb3 - ConnectionScreen", "Trying to send the GoToLoadout command");
         networkClient.sendGoToLoadout(); // Send the request for everyone to move to the loadout screen.
     }
 

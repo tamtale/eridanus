@@ -4,7 +4,7 @@ import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Networking.NetworkObjects.Client;
 
 /**
- * This message is sent to a player right after they connect to the Host with a TCPJoinMessage
+ * This message is sent to a player right after they connect to the Host
  */
 public class PlayerIdMessage extends ClientControlMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.PLAYERID;

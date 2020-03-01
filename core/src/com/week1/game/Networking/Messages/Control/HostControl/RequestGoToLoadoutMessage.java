@@ -8,6 +8,10 @@ import com.week1.game.Networking.NetworkObjects.Player;
 
 import java.net.InetAddress;
 
+/**
+ * This is sent by the client on the host when it is asking the host to move ALL clients
+ * to the Loadout screen when everyone has connected.
+ */
 public class RequestGoToLoadoutMessage extends HostControlMessage {
     private final  static MessageType type = MessageType.REQUESTGOTOLOADOUT;
 

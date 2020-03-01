@@ -21,6 +21,10 @@ import com.week1.game.TowerBuilder.TowerPresets;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This is the screen that you chose your loadout in. This is the screen that is returned to
+ * after a game ends so players can choose their loadout again and play another game
+ */
 public class LoadoutScreen implements Screen {
     private Stage loadoutStage;
     private Client networkClient;
@@ -47,9 +51,7 @@ public class LoadoutScreen implements Screen {
     public LoadoutScreen(Client client, boolean isHostingClient) {
         this.networkClient = client;
         this.isHostingClient = client.getScreenManager().getIsHost();
-
-        Gdx.app.log("pjb3 - LoadoutScreen.java", "creating Loadout Screen. In contructor");
-        loadoutStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
+        this.loadoutStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 
         if (isHostingClient) {
             startButton = new TextButton("Waiting for all players to chose loadouts...", disabledStyle);

@@ -18,8 +18,6 @@ public enum MessageType {
     READYTOSTART,
     
     // Host Control Messages
-    TCPJOIN,
-    UDPJOIN,
     START,
     SENDLOADOUT,
     REQUESTGOTOLOADOUT,
