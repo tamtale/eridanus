@@ -34,4 +34,12 @@ public class PlayerStat {
     public void giveMana(double amount) { this.mana += amount; }
 
     public void regenMana(float delta) { mana += regen_rate * delta; }
+
+    @Override
+    public String toString() {
+        return "PlayerStat{" +
+                "mana=" + mana +
+                ", regen_rate=" + regen_rate +
+                '}';
+    }
 }

@@ -7,7 +7,14 @@ public enum MessageType {
     MOVE,
     CREATETOWER,
     INIT,
+    CHECKSYNC,
+    SYNCERR,
+    TOWERDETAILS,
     
-    // Control Messages
-    PLAYERID
+    // Client Control Messages
+    PLAYERID,
+    
+    // Host Control Messages
+    JOIN,
+    START
 }

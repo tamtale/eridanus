@@ -1,4 +1,5 @@
 package com.week1.game.Model;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -10,66 +11,101 @@ import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.week1.game.Model.Entities.Building;
-import com.week1.game.Model.Entities.PlayerBase;
+import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.World.Basic4WorldBuilder;
 import com.week1.game.Model.World.SmallWorldBuilder;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.InfoUtil;
+import com.week1.game.Networking.Messages.Game.TaggedMessage;
 import com.week1.game.Renderer.RenderConfig;
 
+import java.io.*;
+import java.nio.channels.FileChannel;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Queue;
+import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
+import com.week1.game.Networking.Messages.MessageType;
 
 import static com.week1.game.GameScreen.THRESHOLD;
 
 public class GameEngine implements RenderableProvider {
 
     private GameState gameState;
-    private ConcurrentLinkedQueue<GameMessage> messageQueue;
     private int communicationTurn = 0;
     private SpriteBatch spriteBatch;
-    private IEngineToRendererAdapter engineToRenderer;
+    private IEngineAdapter adapter;
     private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
     private InfoUtil util;
     private boolean sentWinLoss = false, sentGameOver = false;
+    private Queue<TaggedMessage> replayQueue;
+    private boolean isStarted = false;
+    BufferedWriter writer;
 
-    public Batch getSpriteBatch() {
-        return spriteBatch;
-    }
-
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter, InfoUtil util) {
-        messageQueue = new ConcurrentLinkedQueue<>();
+    public GameEngine(IEngineAdapter adapter, Queue<TaggedMessage> replayQueue, InfoUtil util) {
+        this.replayQueue = replayQueue;
+        this.adapter = adapter;
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
         gameState = new GameState(
                 SmallWorldBuilder.ONLY,
                 () -> {
                     Vector3 position = new Vector3();
-                    PlayerBase myBase = null;
-                    for (PlayerBase playerBase: gameState.getPlayerBases()) {
+                    Tower myBase = null;
+                    for (Tower playerBase: gameState.getPlayerBases()) {
                         if (playerBase.getPlayerId() == enginePlayerId) {
                             myBase = playerBase;
                         }
                     }
                     position.set(myBase.getX(), myBase.getY(), 0);
-                    engineToRenderer.setDefaultLocation(position);
+                    adapter.setDefaultLocation(position);
                 });
         Gdx.app.log("wab2- GameEngine", "gameState built");
         spriteBatch = new SpriteBatch();
-        engineToRenderer = engineToRendererAdapter;
         this.util = util;
+
+        // Initialize and truncate the log file for the engine and Error log.
+        try {
+            File logFile = new File("logs/STATE-ERROR-LOG.txt");
+            FileChannel outChan = new FileOutputStream(logFile, true).getChannel();
+            outChan.truncate(0);
+
+            logFile = new File("logs/LOCAL-SYNC-STATE-LOG.txt");
+            writer = new BufferedWriter(new FileWriter(logFile, true));
+            outChan = new FileOutputStream(logFile, true).getChannel();
+            outChan.truncate(0);
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void receiveMessages(List<? extends GameMessage> messages) {
         communicationTurn += 1;
-
-        // TODO unit movement should be 'reverted' and then stepped here in the long term so state is consistent.
+        // Modify things like mana, deal damage, moving units, and checking if the game ends
         synchronousUpdateState();
+        for (GameMessage message : messages) {
+            message.process(this, gameState, util);
+        }
+        // Process the replay messages.
+        for (TaggedMessage message = replayQueue.peek(); message != null && message.turn == communicationTurn; message = replayQueue.peek()) {
+            replayQueue.poll();
+            message.gameMessage.process(this, gameState, util);
+        }
 
-        Gdx.app.log("ttl4 - receiveMessages", "communication turn: " + communicationTurn);
+        if (communicationTurn % 10 == 0) {
+            // Time to sync up!
+            adapter.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash(), communicationTurn));
 
-        messageQueue.addAll(messages);
+            // Log the state to the file
+            try {
+                String newContent = "Turn: " + communicationTurn + " hash: " + getGameStateHash() + " String: " + getGameStateString() + "\n";
+                writer.append(newContent);
+                writer.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void synchronousUpdateState() {
@@ -80,33 +116,20 @@ public class GameEngine implements RenderableProvider {
         // Check the win/loss/restart conditions
         if (!sentWinLoss) {
             if (!gameState.isPlayerAlive(enginePlayerId)) {
-                engineToRenderer.endGame(0); // TODO make an enum probably im tired
+                adapter.endGame(0); // TODO make an enum probably im tired
                 sentWinLoss = true;
             } else if (gameState.checkIfWon(enginePlayerId)) {
-                engineToRenderer.endGame(1); // TODO same as above
+                adapter.endGame(1); // TODO same as above
                 sentWinLoss = true;
             }
         }
         if (!sentGameOver && gameState.getGameOver()) {
-            engineToRenderer.gameOver();
+            adapter.gameOver();
         }
     }
 
-    public void processMessages() {
-        if (messageQueue.isEmpty()) {
-            Gdx.app.log("ttl4 - message processing", "queue empty!");
-            return;
-        } else {
-            Gdx.app.log("GameEngine: processMessages()", "queue nonempty!");
-        }
-        for (GameMessage message = messageQueue.poll(); message != null; message = messageQueue.poll()) {
-            Gdx.app.log("GameEngine: processMessages()", "processing message");
-            message.process(gameState, util);
-            Gdx.app.log("GameEngine: processMessages()", "done processing message");
-        }
-    }
-
-    public void render(RenderConfig renderConfig, ModelBatch modelBatch, Camera cam, Environment env){
+    public void render(RenderConfig renderConfig, ModelBatch modelBatch, Camera cam, Environment env) {
+      // TODO use the renderConfig to interpolate movement
         modelBatch.begin(cam);
         modelBatch.render(gameState, env);
         modelBatch.end();
@@ -117,10 +140,14 @@ public class GameEngine implements RenderableProvider {
     }
 
     /*
-     * Whether or not the first communication message has been received from the host.
+     * whether the host has explicitly sent a message to tell the GameEngine to start
      */
     public boolean started() {
-        return communicationTurn > 0;
+        return isStarted;
+    }
+    
+    public void start() {
+        isStarted = true;
     }
 
     /**
@@ -143,5 +170,24 @@ public class GameEngine implements RenderableProvider {
     @Override
     public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
         gameState.getRenderables(renderables, pool);
+    }
+    /**
+     * Gets the hash associated with the current state of the game.
+     * @return
+     */
+    public int getGameStateHash() {
+        GameState.PackagedGameState wrapped = gameState.packState(communicationTurn);
+//        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
+        return wrapped.getHash();
+    }
+
+    public String getGameStateString() {
+        GameState.PackagedGameState wrapped = gameState.packState(communicationTurn);
+//        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
+        return wrapped.getGameString();
+    }
+
+    public int getTurn() {
+        return communicationTurn;
     }
 }

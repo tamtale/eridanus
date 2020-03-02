@@ -1,11 +1,14 @@
 package com.week1.game.TowerBuilder;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
 
@@ -35,8 +38,12 @@ public class TowerBuilderStage {
 
     private void setWidgets() {
         sw = new StatsWidget();
-        sw.setLblTxt(builder.getCurrTower().getHp(), builder.getCurrTower().getAtk(),
-                builder.getCurrTower().getRange(), builder.getCurrTower().getPrice());
+        sw.setLblTxt(
+                (int)builder.getCurrTowerDetails().getHp(),
+                (int)builder.getCurrTowerDetails().getAtk(),
+                (int)builder.getCurrTowerDetails().getRange(),
+                (int)builder.getCurrTowerDetails().getPrice()
+        );
 
 
         for (int i = 0; i < builder.presets.NUM_PRESETS; i ++) {
@@ -48,6 +55,8 @@ public class TowerBuilderStage {
     }
 
     private void configureWidgets() {
+        stage.addActor(new Image(new TextureRegionDrawable(new Texture("fuzzy_galaxy.png"))));
+
         //Stats widget things
         sw.setSize(200,150);
         sw.setPosition(GameController.VIRTUAL_WIDTH - 250, GameController.VIRTUAL_HEIGHT - 200);
@@ -66,6 +75,9 @@ public class TowerBuilderStage {
         startGame.setPosition(64, GameController.VIRTUAL_HEIGHT - 200);
         stage.addActor(startGame);
 
+
+
+
     }
 
     private void setListeners() {
@@ -77,9 +89,14 @@ public class TowerBuilderStage {
             towerButtons.get(i).addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    Tower currTower = builder.presets.getTower(finalI + 1);
-                    builder.setCurrTower(currTower);
-                    sw.setLblTxt(currTower.getHp(), currTower.getAtk(), currTower.getRange(), currTower.getPrice());
+                    TowerDetails currTowerDetails = builder.presets.getTower(finalI + 1);
+                    builder.setCurrTowerDetails(currTowerDetails);
+                    sw.setLblTxt(
+                            (int) currTowerDetails.getHp(),
+                            (int) currTowerDetails.getAtk(),
+                            (int) currTowerDetails.getRange(),
+                            (int) currTowerDetails.getPrice()
+                    );
                 }
             });
 

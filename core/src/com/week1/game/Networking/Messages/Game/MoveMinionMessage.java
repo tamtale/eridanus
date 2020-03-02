@@ -1,6 +1,7 @@
 package com.week1.game.Networking.Messages.Game;
 
 import com.badlogic.gdx.utils.Array;
+import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.MessageType;
@@ -11,19 +12,28 @@ public class MoveMinionMessage extends GameMessage {
 
     private float x;
     private float y;
-    private Array<Integer> minionIDs;
+    private Array<Integer> minionIDs = new Array<>();
 
-    public MoveMinionMessage(float x, float y, int playerID, Array<Unit> minions) {
-        super(playerID, MESSAGE_TYPE);
+    public MoveMinionMessage(float x, float y, int playerID, Array<Unit> minions, int intHash) {
+        super(playerID, MESSAGE_TYPE, intHash);
         this.x = x;
         this.y = y;
 
-        this.minionIDs = new Array<>();
         minions.forEach((minion) -> minionIDs.add(minion.ID));
-
     }
+
+    public MoveMinionMessage(float x, float y, int playerID, int intHash, int ... ids) {
+        super(playerID, MESSAGE_TYPE, intHash);
+        this.x = x;
+        this.y = y;
+        for (int id: ids) {
+          minionIDs.add(id);
+        }
+    }
+
+
     @Override
-    public boolean process(GameState inputState, InfoUtil util){
+    public boolean process(GameEngine engine, GameState inputState, InfoUtil util){
         float centerX = 0;//x - inputState.getMinionById(minionIDs.get(0)).x;
         float centerY = 0;//y - inputState.getMinionById(minionIDs.get(0)).y;
         int goodMinions = 0;
@@ -32,8 +42,8 @@ public class MoveMinionMessage extends GameMessage {
             Unit minion = inputState.getMinionById(id);
             if (minion != null) {
                 goodMinions++;
-                centerX += minion.x;
-                centerY += minion.y;
+                centerX += minion.getX();
+                centerY += minion.getY();
             }
         }
 

@@ -1,5 +1,6 @@
 package com.week1.game.Networking.Messages.Game;
 
+import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.InfoUtil;
@@ -10,14 +11,19 @@ public class InitMessage extends GameMessage {
     
     private int numPlayers;
 
-    public InitMessage(int numPlayers, int playerID){
-        super(playerID, MESSAGE_TYPE);
+    public InitMessage(int numPlayers, int playerID, int intHash){
+        super(playerID, MESSAGE_TYPE, intHash);
         this.numPlayers = numPlayers;
     }
 
     @Override
-    public boolean process(GameState inputState, InfoUtil util){
+    public boolean process(GameEngine engine, GameState inputState, InfoUtil util){
         inputState.initializeGame(this.numPlayers);
+
+        // The tower details message is the last initialization message sent by the host, so
+        // start the engine
+        engine.start();
+        
         return true;
     }
 

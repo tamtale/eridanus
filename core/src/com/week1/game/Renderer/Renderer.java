@@ -28,11 +28,8 @@ public class Renderer {
     private Environment env;
     private Vector3 touchPos = new Vector3();
     private Vector3 defaultPosition = new Vector3(50, 50, 0);
-    private IRendererToEngineAdapter engineAdapter;
-    private IRendererToNetworkAdapter networkAdapter;
-    private IRendererToClickOracleAdapter clickOracleAdapter;
-    private IRendererToGameScreenAdapter gameScreenAdapter;
-    private RenderConfig renderConfig;
+    private IRendererAdapter adapter;
+    private RenderConfig renderConfig = new RenderConfig(false, false, 0);
     private BitmapFont font = new BitmapFont();
     private Vector3 panning = new Vector3();
     private Map<Direction, Vector3> directionToVector;
@@ -51,16 +48,10 @@ public class Renderer {
     private int winState = -1;
     private InfoUtil util;
 
-    public Renderer(IRendererToEngineAdapter engineAdapter,
-                    IRendererToNetworkAdapter networkAdapter,
-                    IRendererToClickOracleAdapter clickOracleAdapter,
-                    IRendererToGameScreenAdapter gameScreenAdapter,
+    public Renderer(IRendererAdapter clickOracleAdapter,
                     InfoUtil util) {
-        this.engineAdapter = engineAdapter;
-        this.networkAdapter = networkAdapter;
-        this.clickOracleAdapter = clickOracleAdapter;
+        this.adapter = clickOracleAdapter;
         this.util = util;
-        this.gameScreenAdapter = gameScreenAdapter;
     }
 
     public ModelBatch getModelBatch() {
@@ -79,12 +70,14 @@ public class Renderer {
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         env.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(5, 0, 15);
-        cam.lookAt(5,10,0);
+        cam.position.set(-8, 20, 30);
+        // cam.lookAt(10,15,0);
+        cam.rotate(Vector3.X, 45f);
+        cam.position.set(-8, 20, 30);
         cam.near = 1f;
-        cam.far = 300f;
+        cam.far = 500f;
         cam.update();
-        gameButtonsStage = new GameButtonsStage(clickOracleAdapter, gameScreenAdapter);
+        gameButtonsStage = new GameButtonsStage(adapter);
         cam.update();
     }
 
@@ -129,13 +122,13 @@ public class Renderer {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         startBatch();
         font.setColor(Color.WHITE);
-        font.draw(batch, "Host IP:" + networkAdapter.getHostAddr(), 50, 50);
+        font.draw(batch, "Host IP:" + adapter.getHostAddr(), 50, 50);
         endBatch();
     }
 
     public void drawPlayerUI() {
         startBatch();
-        gameButtonsStage.renderUI((int)engineAdapter.getPlayerMana(networkAdapter.getPlayerId()));
+        gameButtonsStage.renderUI((int) adapter.getPlayerMana(adapter.getPlayerId()));
         endBatch();
     }
 
@@ -154,9 +147,8 @@ public class Renderer {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         updateCamera();
-        renderConfig = new RenderConfig(getShowAttackRadius(), getShowSpawnRadius(), deltaTime);
-        engineAdapter.render(renderConfig);
-        clickOracleAdapter.render();
+        renderConfig.set(getShowAttackRadius(), getShowSpawnRadius(), deltaTime);
+        adapter.renderSystem(renderConfig);
         drawPlayerUI();
         util.drawMessages(batch);
     }

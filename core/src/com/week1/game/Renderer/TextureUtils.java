@@ -13,7 +13,16 @@ public class TextureUtils {
         map.dispose();
         return texture;
     }
-    
+
+    public static Texture makeHex(int width, int height, Color color) {
+        Pixmap map = new Pixmap(width, height, Pixmap.Format.RGB888);
+        map.setColor(color);
+        map.fill();
+        Texture texture = new Texture(map);
+        map.dispose();
+        return texture;
+    }
+
     public static Texture makeUnfilledRectangle(int width, int height, Color color) {
         Pixmap map = new Pixmap(width, height, Pixmap.Format.RGB888);
 

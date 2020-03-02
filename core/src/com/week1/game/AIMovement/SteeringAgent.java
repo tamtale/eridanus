@@ -235,7 +235,7 @@ public class SteeringAgent implements Steerable<Vector3> {
         // Update position and linear velocity. Velocity is trimmed to maximum speed
         boolean anyAccelerations = false;
 
-        unit.setPosition(unit.getX() + linearVelocity.x, unit.getY() + linearVelocity.y);
+        // unit.setPosition(unit.getX() + linearVelocity.x, unit.getY() + linearVelocity.y); TODO either get rid of steeringagent or address this
 //        System.out.println(steeringOutput.linear);
 //        System.out.println(steeringOutput.angular);
         // Update position and linear velocity.
