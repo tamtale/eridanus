@@ -3,18 +3,11 @@ package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.PathFinder;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.Renderable;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Pool;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Entities.*;
@@ -22,22 +15,18 @@ import com.week1.game.Model.World.Block;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Model.World.IWorldBuilder;
-import com.week1.game.Model.Entities.*;
 import com.week1.game.Pair;
+import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
-import com.week1.game.TowerBuilder.TowerPresets;
-
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.week1.game.Model.StatsConfig.*;
 
 
-public class GameState implements RenderableProvider {
+public class GameState implements GameRenderable {
 
     private GameGraph graph;
 
@@ -50,6 +39,7 @@ public class GameState implements RenderableProvider {
     private Map<Integer, PlayerBase> playerBases = new HashMap<>(); // bases are just special towers, not an entirely separate class
     private Array<PlayerStat> playerStats = new Array<>();
     private Array<SteeringAgent> agents;
+    private Array<Damageable> damageables = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
     
@@ -125,16 +115,19 @@ public class GameState implements RenderableProvider {
         u.ID = minionCount;
         units.add(u);
         clickables.add(u);
+        damageables.add(u);
         minionCount += 1;
     }
 
     public void addTower(Tower t, int playerID) {
         towers.add(t);
+        damageables.add(t);
         addBuilding(t, playerID);
     }
     
     public void addBase(PlayerBase pb, int playerID) {
         playerBases.put(playerID, pb);
+        damageables.add(pb);
         addBuilding(pb, playerID);
     }
         
@@ -162,7 +155,6 @@ public class GameState implements RenderableProvider {
                     (int)(t.z + bs.getY()),
                     Block.TowerBlock.towerBlockMap.get(bs.getBlockCode()));
         }
-
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
@@ -188,46 +180,6 @@ public class GameState implements RenderableProvider {
             unit.setPath(path);
         }else{
             Gdx.app.error("GameState - wab2", "Astar broke");
-        }
-    }
-    public void render(ModelBatch modelBatch, Camera cam, RenderConfig renderConfig, int renderPlayerId) {
-        modelBatch.begin(cam);
-        modelBatch.render(world);
-        modelBatch.end();
-    }
-
-    public void render(Batch batch, RenderConfig renderConfig, int renderPlayerId){
-        boolean showAttackRadius = renderConfig.isShowAttackRadius();
-        boolean showSpawnRadius = renderConfig.isShowSpawnRadius();
-
-        Unit unit;
-        for (int indx = 0; indx < units.size; indx ++) {
-            unit = units.get(indx);
-            unit.draw(batch, renderConfig.getDelta(), showAttackRadius);
-        }
-
-        Tower tower;
-        for (int i = 0; i < towers.size; i++) {
-            tower = towers.get(i);
-            if (tower.getPlayerId() == renderPlayerId) {
-                // Only show the spawn radius for your own tower.
-                tower.draw(batch, showAttackRadius, showSpawnRadius);
-            } else {
-                tower.draw(batch, showAttackRadius, false);
-            }
-        }
-
-        for (Tower playerBase : playerBases.values()) {
-            if (playerBase.getPlayerId() == renderPlayerId) {
-                // only show the spawn radius for your own base
-                playerBase.draw(batch, false, showSpawnRadius);
-            } else {
-                playerBase.draw(batch, false, false);
-            }
-        }
-
-        for (Crystal crystal : crystals) {
-            crystal.draw(batch);
         }
     }
 
@@ -315,17 +267,20 @@ public class GameState implements RenderableProvider {
     private Damageable.DamageableVisitor<Void> deathVisitor = new Damageable.DamageableVisitor<Void>() {
         @Override
         public Void acceptTower(Tower tower) {
-            towers.removeValue(tower, false);
             Map<Vector3, Array<Connection<Vector3>>> edges = tower.getRemovedEdges();
             for(Vector3 block: edges.keySet()){
                 graph.setConnections(block, edges.get(block));
             }
+            towers.removeValue(tower, true);
+            damageables.removeValue(tower, true);
             return null;
         }
 
         @Override
         public Void acceptUnit(Unit unit) {
-            units.removeValue(unit, false);
+            units.removeValue(unit, true);
+            damageables.removeValue(unit, true);
+            clickables.removeValue(unit, true);
             return null;
         }
 
@@ -467,6 +422,28 @@ public boolean findNearbyStructure(float x, float y, float z, int playerId) {
         return new PackagedGameState(turn, units, towers, getPlayerBases(), playerStats);
     }
 
+    @Override
+    public void render(RenderConfig config) {
+        world.render(config);
+        ModelBatch modelBatch = config.getModelBatch();
+        Batch batch2D = config.getBatch();
+
+        // Render Units
+        modelBatch.begin(config.getCam());
+        for (int i = 0; i < units.size; i++) {
+            units.get(i).render(config);
+        }
+        modelBatch.end();
+
+        // Render overlay stuff
+        batch2D.begin();
+        for (int i = 0; i < damageables.size; i++) {
+            damageables.get(i).drawHealthBar(config);
+        }
+        batch2D.end();
+
+    }
+
 
     /**
      * This inner class maintains the wrapper information for creating the wrapped version of the gamestate
@@ -517,16 +494,6 @@ public boolean findNearbyStructure(float x, float y, float z, int playerId) {
 
         public String getGameString() {
             return this.gameString;
-        }
-    }
-
-    @Override
-    public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
-        world.getRenderables(renderables, pool);
-        Unit unit;
-        for (int u = 0; u < units.size; u++) {
-            unit = units.get(u);
-            unit.getRenderables(renderables, pool);
         }
     }
 

@@ -82,18 +82,6 @@ public class Tower extends Building implements Damaging {
         circlePixmap.dispose();
     }
     
-    public void draw(Batch batch, boolean showAttackRadius, boolean showSpawnRadius) {
-        if (showSpawnRadius) {
-            batch.draw(colorMap.get(playerID), x - (float)placementRange, y - (float)placementRange, (float)placementRange * 2, (float)placementRange * 2);
-        }
-        if (showAttackRadius) {
-            batch.draw(rangeCircle, x - (float)range, y - (float)range, (float)range * 2, (float)range * 2);
-        }
-        batch.draw(getSkin(), this.x - (SIDELENGTH / 2f) + 0.5f, this.y - (SIDELENGTH / 2f) + 0.5f, SIDELENGTH, SIDELENGTH);
-        // TODO draw this in a UI rendering procedure
-        drawHealthBar(batch, x, y, 0.5f, SIDELENGTH, hp, maxHp);
-    }
-
     public Texture getSkin() {
         return skin;
     }
@@ -130,6 +118,16 @@ public class Tower extends Building implements Damaging {
     }
 
     @Override
+    public float getCurrentHealth() {
+        return (float) hp;
+    }
+
+    @Override
+    public float getMaxHealth() {
+        return (float) maxHp;
+    }
+
+    @Override
     public boolean isDead() {
         return this.hp <= 0;
     }
@@ -146,6 +144,11 @@ public class Tower extends Building implements Damaging {
 
     @Override
     public int getPlayerId(){return playerID;}
+
+    @Override
+    public void getPos(Vector3 pos) {
+        pos.set(x, y, z);
+    }
 
     @Override
     public float getReward() {

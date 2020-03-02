@@ -41,7 +41,7 @@ public class SmallWorldBuilder implements IWorldBuilder {
     public Vector3[] startLocations() {
         return new Vector3[] {
                 new Vector3(10, 10, 1),
-                new Vector3(20, 20, 1),
+                new Vector3(75, 10, 1),
         };
     }
 

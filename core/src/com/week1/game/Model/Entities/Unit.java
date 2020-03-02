@@ -15,6 +15,8 @@ import com.badlogic.gdx.utils.Pool;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
+import com.week1.game.Renderer.GameRenderable;
+import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Util3D;
 
 import java.util.HashMap;
@@ -25,7 +27,7 @@ import static com.week1.game.Model.StatsConfig.tempMinionRange;
 import static java.lang.Math.abs;
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
-public class Unit implements Damageable, Damaging, RenderableProvider, Clickable {
+public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     private final int playerID;
     public OutputPath path;
     private Vector3 curNode;
@@ -113,13 +115,6 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
         } else {
             moveRender(delta);
         }
-//
-//        if (showAttackRadius) {
-//            batch.draw(rangeCircle, displayX - ((float)tempMinionRange), displayY - ((float)tempMinionRange), (float)tempMinionRange * 2, (float)tempMinionRange * 2);
-//        }
-//        batch.draw(getSkin(), displayX - (SIZE / 2f), displayY - (SIZE / 2f), SIZE, SIZE);
-//        // TODO draw this in a UI rendering procedure
-//        drawHealthBar(batch, displayX, displayY, 0, SIZE, this.hp, this.maxHp);
     }
 
     @Override
@@ -201,12 +196,10 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
         }
     }
 
-    @Override
     public float getX() {
         return position.x;
     }
 
-    @Override
     public float getY() {
         return position.y;
     }
@@ -233,7 +226,22 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
 
     @Override
     public int getPlayerId(){return playerID;}
-    
+
+    @Override
+    public void getPos(Vector3 pos) {
+        pos.set(position);
+    }
+
+    @Override
+    public float getCurrentHealth() {
+        return (float) this.hp;
+    }
+
+    @Override
+    public float getMaxHealth() {
+        return (float) this.maxHp;
+    }
+
     public OutputPath getPath(){
         return path;
     }
@@ -271,10 +279,6 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
     }
     public float getDisplayY() {
         return displayPosition.y;
-    }
-
-    public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
-        modelInstance.getRenderables(renderables, pool);
     }
 
     public void setGoal(Vector3 goal) {
@@ -331,5 +335,10 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
     @Override
     public <T> T accept(ClickableVisitor<T> clickableVisitor) {
         return clickableVisitor.acceptUnit(this);
+    }
+
+    @Override
+    public void render(RenderConfig config) {
+        config.getModelBatch().render(modelInstance, config.getEnv());
     }
 }
