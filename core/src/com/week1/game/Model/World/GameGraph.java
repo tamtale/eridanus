@@ -118,12 +118,8 @@ public class GameGraph implements IndexedGraph<Vector2> {
     }
 
     public Connection<Vector2> getConnection(int fromX, int fromY, int toX, int toY){
-//        System.out.println(borders.get(new Pair<>(fromX, fromY)));
-        int i = (int) fromX - (int) toX + 1;
-        int j = (int) fromY - (int) toY + 1;
-//        for(Pair<Integer, Integer> key: borders.keySet()){
-//            System.out.println(" x " + key.key + " y " + key.value);
-//        }
+        int i = fromX - toX + 1;
+        int j = fromY - toY + 1;
         if (i < 0 || i > 2 || j < 0 || j > 2){
             return null;
         }
@@ -133,7 +129,7 @@ public class GameGraph implements IndexedGraph<Vector2> {
     public void removeConnection(int fromX, int fromY, int toX, int toY) {
         Connection<Vector2> border = getConnection(fromX, fromY, toX, toY);
         edges[fromX][fromY].removeValue(border, false);
-        int i = (int) fromX - (int) toX + 1;
+        int i = fromX - toX + 1;
         int j = (int) fromY - (int) toY + 1;
         if (i >= 0 && i <= 2 && j >= 0 && j <= 2){
             borders[fromX][fromY][i][j] = null;
