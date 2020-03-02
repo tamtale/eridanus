@@ -467,13 +467,21 @@ public boolean findNearbyStructure(float x, float y, float z, int playerId) {
     @Override
     public void render(RenderConfig config) {
         world.render(config);
-        ModelBatch batch = config.getModelBatch();
+        ModelBatch modelBatch = config.getModelBatch();
+        Batch batch2D = config.getBatch();
         Environment env = config.getEnv();
-        batch.begin(config.getCam());
+        Camera cam = config.getCam();
+        modelBatch.begin(config.getCam());
         for (Unit unit: units) {
-          batch.render(unit, env);
+          modelBatch.render(unit, env);
         }
-        batch.end();
+        modelBatch.end();
+        batch2D.begin();
+        for (int i = 0; i < units.size; i++) {
+            units.get(i).drawHealthBar(config);
+        }
+        batch2D.end();
+
     }
 
 

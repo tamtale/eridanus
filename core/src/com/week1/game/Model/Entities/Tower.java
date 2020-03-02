@@ -130,6 +130,16 @@ public class Tower extends Building implements Damaging {
     }
 
     @Override
+    public float getCurrentHealth() {
+        return 0;
+    }
+
+    @Override
+    public float getMaxHealth() {
+        return 0;
+    }
+
+    @Override
     public boolean isDead() {
         return this.hp <= 0;
     }
@@ -146,6 +156,11 @@ public class Tower extends Building implements Damaging {
 
     @Override
     public int getPlayerId(){return playerID;}
+
+    @Override
+    public void getPos(Vector3 pos) {
+        pos.set(x, y, z);
+    }
 
     @Override
     public float getReward() {

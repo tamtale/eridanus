@@ -1,7 +1,10 @@
 package com.week1.game.Model.Entities;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.Damage;
+import com.week1.game.Renderer.RenderConfig;
 
 import static com.week1.game.Model.Entities.HealthBar.getHealthBar;
 import static com.week1.game.Model.Entities.HealthBar.healthBarBackground;
@@ -26,10 +29,18 @@ public interface Damageable {
      */
     boolean takeDamage(double dmg, Damage.type damageType);
 
-    float getX();
-    float getY();
     boolean isDead();
     int getPlayerId();
+
+    /*
+     * Sets the position of pos to be the position of the damageable.
+     */
+    void getPos(Vector3 pos);
+    float getX();
+    float getY();
+
+    float getCurrentHealth();
+    float getMaxHealth();
 
     /*
      * Mana reward for destroying the unit.
@@ -43,12 +54,29 @@ public interface Damageable {
         float yPosition = y + ((sideLength / 2f) + 0.5f) + offset;
 
         batch.draw(healthBarBackground,
-                xPosition, yPosition,
-                sideLength, .5f);
+            xPosition, yPosition,
+            sideLength, .5f);
         batch.draw(getHealthBar(currentHp, maxHp),
-                xPosition, yPosition,
-                (float)((currentHp / maxHp) * sideLength), .5f);
+            xPosition, yPosition,
+            (float)((currentHp / maxHp) * sideLength), .5f);
 
+    }
+
+    /*
+     * Used for render calculations. DO NOT ACCESS PUBLICLY lol
+     */
+    Vector3 unitPosition = new Vector3();
+
+    default void drawHealthBar(RenderConfig config) {
+        float currentHealth = getCurrentHealth();
+        float maxHealth = getMaxHealth();
+        Batch batch = config.getBatch();
+        Camera cam = config.getCam();
+        this.getPos(unitPosition);
+        cam.project(unitPosition);
+        batch.draw(healthBarBackground, unitPosition.x, unitPosition.y, 5, 1f);
+        batch.draw(getHealthBar(getCurrentHealth(), getMaxHealth()),
+            unitPosition.x, unitPosition.y, currentHealth / maxHealth * 5f, 1f);
     }
 
     <T> T accept(DamageableVisitor<T> visitor);

@@ -201,12 +201,10 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
         }
     }
 
-    @Override
     public float getX() {
         return position.x;
     }
 
-    @Override
     public float getY() {
         return position.y;
     }
@@ -233,7 +231,22 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
 
     @Override
     public int getPlayerId(){return playerID;}
-    
+
+    @Override
+    public void getPos(Vector3 pos) {
+        pos.set(position);
+    }
+
+    @Override
+    public float getCurrentHealth() {
+        return (float) this.hp;
+    }
+
+    @Override
+    public float getMaxHealth() {
+        return (float) this.maxHp;
+    }
+
     public OutputPath getPath(){
         return path;
     }
