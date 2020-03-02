@@ -125,6 +125,17 @@ public class GameState implements RenderableProvider {
     public void addUnit(Unit u){
         u.ID = minionCount;
         units.add(u);
+        u.setAdapter(new Unit2StateAdapter() {
+            @Override
+            public Block getBlock(int i, int j, int k) {
+                return world.getBlock(i, j, k);
+            }
+
+            @Override
+            public int getHeight(int i, int j) {
+                return world.getHeight(i, j);
+            }
+        });
         clickables.add(u);
         minionCount += 1;
     }
@@ -172,12 +183,12 @@ public class GameState implements RenderableProvider {
         OutputPath path = new OutputPath();
         Array<Building> buildings = this.getBuildings();
 
-        for(Building building: buildings) {
-            if(building.overlap(goal.x, goal.y)) {
-                goal = building.closestPoint(unit.getX(), unit.getY());
-                break;
-            }
-        }
+//        for(Building building: buildings) {
+//            if(building.overlap(goal.x, goal.y)) {
+//                goal = building.closestPoint(unit.getX(), unit.getY());
+//                break;
+//            }
+//        }
         Vector2 goalPos = new Vector2(goal.x, goal.y);
 
         long start = System.nanoTime();

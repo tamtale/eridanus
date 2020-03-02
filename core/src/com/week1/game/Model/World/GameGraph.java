@@ -91,7 +91,6 @@ public class GameGraph implements IndexedGraph<Vector2> {
         OutputPath path = new OutputPath();
 
         if (pathFinder.searchNodePath(startNode, endNode, heuristic, path)) {
-            System.out.println("return path");
             return path;
         }
         return null;
@@ -122,7 +121,6 @@ public class GameGraph implements IndexedGraph<Vector2> {
         if (i < 0 || i > 2 || j < 0 || j > 2){
             return null;
         }
-        System.out.println("fromX " + fromX + "fromY " + fromY);
         return borders[fromX][fromY][i][j];
     }
 

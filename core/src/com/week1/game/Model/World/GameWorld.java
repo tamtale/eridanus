@@ -149,13 +149,16 @@ public class GameWorld implements RenderableProvider {
     }
 
     private void updateGraph(int i, int j, Block block) {
+        getHeightMap();
         int k = heightMap[i][j];
         for (int m = i - 1; m <= i + 1; m++) {
             for (int n = j - 1; n <= j + 1; n++) {
                 if ((m != i || n != j) && (m >= 0 && m < heightMap.length && n >= 0 && n < heightMap[0].length)) {
                     graph.removeConnection(m, n, i, j);
+                    graph.removeConnection(i, j, m, n);
                     if (Math.abs(heightMap[m][n] - k) <= 1){
                         graph.setConnection(new Vector2(m, n), new Vector2(i, j), block.getCost());
+                        graph.setConnection(new Vector2(i, j), new Vector2(m, n), blocks[m][n][heightMap[m][n]].getCost());
                     }
                 }
             }
@@ -404,5 +407,10 @@ public class GameWorld implements RenderableProvider {
 
     public int[] getWorldDimensions() {
        return new int[]{blocks.length, blocks[0].length, blocks[0][0].length};
+    }
+
+    public int getHeight(int i, int j) {
+        getHeightMap();
+        return heightMap[i][j];
     }
 }

@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Pool;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
+import com.week1.game.Model.Unit2StateAdapter;
 import com.week1.game.Util3D;
 
 import java.util.HashMap;
@@ -33,9 +34,11 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
     private Vector3 lastNode;
     private float distance;
     private float distanceTraveled;
+    Unit2StateAdapter unit2StateAdapter;
     private Vector3 goal = new Vector3();
     private boolean close;
     private boolean selected;
+    private float blockSpeed;
 
     public boolean isClicked() {
         return clicked;
@@ -138,14 +141,13 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
             if (path.getPath().size > 0) {
                 if (distanceTraveled > distance) {
                     turn = 0;
-                    Gdx.app.setLogLevel(Application.LOG_NONE);
-                    float dx = path.get(0).x - this.x;
-                    float dy = path.get(0).y - this.y;
-                    this.blockSpeed = 1f/unit2StateAdapter.getBlock((int) this.x, (int) this.y,
-                            unit2StateAdapter.getHeight((int) this.x, (int) this.y)).getCost(); //TODO: 3D
-                    if(blockSpeed != 1) {
-                        System.out.println(blockSpeed);
-                    }
+                    float dx = path.get(0).x - position.x;
+                    float dy = path.get(0).y - position.y;
+                    int height = unit2StateAdapter.getHeight((int) position.x, (int) position.y);
+                    int nxtHeight = unit2StateAdapter.getHeight((int) path.get(0).x, (int) path.get(0).y);
+                    this.blockSpeed = 1f/unit2StateAdapter.getBlock((int) position.x, (int) position.y,
+                            height).getCost(); //TODO: 3D
+                    position.z = nxtHeight + 1;
                     this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
                     double angle = Math.atan(dy / dx);
                     if (dx < 0) {
@@ -329,5 +331,9 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
     @Override
     public <T> T accept(ClickableVisitor<T> clickableVisitor) {
         return clickableVisitor.acceptUnit(this);
+    }
+
+    public void setAdapter(Unit2StateAdapter unit2StateAdapter) {
+        this.unit2StateAdapter = unit2StateAdapter;
     }
 }
