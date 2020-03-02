@@ -13,6 +13,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
 
+import java.util.ArrayList;
+
 public class TowerBuilderStage {
     //TODO - make things static?
 
@@ -72,6 +74,10 @@ public class TowerBuilderStage {
         Array<TowerDetails> presets = new Array<>();
         for (TowerDetails p: TowerPresets.presets) {
             presets.add(p);
+        }
+        //Add the custom towers
+        for (TowerDetails custom: screen.getCustomTowerList()) {
+            presets.add(custom);
         }
         displaySelection.setItems(presets);
 
@@ -292,6 +298,13 @@ public class TowerBuilderStage {
 
     public void updateStats(String towerStats) {
         sw.setLblTxt(towerStats);
+    }
+
+    public void addTowertoSelections(TowerDetails newTower) {
+        //TODO -- only allow a certain number of customizable towers
+        Array<TowerDetails> items = this.displaySelection.getItems();
+        items.add(newTower);
+        displaySelection.setItems(items);
     }
 }
 

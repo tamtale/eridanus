@@ -8,7 +8,9 @@ import com.week1.game.Model.TowerFootprint;
 import com.week1.game.Model.World.Block;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class TowerDetails {
     private double hp = 0;
@@ -47,8 +49,66 @@ public class TowerDetails {
         return model;
     }
 
-    //want to also generate dimensions, footprint, other multipliers
-    //prog generated view
+    private List<BlockSpec> parseLayoutString(String layout) {
+        List<BlockSpec> blocks = new ArrayList<>();
+
+        String blox = layout.substring(1, layout.length() - 1);
+        boolean isFirst = true;
+        for (String block: blox.split("\\(")) {
+            if (isFirst) {
+                isFirst = false;
+                continue;
+            }
+//            System.out.println("block is "+ block);
+            int i = 0;
+            int x = 0,y = 0,z = 0,code = 0;
+            for (String coord: block.split(", ")) {
+//                System.out.println("coord is: " + coord);
+                if (i == 0) {
+                    x = Integer.parseInt(coord);
+                } else if (i == 1) {
+                    y = Integer.parseInt(coord);
+                } else if (i == 2) {
+                    z = Integer.parseInt(coord);
+                } else if (i == 3) {
+                    code = Integer.parseInt(coord.substring(0, 1));
+                }
+                i += 1;
+            }
+
+            blocks.add(new BlockSpec(code, x, y, z));
+        }
+
+
+        return blocks;
+    }
+
+
+    public TowerDetails(String filename) {
+
+        //parse the name and block layout to use the other constructor
+        try {
+            List<BlockSpec> blocks = new ArrayList<>();
+
+            File myObj = new File(filename);
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                String data = myReader.nextLine();
+                blocks = parseLayoutString(data);
+            }
+            myReader.close();
+
+            String twrName = filename.substring(13, filename.length() - 11);
+            System.out.println(twrName);
+            layout = blocks;
+            name = twrName;
+            populateFields();
+
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
 
     public TowerDetails(List<BlockSpec> layout, String name) {
         this.layout = layout;
@@ -56,9 +116,8 @@ public class TowerDetails {
 
         //generate model and stats
         populateFields();
-
-
     }
+
     
     /*
         Overloaded constructor to allow us to bypass automatic stat generation, if necessary for testing

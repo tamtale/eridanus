@@ -7,6 +7,10 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.week1.game.GameController;
 import com.week1.game.GameScreen;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 public class TowerBuilderScreen implements Screen {
 
     private GameController game;
@@ -148,5 +152,18 @@ public class TowerBuilderScreen implements Screen {
     public void saveTower(String twrName) {
         towerCam.WIPTower.setName(twrName);
         towerCam.WIPTower.saveTower();
+        towerStage.addTowertoSelections(towerCam.WIPTower);
+    }
+
+    public List<TowerDetails> getCustomTowerList() {
+        ArrayList<TowerDetails> customTowers = new ArrayList<>();
+
+        File customTowerDir = new File("customTowers");
+        File[] customTowerFiles = customTowerDir.listFiles();
+        for (File f: customTowerFiles) {
+            customTowers.add(new TowerDetails(f.getPath()));
+        }
+
+        return customTowers;
     }
 }
