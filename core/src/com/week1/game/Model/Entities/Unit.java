@@ -115,13 +115,6 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
         } else {
             moveRender(delta);
         }
-//
-//        if (showAttackRadius) {
-//            batch.draw(rangeCircle, displayX - ((float)tempMinionRange), displayY - ((float)tempMinionRange), (float)tempMinionRange * 2, (float)tempMinionRange * 2);
-//        }
-//        batch.draw(getSkin(), displayX - (SIZE / 2f), displayY - (SIZE / 2f), SIZE, SIZE);
-//        // TODO draw this in a UI rendering procedure
-//        drawHealthBar(batch, displayX, displayY, 0, SIZE, this.hp, this.maxHp);
     }
 
     @Override
