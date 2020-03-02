@@ -272,7 +272,12 @@ public class TowerBuilderCamera {
         int result = selectBlock(screenX, screenY);
         if (result != -1) {
             Vector3 selectedPos = towerBlocks.get(result);
-            WIPTower.removeBlock(new BlockSpec(-1, (int) selectedPos.x, (int) selectedPos.y, (int) selectedPos.z));
+            boolean removed = WIPTower.removeBlock(new BlockSpec(-1, (int) selectedPos.x, (int) selectedPos.y, (int) selectedPos.z));
+            if (!removed) {
+                towerScreen.showErrorDialog("Couldn't remove selected block because it etiher disconnects the tower from itself or the ground");
+                return;
+            }
+
             towerScreen.updateTowerStats();
             updateInvisibloxOnDel(selectedPos);
 

@@ -205,7 +205,11 @@ public class TowerDetails {
 
     }
 
-    protected void removeBlock(BlockSpec bs) {
+    private boolean checkRemovalSafety(BlockSpec b, int blockIdx, int modelIdx) {
+        return true;
+    }
+
+    protected boolean removeBlock(BlockSpec bs) {
         int x = bs.getX();
         int y = bs.getY();
         int z = bs.getZ();
@@ -244,9 +248,13 @@ public class TowerDetails {
 
         }
 
+        if (!checkRemovalSafety(bs, blockIdx, modelIdx)) {
+            return false;
+        }
         //remove from model and layout
         layout.remove(blockIdx);
         this.model.removeIndex(modelIdx);
+
 
         //update the fields
         this.atk -= TowerMaterials.blockAtk.get(code);
@@ -259,6 +267,8 @@ public class TowerDetails {
         }
 
         this.range = newRange * 3;
+
+        return true;
 
     }
 

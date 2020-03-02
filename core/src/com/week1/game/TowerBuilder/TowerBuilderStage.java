@@ -112,18 +112,19 @@ public class TowerBuilderStage {
         enterName.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                twrName.setText("");
                 screen.saveTower(twrName.getText());
                 dialog.hide();
             }});
         cancelBtn.addListener(new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
+            twrName.setText("");
             dialog.hide();
         }});
         dialog.getContentTable().add(enterName);
         dialog.getContentTable().add(cancelBtn);
-//        dialog.setPosition(30, 30);
-//        stage.addActor(dialog);
+
 
 
         startGame = new TextButton("Start Game", normalStyle);
@@ -330,6 +331,24 @@ public class TowerBuilderStage {
     public void renderDialogs() {
         dialogStage.act();
         dialogStage.draw();
+    }
+
+    public void showDialog(String msg) {
+        TextButton Okbtn = new TextButton("OK", new Skin(Gdx.files.internal("uiskin.json")));
+
+        Dialog d = new Dialog("Error", new Skin(Gdx.files.internal("uiskin.json")));
+        d.text(msg);
+        d.getContentTable().row();
+        d.getContentTable().add(Okbtn);
+
+        Okbtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                d.hide();
+            }
+        });
+
+        d.show(dialogStage);
     }
 }
 
