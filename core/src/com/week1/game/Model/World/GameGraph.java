@@ -61,7 +61,7 @@ public class GameGraph implements IndexedGraph<Vector2> {
         return edges[(int) fromNode.x][(int) fromNode.y];
 
     }
-    
+
     public Array<Connection<Vector2>> getConnections(int i, int j){
         if (i < 0 || i> edges.length - 1 || j < 0 || j > edges[0].length){
             return null;

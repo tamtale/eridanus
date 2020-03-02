@@ -89,9 +89,9 @@ public class GameState implements RenderableProvider {
         Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
             playerStats.add(new PlayerStat());
-            
+
             // Create and add a base for each player
-            PlayerBase newBase = new PlayerBase((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z, 
+            PlayerBase newBase = new PlayerBase((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z,
                     towerLoadouts.getTowerDetails(i,-1), i, -1);
             addBase(newBase, i);
         }
@@ -107,7 +107,7 @@ public class GameState implements RenderableProvider {
 //            }
 //        }
 //    }
-    
+
     public PlayerStat getPlayerStats(int playerNum) {
         if (isInitialized()) {
             return playerStats.get(playerNum);
@@ -133,12 +133,12 @@ public class GameState implements RenderableProvider {
         towers.add(t);
         addBuilding(t, playerID);
     }
-    
+
     public void addBase(PlayerBase pb, int playerID) {
         playerBases.put(playerID, pb);
         addBuilding(pb, playerID);
     }
-        
+
     public void addBuilding(Tower t, int playerID) {
 //        int startX = (int) t.x - 4;
 //        int startY = (int) t.y - 4;
@@ -163,7 +163,6 @@ public class GameState implements RenderableProvider {
                     (int)(t.z + bs.getY()),
                     Block.TowerBlock.towerBlockMap.get(bs.getBlockCode()));
         }
-
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
@@ -306,7 +305,7 @@ public class GameState implements RenderableProvider {
             // Reward mana.
             playerStats.get(attackingPlayerId).giveMana(deadEntity.getReward());
             // Do other bookkeeping related to death.
-            deadEntity.accept(deathVisitor);        
+            deadEntity.accept(deathVisitor);
         }
     }
 
@@ -330,7 +329,6 @@ public class GameState implements RenderableProvider {
             return null;
         }
 
-  
         @Override
         public Void acceptBase(PlayerBase base) {
             int deadPlayer = base.getPlayerId();
@@ -348,8 +346,8 @@ public class GameState implements RenderableProvider {
 public boolean findNearbyStructure(float x, float y, float z, int playerId) {
         // Check if it is near the home base
         if (Math.sqrt(
-                Math.pow(x - playerBases.get(playerId).x, 2) + 
-                Math.pow(y - playerBases.get(playerId).y, 2) + 
+                Math.pow(x - playerBases.get(playerId).x, 2) +
+                Math.pow(y - playerBases.get(playerId).y, 2) +
                 Math.pow(z - playerBases.get(playerId).z, 2)) < placementRange){
             return true;
         }
@@ -411,7 +409,7 @@ public boolean findNearbyStructure(float x, float y, float z, int playerId) {
 
         // Check if you are the last base alive
         return playerBases.values().size() == 1;
-        
+
 //        for (int playerIndex = 0; playerIndex < playerBases.size; playerIndex += 1) {
 //            if (playerIndex != playerId && !playerBases.get(playerIndex).isDead()) {
 //                // Since there is another placers base that is not dead yet, you have not won.
@@ -536,9 +534,9 @@ public boolean findNearbyStructure(float x, float y, float z, int playerId) {
      * Returns null if there is no clickable.
      */
     public Clickable getClickableOnRay(Ray ray, Vector3 intersection) {
-        
+
         // TODO: doesn't neccessarily find the clickable closest to the camera
-        
+
         // Look through all the standard clickables
         for (Clickable clickable: clickables) {
             if (clickable.intersects(ray, intersection)) {
@@ -546,10 +544,10 @@ public boolean findNearbyStructure(float x, float y, float z, int playerId) {
             }
         }
 //        Gdx.app.log("GameState.getClickableOnRay", "No clickables (units) found");
-        
+
         // Look through all the blocks
         Clickable clickedBlock = world.getBlockOnRay(ray, intersection);
-        
+
         return clickedBlock;
     }
 }
