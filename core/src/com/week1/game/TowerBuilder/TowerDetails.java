@@ -21,6 +21,7 @@ import java.util.Scanner;
 public class TowerDetails {
     private double hp = 0;
     private double atk = 0;
+    private int height = 0;
     private double range = 0;
     private int rawHp = 0;
     private int rawAtk = 0;
@@ -155,14 +156,14 @@ public class TowerDetails {
             //Generate the tower stats
             rawHp += TowerMaterials.blockHp.get(code);
             rawAtk += TowerMaterials.blockAtk.get(code);
-            range = Math.max(range, y + 1);
+            height = Integer.max(height, y + 1);
             price += TowerMaterials.blockPrice.get(code);
         }
 
         //We aren't calculating armour multipliers, etc
         atk = rawAtk * 0.05;
         hp = rawHp * armour;
-        range = range * 3;
+        range = height * 3;
 
     }
 
@@ -200,7 +201,8 @@ public class TowerDetails {
         //populate the fields
         this.atk += TowerMaterials.blockAtk.get(code);
         this.hp += TowerMaterials.blockHp.get(code);
-        this.range = Integer.max((int) this.range, 3 * y);
+        height = Integer.max(height, y + 1);
+        range = height * 3;
         this.price += TowerMaterials.blockPrice.get(code);
 
     }
@@ -218,9 +220,9 @@ public class TowerDetails {
         int modelIdx = -1;
         int blockIdx = -1;
         boolean shrinkFootprint = true;
-        double newRange = 0;
+        int newHt = 0;
 
-
+        System.out.println("removal");
         for (int i = 0; i < layout.size(); i++) {
             if (code == -1) {
                 BlockSpec b = layout.get(i);
@@ -234,13 +236,14 @@ public class TowerDetails {
             Vector3 translation = new Vector3();
             m.transform.getTranslation(translation);
 
-            if (modelIdx ==  -1) {
-                if (translation.x == 5f * x & translation.y == 5f * y & translation.z == 5f * z) {
-                    modelIdx = i;
-                }
-            }
 
-            newRange = Math.max(newRange, translation.y);
+            if (translation.x == 5f * x & translation.y == 5f * y & translation.z == 5f * z) {
+                modelIdx = i;
+            } else {
+                System.out.println((int)translation.y/5);
+                newHt = Integer.max(newHt, ((int)translation.y/5) + 1);
+
+            }
 
             if (translation.x == x & translation.z == z) {
                 shrinkFootprint = false;
@@ -266,7 +269,9 @@ public class TowerDetails {
             this.footprint.setFootPrint(x + 2, z + 2, false);
         }
 
-        this.range = newRange * 3;
+        height = newHt;
+        range = newHt * 3;
+
 
         return true;
 
