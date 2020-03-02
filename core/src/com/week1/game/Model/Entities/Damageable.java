@@ -47,21 +47,6 @@ public interface Damageable {
      */
     float getReward();
 
-
-    default void drawHealthBar(Batch batch, float x, float y, float offset, int sideLength, double currentHp, double maxHp) {
-
-        float xPosition = x - (sideLength / 2f) + offset;
-        float yPosition = y + ((sideLength / 2f) + 0.5f) + offset;
-
-        batch.draw(healthBarBackground,
-            xPosition, yPosition,
-            sideLength, .5f);
-        batch.draw(getHealthBar(currentHp, maxHp),
-            xPosition, yPosition,
-            (float)((currentHp / maxHp) * sideLength), .5f);
-
-    }
-
     /*
      * Used for render calculations. DO NOT ACCESS PUBLICLY lol
      */
@@ -74,9 +59,9 @@ public interface Damageable {
         Camera cam = config.getCam();
         this.getPos(unitPosition);
         cam.project(unitPosition);
-        batch.draw(healthBarBackground, unitPosition.x, unitPosition.y, 5, 1f);
+        batch.draw(healthBarBackground, unitPosition.x, unitPosition.y, 10f, 2f);
         batch.draw(getHealthBar(getCurrentHealth(), getMaxHealth()),
-            unitPosition.x, unitPosition.y, currentHealth / maxHealth * 5f, 1f);
+            unitPosition.x, unitPosition.y, currentHealth / maxHealth * 10f, 2f);
     }
 
     <T> T accept(DamageableVisitor<T> visitor);

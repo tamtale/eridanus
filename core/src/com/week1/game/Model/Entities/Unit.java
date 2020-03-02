@@ -15,6 +15,8 @@ import com.badlogic.gdx.utils.Pool;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
+import com.week1.game.Renderer.GameRenderable;
+import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Util3D;
 
 import java.util.HashMap;
@@ -25,7 +27,7 @@ import static com.week1.game.Model.StatsConfig.tempMinionRange;
 import static java.lang.Math.abs;
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
-public class Unit implements Damageable, Damaging, RenderableProvider, Clickable {
+public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     private final int playerID;
     public OutputPath path;
     private Vector3 curNode;
@@ -286,10 +288,6 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
         return displayPosition.y;
     }
 
-    public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
-        modelInstance.getRenderables(renderables, pool);
-    }
-
     public void setGoal(Vector3 goal) {
         this.goal.set(goal);
     }
@@ -344,5 +342,10 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
     @Override
     public <T> T accept(ClickableVisitor<T> clickableVisitor) {
         return clickableVisitor.acceptUnit(this);
+    }
+
+    @Override
+    public void render(RenderConfig config) {
+        config.getModelBatch().render(modelInstance, config.getEnv());
     }
 }
