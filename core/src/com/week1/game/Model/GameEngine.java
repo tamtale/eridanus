@@ -29,7 +29,7 @@ import java.util.Queue;
 import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.MessageType;
 
-import static com.week1.game.GameScreen.THRESHOLD;
+import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
 
 public class GameEngine implements GameRenderable {
 
@@ -44,10 +44,10 @@ public class GameEngine implements GameRenderable {
     private boolean isStarted = false;
     BufferedWriter writer;
 
-    public GameEngine(IEngineAdapter adapter, Queue<TaggedMessage> replayQueue, InfoUtil util) {
-        this.replayQueue = replayQueue;
+    public GameEngine(IEngineAdapter adapter, int playerId, InfoUtil util) {
         this.adapter = adapter;
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
+        this.enginePlayerId = playerId;
         gameState = new GameState(
                 SmallWorldBuilder.ONLY,
                 () -> {
@@ -85,14 +85,15 @@ public class GameEngine implements GameRenderable {
         communicationTurn += 1;
         // Modify things like mana, deal damage, moving units, and checking if the game ends
         synchronousUpdateState();
+        // Process the messages that come in, if there are any
         for (GameMessage message : messages) {
             message.process(this, gameState, util);
         }
-        // Process the replay messages.
-        for (TaggedMessage message = replayQueue.peek(); message != null && message.turn == communicationTurn; message = replayQueue.peek()) {
-            replayQueue.poll();
-            message.gameMessage.process(this, gameState, util);
-        }
+        // Process the replay messages. TODO revisit
+//        for (TaggedMessage message = replayQueue.peek(); message != null && message.turn == communicationTurn; message = replayQueue.peek()) {
+//            replayQueue.poll();
+//            message.gameMessage.process(this, gameState, util);
+//        }
 
         if (communicationTurn % 10 == 0) {
             // Time to sync up!
@@ -159,8 +160,6 @@ public class GameEngine implements GameRenderable {
         }
         return gameState.isPlayerAlive(enginePlayerId);
     }
-
-    public void setEnginePlayerId(int playerId) { this.enginePlayerId = playerId; }
 
     public Array<Building> getBuildings() {
         return gameState.getBuildings();

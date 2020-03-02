@@ -1,5 +1,10 @@
 package com.week1.game;
 
+/**
+ * This is a custom class since importing java's didn't work
+ * @param <K>
+ * @param <V>
+ */
 public class Pair<K,V> {
     public K key;
     public V value;
@@ -8,5 +13,4 @@ public class Pair<K,V> {
         this.key = key;
         this.value = value;
     }
-    
 }

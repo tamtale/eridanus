@@ -398,8 +398,8 @@ public class GameState implements GameRenderable {
     }
 
     public void moveUnits(float movementAmount) {
-        for (Unit u: units) {
-            u.step(movementAmount);
+        for (int i = 0; i < units.size; i++) {
+            units.get(i).step(movementAmount);
         }
     }
 

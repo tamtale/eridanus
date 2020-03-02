@@ -18,7 +18,6 @@ import com.week1.game.TowerBuilder.BlockType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
 public interface Block {
     float getCost();
     Optional<ModelInstance> modelInstance(float x, float y, float z);
