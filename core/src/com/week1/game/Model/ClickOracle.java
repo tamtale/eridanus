@@ -168,8 +168,10 @@ public class ClickOracle extends InputAdapter {
             selected.accept(new Clickable.ClickableVisitor<Void>() {
                 @Override
                 public Void acceptUnit(Unit unit) {
-                  multiSelected.add(unit);
-                  return null;
+                    if (unit.getPlayerId() == adapter.getPlayerId()) {
+                        multiSelected.add(unit);
+                    }
+                    return null;
                 }
                 @Override
                 public Void acceptBlockLocation(Vector3 vector) {
@@ -240,11 +242,7 @@ public class ClickOracle extends InputAdapter {
 
 
     private void deMultiSelect() {
-        // TODO 3D
-//        if (multiSelected.notEmpty()) {
-//            multiSelected.forEach((u) -> u.setClicked(false));
-//            multiSelected.clear();
-//        }
+        selected.setSelected(false);
         multiSelected.forEach(clickable -> clickable.setSelected(false));
         multiSelected.clear();
     }
