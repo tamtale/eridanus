@@ -13,8 +13,12 @@ public enum MessageType {
     
     // Client Control Messages
     PLAYERID,
+    GOTOLOADOUT,
+    GOTOGAME,
+    READYTOSTART,
     
     // Host Control Messages
-    JOIN,
-    START
+    REQUESTGOTOGAME,
+    SUBMITLOADOUT,
+    REQUESTGOTOLOADOUT,
 }

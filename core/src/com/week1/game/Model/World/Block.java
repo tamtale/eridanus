@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-import static com.week1.game.GameScreen.PIXELS_PER_UNIT;
+import static com.week1.game.MenuScreens.GameScreen.PIXELS_PER_UNIT;
 
 public interface Block {
 

@@ -18,7 +18,7 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
-import static com.week1.game.GameScreen.THRESHOLD;
+import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
 
 public class GameEngine {
 
@@ -37,8 +37,9 @@ public class GameEngine {
         return batch;
     }
 
-    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter,IEngineToNetworkAdapter engineToNetworkAdapter, InfoUtil util) {
+    public GameEngine(IEngineToRendererAdapter engineToRendererAdapter,IEngineToNetworkAdapter engineToNetworkAdapter, int playerId, InfoUtil util) {
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
+        this.enginePlayerId = playerId;
         gameState = new GameState(
                 Basic4WorldBuilder.ONLY,
                 () -> {
@@ -81,13 +82,7 @@ public class GameEngine {
         // Modify things like mana, deal damage, moving units, and checking if the game ends
         synchronousUpdateState();
 
-        // Process the messages that come in, if there are any.
-        // prints a message whether or not it has messages to process
-        if (messages.isEmpty()) {
-            Gdx.app.log("pjb3 - message processing", "Info: queue empty!");
-        } else {
-            Gdx.app.log("pjb3 - message processing", "Info: queue nonempty!");
-        }
+        // Process the messages that come in, if there are any
         for (GameMessage message : messages) {
             Gdx.app.log("GameEngine: receiveMessages()", "processing message");
             message.process(this, gameState, util);
@@ -163,8 +158,6 @@ public class GameEngine {
         }
         return gameState.isPlayerAlive(enginePlayerId);
     }
-
-    public void setEnginePlayerId(int playerId) { this.enginePlayerId = playerId; }
 
     public Array<Building> getBuildings() {
         return gameState.getBuildings();

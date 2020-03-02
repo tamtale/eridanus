@@ -1,4 +1,4 @@
-package com.week1.game;
+package com.week1.game.MenuScreens;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
@@ -7,32 +7,26 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.AIMovement.AI;
+import com.week1.game.GameController;
+import com.week1.game.InfoUtil;
 import com.week1.game.Model.*;
-import com.week1.game.Model.Entities.Building;
-import com.week1.game.Model.Entities.PlayerBase;
-import com.week1.game.Model.Entities.Tower;
-import com.week1.game.Model.Entities.Unit;
-import com.week1.game.Networking.Client;
+import com.week1.game.Model.Entities.*;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
-import com.week1.game.Networking.NetworkUtils;
+import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Renderer.*;
-import com.week1.game.TowerBuilder.TowerPresets;
 
-import java.util.Arrays;
 import java.util.List;
 
-
+/**
+ * This is the Screen that holds the actual game that is being played.
+ */
 public class GameScreen implements Screen {
 	public static float THRESHOLD = .2f;
 	public static int PIXELS_PER_UNIT = 64;
@@ -44,62 +38,28 @@ public class GameScreen implements Screen {
 	private AI ai;
 	private InfoUtil util;
 	//This is a temporary stage that is displayed before connection of clients
-	private Stage connectionStage;
+	private Stage gameStage;
 	private boolean pressedStartbtn;
 	private boolean createdTextures;
 
-	private void makeTempStage() {
-		connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
-
-		TextButton startbtn = new TextButton("Send Start Message", new Skin(Gdx.files.internal("uiskin.json")));
-		startbtn.setSize(200,64);
-		startbtn.setPosition(GameController.VIRTUAL_WIDTH/2 - startbtn.getWidth(), GameController.VIRTUAL_HEIGHT/2 - startbtn.getHeight());
-		connectionStage.addActor(startbtn);
-
-		startbtn.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				networkClient.sendStartMessage();
-			}
-		});
-	}
-
-	public GameScreen(String[] args) {
-		this.args = args;
+	public GameScreen(Client givenNetworkClient) {
 		// Set the logging level
 		Gdx.app.setLogLevel(Application.LOG_INFO);
-
-		pressedStartbtn = false;
-
+		gameStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 		util = new InfoUtil(true);
-		
-		networkClient = NetworkUtils.initNetworkObjects(args, new INetworkClientToEngineAdapter() {
+
+
+		// Finish setting up the client.
+		this.networkClient = givenNetworkClient;
+
+		//TODO actually pass the towers.
+		networkClient.addAdapter( new INetworkClientToEngineAdapter() {
 			@Override
 			public void deliverUpdate(List<? extends GameMessage> messages) {
 				engine.receiveMessages(messages);
 			}
+		});
 
-			@Override
-			public void setPlayerId(int playerId) {
-				engine.setEnginePlayerId(playerId);
-			}
-		}, 
-				Arrays.asList(
-						TowerPresets.getTower(1).getLayout(),
-						TowerPresets.getTower(3).getLayout(),
-						TowerPresets.getTower(5).getLayout()
-						)
-	); // TODO: actually pass the towers
-
-		createNewGame();
-	}
-
-	/**
-	 * This function is called to [re]initialize the game-specific classes not
-	 * related to the network. It will be called every time you want to restart a game
-	 * TODO Need to make this reset anything within the network client that needs revision.
-	 */
-	public void createNewGame() {
 		engine = new GameEngine(new IEngineToRendererAdapter() {
 			@Override
 			public void setDefaultLocation(Vector3 location) {
@@ -121,7 +81,7 @@ public class GameScreen implements Screen {
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
-		}, util);
+		}, networkClient.getPlayerId(), util);
 
 		renderer = new Renderer(new IRendererToEngineAdapter() {
 			@Override
@@ -171,7 +131,7 @@ public class GameScreen implements Screen {
 				}, new IRendererToGameScreenAdapter() {
 			@Override
 			public void restartGame() {
-				createNewGame();
+				Gdx.app.log("pjb3 - GameScreen", "TODO restart not implemented");
 			}
 		}, util);
 		clickOracle = new ClickOracle(
@@ -239,9 +199,6 @@ public class GameScreen implements Screen {
 				});
 
 		ai = new AI();
-		makeTempStage();
-		Gdx.input.setInputProcessor(connectionStage);
-
 		renderer.create();
 	}
 
@@ -253,7 +210,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		if (!engine.started()) {
-			connectionStage.draw();
+			gameStage.draw();
 			return;
 		}
 		if (!createdTextures) {
@@ -269,21 +226,21 @@ public class GameScreen implements Screen {
 			multiplexer.addProcessor(clickOracle);
 			Gdx.input.setInputProcessor(multiplexer);
 
-			connectionStage.dispose();
+			gameStage.dispose();
 			pressedStartbtn = true;
 		}
-
 		float time = Gdx.graphics.getDeltaTime();
 		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
 		renderer.render(time); // Only move the units from their state position
 														   // if the threshold was not passed.
+
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		renderer.resize(width, height);
 		if (!engine.started()) {
-			connectionStage.getViewport().update(width, height);
+			gameStage.getViewport().update(width, height);
 		}
 	}
 
