@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerFootprint;
 import com.week1.game.Model.World.Block;
 
+import java.io.*;
 import java.util.List;
 
 public class TowerDetails {
@@ -193,6 +194,34 @@ public class TowerDetails {
         }
 
         this.range = newRange * 3;
+
+    }
+
+    private String getLayoutStr() {
+        String towerStr = "[";
+        for (BlockSpec b: layout) {
+            towerStr += b.toString();
+            towerStr += ", ";
+        }
+        towerStr = towerStr.substring(0, towerStr.length() - 2);
+        towerStr += "]";
+
+        return  towerStr;
+
+    }
+
+    public void saveTower() {
+        //write tower layout to a file
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream("customTowers/" +name +"_layout.txt"), "utf-8"))) {
+            writer.write(getLayoutStr());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 }

@@ -142,4 +142,11 @@ public class TowerBuilderScreen implements Screen {
     public void displayBuildCore() {
         towerCam.setCurrTowerDetails(TowerPresets.getBuildCore());
     }
+
+
+
+    public void saveTower(String twrName) {
+        towerCam.WIPTower.setName(twrName);
+        towerCam.WIPTower.saveTower();
+    }
 }

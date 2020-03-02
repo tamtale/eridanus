@@ -24,11 +24,12 @@ public class TowerBuilderStage {
     private TextButton displayButton;
 
     //Build mode buttons
-    private TextButton buildMode;
-    private TextButton saveTower;
-    private TextButton addBlock;
-    private TextButton removeBlock;
+    private TextButton buildModeBtn;
+    private TextButton saveTowerBtn;
+    private TextButton addBlockBtn;
+    private TextButton removeBlockBtn;
     private SelectBox<String> materialSelection;
+    private Dialog dialog;
 
     //make skins
     private TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
@@ -82,9 +83,30 @@ public class TowerBuilderStage {
         }
         materialSelection.setItems(materials);
 
-        buildMode = new TextButton("Build Mode", normalStyle);
-        addBlock = new TextButton("Add block", normalStyle);
-        removeBlock = new TextButton("Remove Block", normalStyle);
+        buildModeBtn = new TextButton("Build Mode", normalStyle);
+
+        //Build mode buttons
+        addBlockBtn = new TextButton("Add block", normalStyle);
+        removeBlockBtn = new TextButton("Remove Block", normalStyle);
+        saveTowerBtn = new TextButton("Save Tower", normalStyle);
+
+        TextField twrName = new TextField("Enter tower name", new Skin(Gdx.files.internal("uiskin.json")));
+        dialog = new Dialog("Name your tower", new Skin(Gdx.files.internal("uiskin.json")));
+        dialog.text("Enter a name for your tower");
+        dialog.getContentTable().row();
+        dialog.getContentTable().add(twrName);
+        TextButton enterName = new TextButton("Enter", new Skin(Gdx.files.internal("uiskin.json")));
+        enterName.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                System.out.println("Entered Name");
+                screen.saveTower(twrName.getText());
+                dialog.hide();
+            }});
+        dialog.getContentTable().add(enterName);
+//        dialog.setPosition(30, 30);
+//        stage.addActor(dialog);
+
 
         startGame = new TextButton("Start Game", normalStyle);
     }
@@ -109,28 +131,29 @@ public class TowerBuilderStage {
         stage.addActor(displayButton);
 
         //Build Mode buttons
-        buildMode.setSize(128, 48);
-        buildMode.setPosition(256, 0);
-        stage.addActor(buildMode);
+        buildModeBtn.setSize(128, 48);
+        buildModeBtn.setPosition(256, 0);
+        stage.addActor(buildModeBtn);
 
-        addBlock.setSize(128, 48);
-        addBlock.setPosition(384, 0);
-        stage.addActor(addBlock);
-        addBlock.setVisible(false);
-
+        addBlockBtn.setSize(128, 48);
+        addBlockBtn.setPosition(384, 0);
+        stage.addActor(addBlockBtn);
+        addBlockBtn.setVisible(false);
 
         materialSelection.setSize(128, 48);
         materialSelection.setPosition(512, 0);
         stage.addActor(materialSelection);
         materialSelection.setVisible(false);
 
-        removeBlock.setSize(128, 48);
-        removeBlock.setPosition(640, 0);
-        stage.addActor(removeBlock);
-        removeBlock.setVisible(false);
+        removeBlockBtn.setSize(128, 48);
+        removeBlockBtn.setPosition(640, 0);
+        stage.addActor(removeBlockBtn);
+        removeBlockBtn.setVisible(false);
 
-
-
+        saveTowerBtn.setSize(128, 48);
+        saveTowerBtn.setPosition(384, 48);
+        stage.addActor(saveTowerBtn);
+        saveTowerBtn.setVisible(false);
 
         //Start Game button
         startGame.setSize(128, 48);
@@ -151,65 +174,74 @@ public class TowerBuilderStage {
             }
         });
 
-        buildMode.addListener(new ClickListener() {
+        buildModeBtn.addListener(new ClickListener() {
            @Override
            public void clicked(InputEvent event, float x, float y) {
                isBuildMode = !isBuildMode;
-               if (buildMode.isChecked()) {
+               if (buildModeBtn.isChecked()) {
                    screen.displayBuildCore();
                    sw.setLblTxt(screen.getTowerStats());
 
-                   buildMode.setStyle(pressedStyle);
+                   buildModeBtn.setStyle(pressedStyle);
                    addBuildButtons();
                } else {
                    screen.setCamTower(displaySelection.getSelected());
                    sw.setLblTxt(screen.getTowerStats());
 
-                   buildMode.setStyle(normalStyle);
+                   buildModeBtn.setStyle(normalStyle);
                    removeBuildButtons();
                }
 
            }
         });
 
-        addBlock.addListener(new ClickListener() {
+        addBlockBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 isAddMode = !isAddMode;
-                if (addBlock.isChecked()) {
-                    addBlock.setStyle(pressedStyle);
+                if (addBlockBtn.isChecked()) {
+                    addBlockBtn.setStyle(pressedStyle);
 
                     //uncheck other buttons
                     screen.stopHighlighting();
 
                     isDelMode = false;
-                    removeBlock.setChecked(false);
-                    removeBlock.setStyle(normalStyle);
+                    removeBlockBtn.setChecked(false);
+                    removeBlockBtn.setStyle(normalStyle);
 
                 } else {
-                    addBlock.setStyle(normalStyle);
+                    addBlockBtn.setStyle(normalStyle);
                 }
              }
         });
 
 
-        removeBlock.addListener(new ClickListener() {
+        removeBlockBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 isDelMode = !isDelMode;
-                if (removeBlock.isChecked()) {
-                    removeBlock.setStyle(pressedStyle);
+                if (removeBlockBtn.isChecked()) {
+                    removeBlockBtn.setStyle(pressedStyle);
 
                     //uncheck other buttons
                     screen.stopHighlighting();
 
                     isAddMode = false;
-                    addBlock.setChecked(false);
-                    addBlock.setStyle(normalStyle);
+                    addBlockBtn.setChecked(false);
+                    addBlockBtn.setStyle(normalStyle);
 
                 } else {
-                    removeBlock.setStyle(normalStyle);
+                    removeBlockBtn.setStyle(normalStyle);
                 }
+            }
+        });
+
+        saveTowerBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                //TODO - this
+                dialog.show(stage);
+//                screen.saveTower();
             }
         });
 
@@ -229,24 +261,26 @@ public class TowerBuilderStage {
     }
 
     private void addBuildButtons() {
-        addBlock.setVisible(true);
+        addBlockBtn.setVisible(true);
         materialSelection.setVisible(true);
-        removeBlock.setVisible(true);
+        removeBlockBtn.setVisible(true);
+        saveTowerBtn.setVisible(true);
     }
 
     private void removeBuildButtons() {
         //Hide buttons
-        addBlock.setVisible(false);
+        addBlockBtn.setVisible(false);
         materialSelection.setVisible(false);
-        removeBlock.setVisible(false);
+        removeBlockBtn.setVisible(false);
+        saveTowerBtn.setVisible(false);
 
         //Change modes
         isAddMode = false;
         isDelMode = false;
 
         //set unpressed styles
-        addBlock.setStyle(normalStyle);
-        removeBlock.setStyle(normalStyle);
+        addBlockBtn.setStyle(normalStyle);
+        removeBlockBtn.setStyle(normalStyle);
 
         //unhighlight blocks
         screen.stopHighlighting();

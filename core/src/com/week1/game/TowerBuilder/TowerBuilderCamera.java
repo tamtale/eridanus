@@ -1,7 +1,6 @@
 package com.week1.game.TowerBuilder;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.*;
@@ -11,7 +10,6 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.utils.Array;
 
 
 import java.util.ArrayList;
@@ -28,17 +26,15 @@ public class TowerBuilderCamera {
     private PerspectiveCamera cam;
     public ModelBatch modelBatch;
     public Environment environment;
-    private Vector3 position = new Vector3();
     private CameraInputController camController;
     private ModelInstance highlightedAddBlock = null;
     private ModelInstance highlightedTowerBlock = null;
 
     private TowerDetails currTowerDetails;
     public TowerDetails WIPTower;
-//    private Array<ModelInstance> instances;
     TowerBuilderScreen towerScreen;
-    private List<Vector3> invisiPoses = new ArrayList<>();
-    private List<Vector3> poses = new ArrayList<>();
+    private List<Vector3> invisiBlocks = new ArrayList<>();
+    private List<Vector3> towerBlocks = new ArrayList<>();
 
     public PerspectiveCamera getCam() {
         return cam;
@@ -52,7 +48,6 @@ public class TowerBuilderCamera {
 
         if (towerScreen.isBuildMode()) {
             this.WIPTower = TowerPresets.getBuildCore();
-//            instances = WIPTower.getModel();
             calcInvisiBlox();
         } else {
             this.currTowerDetails = newTower;
@@ -150,30 +145,30 @@ public class TowerBuilderCamera {
 
     private void calcInvisiBlox() {
 
-        poses.clear();
-        invisiPoses.clear();
+        towerBlocks.clear();
+        invisiBlocks.clear();
 
         for (BlockSpec b : WIPTower.getLayout()) {
             Vector3 curpos = new Vector3(b.getX(), b.getY(), b.getZ());
-            poses.add(curpos);
+            towerBlocks.add(curpos);
         }
 
-        for (Vector3 p : poses) {
+        for (Vector3 p : towerBlocks) {
 
             for (int i = -1; i < 2; i += 2) {
                 Vector3 nbr = new Vector3(p.x + i, p.y, p.z);
-                if (nbr.x < 3 & nbr.x > -3 & !poses.contains(nbr) & !invisiPoses.contains(nbr)) {
-                    invisiPoses.add(nbr);
+                if (nbr.x < 3 & nbr.x > -3 & !towerBlocks.contains(nbr) & !invisiBlocks.contains(nbr)) {
+                    invisiBlocks.add(nbr);
                 }
 
                 nbr = new Vector3(p.x, p.y + i, p.z);
-                if (nbr.y > -1 & nbr.y < 8 & !poses.contains(nbr) & !invisiPoses.contains(nbr)) {
-                    invisiPoses.add(nbr);
+                if (nbr.y > -1 & nbr.y < 8 & !towerBlocks.contains(nbr) & !invisiBlocks.contains(nbr)) {
+                    invisiBlocks.add(nbr);
                 }
 
                 nbr = new Vector3(p.x, p.y, p.z + i);
-                if (nbr.z > -3 & nbr.z < 3 & !poses.contains(nbr) & !invisiPoses.contains(nbr)) {
-                    invisiPoses.add(nbr);
+                if (nbr.z > -3 & nbr.z < 3 & !towerBlocks.contains(nbr) & !invisiBlocks.contains(nbr)) {
+                    invisiBlocks.add(nbr);
                 }
             }
         }
@@ -191,7 +186,7 @@ public class TowerBuilderCamera {
         for (int i = 0; i < blocks.size(); i++) {
             Vector3 curblock = blocks.get(i);
 
-            position = new Vector3(curblock.x * 5f, curblock.y * 5f, curblock.z * 5f);
+            Vector3 position = new Vector3(curblock.x * 5f, curblock.y * 5f, curblock.z * 5f);
             Vector3 dimensions = new Vector3(5, 5, 5);
 
 
@@ -209,11 +204,11 @@ public class TowerBuilderCamera {
 
 
     private int selectInvisiblock(int screenX, int screenY) {
-        return selectBlockfromArray(screenX, screenY, invisiPoses);
+        return selectBlockfromArray(screenX, screenY, invisiBlocks);
     }
 
     private int selectBlock(int screenX, int screenY) {
-        return selectBlockfromArray(screenX, screenY, poses);
+        return selectBlockfromArray(screenX, screenY, towerBlocks);
     }
 
     public void addBlock(int screenX, int screenY, String materialSelection) {
@@ -222,11 +217,11 @@ public class TowerBuilderCamera {
 
         if (result > -1) {
             WIPTower.addBlock(new BlockSpec(TowerMaterials.materialCodes.get(materialSelection),
-                    (int) invisiPoses.get(result).x, (int) invisiPoses.get(result).y, (int) invisiPoses.get(result).z));
+                    (int) invisiBlocks.get(result).x, (int) invisiBlocks.get(result).y, (int) invisiBlocks.get(result).z));
             towerScreen.updateTowerStats();
 
             //update invisiblox
-            updateInvisibloxOnAdd(invisiPoses.get(result));
+            updateInvisibloxOnAdd(invisiBlocks.get(result));
 //            Gdx.app.log("skv2", "Tower editor added a block");
             highlightBlock(screenX, screenY);
         }
@@ -238,42 +233,42 @@ public class TowerBuilderCamera {
     }
 
     private void updateInvisibloxOnAdd(Vector3 addedBlock) {
-        this.invisiPoses.remove(addedBlock);
-        this.poses.add(addedBlock);
+        this.invisiBlocks.remove(addedBlock);
+        this.towerBlocks.add(addedBlock);
         float oldX = addedBlock.x;
         float oldY = addedBlock.y;
         float oldZ = addedBlock.z;
         for (int i = -1; i < 2; i += 2) {
             Vector3 newX = new Vector3(oldX + i, oldY, oldZ);
-            if (!this.invisiPoses.contains(newX) & !this.poses.contains(newX) & oldX + i < 3 & oldX + i > -3) {
-                this.invisiPoses.add(newX);
+            if (!this.invisiBlocks.contains(newX) & !this.towerBlocks.contains(newX) & oldX + i < 3 & oldX + i > -3) {
+                this.invisiBlocks.add(newX);
             }
 
             Vector3 newY = new Vector3(oldX, oldY + i, oldZ);
-            if (!this.invisiPoses.contains(newY) & !this.poses.contains(newY) & oldY + i < 8 & oldY + i > 0) {
-                this.invisiPoses.add(newY);
+            if (!this.invisiBlocks.contains(newY) & !this.towerBlocks.contains(newY) & oldY + i < 8 & oldY + i > 0) {
+                this.invisiBlocks.add(newY);
             }
 
             Vector3 newZ = new Vector3(oldX, oldY, oldZ + i);
-            if (!this.invisiPoses.contains(newZ) & !this.poses.contains(newZ) & oldZ + i < 3 & oldZ + i > -3) {
-                this.invisiPoses.add(newZ);
+            if (!this.invisiBlocks.contains(newZ) & !this.towerBlocks.contains(newZ) & oldZ + i < 3 & oldZ + i > -3) {
+                this.invisiBlocks.add(newZ);
             }
         }
 
-        System.out.println(poses);
-        System.out.println(invisiPoses);
+        System.out.println(towerBlocks);
+        System.out.println(invisiBlocks);
 
     }
 
     public void deleteBlock(int screenX, int screenY) {
-        if (poses.size() == 1) {
+        if (towerBlocks.size() == 1) {
             //Don't remove the last block
             return;
         }
 
         int result = selectBlock(screenX, screenY);
         if (result != -1) {
-            Vector3 selectedPos = poses.get(result);
+            Vector3 selectedPos = towerBlocks.get(result);
             WIPTower.removeBlock(new BlockSpec(-1, (int) selectedPos.x, (int) selectedPos.y, (int) selectedPos.z));
             towerScreen.updateTowerStats();
             updateInvisibloxOnDel(selectedPos);
@@ -285,37 +280,31 @@ public class TowerBuilderCamera {
 
     private boolean isNbr(Vector3 pos1, Vector3 pos2) {
         if (pos1.x == pos2.x & pos1.y == pos2.y) {
-            if (Math.abs(pos1.z - pos2.z) == 1) {
-                return true;
-            }
+            return Math.abs(pos1.z - pos2.z) == 1;
         } else if (pos1.y == pos2.y & pos1.z == pos2.z) {
-            if (Math.abs(pos1.x - pos2.x) == 1) {
-                return true;
-            }
+            return Math.abs(pos1.x - pos2.x) == 1;
         } else if (pos1.x == pos2.x & pos1.z == pos2.z) {
-            if (Math.abs(pos1.y - pos2.y) == 1) {
-                return true;
-            }
+            return Math.abs(pos1.y - pos2.y) == 1;
         }
         return false;
     }
 
 
     private void updateInvisibloxOnDel(Vector3 selectedPos) {
-        poses.remove(selectedPos);
-        invisiPoses.add(selectedPos);
+        towerBlocks.remove(selectedPos);
+        invisiBlocks.add(selectedPos);
 
         List<Vector3> nbrs = new ArrayList<>();
-        for (int i = 0; i < invisiPoses.size(); i ++) {
-            if (isNbr(selectedPos, invisiPoses.get(i))) {
-                nbrs.add(invisiPoses.get(i));
+        for (Vector3 invisiPos : invisiBlocks) {
+            if (isNbr(selectedPos, invisiPos)) {
+                nbrs.add(invisiPos);
             }
         }
 
         List<Integer> nbrRemovals = new ArrayList<>();
         for (int i = 0; i < nbrs.size(); i++) {
-            for (int j = 0; j < invisiPoses.size(); j++) {
-                if (isNbr(nbrs.get(i), invisiPoses.get(j))) {
+            for (Vector3 invisiPos : invisiBlocks) {
+                if (isNbr(nbrs.get(i), invisiPos)) {
                     nbrRemovals.add(i);
                     break;
                 }
@@ -327,7 +316,7 @@ public class TowerBuilderCamera {
         }
 
         for (Vector3 pos: nbrs) {
-            invisiPoses.remove(pos);
+            invisiBlocks.remove(pos);
         }
 
     }
@@ -336,7 +325,7 @@ public class TowerBuilderCamera {
         int result = selectInvisiblock(screenX, screenY);
         if (result != -1) {
             ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(0));
-            newbloc.transform.setToTranslation(invisiPoses.get(result).x * 5f, invisiPoses.get(result).y * 5f, invisiPoses.get(result).z * 5f);
+            newbloc.transform.setToTranslation(invisiBlocks.get(result).x * 5f, invisiBlocks.get(result).y * 5f, invisiBlocks.get(result).z * 5f);
             highlightedAddBlock = newbloc;
 
         } else {
@@ -347,7 +336,7 @@ public class TowerBuilderCamera {
     public void highlightTowerBlock(int screenX, int screenY) {
         int result = selectBlock(screenX, screenY);
         if (result != -1) {
-            Vector3 selectedPos = poses.get(result);
+            Vector3 selectedPos = towerBlocks.get(result);
             for (int i = 0; i < WIPTower.getModel().size; i++) {
                 ModelInstance block = WIPTower.getModel().get(i);
 

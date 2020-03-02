@@ -58,6 +58,6 @@ public class BlockSpec {
 
     @Override
     public String toString() {
-        return "x: " + x + ", y: " + y + ", z: " + z + ", code: " + blockCode;
+        return "(" + x + ", " + y + ", " + z + ", " + blockCode +")";
     }
 }
