@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class TowerBuilderCamera {
     private CameraInputController camController;
     private ModelInstance highlightedAddBlock = null;
     private ModelInstance highlightedTowerBlock = null;
+    private FitViewport viewport;
 
     private TowerDetails currTowerDetails;
     public TowerDetails WIPTower;
@@ -77,6 +79,8 @@ public class TowerBuilderCamera {
         cam.near = 0.5f;
         cam.far = 300f;
         cam.update();
+
+        viewport = new FitViewport(800, 800, cam);
     }
 
     private void initModelBatch() {
@@ -96,8 +100,7 @@ public class TowerBuilderCamera {
 
 
     public void resize(int width, int height) {
-        cam.viewportHeight = height;
-        cam.viewportWidth = width;
+        viewport.update(width, height);
     }
 
 

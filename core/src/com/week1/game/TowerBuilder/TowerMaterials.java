@@ -40,14 +40,14 @@ public class TowerMaterials {
 //    addBlockType("core_block.png", "coreBlock", 1, 0, 0, 0);
 
         //Materials
-        addBlockType("space_obsidian2.png", "obsidian", 2, 50,5,10);
-        addBlockType("moonstone3.png", "moonstone", 3, 25, 15,20);
-        addBlockType("gold2.png", "space gold", 4, 15, 40,40);
+        addBlockType("space_obsidian2.png", "Obsidian", 2, 50,5,10);
+        addBlockType("moonstone3.png", "Moonstone", 3, 25, 15,20);
+        addBlockType("gold2.png", "Space mesh", 4, 15, 40,40);
 
         //Guns
-        addBlockType("water2.png", "water", 6, 15,40, 35);
-        addBlockType("fire2.png", "fire", 5, 15, 40, 35);
-        addBlockType("earth3.png", "earth", 7, 15,40, 35);
+        addBlockType("water2.png", "Water", 6, 15,40, 35);
+        addBlockType("fire2.png", "Fire", 5, 15, 40, 35);
+        addBlockType("earth3.png", "Earth", 7, 15,40, 35);
 
 
     //Easter egg
