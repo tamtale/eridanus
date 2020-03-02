@@ -1,9 +1,7 @@
 package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.ai.pfa.Connection;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Damage;
@@ -22,7 +20,6 @@ public class Tower extends Building implements Damaging {
     private static Texture skin; // TODO change this when we go to 3D to actually use the model of the tower.
     private int playerID, towerType;
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
-    private static Texture rangeCircle;
     private double hp, maxHp, dmg, range, cost;
     private List<BlockSpec> layout;
     private Map<Vector3, Array<Connection<Vector3>>> removedEdges = new HashMap<>();
@@ -42,49 +39,6 @@ public class Tower extends Building implements Damaging {
         this.layout = towerDetails.getLayout();
     }
     
-
-    public static void makeTextures() {
-        Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, sniperTexture.getFormat());
-        towerScaled.drawPixmap(sniperTexture, 0, 0, sniperTexture.getWidth(), sniperTexture.getHeight(),
-                0, 0, SIDELENGTH, SIDELENGTH);
-        skin = new Texture(towerScaled);
-
-        // Make the textures for the circles surrounding the tower
-        Pixmap circlePixmap = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
-        circlePixmap.setBlending(Pixmap.Blending.None);
-
-        circlePixmap.setColor(0, 0, 1, .1f);
-        circlePixmap.fillCircle(50, 50, 50);
-        colorMap.put(0, new Texture(circlePixmap));
-
-        circlePixmap.setColor(1, 0, 0, .1f);
-        circlePixmap.fillCircle(50, 50, 50);
-        colorMap.put(1, new Texture(circlePixmap));
-
-        circlePixmap.setColor(0, 0, 0, .1f);
-        circlePixmap.fillCircle(50, 50, 50);
-        colorMap.put(2, new Texture(circlePixmap));
-
-        circlePixmap.setColor(0.5f, 0, 0.5f, .1f);
-        circlePixmap.fillCircle(50, 50, 50);
-        colorMap.put(3, new Texture(circlePixmap));
-
-        circlePixmap.setColor(0.6f, 0.05f, 0.35f, .1f);
-        circlePixmap.fillCircle(50, 50, 50);
-        colorMap.put(4, new Texture(circlePixmap));
-
-        // Make the radius that towers can attack;
-        circlePixmap = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
-        circlePixmap.setBlending(Pixmap.Blending.None);
-        circlePixmap.setColor(1, 1, 1, .5f);
-        circlePixmap.drawCircle(50, 50, 50);
-        rangeCircle = new Texture(circlePixmap);
-        circlePixmap.dispose();
-    }
-    
-    public Texture getSkin() {
-        return skin;
-    }
 
     public double getCost() {
         return cost;

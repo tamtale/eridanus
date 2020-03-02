@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.Model.*;
 import com.week1.game.GameController;
 import com.week1.game.InfoUtil;
-import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
@@ -116,11 +115,6 @@ public class GameScreen implements Screen {
 		}, util);
 		clickOracle = new ClickOracle(
 				new IClickOracleAdapter() {
-					@Override
-					public void unproject(Vector3 projected) {
-						renderer.getCamera().unproject(projected);
-					}
-
 
 					@Override
 					public void setTranslationDirection(Direction direction) {
@@ -144,11 +138,6 @@ public class GameScreen implements Screen {
 					@Override
 					public Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
 						return engine.getGameState().findUnitsInBox(cornerA, cornerB);
-					}
-
-					@Override
-					public Array<Building> getBuildings() {
-						return engine.getBuildings();
 					}
 
 					@Override

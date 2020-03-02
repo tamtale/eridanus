@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
@@ -30,7 +29,6 @@ public class ClickOracle extends InputAdapter {
 
     private Vector3 touchPos = new Vector3();
     private Array<Unit> multiSelected = new Array<>();
-    private Ray pickedRay = new Ray();
 
     private Vector3 selectionLocationStart = new Vector3();
     private Vector3 selectionLocationEnd = new Vector3();
@@ -81,8 +79,6 @@ public class ClickOracle extends InputAdapter {
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
         if (button != Input.Buttons.LEFT) return false;
         selectionLocationStart.set(screenX, screenY, 0);
-        adapter.unproject(selectionLocationStart);
-        Gdx.app.log("ClickOracle - lji1", "Touchdown!");
         return false;
     }
     
@@ -91,7 +87,6 @@ public class ClickOracle extends InputAdapter {
         if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) return false;
         dragging = true;
         selectionLocationEnd.set(screenX, screenY, 0);
-        adapter.unproject(selectionLocationEnd);
         Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
         return false;
     }
@@ -138,28 +133,11 @@ public class ClickOracle extends InputAdapter {
             return false;
         }
 
-        if (dragging) {
-            dragging = false;
-            
-            // mark the units in the box as selected
-            Array<Unit> unitsToSelect = adapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
-
-            deMultiSelect();
-            // unitsToSelect.forEach(this::multiSelect);
-
-            Gdx.app.log("lji1 - ClickOracle", "Cleared selection locations.");
-            return false;
-        }
-
         touchPos.set(screenX, screenY, 0);
         // for 3D, get the ray that the click represents.
 
         int currentGameHash = adapter.getGameStateHash();
-//        Gdx.app.log("pjb3 - ClickOracle", "hash int is " + currentGameHash);
-//        Gdx.app.log("pjb3 - ClickOracle", "the human readable is: " + adapter.getGameStateString());
 
-        // for 2D, just unproject.
-        adapter.unproject(touchPos);
         Clickable selectedClickable = adapter.selectClickable(screenX, screenY, touchPos);
         if (button == Input.Buttons.LEFT) {
             Gdx.app.log("lji1 - ClickOracle", "Left click.");

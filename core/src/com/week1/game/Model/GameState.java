@@ -89,14 +89,6 @@ public class GameState implements GameRenderable {
         postInit.run();
     }
 
-//    public void removePlayerBase(int startX, int startY, PlayerBase b){
-//        for(int i = startX - 4; i <= startX + 3; i++){
-//            for (int j = startY - 4; j <= startY + 4; j++){
-//                graph.removeAllConnections(new Vector3(i, j, 0), b);
-//            }
-//        }
-//    }
-    
     public PlayerStat getPlayerStats(int playerNum) {
         if (isInitialized()) {
             return playerStats.get(playerNum);
@@ -158,7 +150,6 @@ public class GameState implements GameRenderable {
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
-        SteeringAgent agent = unit.getAgent();
         Vector3 unitPos = new Vector3((int) unit.getX(), (int) unit.getY(), 0); //TODO: make acutal z;
         unit.setGoal(goal);
         OutputPath path = new OutputPath();
@@ -351,13 +342,6 @@ public class GameState implements GameRenderable {
         // Check if you are the last base alive
         return playerBases.values().size() == 1;
         
-//        for (int playerIndex = 0; playerIndex < playerBases.size; playerIndex += 1) {
-//            if (playerIndex != playerId && !playerBases.get(playerIndex).isDead()) {
-//                // Since there is another placers base that is not dead yet, you have not won.
-//                return false;
-//            }
-//        }
-//        return true;
     }
     
     public void setTowerInfo(TowerLoadouts info) {
@@ -373,13 +357,6 @@ public class GameState implements GameRenderable {
         }
 
         int numPlayersAlive = playerBases.values().size();
-//        // Check if you are the last base alive
-//        for (int playerIndex = 0; playerIndex < playerBases.size; playerIndex += 1) {
-//            if (!playerBases.get(playerIndex).isDead()) {
-//                // Since there is another placers base that is not dead yet, you have not won.
-//                numPlayersAlive += 1;
-//            }
-//        }
         return numPlayersAlive <= 1;
     }
 

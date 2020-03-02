@@ -37,23 +37,12 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     private Vector3 goal = new Vector3();
     private boolean close;
     private boolean selected;
-
-    public boolean isClicked() {
-        return clicked;
-    }
-
-    public void setClicked(boolean clicked) {
-        this.clicked = clicked;
-    }
     private int turn = 0;
     private double hp;
     private Vector3 vel;
     private double maxHp;
-    private boolean clicked = false;
-    public SteeringAgent agent;
     public int ID;
     public static double speed = 4;
-    public  static int SIZE = 1;
     // 3D STUFF
     private static ModelBuilder BUILDER = new ModelBuilder();
     private Model model;
@@ -130,13 +119,6 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     public void step(float delta) {
         if (path != null) {
             if (path.getPath().size > 0) {
-//                this.curNode = new Vector3(this.x, this.y, 0);
-//                Line travelPath = new Line(lastNode.x, lastNode.y, curNode.x, curNode.y);
-//                Rectangle nodeRect = new Rectangle(path.get(1).x, path.get(1).y, 1, 1);
-
-//                boolean intersect = lineRect(lastNode.x, lastNode.y, curNode.x, curNode.y,
-//                        path.get(1).x, path.get(1).y, 1, 1);
-//                if (intersect){
                 if (distanceTraveled > distance) {
                     turn = 0;
                     Gdx.app.setLogLevel(Application.LOG_NONE);
@@ -181,9 +163,6 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
         displayPosition.y = displayPosition.y + (vel.y * delta);
         modelInstance.transform.setToTranslation(displayPosition);
     }
-
-    public SteeringAgent getAgent(){ return agent;}
-
 
     @Override
     public boolean takeDamage(double dmg, Damage.type damageType) {
@@ -272,13 +251,6 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
         System.out.println("vel.x " + vel.x + " vel.y " + vel.y);
         this.distanceTraveled = 0;
         path.removeIndex(0);
-    }
-
-    public float getDisplayX() {
-        return displayPosition.x;
-    }
-    public float getDisplayY() {
-        return displayPosition.y;
     }
 
     public void setGoal(Vector3 goal) {

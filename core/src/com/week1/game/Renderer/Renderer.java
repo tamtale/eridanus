@@ -21,18 +21,15 @@ import java.util.Map;
 public class Renderer {
     private Batch batch = new SpriteBatch();
     public Model model;
-    public ModelInstance instance;
     private PerspectiveCamera cam;
     private GameButtonsStage gameButtonsStage;
     private Environment env;
-    private Vector3 touchPos = new Vector3();
     private Vector3 defaultPosition = new Vector3(50, 50, 0);
     private IRendererAdapter adapter;
     private RenderConfig renderConfig;
     private BitmapFont font = new BitmapFont();
     private Vector3 panning = new Vector3();
     private Map<Direction, Vector3> directionToVector;
-    private static int DEFAULT_WIDTH = 30;
 
     {
         directionToVector = new HashMap<Direction, Vector3>() {{
@@ -52,8 +49,6 @@ public class Renderer {
         this.adapter = clickOracleAdapter;
         this.util = util;
     }
-
-    public Environment getEnv() { return env; }
 
     public PerspectiveCamera getCam() {
         return cam;
