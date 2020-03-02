@@ -2,6 +2,7 @@ package com.week1.game.Model.World;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -13,6 +14,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
@@ -49,13 +51,13 @@ public class GameWorld implements RenderableProvider {
         this.graph = new GameGraph(blocks);
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
-                graph.addVector3(new Vector3(i, j, 0));
+                graph.addVector2(new Vector2(i, j));
 //                if (i > 0) {
 //                    blocks[i][j][0].setConnection(new WeightedBlockEdge(1, blocks[i][j][0], blocks[i - 1][j][0]));
 //                }
-                for (int k = 1; k < blocks[0][0].length; k++) {
-                    graph.addVector3(new Vector3(i, j, k));
-                }
+//                for (int k = 1; k < blocks[0][0].length; k++) {
+//                    graph.addVector2(new Vector2(i, j));
+//                }
             }
         }
         Gdx.app.log("Game World - wab2", "Block array built");
@@ -145,7 +147,25 @@ public class GameWorld implements RenderableProvider {
                 .ifPresent(modelInstance -> instances[i][j][k] = modelInstance);
         updateBoundingBox(i,j,k);
         updateActiveBlocks(i,j,k);
+        updateGraph(i, j, block);
         refreshHeight = true;
+    }
+
+    private void updateGraph(int i, int j, Block block) {
+        int k = heightMap[i][j];
+        for (int m = i - 1; m < i + 1; i++) {
+            for (int n = j - 1; n < j + 1; j++) {
+                if (m != i || n != j) {
+                    graph.removeConnection(m, n, i, j);
+                    if (Math.abs(heightMap[m][n] - k) <= 1){
+                        graph.setConnection(new Vector2(m, n), new Vector2(i, j), block.getCost());
+                    }
+                }
+            }
+        }
+
+
+
     }
 
     public GameGraph buildGraph(){
@@ -153,41 +173,41 @@ public class GameWorld implements RenderableProvider {
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
 //                for (int k = 0; k < blocks[0][0].length; k++) {
-                    Vector3 coords = new Vector3(i, j, 0);
+                    Vector2 coords = new Vector2(i, j);
                     if (i > 0 && Math.abs(heightMap[i][j] - heightMap[i - 1][j]) <= 1) {
-                        graph.setConnection(coords, new Vector3(i - 1, j, 0), blocks[i][j][heightMap[i][j]].getCost());
+                        graph.setConnection(coords, new Vector2(i - 1, j), blocks[i][j][heightMap[i][j]].getCost());
                     }
                     if(i < blocks.length - 1) {
                         if (Math.abs(heightMap[i][j] - heightMap[i + 1][j]) <= 1) {
-                            graph.setConnection(coords, new Vector3(i + 1, j, 0), blocks[i][j][heightMap[i][j]].getCost());
+                            graph.setConnection(coords, new Vector2(i + 1, j), blocks[i][j][heightMap[i][j]].getCost());
                         }
                     }
                     if (j > 0 && Math.abs(heightMap[i][j] - heightMap[i][j - 1]) <= 1) {
-                        graph.setConnection(coords, new Vector3(i, j - 1, 0), blocks[i][j][heightMap[i][j]].getCost());
+                        graph.setConnection(coords, new Vector2(i, j - 1), blocks[i][j][heightMap[i][j]].getCost());
                     }
                     if(j < blocks[0].length - 1 && Math.abs(heightMap[i][j] - heightMap[i][j + 1]) <= 1) {
 
-                        graph.setConnection(coords, new Vector3(i, j + 1, 0), blocks[i][j][heightMap[i][j]].getCost());
+                        graph.setConnection(coords, new Vector2(i, j + 1), blocks[i][j][heightMap[i][j]].getCost());
                     }
                     //TODO: climbing jumping into k.
                     if (i > 0 && j > 0
                             && Math.abs(heightMap[i][j] - heightMap[i - 1][j - 1]) <= 1) {
-                        graph.setConnection(coords, new Vector3(i - 1, j - 1, 0),
+                        graph.setConnection(coords, new Vector2(i - 1, j - 1),
                                 blocks[i][j][heightMap[i][j]].getCost() * (float) Math.sqrt(2));
                     }
                     if (i > 0 && j < blocks[0].length - 1
                             && Math.abs(heightMap[i][j] - heightMap[i - 1][j + 1]) <= 1) {
-                        graph.setConnection(coords, new Vector3(i - 1, j + 1, 0),
+                        graph.setConnection(coords, new Vector2(i - 1, j + 1),
                                 blocks[i][j][heightMap[i][j]].getCost() * (float) Math.sqrt(2));
                     }
                     if (i < blocks.length - 1 && j > 0
                             && Math.abs(heightMap[i][j] - heightMap[i + 1][j - 1]) <= 1) {
-                        graph.setConnection(coords, new Vector3(i + 1, j - 1, 0),
+                        graph.setConnection(coords, new Vector2(i + 1, j - 1),
                                 blocks[i][j][heightMap[i][j]].getCost() * (float) Math.sqrt(2));
                     }
                     if (i < blocks.length  - 1 && j < blocks[0].length - 1
                             && Math.abs(heightMap[i][j] - heightMap[i + 1][j + 1]) <= 1) {
-                        graph.setConnection(coords, new Vector3(i + 1, j + 1, 0),
+                        graph.setConnection(coords, new Vector2(i + 1, j + 1),
                                 blocks[i][j][heightMap[i][j]].getCost() * (float) Math.sqrt(2));
                     }
 //                }

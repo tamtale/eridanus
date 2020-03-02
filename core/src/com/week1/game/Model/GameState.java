@@ -139,21 +139,21 @@ public class GameState implements RenderableProvider {
     }
         
     public void addBuilding(Tower t, int playerID) {
-        int startX = (int) t.x - 4;
-        int startY = (int) t.y - 4;
-        TowerFootprint footprint = towerLoadouts.getTowerDetails(playerID, t.getTowerType()).getFootprint();
-        boolean[][] fp = footprint.getFp();
-        int i = 0;
-        for(boolean[] bool: fp){
-            int j = 0;
-            for(boolean boo: bool){
-                if(boo){
-                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0), t);
-                }
-                j++;
-            }
-            i++;
-        }
+//        int startX = (int) t.x - 4;
+//        int startY = (int) t.y - 4;
+//        TowerFootprint footprint = towerLoadouts.getTowerDetails(playerID, t.getTowerType()).getFootprint();
+//        boolean[][] fp = footprint.getFp();
+//        int i = 0;
+//        for(boolean[] bool: fp){
+//            int j = 0;
+//            for(boolean boo: bool){
+//                if(boo){
+//                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0), t);
+//                }
+//                j++;
+//            }
+//            i++;
+//        }
 
         for(BlockSpec bs : t.getLayout()) {
             this.world.setBlock(
