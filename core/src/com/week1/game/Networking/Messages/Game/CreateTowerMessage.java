@@ -126,7 +126,8 @@ public class CreateTowerMessage extends GameMessage {
 
             for(int u = 0; u < minions.size; u++) {
                 Unit minion = minions.get(u);
-                if (((int)minion.getX() == tempX) && ((int)minion.getY() == tempY)) {
+                if ((((int)minion.getX() == tempX) || ((int)minion.getX() + 1 == tempX)) && 
+                        (((int)minion.getY() == tempY) || ((int)minion.getY() + 1 == tempY))) {
                     util.log("lji1 - CreateTowerMessage", "Tower overlaps with minion.");
                     return false;
                 }
