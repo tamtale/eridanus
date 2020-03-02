@@ -2,17 +2,9 @@ package com.week1.game.Model.World;
 
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.*;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.maps.MapLayers;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -153,9 +145,9 @@ public class GameWorld implements RenderableProvider {
 
     private void updateGraph(int i, int j, Block block) {
         int k = heightMap[i][j];
-        for (int m = i - 1; m < i + 1; m++) {
-            for (int n = j - 1; n < j + 1; n++) {
-                if (m != i || n != j) {
+        for (int m = i - 1; m <= i + 1; m++) {
+            for (int n = j - 1; n <= j + 1; n++) {
+                if ((m != i || n != j) && (m >= 0 && m < heightMap.length && n >= 0 && n < heightMap[0].length)) {
                     graph.removeConnection(m, n, i, j);
                     if (Math.abs(heightMap[m][n] - k) <= 1){
                         graph.setConnection(new Vector2(m, n), new Vector2(i, j), block.getCost());
@@ -163,8 +155,6 @@ public class GameWorld implements RenderableProvider {
                 }
             }
         }
-
-
 
     }
 

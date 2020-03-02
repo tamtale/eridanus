@@ -85,7 +85,6 @@ public class GameGraph implements IndexedGraph<Vector2> {
     public void addVector2(Vector2 Vector2) {
         nodeCount+=1;
         Vector2s.add(Vector2);
-        //vecCoords[(int) Vector2.x][(int) Vector2.y][(int) Vector2.z] = Vector2;
     }
 
     public OutputPath search(Vector2 startNode, Vector2 endNode) {
@@ -123,6 +122,7 @@ public class GameGraph implements IndexedGraph<Vector2> {
         if (i < 0 || i > 2 || j < 0 || j > 2){
             return null;
         }
+        System.out.println("fromX " + fromX + "fromY " + fromY);
         return borders[fromX][fromY][i][j];
     }
 
@@ -130,7 +130,7 @@ public class GameGraph implements IndexedGraph<Vector2> {
         Connection<Vector2> border = getConnection(fromX, fromY, toX, toY);
         edges[fromX][fromY].removeValue(border, false);
         int i = fromX - toX + 1;
-        int j = (int) fromY - (int) toY + 1;
+        int j = fromY - toY + 1;
         if (i >= 0 && i <= 2 && j >= 0 && j <= 2){
             borders[fromX][fromY][i][j] = null;
         }
