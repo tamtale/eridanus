@@ -18,6 +18,11 @@ public interface Clickable {
     public void setSelected(boolean selected) {}
 
     @Override
+    public void setHovered(boolean hovered) {
+
+    }
+
+    @Override
     public <T> T accept(ClickableVisitor<T> clickableVisitor) {
       return clickableVisitor.acceptNull();
     }
@@ -39,6 +44,12 @@ public interface Clickable {
    * Visually indicates that the clickable has been selected.
    */
   void setSelected(boolean selected);
+
+  /*
+   * Visually indicates that the clickable is hovered over.
+   */
+  void setHovered(boolean hovered);
+
   <T> T accept(ClickableVisitor<T> clickableVisitor);
 }
 
