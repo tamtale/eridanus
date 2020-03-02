@@ -194,7 +194,9 @@ public class GameState implements GameRenderable {
         return unitsToSelect;
     }
 
-
+    public Array<Unit> getUnits() {
+        return units;
+    }
     public Unit getMinionById(int minionId) {
 
         for (int i = 0; i < units.size; i++) {
@@ -284,7 +286,7 @@ public class GameState implements GameRenderable {
             return null;
         }
 
-  
+
         @Override
         public Void acceptBase(PlayerBase base) {
             int deadPlayer = base.getPlayerId();
@@ -299,12 +301,12 @@ public class GameState implements GameRenderable {
         }
     };
 
-public boolean findNearbyStructure(float x, float y, float z, int playerId) {
+    public boolean findNearbyStructure(float x, float y, float z, int playerId) {
         // Check if it is near the home base
         if (Math.sqrt(
-                Math.pow(x - playerBases.get(playerId).x, 2) + 
-                Math.pow(y - playerBases.get(playerId).y, 2) + 
-                Math.pow(z - playerBases.get(playerId).z, 2)) < placementRange){
+                Math.pow(x - playerBases.get(playerId).x, 2) +
+                        Math.pow(y - playerBases.get(playerId).y, 2) +
+                        Math.pow(z - playerBases.get(playerId).z, 2)) < placementRange){
             return true;
         }
 
@@ -320,23 +322,6 @@ public boolean findNearbyStructure(float x, float y, float z, int playerId) {
         return false;
     }
 
-    public boolean overlapsExistingStructure(int playerId, int towerType, int x, int y) {
-        TowerFootprint footprint = towerLoadouts.getTowerDetails(playerId, towerType).getFootprint();
-        for (Tower t: towers) {
-            if (TowerFootprint.overlap(footprint, x, y, towerLoadouts.getTowerDetails(t.getPlayerId(), t.getTowerType()).getFootprint(), (int)t.x, (int)t.y)) {
-                return true;
-            }
-        }
-        
-        for (Tower pb: playerBases.values()) {
-            // use -1 as towerType for the player base
-            if (TowerFootprint.overlap(footprint, x, y, towerLoadouts.getTowerDetails(-1, -1).getFootprint(), (int)pb.x, (int)pb.y)) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
 
     public GameWorld getWorld() {
         return world;

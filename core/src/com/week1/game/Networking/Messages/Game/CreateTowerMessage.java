@@ -1,7 +1,9 @@
 package com.week1.game.Networking.Messages.Game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Damage;
+import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Entities.Tower;
@@ -87,6 +89,7 @@ public class CreateTowerMessage extends GameMessage {
         and that it doesn't overlap with an existing blocks
      */
     private boolean checkTowerBlockPlacement(GameState inputState, TowerDetails towerDetails, InfoUtil util) {
+        
         int[] dimensions = inputState.getWorld().getWorldDimensions();
         int maxX = dimensions[0];
         int maxY = dimensions[1];
@@ -95,6 +98,8 @@ public class CreateTowerMessage extends GameMessage {
         int tempX;
         int tempY;
         int tempZ;
+        
+        Array<Unit> minions = inputState.getUnits();
 
         for(BlockSpec bs : towerDetails.getLayout()) {
             tempX = (int)(x + bs.getX());
@@ -118,7 +123,19 @@ public class CreateTowerMessage extends GameMessage {
                 util.log("lji1 - CreateTowerMessage", "Tower not fully supported by terrain");
                 return false;
             }
+
+            for(int u = 0; u < minions.size; u++) {
+                Unit minion = minions.get(u);
+                if ((((int)minion.getX() == tempX) || ((int)minion.getX() + 1 == tempX)) && 
+                        (((int)minion.getY() == tempY) || ((int)minion.getY() + 1 == tempY))) {
+                    util.log("lji1 - CreateTowerMessage", "Tower overlaps with minion.");
+                    return false;
+                }
+            }
         }
+        
         return true;
     }
+    
+    
 }
