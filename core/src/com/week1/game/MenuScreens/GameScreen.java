@@ -233,6 +233,7 @@ public class GameScreen implements Screen {
 		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
 		renderer.render(time); // Only move the units from their state position
 														   // if the threshold was not passed.
+
 	}
 
 	@Override

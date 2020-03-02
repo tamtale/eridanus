@@ -145,7 +145,7 @@ public class LoadoutScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        loadoutStage.getViewport().update(width, height);
     }
 
     @Override

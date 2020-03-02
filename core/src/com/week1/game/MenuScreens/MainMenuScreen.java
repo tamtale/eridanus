@@ -24,13 +24,8 @@ public class MainMenuScreen implements Screen {
     //Widgets
     TextButton playButton, buildTowersButton;
 
-    // Janky way to be able to pass 'this' into a lambda. Probably a better way to do it.
-    MainMenuScreen selfRef;
-
-
     public MainMenuScreen(GameController game) {
         this.game = game;
-        this.selfRef = this;
         stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
         setWidgets();
         configureWidgets();
@@ -70,7 +65,7 @@ public class MainMenuScreen implements Screen {
         buildTowersButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new TowerBuilderScreen(game, selfRef));
+                game.setScreen(new TowerBuilderScreen(game, MainMenuScreen.this));
             }
         });
     }

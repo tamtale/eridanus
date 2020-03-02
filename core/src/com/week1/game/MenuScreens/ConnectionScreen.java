@@ -151,7 +151,7 @@ public class ConnectionScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        connectionStage.getViewport().update(width, height);
     }
 
     @Override
