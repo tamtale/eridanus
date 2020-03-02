@@ -4,9 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
@@ -24,7 +26,7 @@ public class TowerBuilderStage {
     private StatsWidget sw;
     private TextButton startGame;
     private SelectBox<TowerDetails> displaySelection;
-    private TextButton displayButton;
+//    private TextButton displayButton;
 
     //Build mode buttons
     private TextButton buildModeBtn;
@@ -70,7 +72,7 @@ public class TowerBuilderStage {
         sw.setLblTxt(screen.getTowerStats());
 
         //select and display presets
-        displayButton = new TextButton("Display", normalStyle);
+//        displayButton = new TextButton("Display", normalStyle);
 
         displaySelection =new SelectBox(new Skin(Gdx.files.internal("uiskin.json")));
         Array<TowerDetails> presets = new Array<>();
@@ -98,20 +100,28 @@ public class TowerBuilderStage {
         removeBlockBtn = new TextButton("Remove Block", normalStyle);
         saveTowerBtn = new TextButton("Save Tower", normalStyle);
 
-        TextField twrName = new TextField("Enter tower name", new Skin(Gdx.files.internal("uiskin.json")));
+        TextField twrName = new TextField("", new Skin(Gdx.files.internal("uiskin.json")));
         dialog = new Dialog("Name your tower", new Skin(Gdx.files.internal("uiskin.json")));
-        dialog.text("Enter a name for your tower");
+        dialog.text("Enter a name for your tower below: ");
         dialog.getContentTable().row();
         dialog.getContentTable().add(twrName);
+        dialog.getContentTable().row();
         TextButton enterName = new TextButton("Enter", new Skin(Gdx.files.internal("uiskin.json")));
+        TextButton cancelBtn = new TextButton("Cancel", new Skin(Gdx.files.internal("uiskin.json")));
+
         enterName.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Entered Name");
                 screen.saveTower(twrName.getText());
                 dialog.hide();
             }});
+        cancelBtn.addListener(new ClickListener() {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            dialog.hide();
+        }});
         dialog.getContentTable().add(enterName);
+        dialog.getContentTable().add(cancelBtn);
 //        dialog.setPosition(30, 30);
 //        stage.addActor(dialog);
 
@@ -134,32 +144,32 @@ public class TowerBuilderStage {
         displaySelection.setPosition(0, 0);
         stage.addActor(displaySelection);
 
-        displayButton.setSize(128, 48);
-        displayButton.setPosition(128, 0);
-        stage.addActor(displayButton);
+//        displayButton.setSize(128, 48);
+//        displayButton.setPosition(128, 0);
+//        stage.addActor(displayButton);
 
         //Build Mode buttons
         buildModeBtn.setSize(128, 48);
-        buildModeBtn.setPosition(256, 0);
+        buildModeBtn.setPosition(128, 0);
         stage.addActor(buildModeBtn);
 
         addBlockBtn.setSize(128, 48);
-        addBlockBtn.setPosition(384, 0);
+        addBlockBtn.setPosition(256, 0);
         stage.addActor(addBlockBtn);
         addBlockBtn.setVisible(false);
 
         materialSelection.setSize(128, 48);
-        materialSelection.setPosition(512, 0);
+        materialSelection.setPosition(384, 0);
         stage.addActor(materialSelection);
         materialSelection.setVisible(false);
 
         removeBlockBtn.setSize(128, 48);
-        removeBlockBtn.setPosition(640, 0);
+        removeBlockBtn.setPosition(512, 0);
         stage.addActor(removeBlockBtn);
         removeBlockBtn.setVisible(false);
 
         saveTowerBtn.setSize(128, 48);
-        saveTowerBtn.setPosition(384, 48);
+        saveTowerBtn.setPosition(640, 0);
         stage.addActor(saveTowerBtn);
         saveTowerBtn.setVisible(false);
 
@@ -172,15 +182,23 @@ public class TowerBuilderStage {
 
     private void setListeners() {
 
-        displayButton.addListener(new ClickListener() {
+        displaySelection.addListener(new ChangeListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (!isBuildMode) {
-                    screen.setCamTower(displaySelection.getSelected());
-                    sw.setLblTxt(screen.getTowerStats());
-                }
+            public void changed(ChangeEvent event, Actor actor) {
+                screen.setCamTower(displaySelection.getSelected());
+                sw.setLblTxt(screen.getTowerStats());
             }
         });
+
+//        displayButton.addListener(new ClickListener() {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                if (!isBuildMode) {
+//                    screen.setCamTower(displaySelection.getSelected());
+//                    sw.setLblTxt(screen.getTowerStats());
+//                }
+//            }
+//        });
 
         buildModeBtn.addListener(new ClickListener() {
            @Override
