@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Plane;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
@@ -167,7 +168,7 @@ public class GameState implements RenderableProvider {
 
     public void updateGoal(Unit unit, Vector3 goal) {
         SteeringAgent agent = unit.getAgent();
-        Vector3 unitPos = new Vector3((int) unit.getX(), (int) unit.getY(), 0); //TODO: make acutal z;
+        Vector2 unitPos = new Vector2((int) unit.getX(), (int) unit.getY()); //TODO: make acutal z;
         unit.setGoal(goal);
         OutputPath path = new OutputPath();
         Array<Building> buildings = this.getBuildings();
@@ -178,7 +179,7 @@ public class GameState implements RenderableProvider {
                 break;
             }
         }
-        Vector3 goalPos = new Vector3(goal);
+        Vector2 goalPos = new Vector2(goal.x, goal.y);
 
         long start = System.nanoTime();
         path = graph.search(unitPos, goalPos);
@@ -316,10 +317,10 @@ public class GameState implements RenderableProvider {
         @Override
         public Void acceptTower(Tower tower) {
             towers.removeValue(tower, false);
-            Map<Vector3, Array<Connection<Vector3>>> edges = tower.getRemovedEdges();
-            for(Vector3 block: edges.keySet()){
-                graph.setConnections(block, edges.get(block));
-            }
+//            Map<Vector2, Array<Connection<Vector2>>> edges = tower.getRemovedEdges();
+//            for(Vector2 block: edges.keySet()){
+//                graph.setConnections(block, edges.get(block));
+//            }
             return null;
         }
 

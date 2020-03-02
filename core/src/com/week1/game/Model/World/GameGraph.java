@@ -22,19 +22,19 @@ public class GameGraph implements IndexedGraph<Vector2> {
     private GameHeuristic heuristic = new GameHeuristic();
     private PathFinder<Vector2> pathFinder;
     Array<Vector2> Vector2s = new Array<>();
-    Map<Pair<Integer, Integer>, Border[][]> borders = new HashMap<>();
+    Border[][][][] borders;
     private Array<Connection<Vector2>>[][] edges;
 
     //TODO: make general
     public GameGraph(Block[][][] blocks){
         super();
         edges = new Array[blocks.length][blocks[0].length];
+        borders = new Border[blocks.length][blocks[0].length][3][3];
         this.pathFinder = new WarrenIndexedAStarPathFinder<>(this);
         this.nodeCount = 0;
         for (int i = 0; i < edges.length; i++) {
             for (int j = 0; j < edges[0].length; j++) {
                 edges[i][j] = new Array<>();
-                borders.put(new Pair<>(i, j), new Border[3][3]);
             }
         }
         Gdx.app.log("GameGraph - wab2", "Building GameGraph");
@@ -72,8 +72,7 @@ public class GameGraph implements IndexedGraph<Vector2> {
         Border border = new Border(weight, fromNode, toNode);
         int i = (int) fromNode.x - (int) toNode.x + 1;
         int j = (int) fromNode.y - (int) toNode.y + 1;
-        Border[][] bordArr = borders.get(new Pair<>((int) fromNode.x, (int) fromNode.y));
-        bordArr[i][j] = border;
+        borders[(int) fromNode.x][(int) fromNode.y][i][j] = border;
         edges[(int) fromNode.x][(int) fromNode.y].add(border);
     }
 
@@ -119,12 +118,26 @@ public class GameGraph implements IndexedGraph<Vector2> {
     }
 
     public Connection<Vector2> getConnection(int fromX, int fromY, int toX, int toY){
-        return borders.get(new Pair<>(fromX, fromY))[toX][toY];
+//        System.out.println(borders.get(new Pair<>(fromX, fromY)));
+        int i = (int) fromX - (int) toX + 1;
+        int j = (int) fromY - (int) toY + 1;
+//        for(Pair<Integer, Integer> key: borders.keySet()){
+//            System.out.println(" x " + key.key + " y " + key.value);
+//        }
+        if (i < 0 || i > 2 || j < 0 || j > 2){
+            return null;
+        }
+        return borders[fromX][fromY][i][j];
     }
 
     public void removeConnection(int fromX, int fromY, int toX, int toY) {
         Connection<Vector2> border = getConnection(fromX, fromY, toX, toY);
         edges[fromX][fromY].removeValue(border, false);
-        borders.get(new Pair<>(fromX, fromY))[toX][toY] = null;
+        int i = (int) fromX - (int) toX + 1;
+        int j = (int) fromY - (int) toY + 1;
+        if (i >= 0 && i <= 2 && j >= 0 && j <= 2){
+            borders[fromX][fromY][i][j] = null;
+        }
+
     }
 }

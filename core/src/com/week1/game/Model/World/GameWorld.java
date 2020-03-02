@@ -153,8 +153,8 @@ public class GameWorld implements RenderableProvider {
 
     private void updateGraph(int i, int j, Block block) {
         int k = heightMap[i][j];
-        for (int m = i - 1; m < i + 1; i++) {
-            for (int n = j - 1; n < j + 1; j++) {
+        for (int m = i - 1; m < i + 1; m++) {
+            for (int n = j - 1; n < j + 1; n++) {
                 if (m != i || n != j) {
                     graph.removeConnection(m, n, i, j);
                     if (Math.abs(heightMap[m][n] - k) <= 1){
