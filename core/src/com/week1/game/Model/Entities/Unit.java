@@ -22,6 +22,7 @@ import java.util.Map;
 
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
+import static com.week1.game.Renderer.TextureUtils.makeTexture;
 import static java.lang.Math.abs;
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
@@ -135,19 +136,16 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
     public void step(float delta) {
         if (path != null) {
             if (path.getPath().size > 0) {
-//                this.curNode = new Vector3(this.x, this.y, 0);
-//                Line travelPath = new Line(lastNode.x, lastNode.y, curNode.x, curNode.y);
-//                Rectangle nodeRect = new Rectangle(path.get(1).x, path.get(1).y, 1, 1);
-
-//                boolean intersect = lineRect(lastNode.x, lastNode.y, curNode.x, curNode.y,
-//                        path.get(1).x, path.get(1).y, 1, 1);
-//                if (intersect){
                 if (distanceTraveled > distance) {
                     turn = 0;
                     Gdx.app.setLogLevel(Application.LOG_NONE);
-                    this.lastNode = new Vector3(this.position.x, this.position.y, 0);
-                    float dx = path.get(0).x - this.position.x;
-                    float dy = path.get(0).y - this.position.y;
+                    float dx = path.get(0).x - this.x;
+                    float dy = path.get(0).y - this.y;
+                    this.blockSpeed = 1f/unit2StateAdapter.getBlock((int) this.x, (int) this.y,
+                            unit2StateAdapter.getHeight((int) this.x, (int) this.y)).getCost(); //TODO: 3D
+                    if(blockSpeed != 1) {
+                        System.out.println(blockSpeed);
+                    }
                     this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
                     double angle = Math.atan(dy / dx);
                     if (dx < 0) {
@@ -155,8 +153,8 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
                     } else if (dy < 0) {
                         angle += 2 * Math.PI;
                     }
-                    vel.x = (float) speed * (float) Math.cos(angle);
-                    vel.y = (float) speed * (float) Math.sin(angle);
+                    vel.x = blockSpeed * (float) speed * (float) Math.cos(angle);
+                    vel.y = blockSpeed * (float) speed * (float) Math.sin(angle);
                     path.removeIndex(0);
                     this.distanceTraveled = 0;
                 }
