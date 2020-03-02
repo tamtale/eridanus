@@ -59,7 +59,7 @@ public class ConnectionScreen implements Screen {
         joinGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                joinGame(ipField.getMessageText());
+                joinGame(ipField.getText());
             }
         });
 

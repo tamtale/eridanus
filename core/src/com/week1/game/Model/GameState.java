@@ -8,23 +8,17 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
+import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Model.World.IWorldBuilder;
-import com.week1.game.Model.Entities.*;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.TowerBuilder.TowerDetails;
 
-import java.sql.Time;
-import java.time.Instant;
-import java.time.Period;
 import java.util.Map;
 
-import static com.week1.game.Model.Entities.TowerType.BASIC;
-import static com.week1.game.Model.Entities.TowerType.SNIPER;
 import static com.week1.game.Model.StatsConfig.*;
-import static com.week1.game.Model.Entities.TowerType.*;
 
 
 public class GameState {
@@ -469,8 +463,8 @@ public class GameState {
     }
 
     public void moveUnits(float movementAmount) {
-        for (Unit u: units) {
-            u.step(movementAmount);
+        for (int i = 0; i < units.size; i++) {
+            units.get(i).step(movementAmount);
         }
     }
 
