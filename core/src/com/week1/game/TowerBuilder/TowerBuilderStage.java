@@ -18,7 +18,7 @@ public class TowerBuilderStage {
 
     private TowerBuilderScreen screen;
     public Stage stage;
-    public StatsWidget sw;
+    private StatsWidget sw;
     private TextButton startGame;
     private SelectBox<TowerDetails> displaySelection;
     private TextButton displayButton;
@@ -254,6 +254,10 @@ public class TowerBuilderStage {
 
     public String getMaterialSelection() {
         return materialSelection.getSelected();
+    }
+
+    public void updateStats(String towerStats) {
+        sw.setLblTxt(towerStats);
     }
 }
 

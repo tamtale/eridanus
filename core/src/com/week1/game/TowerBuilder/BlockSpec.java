@@ -45,4 +45,19 @@ public class BlockSpec {
     public void setZ(int z) {
         this.z = z;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof  BlockSpec) {
+            if (((BlockSpec) o).getX() == x & ((BlockSpec) o).getY() == y & ((BlockSpec) o).getZ() == z & ((BlockSpec) o).getBlockCode() == blockCode) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "x: " + x + ", y: " + y + ", z: " + z + ", code: " + blockCode;
+    }
 }

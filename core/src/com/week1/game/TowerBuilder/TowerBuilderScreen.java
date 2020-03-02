@@ -90,8 +90,17 @@ public class TowerBuilderScreen implements Screen {
     }
 
     public String getTowerStats() {
-        TowerDetails curr = towerCam.getCurrTowerDetails();
+        TowerDetails curr;
+        if (towerStage.isBuildMode) {
+            curr = towerCam.getWIPTower();
+        } else {
+            curr = towerCam.getCurrTowerDetails();
+        }
         return "HP: " + curr.getHp() +"\n Atk: " + curr.getAtk() + " \n Range: " + curr.getRange() + "\n Price: " + curr.getPrice();
+    }
+
+    public void updateTowerStats() {
+        towerStage.updateStats(getTowerStats());
     }
 
     //Builder Input Proc to stage methods
@@ -131,6 +140,6 @@ public class TowerBuilderScreen implements Screen {
     }
 
     public void displayBuildCore() {
-        towerCam.setCurrTowerDetails(TowerPresets.getBuildingCore());
+        towerCam.setCurrTowerDetails(TowerPresets.getBuildCore());
     }
 }

@@ -2,6 +2,7 @@ package com.week1.game.TowerBuilder;
 
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerFootprint;
 import com.week1.game.Model.World.Block;
@@ -120,6 +121,7 @@ public class TowerDetails {
         int y = bs.getY();
         int z = bs.getZ();
 
+
         //add to the layout
         this.layout.add(bs);
 
@@ -135,6 +137,62 @@ public class TowerDetails {
         this.range = Integer.max((int) this.range, 3 * y);
         this.price += TowerMaterials.blockPrice.get(code);
 
+    }
+
+    protected void removeBlock(BlockSpec bs) {
+        int x = bs.getX();
+        int y = bs.getY();
+        int z = bs.getZ();
+        int code = -1;
+
+        int modelIdx = -1;
+        int blockIdx = -1;
+        boolean shrinkFootprint = true;
+        double newRange = 0;
+
+
+        for (int i = 0; i < layout.size(); i++) {
+            if (code == -1) {
+                BlockSpec b = layout.get(i);
+                if (x == b.getX() & y == b.getY() & z == b.getZ()) {
+                    code = b.getBlockCode();
+                    blockIdx = i;
+                }
+            }
+
+            ModelInstance m = model.get(i);
+            Vector3 translation = new Vector3();
+            m.transform.getTranslation(translation);
+
+            if (modelIdx ==  -1) {
+                if (translation.x == 5f * x & translation.y == 5f * y & translation.z == 5f * z) {
+                    modelIdx = i;
+                }
+            }
+
+            newRange = Math.max(newRange, translation.y);
+
+            if (translation.x == x & translation.z == z) {
+                shrinkFootprint = false;
+            }
+
+        }
+
+        //remove from model and layout
+        layout.remove(blockIdx);
+        this.model.removeIndex(modelIdx);
+
+        //update the fields
+        this.atk -= TowerMaterials.blockAtk.get(code);
+        this.hp -= TowerMaterials.blockHp.get(code);
+        this.price -= TowerMaterials.blockPrice.get(code);
+
+        //updating range and footprint
+        if (shrinkFootprint) {
+            this.footprint.setFootPrint(x + 2, z + 2, false);
+        }
+
+        this.range = newRange * 3;
 
     }
 }

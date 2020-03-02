@@ -3,6 +3,7 @@ package com.week1.game.TowerBuilder;
 import com.badlogic.gdx.Gdx;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class TowerPresets {
         new BlockSpec(3, 0, 2, 1),
         new BlockSpec(3, -1, 2, 1)), "Preset 6");
 
-    private static TowerDetails buildingCore = new TowerDetails(Arrays.asList(new BlockSpec(2, 0, 0, 0) ), "Building core");
+//    private static TowerDetails buildingCore = new TowerDetails(Arrays.asList(new BlockSpec(2, 0, 0, 0) ), "Building core");
 
     public static List<TowerDetails> presets = Arrays.asList(towerDetails1, towerDetails2, towerDetails3, towerDetails4, towerDetails5, towerDetails6);
 
@@ -103,9 +104,12 @@ public class TowerPresets {
         return presets.get(towernum - 1);
     }
 
-    public static TowerDetails getBuildingCore() {
-        return buildingCore;
+
+
+    public static TowerDetails getBuildCore() {
+        ArrayList<BlockSpec> layout = new ArrayList<>();
+        layout.add(new BlockSpec(2, 0, 0, 0));
+        return new TowerDetails(layout, "Building core");
+
     }
-
-
 }

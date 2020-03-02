@@ -28,14 +28,14 @@ public class TowerBuilderCamera {
     private PerspectiveCamera cam;
     public ModelBatch modelBatch;
     public Environment environment;
-    private TowerDetails currTowerDetails;
-    private Array<ModelInstance> instances;
     private Vector3 position = new Vector3();
     private CameraInputController camController;
     private ModelInstance highlightedAddBlock = null;
     private ModelInstance highlightedTowerBlock = null;
 
-
+    private TowerDetails currTowerDetails;
+    public TowerDetails WIPTower;
+//    private Array<ModelInstance> instances;
     TowerBuilderScreen towerScreen;
     private List<Vector3> invisiPoses = new ArrayList<>();
     private List<Vector3> poses = new ArrayList<>();
@@ -49,14 +49,19 @@ public class TowerBuilderCamera {
     }
 
     public void setCurrTowerDetails(TowerDetails newTower) {
-        this.currTowerDetails = newTower;
 
-        instances = new Array<>();
-        for (ModelInstance i: currTowerDetails.getModel()) {
-            this.instances.add(new ModelInstance(i));
+        if (towerScreen.isBuildMode()) {
+            this.WIPTower = TowerPresets.getBuildCore();
+//            instances = WIPTower.getModel();
+            calcInvisiBlox();
+        } else {
+            this.currTowerDetails = newTower;
         }
 
-        calcInvisiBlox();
+    }
+
+    public TowerDetails getWIPTower() {
+        return this.WIPTower;
     }
 
     public TowerDetails getCurrTowerDetails() {
@@ -109,7 +114,7 @@ public class TowerBuilderCamera {
 
         modelBatch.begin(cam);
         if (towerScreen.isBuildMode()) {
-            modelBatch.render(instances, environment);
+            modelBatch.render(WIPTower.getModel(), environment);
         } else {
             modelBatch.render(currTowerDetails.getModel(), environment);
         }
@@ -148,7 +153,7 @@ public class TowerBuilderCamera {
         poses.clear();
         invisiPoses.clear();
 
-        for (BlockSpec b : currTowerDetails.getLayout()) {
+        for (BlockSpec b : WIPTower.getLayout()) {
             Vector3 curpos = new Vector3(b.getX(), b.getY(), b.getZ());
             poses.add(curpos);
         }
@@ -216,10 +221,9 @@ public class TowerBuilderCamera {
         int result = selectInvisiblock(screenX, screenY);
 
         if (result > -1) {
-            ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(TowerMaterials.materialCodes.get(materialSelection)));
-            newbloc.transform.setToTranslation(invisiPoses.get(result).x * 5f, invisiPoses.get(result).y * 5f, invisiPoses.get(result).z * 5f);
-            //TODO -- this changes the preset permanently. need to fix that
-            instances.add(newbloc);
+            WIPTower.addBlock(new BlockSpec(TowerMaterials.materialCodes.get(materialSelection),
+                    (int) invisiPoses.get(result).x, (int) invisiPoses.get(result).y, (int) invisiPoses.get(result).z));
+            towerScreen.updateTowerStats();
 
             //update invisiblox
             updateInvisibloxOnAdd(invisiPoses.get(result));
@@ -256,6 +260,8 @@ public class TowerBuilderCamera {
             }
         }
 
+        System.out.println(poses);
+        System.out.println(invisiPoses);
 
     }
 
@@ -268,20 +274,9 @@ public class TowerBuilderCamera {
         int result = selectBlock(screenX, screenY);
         if (result != -1) {
             Vector3 selectedPos = poses.get(result);
-            for (int i = 0; i < this.instances.size; i++) {
-                ModelInstance block = this.instances.get(i);
-
-                Vector3 translation = new Vector3();
-                block.transform.getTranslation(translation);
-                if (translation.x == selectedPos.x * 5f & translation.y == selectedPos.y * 5f & translation.z == selectedPos.z * 5f) {
-
-                    this.instances.removeValue(block, true);
-                    updateInvisibloxOnDel(selectedPos);
-
-
-                    break;
-                }
-            }
+            WIPTower.removeBlock(new BlockSpec(-1, (int) selectedPos.x, (int) selectedPos.y, (int) selectedPos.z));
+            towerScreen.updateTowerStats();
+            updateInvisibloxOnDel(selectedPos);
 
             highlightTowerBlock(screenX, screenY);
         }
@@ -353,8 +348,8 @@ public class TowerBuilderCamera {
         int result = selectBlock(screenX, screenY);
         if (result != -1) {
             Vector3 selectedPos = poses.get(result);
-            for (int i = 0; i < this.instances.size; i++) {
-                ModelInstance block = this.instances.get(i);
+            for (int i = 0; i < WIPTower.getModel().size; i++) {
+                ModelInstance block = WIPTower.getModel().get(i);
 
                 Vector3 translation = new Vector3();
                 block.transform.getTranslation(translation);
@@ -378,6 +373,7 @@ public class TowerBuilderCamera {
     public void stopHighlighting() {
         highlightedAddBlock = null;
         highlightedTowerBlock = null;
-        return;
     }
+
+
 }
