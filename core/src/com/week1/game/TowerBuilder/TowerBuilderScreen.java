@@ -25,6 +25,7 @@ public class TowerBuilderScreen implements Screen {
         BuilderInputProcessor bip = new BuilderInputProcessor(this);
 
         multiplexer.addProcessor(towerStage.stage);
+        multiplexer.addProcessor(towerStage.dialogStage);
         multiplexer.addProcessor(bip);
         multiplexer.addProcessor(camController);
         Gdx.input.setInputProcessor(multiplexer);
@@ -53,6 +54,7 @@ public class TowerBuilderScreen implements Screen {
         //Delegate render to the camera (3d cam) and the stage (buttons and widgets)
         towerStage.render();
         towerCam.render();
+        towerStage.renderDialogs();
 
     }
 

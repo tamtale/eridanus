@@ -20,6 +20,7 @@ public class TowerBuilderStage {
 
     private TowerBuilderScreen screen;
     public Stage stage;
+    public Stage dialogStage;
     private StatsWidget sw;
     private TextButton startGame;
     private SelectBox<TowerDetails> displaySelection;
@@ -53,6 +54,7 @@ public class TowerBuilderStage {
     public TowerBuilderStage(TowerBuilderScreen screen) {
         this.screen = screen;
         stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
+        dialogStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
     }
 
     public void setTowerBuilder(TowerBuilderCamera builder) {
@@ -246,7 +248,7 @@ public class TowerBuilderStage {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 //TODO - this
-                dialog.show(stage);
+                dialog.show(dialogStage);
 //                screen.saveTower();
             }
         });
@@ -305,6 +307,11 @@ public class TowerBuilderStage {
         Array<TowerDetails> items = this.displaySelection.getItems();
         items.add(newTower);
         displaySelection.setItems(items);
+    }
+
+    public void renderDialogs() {
+        dialogStage.act();
+        dialogStage.draw();
     }
 }
 

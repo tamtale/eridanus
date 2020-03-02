@@ -12,6 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+//Todos for towers -- ensure that they are connected when deleting blocks
+//                  -- update stats and block names
+//                  -- clean up load code
+//                  -- make things static if possible
+//                  -- make dialog bigger and show up to the side or over the camera
+
 public class TowerDetails {
     private double hp = 0;
     private double atk = 0;
