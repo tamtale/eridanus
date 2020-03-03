@@ -2,13 +2,11 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.Connection;
-import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
-import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.World.Block;
@@ -32,13 +30,11 @@ public class GameState implements GameRenderable {
 
     private Array<Clickable> clickables = new Array<>();
     private int minionCount;
-    private PathFinder<Vector3> pathFinder;
     private Array<Unit> units = new Array<>();
     private Array<Crystal> crystals = new Array<>();
     private Array<Tower> towers = new Array<>();
     private Map<Integer, PlayerBase> playerBases = new HashMap<>(); // bases are just special towers, not an entirely separate class
     private Array<PlayerStat> playerStats = new Array<>();
-    private Array<SteeringAgent> agents;
     private Array<Damageable> damageables = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
