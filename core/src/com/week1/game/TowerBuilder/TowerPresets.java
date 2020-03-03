@@ -153,7 +153,7 @@ public class TowerPresets {
             new BlockSpec(BlockType.MOONSTONE, 1, 2, 1)
     ));
 
-    public static List<TowerDetails> presets = Arrays.asList(base, towerDetails2, towerDetails3, towerDetails4, towerDetails5, towerDetails6);
+    public static List<TowerDetails> presets = Arrays.asList(towerDetails1, towerDetails2, towerDetails3, towerDetails4, towerDetails5, towerDetails6);
     public static final Integer NUM_PRESETS = 6;
 
     public static TowerDetails getTower(int towernum) {
