@@ -21,6 +21,7 @@ import com.week1.game.TowerBuilder.TowerDetails;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.week1.game.Model.StatsConfig.*;
 
@@ -279,8 +280,7 @@ public class GameState implements GameRenderable {
 
         @Override
         public Void acceptBase(PlayerBase base) {
-            // "Dead" base will be kept in the playerbases array so that checking for hp below 0 still works.
-            // In this case, no need to do anything on death.
+            playerBases.remove(base.getPlayerId());
             return null;
         }
 
@@ -293,11 +293,14 @@ public class GameState implements GameRenderable {
 
     public boolean findNearbyStructure(float x, float y, float z, int playerId) {
         // Check if it is near the home base
-        if (Math.sqrt(
-                Math.pow(x - playerBases.get(playerId).x, 2) +
-                        Math.pow(y - playerBases.get(playerId).y, 2) +
-                        Math.pow(z - playerBases.get(playerId).z, 2)) < placementRange){
-            return true;
+        PlayerBase base = playerBases.get(playerId);
+        if (base != null) {
+            if (Math.sqrt(
+                Math.pow(x - base.x, 2) +
+                    Math.pow(y - base.y, 2) +
+                    Math.pow(z - base.z, 2)) < placementRange){
+                return true;
+            }
         }
 
         // Check if it is near any of your towers
@@ -325,12 +328,7 @@ public class GameState implements GameRenderable {
         if (!isInitialized() || playerId == PLAYERNOTASSIGNED){
             return true; // Return that the player is alive because the game has not started
         }
-
-        if (playerBases.get(playerId).getHp() <= 0) {
-           // Yikes, you died!
-            return false;
-        }
-        return true;
+        return playerBases.get(playerId) != null;
     }
 
     public boolean checkIfWon(int playerId) {
