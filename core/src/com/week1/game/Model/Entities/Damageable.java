@@ -36,6 +36,15 @@ public interface Damageable {
      * Sets the position of pos to be the position of the damageable.
      */
     void getPos(Vector3 pos);
+
+    /*
+     * Sets the position displayPos to the display position of the damageable, as rendered on the screen.
+     * By default, will just give the logical position of the damageable.
+     */
+    default void getDisplayPos(Vector3 displayPos) {
+        getPos(displayPos);
+    }
+
     float getX();
     float getY();
 
@@ -57,7 +66,7 @@ public interface Damageable {
         float maxHealth = getMaxHealth();
         Batch batch = config.getBatch();
         Camera cam = config.getCam();
-        this.getPos(unitPosition);
+        this.getDisplayPos(unitPosition);
         cam.project(unitPosition);
         batch.draw(healthBarBackground, unitPosition.x, unitPosition.y, 10f, 2f);
         batch.draw(getHealthBar(getCurrentHealth(), getMaxHealth()),

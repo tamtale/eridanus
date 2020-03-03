@@ -212,6 +212,11 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     }
 
     @Override
+    public void getDisplayPos(Vector3 pos) {
+        pos.set(displayPosition);
+    }
+
+    @Override
     public float getCurrentHealth() {
         return (float) this.hp;
     }
@@ -311,6 +316,10 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
 
     @Override
     public void render(RenderConfig config) {
+        float delta = config.getDelta();
+        if (delta != 0) {
+            moveRender(delta);
+        }
         config.getModelBatch().render(modelInstance, config.getEnv());
     }
 }
