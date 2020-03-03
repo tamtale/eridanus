@@ -10,9 +10,6 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Pool;
-import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
 import com.week1.game.Renderer.GameRenderable;
@@ -25,7 +22,6 @@ import java.util.Map;
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 import static java.lang.Math.abs;
-import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
 public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     private final int playerID;
@@ -139,9 +135,8 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
                 }
                 move(delta);
                 turn++;
-            } else {
-                Gdx.app.log("Unit::step", "nope");
             }
+
             if (path.getPath().size <= 0) {
                 path = null;
                 vel.x = 0;
@@ -195,7 +190,6 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     @Override
     public boolean hasTargetInRange(Damageable victim) {
         return Math.sqrt(Math.pow(position.x - victim.getX(), 2) + Math.pow(position.y - victim.getY(), 2)) < tempMinionRange;
-//        return true; // TODO
     }
     
     @Override

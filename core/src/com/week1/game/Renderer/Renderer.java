@@ -84,7 +84,6 @@ public class Renderer {
     }
 
     public void resize(int x, int y) {
-        // TODO this
         cam.viewportWidth = x;
         cam.viewportHeight = y;
         cam.update();
@@ -127,7 +126,6 @@ public class Renderer {
     }
 
     public void render(float deltaTime) {
-        // Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         updateCamera();

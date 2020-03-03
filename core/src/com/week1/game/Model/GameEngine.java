@@ -35,7 +35,6 @@ public class GameEngine implements GameRenderable {
 
     private GameState gameState;
     private int communicationTurn = 0;
-    private SpriteBatch spriteBatch;
     private IEngineAdapter adapter;
     private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
     private InfoUtil util;
@@ -44,16 +43,18 @@ public class GameEngine implements GameRenderable {
     private boolean isStarted = false;
     BufferedWriter writer;
 
-    public GameEngine(IEngineAdapter adapter, int playerId, InfoUtil util) {
+    public GameEngine(IEngineAdapter adapter, int playerId, Queue<TaggedMessage> replayQueue, InfoUtil util) {
         this.adapter = adapter;
-        Gdx.app.log("wab2- GameEngine", "messageQueue built");
         this.enginePlayerId = playerId;
+        this.replayQueue = replayQueue;
         gameState = new GameState(
                 SmallWorldBuilder.ONLY,
                 () -> {
                     Vector3 position = new Vector3();
                     Tower myBase = null;
-                    for (Tower playerBase: gameState.getPlayerBases()) {
+                    Array<Tower> bases = gameState.getPlayerBases();
+                    for (int i = 0; i < bases.size; i++) {
+                        Tower playerBase = bases.get(i);
                         if (playerBase.getPlayerId() == enginePlayerId) {
                             myBase = playerBase;
                         }
@@ -62,7 +63,6 @@ public class GameEngine implements GameRenderable {
                     adapter.setDefaultLocation(position);
                 });
         Gdx.app.log("wab2- GameEngine", "gameState built");
-        spriteBatch = new SpriteBatch();
         this.util = util;
 
         // Initialize and truncate the log file for the engine and Error log.
@@ -89,12 +89,11 @@ public class GameEngine implements GameRenderable {
         for (GameMessage message : messages) {
             message.process(this, gameState, util);
         }
-        // Process the replay messages. TODO revisit
-//        for (TaggedMessage message = replayQueue.peek(); message != null && message.turn == communicationTurn; message = replayQueue.peek()) {
-//            replayQueue.poll();
-//            message.gameMessage.process(this, gameState, util);
-//        }
-
+        // Process any messages in the replay queue.
+        for (TaggedMessage message = replayQueue.peek(); message != null && message.turn == communicationTurn; message = replayQueue.peek()) {
+            replayQueue.poll();
+            message.gameMessage.process(this, gameState, util);
+        }
         if (communicationTurn % 10 == 0) {
             // Time to sync up!
             adapter.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash(), communicationTurn));

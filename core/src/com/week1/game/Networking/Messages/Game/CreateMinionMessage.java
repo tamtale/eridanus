@@ -14,14 +14,8 @@ public class CreateMinionMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.CREATEMINION;
     private final static String TAG = "CreateMinionMessage";
     
-
     private float x, y, z;
     private int unitType;
-
-    // Holdover form 2D-land.
-    public CreateMinionMessage(float x, float y, int unitType, int playerID, int intHash){
-      this(x, y, 1, unitType, playerID, intHash);
-    }
 
     public CreateMinionMessage(float x, float y, float z, int unitType, int playerID, int intHash){
         super(playerID, MESSAGE_TYPE, intHash);
@@ -64,10 +58,6 @@ public class CreateMinionMessage extends GameMessage {
             util.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
             inputState.addUnit(unit);
         });
-//        SteeringAgent agent = new SteeringAgent(unit, new Vector2(x, y), 0,
-//                new Vector2((float) .1, (float) .1), 0, 1, true, (float).5);
-//        inputState.addAgent(agent);
-//        unit.agent = agent;
         return true;
     }
 

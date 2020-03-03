@@ -19,6 +19,7 @@ import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.week1.game.Model.StatsConfig.*;
@@ -136,7 +137,9 @@ public class GameState implements GameRenderable {
             i++;
         }
 
-        for(BlockSpec bs : t.getLayout()) {
+        List<BlockSpec> blockSpecs = t.getLayout();
+        for(int k = 0; k < blockSpecs.size(); k++) {
+            BlockSpec bs = blockSpecs.get(k);
             this.world.setBlock(
                     (int)(t.x + bs.getX()),
                     (int)(t.y + bs.getZ()),
@@ -276,8 +279,8 @@ public class GameState implements GameRenderable {
 
         @Override
         public Void acceptBase(PlayerBase base) {
-            int deadPlayer = base.getPlayerId();
-            playerBases.remove(deadPlayer);
+            // "Dead" base will be kept in the playerbases array so that checking for hp below 0 still works.
+            // In this case, no need to do anything on death.
             return null;
         }
 

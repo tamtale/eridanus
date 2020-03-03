@@ -154,13 +154,6 @@ public class ClickOracle extends InputAdapter {
                 @Override
                 public Void acceptBlockLocation(Vector3 vector) {
                     Gdx.app.log("ClickOracle", "Accepting block location.");
-
-//                      // TODO: only using this becasue buttons are broken
-//                      spawnType = SpawnInfo.SpawnType.TOWER1; // TODO: remove me !
-
-                    System.out.println("Sending message to spawn tower at: " + vector);
-
-//                      if (unit == null) {
                     if (spawnType == SpawnInfo.SpawnType.UNIT) {
                         Gdx.app.log("pjb3 - ClickOracle", "Spawn unit");
                         adapter.sendMessage(new CreateMinionMessage(vector.x, vector.y, vector.z + 1, 69, adapter.getPlayerId(), currentGameHash));
@@ -174,14 +167,6 @@ public class ClickOracle extends InputAdapter {
                         Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
                         adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 2, adapter.getPlayerId(), currentGameHash));
                     }
-//                      } else {
-//                          Gdx.app.log("ttl4 - ClickOracle", "selected a unit!");
-//                          deMultiSelect();
-//                          selectionLocationStart.set(unit.getX(), unit.getY(), 0);
-//                          selectionLocationEnd.set(unit.getX(), unit.getY(), 0);
-//                          multiSelect(unit);
-//                      }
-
                     return null;
                 }
 
@@ -234,19 +219,12 @@ public class ClickOracle extends InputAdapter {
     }
 
     public void render() {
-        batch.setProjectionMatrix(adapter.getCamera().combined);
-//        Gdx.app.log("projection matrix ", batch.getProjectionMatrix().toString());
-        // selectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getHeight(), Gdx.graphics.getWidth());
-        // batch.setProjectionMatrix(selectionMatrix);
 
+        batch.setProjectionMatrix(adapter.getCamera().combined);
         batch.setColor(1, 1,1, 0.5f);
         batch.begin();
-        
 
         if (dragging) {
-
-            System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
-
             Texture t = TextureUtils.makeUnfilledRectangle(1,1, Color.YELLOW);
             batch.draw(
                     t,

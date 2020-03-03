@@ -22,6 +22,7 @@ import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Renderer.*;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * This is the Screen that holds the actual game that is being played.
@@ -75,7 +76,7 @@ public class GameScreen implements Screen {
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
-		}, networkClient.getPlayerId(), util);
+		}, networkClient.getPlayerId(), new ConcurrentLinkedQueue<>(), util);
 
 		renderer = new Renderer(new IRendererAdapter() {
 			@Override

@@ -38,36 +38,24 @@ public class GameWorld implements GameRenderable {
     private int chunkHeight;
 
     public GameWorld(IWorldBuilder worldBuilder) {
-        // For now, we'll make a preset 100x100x10 world.
         blocks = worldBuilder.terrain();
-        
         this.graph = new GameGraph(blocks);
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 graph.addVector3(new Vector3(i, j, 0));
-//                if (i > 0) {
-//                    blocks[i][j][0].setConnection(new WeightedBlockEdge(1, blocks[i][j][0], blocks[i - 1][j][0]));
-//                }
                 for (int k = 1; k < blocks[0][0].length; k++) {
                     graph.addVector3(new Vector3(i, j, k));
                 }
             }
         }
         Gdx.app.log("Game World - wab2", "Block array built");
-//        model = modelBuilder.createBox(5f, 5f, 5f,
-//                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
-//                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
-        
         // Set up the chunk bounding boxes
         chunkSide = (int)Math.pow(blocks.length * blocks[0].length * blocks[0][0].length, 1d/4d);
-//        System.out.println("ChunkSize: " + chunkSide);
         chunkHeight = 5;
-        
         int sizeX = (int)Math.ceil(blocks.length / (double)chunkSide);
         int sizeY = (int)Math.ceil(blocks[0].length / (double)chunkSide);
         int sizeZ = (int)Math.ceil(blocks[0][0].length / (double)chunkHeight);
         chunkBoundingBoxes = new BoundingBox[sizeX][sizeY][sizeZ];
-//        System.out.println("numberof Chunks: " + sizeX + ", " + sizeY + ", " + sizeZ);
         activeBlocksPerChunk = new int[sizeX][sizeY][sizeZ];
         Vector3 minCorner = new Vector3();
         Vector3 maxCorner = new Vector3();
@@ -82,8 +70,6 @@ public class GameWorld implements GameRenderable {
             }
         }
         
-        
-
         // Build the modelinstances and precompute the bounding boxes
         instances = new ModelInstance[blocks.length][blocks[0].length][blocks[0][0].length];
         boundingBoxes = new BoundingBox[blocks.length][blocks[0].length][blocks[0][0].length];
@@ -102,9 +88,7 @@ public class GameWorld implements GameRenderable {
                 }
             }
         }
-        
-        
-        
+
     }
     
     private void updateActiveBlocks(int i, int j, int k) {

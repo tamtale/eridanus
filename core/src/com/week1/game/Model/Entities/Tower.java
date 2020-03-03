@@ -18,9 +18,14 @@ public class Tower extends Building implements Damaging {
     private static final int SIDELENGTH = 3;
     public float x, y, z;
     private static Texture skin; // TODO change this when we go to 3D to actually use the model of the tower.
-    private int playerID, towerType;
+    protected int playerID;
+    protected int towerType;
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
-    private double hp, maxHp, dmg, range, cost;
+    protected double hp;
+    protected double maxHp;
+    protected double dmg;
+    protected double range;
+    protected double cost;
     private List<BlockSpec> layout;
     private Map<Vector3, Array<Connection<Vector3>>> removedEdges = new HashMap<>();
     

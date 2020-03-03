@@ -20,7 +20,6 @@ public class GameGraph implements IndexedGraph<Vector3> {
     Array<Border> borders = new Array<>();
     private Array<Connection<Vector3>>[][][] edges;
 
-    //TODO: make general
     public GameGraph(Block[][][] blocks){
         super();
         edges = new Array[blocks.length][blocks[0].length][blocks[0][0].length];
@@ -38,10 +37,7 @@ public class GameGraph implements IndexedGraph<Vector3> {
 
     @Override
     public int getIndex(Vector3 node) {
-        int index = (int) (node.x + edges.length * node.y + edges.length * edges[0].length * node.z);
-
-        return index;
-//        return node.getIndex();
+        return (int) (node.x + edges.length * node.y + edges.length * edges[0].length * node.z);
     }
 
     @Override

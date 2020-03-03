@@ -12,7 +12,6 @@ public class SmallWorldBuilder implements IWorldBuilder {
 
     @Override
     public Block[][][] terrain() {
-        // empty block
         Block[][][] blocks = new Block[90][30][15];
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
@@ -23,9 +22,6 @@ public class SmallWorldBuilder implements IWorldBuilder {
             }
         }
         makePlateau(blocks, 0, 5, 0, 5);
-        
-//        blocks[3][3][2] = Block.TowerBlock.REDBLOCK;
-        
         return blocks;
     }
 

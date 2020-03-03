@@ -71,7 +71,6 @@ public class CreateTowerMessage extends GameMessage {
         inputState.getPlayerStats(playerID).useMana(towerCost);
 
         // Only create the tower once we're sure it's safe to do so
-//        Tower tower = new Tower((int) x, (int) y, towerHealth, towerDmg, towerRange, Damage.type.BASIC, towerCost, playerID, towerType);
         Tower tower = new Tower((int) x, (int) y, (int) z, towerDetails, playerID, towerType);
         inputState.addTower(tower, playerID);
         
@@ -133,9 +132,7 @@ public class CreateTowerMessage extends GameMessage {
                 }
             }
         }
-        
+
         return true;
     }
-    
-    
 }

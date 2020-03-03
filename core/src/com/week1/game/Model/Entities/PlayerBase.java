@@ -12,4 +12,19 @@ public class PlayerBase extends Tower {
     public <T> T accept(DamageableVisitor<T> visitor) {
         return visitor.acceptBase(this);
     }
+
+    @Override
+    public String toString() {
+        return "PlayerBase {" +
+            "x=" + x +
+            ", y=" + y +
+            ", playerID=" + playerID +
+            ", towerType=" + towerType +
+            ", hp=" + hp +
+            ", maxHp=" + maxHp +
+            ", dmg=" + dmg +
+            ", range=" + range +
+            ", cost=" + cost +
+            '}';
+    }
 }
