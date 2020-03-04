@@ -317,7 +317,7 @@ public class GameWorld implements GameRenderable {
         ModelInstance closestModelInstance_final = closestModelInstance;
         intersection.set(closestIntersection);
 
-        Gdx.app.log("GameState.getClickableOnRay",
+        Gdx.app.debug("GameState.getClickableOnRay",
                 "Returning clickable for block at i: " + closestCoords.x +
                         " j: " + closestCoords.y +
                         " k: " + closestCoords.z +

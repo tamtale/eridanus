@@ -50,7 +50,7 @@ public class GameEngine implements GameRenderable {
         this.enginePlayerId = playerId;
         this.replayQueue = replayQueue;
         gameState = new GameState(
-                SmallWorldBuilder.ONLY,
+                Basic4WorldBuilder.ONLY,
                 () -> {
                     Vector3 position = new Vector3();
                     Tower myBase = gameState.getPlayerBase(this.enginePlayerId);

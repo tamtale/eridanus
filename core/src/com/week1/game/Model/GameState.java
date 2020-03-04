@@ -390,6 +390,7 @@ public class GameState implements GameRenderable {
 
     @Override
     public void render(RenderConfig config) {
+        long time = System.currentTimeMillis();
         world.render(config);
         ModelBatch modelBatch = config.getModelBatch();
         Batch batch2D = config.getBatch();
@@ -407,6 +408,8 @@ public class GameState implements GameRenderable {
             damageables.get(i).drawHealthBar(config);
         }
         batch2D.end();
+        long newTime = System.currentTimeMillis();
+        Gdx.app.log("render", "render time = " + (newTime - time) + "ms");
 
     }
 
