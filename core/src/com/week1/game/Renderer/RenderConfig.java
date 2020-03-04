@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
+import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 
 /**
  * This class is passed from the renderer through to the game state when it is asking the
@@ -18,8 +20,13 @@ public class RenderConfig {
     private SpriteBatch batch = new SpriteBatch();
     /* ModelBatch used to draw 3D models.*/
     private ModelBatch modelBatch = new ModelBatch();
+
+    private DecalBatch decalBatch;
+    
     /* Camera used to view the world*/
     private Camera cam;
+    
+    
     /* Lighting and other global properties of the world.*/
     private Environment env;
     
@@ -32,6 +39,8 @@ public class RenderConfig {
         this.delta = delta;
         this.cam = cam;
         this.env = env;
+        
+        this.decalBatch = new DecalBatch(new CameraGroupStrategy(this.cam));
     }
 
     public void set(boolean showAttackRadius, boolean showSpawnRadius, float delta) {
@@ -59,6 +68,10 @@ public class RenderConfig {
 
     public ModelBatch getModelBatch() {
         return modelBatch;
+    }
+    
+    public DecalBatch getDecalBatch() {
+        return decalBatch;
     }
 
     public Camera getCam() {
