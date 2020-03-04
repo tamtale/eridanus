@@ -120,7 +120,7 @@ public interface Block {
             }
         };
 
-        public static TerrainBlock WATER = new TerrainBlock(Color.BLUE, 5f) {
+        public static TerrainBlock WATER = new TerrainBlock(Color.CYAN, 5f) {
             @Override
             public boolean canSupportTower() {
                 // water shouldn't be able to hold up a tower

@@ -26,65 +26,23 @@ public class CoolWorldBuilder implements IWorldBuilder {
                         float max = .98f - .01f * adjBlocks.value;
                         blockType = min + random.nextFloat() * (max - min);
                     }
-                    if (adjBlocks.value > 0) {
-//                        float min = .65f + .05f * adjBlocks.value;
-//                        float max = 1;
-//                        blockType = min + random.nextFloat() * (max - min);
-                    }
                     if (blockType < 0.75) {
                         blocks[i][j][0] = Block.TerrainBlock.ZAMBALA;
-                    } else if (blockType < .99) {
+                        spread(i, j, 0, .125f, .125f, .75f, true, Block.TerrainBlock.ZAMBALA);
+                        //heightBuild(i, j, Block.TerrainBlock.ZAMBALA);
+                    } else if (blockType < .98) {
                         blocks[i][j][0] = Block.TerrainBlock.FIREBRICK;
+                        spread(i, j, 0, .125f, .125f, .85f, true, Block.TerrainBlock.FIREBRICK);
+                        //heightBuild(i, j, Block.TerrainBlock.FIREBRICK);
                     } else {
                         blocks[i][j][0] = Block.TerrainBlock.WATER;
-                        Random water = new Random();
-                        float lake = water.nextFloat();
-                        int m = i;
-                        int n = j;
-                        while (lake < .99) {
-                            float dir = water.nextFloat();
-                            if ((m > 0 && m < blocks.length - 1) && (n > 0 && n < blocks[0].length - 1)) {
-                                if (dir < .23) {
-                                    blocks[m][n - 1][0] = Block.TerrainBlock.WATER;
-                                    n--;
-                                } else if (dir < .25) {
+                        spread(i, j, 0,.23f, .02f, .98f, false, Block.TerrainBlock.WATER);
 
-                                    blocks[m - 1][n - 1][0] = Block.TerrainBlock.WATER;
-                                    m--;
-                                    n--;
-
-                                } else if (dir < .48) {
-                                    blocks[m - 1][n][0] = Block.TerrainBlock.WATER;
-                                    m--;
-                                } else if (dir < .5) {
-                                    if (n < blocks[0].length - 1) {
-                                        blocks[m - 1][n + 1][0] = Block.TerrainBlock.WATER;
-                                        m--;
-                                        n++;
-                                    }
-                                } else if (dir < .73) {
-                                    blocks[m][n + 1][0] = Block.TerrainBlock.WATER;
-                                    n++;
-                                } else if (dir < .75) {
-                                    blocks[m + 1][n + 1][0] = Block.TerrainBlock.WATER;
-                                    m++;
-                                    n++;
-                                } else if (dir < .98) {
-                                    blocks[m + 1][n][0] = Block.TerrainBlock.WATER;
-                                    m++;
-                                } else {
-                                    blocks[m + 1][n - 1][0] = Block.TerrainBlock.WATER;
-                                    m++;
-                                    n--;
-                                }
-
-                                lake = water.nextFloat();
-                            } else {
-                                lake = 1;
-                            }
+//                            } else {
+//                                lake = 1;
+//                            }
                         }
                     }
-                }
                 for (int k = 1; k < blocks[0][0].length; k++) {
                     blocks[i][j][k] = Block.TerrainBlock.AIR;
                 }
@@ -96,6 +54,80 @@ public class CoolWorldBuilder implements IWorldBuilder {
 //        blocks[3][3][2] = Block.TowerBlock.REDBLOCK;
 
         return blocks;
+    }
+
+    private void spread(int i, int j, int k, float ortho, float diag, float sticky, boolean height, Block.TerrainBlock block) {
+        Random spread = new Random();
+        int m = i;
+        int n = j;
+        while (spread.nextFloat() < sticky) {
+            if (height){
+//                int lim = blocks[0][0].length - 1;
+                float incr = .975f - .01f * k;
+                if (spread.nextFloat() > incr && k < 2) {
+                    k++;
+                    diag = 0;
+                    ortho = .25f;
+                    sticky *= 1.7f;
+                    sticky = Math.min(sticky, .99f);
+                }
+                if (spread.nextFloat() < .02 && k > 0) {
+                    k--;
+                }
+            }
+            float dir = spread.nextFloat();
+            if ((m > 0 && m < blocks.length - 1) && (n > 0 && n < blocks[0].length - 1)) {
+                if (dir < ortho) {
+                    blocks[m][n - 1][k] = block;
+                    n--;
+                } else if (dir < ortho + diag) {
+                    blocks[m - 1][n - 1][k] = block;
+                    m--;
+                    n--;
+                } else if (dir < 2 * ortho + diag) {
+                    blocks[m - 1][n][k] = block;
+                    m--;
+                } else if (dir < 2 * ortho + 2 * diag) {
+                    if (n < blocks[0].length - 1) {
+                        blocks[m - 1][n + 1][k] = block;
+                        m--;
+                        n++;
+                    }
+                } else if (dir < 3 * ortho + 2 * diag) {
+                    blocks[m][n + 1][k] = block;
+                    n++;
+                } else if (dir < 3 * ortho + 3 * diag) {
+                    blocks[m + 1][n + 1][k] = block;
+                    m++;
+                    n++;
+                } else if (dir < 4 * ortho + 3 * diag) {
+                    blocks[m + 1][n][k] = block;
+                    m++;
+                } else {
+                    blocks[m + 1][n - 1][k] = block;
+                    m++;
+                    n--;
+                }
+                int o = k;
+                while(o > 0) {
+                    o--;
+                    blocks[m][n][o] = block;
+                }
+            }
+
+//                            } else {
+//                                lake = 1;
+//                            }
+        }
+    }
+    private void heightBuild(int i, int j, Block.TerrainBlock block) {
+        Random height = new Random();
+        float plateau = height.nextFloat();
+        if (plateau < .98) {
+            blocks[i][j][0] = block;
+        } else {
+            spread(i, j, 1, .25f, 0f, .95f, true, block);
+        }
     }
 
     private Pair<Integer, Integer> checkAdjacentBlocks(int i, int j) {
