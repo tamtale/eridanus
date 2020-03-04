@@ -5,8 +5,10 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.math.Vector3;
 
 import com.week1.game.Model.Direction;
@@ -16,25 +18,18 @@ import com.week1.game.InfoUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.week1.game.MenuScreens.GameScreen.PIXELS_PER_UNIT;
-
 public class Renderer {
-    private Batch batch;
-    private OrthographicCamera camera;
+    private Batch batch = new SpriteBatch();
+    public Model model;
+    private PerspectiveCamera cam;
     private GameButtonsStage gameButtonsStage;
-    private Vector3 touchPos = new Vector3();
+    private Environment env;
     private Vector3 defaultPosition = new Vector3(50, 50, 0);
-    private TiledMap map;
-    private OrthogonalTiledMapRenderer mapRenderer;
-    private IRendererToEngineAdapter engineAdapter;
-    private IRendererToNetworkAdapter networkAdapter;
-    private IRendererToClickOracleAdapter clickOracleAdapter;
-    private IRendererToGameScreenAdapter gameScreenAdapter;
+    private IRendererAdapter adapter;
     private RenderConfig renderConfig;
     private BitmapFont font = new BitmapFont();
     private Vector3 panning = new Vector3();
     private Map<Direction, Vector3> directionToVector;
-    private static int DEFAULT_WIDTH = 30;
 
     {
         directionToVector = new HashMap<Direction, Vector3>() {{
@@ -49,36 +44,35 @@ public class Renderer {
     private int winState = -1;
     private InfoUtil util;
 
-    public Renderer(IRendererToEngineAdapter engineAdapter,
-                    IRendererToNetworkAdapter networkAdapter,
-                    IRendererToClickOracleAdapter clickOracleAdapter,
-                    IRendererToGameScreenAdapter gameScreenAdapter,
+    public Renderer(IRendererAdapter clickOracleAdapter,
                     InfoUtil util) {
-        this.engineAdapter = engineAdapter;
-        this.networkAdapter = networkAdapter;
-        this.clickOracleAdapter = clickOracleAdapter;
+        this.adapter = clickOracleAdapter;
         this.util = util;
-        this.gameScreenAdapter = gameScreenAdapter;
+    }
 
+    public PerspectiveCamera getCam() {
+        return cam;
     }
 
     public void create() {
-        map = engineAdapter.getMap();
-        camera = new OrthographicCamera();
-        mapRenderer = new OrthogonalTiledMapRenderer(map, 1f / PIXELS_PER_UNIT);
-        batch = mapRenderer.getBatch();
-        gameButtonsStage = new GameButtonsStage(clickOracleAdapter, gameScreenAdapter);
-        camera.setToOrtho(false, DEFAULT_WIDTH, Gdx.graphics.getHeight() * (float) DEFAULT_WIDTH / Gdx.graphics.getWidth());
-        camera.update();
-    }
-
-    public void zoom(int amount) {
-        camera.zoom += amount * .05;
-        camera.update();
+        env = new Environment();
+        env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+        env.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+        cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        renderConfig = new RenderConfig(false, false, 0, cam, env);
+        cam.position.set(-8, 20, 30);
+        // cam.lookAt(10,15,0);
+        cam.rotate(Vector3.X, 45f);
+        cam.position.set(-8, 20, 30);
+        cam.near = 1f;
+        cam.far = 500f;
+        cam.update();
+        gameButtonsStage = new GameButtonsStage(adapter);
+        cam.update();
     }
 
     public Camera getCamera() {
-        return camera;
+        return cam;
     }
 
     public void startBatch() {
@@ -90,12 +84,9 @@ public class Renderer {
     }
 
     public void resize(int x, int y) {
-        float oldX = camera.position.x;
-        float oldY = camera.position.y;
-        camera.setToOrtho(false, DEFAULT_WIDTH, Gdx.graphics.getHeight() * (float) DEFAULT_WIDTH / Gdx.graphics.getWidth());
-        camera.position.x = oldX;
-        camera.position.y = oldY;
-        camera.update();
+        cam.viewportWidth = x;
+        cam.viewportHeight = y;
+        cam.update();
         gameButtonsStage.stage.getViewport().update(x, y);
     }
 
@@ -114,13 +105,13 @@ public class Renderer {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         startBatch();
         font.setColor(Color.WHITE);
-        font.draw(batch, "Host IP:" + networkAdapter.getHostAddr(), 50, 50);
+        font.draw(batch, "Host IP:" + adapter.getHostAddr(), 50, 50);
         endBatch();
     }
 
     public void drawPlayerUI() {
         startBatch();
-        gameButtonsStage.renderUI((int)engineAdapter.getPlayerMana(networkAdapter.getPlayerId()));
+        gameButtonsStage.renderUI((int) adapter.getPlayerMana(adapter.getPlayerId()));
         endBatch();
     }
 
@@ -130,19 +121,16 @@ public class Renderer {
 
     private void updateCamera() {
         // TODO prevent the camera from displaying outside the bounds of the map.
-        camera.translate(panning);
-        camera.update();
+        cam.translate(panning);
+        cam.update();
     }
 
     public void render(float deltaTime) {
-        Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         updateCamera();
-        mapRenderer.setView(camera);
-        mapRenderer.render();
-        renderConfig = new RenderConfig(getShowAttackRadius(), getShowSpawnRadius(), deltaTime);
-        engineAdapter.render(renderConfig);
-        clickOracleAdapter.render();
+        renderConfig.set(getShowAttackRadius(), getShowSpawnRadius(), deltaTime);
+        adapter.renderSystem(renderConfig);
         drawPlayerUI();
         util.drawMessages(batch);
     }
@@ -156,7 +144,7 @@ public class Renderer {
     }
 
     public void setCameraToDefaultPosition() {
-        camera.position.set(defaultPosition);
+        cam.position.set(defaultPosition);
     }
 
     public boolean getShowAttackRadius() {

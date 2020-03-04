@@ -12,17 +12,26 @@ public class MoveMinionMessage extends GameMessage {
 
     private float x;
     private float y;
-    private Array<Integer> minionIDs;
+    private Array<Integer> minionIDs = new Array<>();
 
     public MoveMinionMessage(float x, float y, int playerID, Array<Unit> minions, int intHash) {
         super(playerID, MESSAGE_TYPE, intHash);
         this.x = x;
         this.y = y;
 
-        this.minionIDs = new Array<>();
         minions.forEach((minion) -> minionIDs.add(minion.ID));
-
     }
+
+    public MoveMinionMessage(float x, float y, int playerID, int intHash, int ... ids) {
+        super(playerID, MESSAGE_TYPE, intHash);
+        this.x = x;
+        this.y = y;
+        for (int id: ids) {
+          minionIDs.add(id);
+        }
+    }
+
+
     @Override
     public boolean process(GameEngine engine, GameState inputState, InfoUtil util){
         float centerX = 0;//x - inputState.getMinionById(minionIDs.get(0)).x;
@@ -33,8 +42,8 @@ public class MoveMinionMessage extends GameMessage {
             Unit minion = inputState.getMinionById(id);
             if (minion != null) {
                 goodMinions++;
-                centerX += minion.x;
-                centerY += minion.y;
+                centerX += minion.getX();
+                centerY += minion.getY();
             }
         }
 

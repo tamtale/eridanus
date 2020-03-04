@@ -1,5 +1,6 @@
 package com.week1.game.Networking.Messages.Game;
 
+import com.badlogic.gdx.Gdx;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
@@ -13,15 +14,15 @@ public class CreateMinionMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.CREATEMINION;
     private final static String TAG = "CreateMinionMessage";
     
-
-    private float x, y;
+    private float x, y, z;
     private int unitType;
 
-    public CreateMinionMessage(float x, float y, int unitType, int playerID, int intHash){
+    public CreateMinionMessage(float x, float y, float z, int unitType, int playerID, int intHash){
         super(playerID, MESSAGE_TYPE, intHash);
         this.x = x;
         this.y = y;
         this.unitType = unitType; // TODO use this
+        this.z = z;
     }
 
     @Override
@@ -36,7 +37,7 @@ public class CreateMinionMessage extends GameMessage {
         }
 
         // Test to see if it is in the proximity of a tower or a home base
-        if (!inputState.findNearbyStructure(x, y, playerID)) {
+        if (!inputState.findNearbyStructure(x, y, z, playerID)) {
             util.log("pjb3 - CreateMinionMessage", "Not close enough to an existing tower or home base");
              return false;
         }
@@ -50,15 +51,13 @@ public class CreateMinionMessage extends GameMessage {
         }
 
 
-        util.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
         inputState.getPlayerStats(playerID).useMana(tempMinion1Cost);
 
-        Unit unit = new Unit(x, y, null, tempMinion1Health, playerID);
-        inputState.addUnit(unit);
-//        SteeringAgent agent = new SteeringAgent(unit, new Vector2(x, y), 0,
-//                new Vector2((float) .1, (float) .1), 0, 1, true, (float).5);
-//        inputState.addAgent(agent);
-//        unit.agent = agent;
+        Gdx.app.postRunnable(() -> {
+            Unit unit = new Unit(x, y, z, tempMinion1Health, playerID);
+            util.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
+            inputState.addUnit(unit);
+        });
         return true;
     }
 

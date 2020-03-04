@@ -5,16 +5,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.week1.game.AIMovement.AI;
+import com.week1.game.Model.*;
 import com.week1.game.GameController;
 import com.week1.game.InfoUtil;
-import com.week1.game.Model.*;
-import com.week1.game.Model.Entities.*;
+import com.week1.game.Model.Entities.Clickable;
+import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
@@ -23,19 +22,17 @@ import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Renderer.*;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * This is the Screen that holds the actual game that is being played.
  */
 public class GameScreen implements Screen {
 	public static float THRESHOLD = .2f;
-	public static int PIXELS_PER_UNIT = 64;
-	private String[] args;
 	private Client networkClient;
 	private GameEngine engine;
 	private Renderer renderer;
 	private ClickOracle clickOracle;
-	private AI ai;
 	private InfoUtil util;
 	//This is a temporary stage that is displayed before connection of clients
 	private Stage gameStage;
@@ -45,10 +42,9 @@ public class GameScreen implements Screen {
 	public GameScreen(Client givenNetworkClient) {
 		// Set the logging level
 		Gdx.app.setLogLevel(Application.LOG_INFO);
+		Initializer.init();
 		gameStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 		util = new InfoUtil(true);
-
-
 		// Finish setting up the client.
 		this.networkClient = givenNetworkClient;
 
@@ -59,8 +55,7 @@ public class GameScreen implements Screen {
 				engine.receiveMessages(messages);
 			}
 		});
-
-		engine = new GameEngine(new IEngineToRendererAdapter() {
+		engine = new GameEngine(new IEngineAdapter() {
 			@Override
 			public void setDefaultLocation(Vector3 location) {
 				renderer.setDefaultPosition(location);
@@ -76,33 +71,24 @@ public class GameScreen implements Screen {
 			public void gameOver() {
 				renderer.showGameOver();
 			}
-		}, new IEngineToNetworkAdapter() {
+
 			@Override
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
-		}, networkClient.getPlayerId(), util);
+		}, networkClient.getPlayerId(), new ConcurrentLinkedQueue<>(), util);
 
-		renderer = new Renderer(new IRendererToEngineAdapter() {
+		renderer = new Renderer(new IRendererAdapter() {
 			@Override
-			public void render(RenderConfig renderConfig) {
+			public void renderSystem(RenderConfig renderConfig) {
 				engine.render(renderConfig);
-			}
-
-			@Override
-			public int[][] heightMap() {
-				return engine.getGameState().getWorld().getHeightMap();
-			}
-
-			@Override
-			public TiledMap getMap() {
-				return engine.getGameState().getWorld().toTiledMap();
+				clickOracle.render();
 			}
 
 			public double getPlayerMana(int playerId) {
 				return engine.getGameState().getPlayerStats(playerId).getMana();
 			}
-		}, new IRendererToNetworkAdapter() {
+
 			@Override
 			public String getHostAddr() {
 				return networkClient.getHostAddr();
@@ -117,34 +103,19 @@ public class GameScreen implements Screen {
 			public String getClientAddr() {
 				return null;
 			}
-		},
-				new IRendererToClickOracleAdapter() {
-					@Override
-					public void render() {
-						clickOracle.render();
-					}
 
-					@Override
-					public void setSelectedSpawnState(SpawnInfo type) {
-						clickOracle.setSpawnType(type);
-					}
-				}, new IRendererToGameScreenAdapter() {
+			@Override
+			public void setSelectedSpawnState(SpawnInfo type) {
+				clickOracle.setSpawnType(type);
+			}
+
 			@Override
 			public void restartGame() {
 				Gdx.app.log("pjb3 - GameScreen", "TODO restart not implemented");
 			}
 		}, util);
 		clickOracle = new ClickOracle(
-				new IClickOracleToRendererAdapter() {
-					@Override
-					public void unproject(Vector3 projected) {
-						renderer.getCamera().unproject(projected);
-					}
-
-					@Override
-					public void zoom(int amount) {
-						renderer.zoom(amount);
-					}
+				new IClickOracleAdapter() {
 
 					@Override
 					public void setTranslationDirection(Direction direction) {
@@ -154,11 +125,10 @@ public class GameScreen implements Screen {
 					public Camera getCamera() {
 						return renderer.getCamera();
 					}
-				},
-				new IClickOracleToEngineAdapter() {
+
 					@Override
-					public Unit selectUnit(Vector3 position) {
-						return engine.getGameState().findUnit(position);
+					public Clickable selectClickable(float screenX, float screenY, Vector3 intersection) {
+                      return engine.getGameState().getClickableOnRay(renderer.getCam().getPickRay(screenX, screenY), intersection);
 					}
 
 					@Override
@@ -172,11 +142,6 @@ public class GameScreen implements Screen {
 					}
 
 					@Override
-					public Array<Building> getBuildings() {
-						return engine.getBuildings();
-					}
-
-					@Override
 					public int getGameStateHash() {
 						return engine.getGameStateHash();
 					}
@@ -186,8 +151,6 @@ public class GameScreen implements Screen {
 						return engine.getGameStateString();
 					}
 
-				},
-				new IClickOracleToNetworkAdapter() {
 					@Override
 					public void sendMessage(AMessage msg) {
 						networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
@@ -198,7 +161,6 @@ public class GameScreen implements Screen {
 					}
 				});
 
-		ai = new AI();
 		renderer.create();
 	}
 
@@ -213,27 +175,19 @@ public class GameScreen implements Screen {
 			gameStage.draw();
 			return;
 		}
-		if (!createdTextures) {
-			PlayerBase.createTextures();
-			Unit.makeTextures();
-			Tower.makeTextures();
-			createdTextures = true;
-		}
 
 		if (!pressedStartbtn) {
 			InputMultiplexer multiplexer = new InputMultiplexer();
 			multiplexer.addProcessor(renderer.getButtonStage());
 			multiplexer.addProcessor(clickOracle);
+			multiplexer.addProcessor(new GameCameraController(renderer.getCamera()));
 			Gdx.input.setInputProcessor(multiplexer);
 
 			gameStage.dispose();
 			pressedStartbtn = true;
 		}
 		float time = Gdx.graphics.getDeltaTime();
-		engine.getBatch().setProjectionMatrix(renderer.getCamera().combined); // necessary to use tilemap coordinate system
 		renderer.render(time); // Only move the units from their state position
-														   // if the threshold was not passed.
-
 	}
 
 	@Override

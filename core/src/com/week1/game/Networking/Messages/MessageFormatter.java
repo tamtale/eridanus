@@ -22,7 +22,6 @@ public class MessageFormatter {
     public static List<GameMessage> parseMessages(String jsonString) {
         List<GameMessage> msgList = new ArrayList<>();
         Update update = g.fromJson(jsonString, Update.class);
-        Gdx.app.log("pjb3 MessageFormatter", "parseMessages(). Here are the messages to send out " + update.messages);
         update.messages.forEach((msg) -> {
             GameMessage parsedMsg = parseMessage(msg);
             if (parsedMsg == null) {
