@@ -82,7 +82,7 @@ public class GameScreen implements Screen {
 			@Override
 			public void renderSystem(RenderConfig renderConfig) {
 				engine.render(renderConfig);
-				clickOracle.render();
+				clickOracle.render(renderConfig);
 			}
 
 			public double getPlayerMana(int playerId) {

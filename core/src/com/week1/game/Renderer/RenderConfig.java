@@ -71,5 +71,6 @@ public class RenderConfig {
     
     public void update() {
         batch.getProjectionMatrix().setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        
     }
 }
