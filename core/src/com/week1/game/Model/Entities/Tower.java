@@ -2,6 +2,7 @@ package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Damage;
@@ -117,6 +118,7 @@ public class Tower extends Building implements Damaging {
     public float getReward() {
         return (float) cost * (float) towerDestructionBonus;
     }
+
 
     @Override
     public <T> T accept(DamageableVisitor<T> visitor) {

@@ -13,14 +13,15 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.week1.game.Model.Damage;
 import com.week1.game.Renderer.RenderConfig;
 
 import static com.week1.game.Model.Entities.HealthBar.*;
 
-public interface Damageable {
+public abstract class Damageable {
 
-    interface DamageableVisitor<T> {
+    public interface DamageableVisitor<T> {
         T acceptTower(Tower tower);
         T acceptUnit(Unit u);
         T acceptBase(PlayerBase base);
@@ -28,7 +29,7 @@ public interface Damageable {
     }
 
     /* This is a short-hand version for taking normal damage as default */
-    default boolean takeDamage(double dmg) {
+    public boolean takeDamage(double dmg) {
         return takeDamage(dmg, Damage.type.BASIC);
     }
 
@@ -36,96 +37,108 @@ public interface Damageable {
      * This function must be implemented. It returns false if the entity was not destroyed
      * and returns true if the entity was destroyed
      */
-    boolean takeDamage(double dmg, Damage.type damageType);
+    public abstract boolean takeDamage(double dmg, Damage.type damageType);
 
-    boolean isDead();
-    int getPlayerId();
+    public abstract boolean isDead();
+    public abstract int getPlayerId();
 
     /*
      * Sets the position of pos to be the position of the damageable.
      */
-    void getPos(Vector3 pos);
+    abstract void getPos(Vector3 pos);
 
     /*
      * Sets the position displayPos to the display position of the damageable, as rendered on the screen.
      * By default, will just give the logical position of the damageable.
      */
-    default void getDisplayPos(Vector3 displayPos) {
+    void getDisplayPos(Vector3 displayPos) {
         getPos(displayPos);
     }
 
-    float getX();
-    float getY();
+    abstract float getX();
+    abstract float getY();
 
-    float getCurrentHealth();
-    float getMaxHealth();
+    abstract float getCurrentHealth();
+    abstract float getMaxHealth();
 
     /*
      * Mana reward for destroying the unit.
      */
-    float getReward();
+    public abstract float getReward();
+    
 
     /*
      * Used for render calculations. DO NOT ACCESS PUBLICLY lol
      */
     Vector3 unitPosition = new Vector3();
-
-    default void drawHealthBar(RenderConfig config) {
-        float currentHealth = getCurrentHealth();
-        float maxHealth = getMaxHealth();
+//    Decal hpBar = Decal.newDecal(3, 0.2f, new TextureRegion(healthBarHigh));
+    Decal background = null;
+    Vector3 lookAt = new Vector3();
+    float hpBarWidthFactor = 0.3f;
+    float maxWidth;
+    
+    Decal hpBar;
+//    Decal hpBarBackground;
+    
+    
+    public void drawHealthBar(RenderConfig config) {
+        // Initialize the healthbar, if previously unrendered
+        if (hpBar == null) {
+//            hpBarBackground = Decal.newDecal(hpBarWidth, 0.2f, new TextureRegion(healthBarBackground));
+            hpBar = Decal.newDecal(maxWidth, 0.1f, new TextureRegion(healthBarHigh));
+            maxWidth = hpBarWidthFactor * (float)Math.log(this.getMaxHealth());
+        }
+        
+        System.out.println("Max width: " + maxWidth);
+        
         DecalBatch batch = config.getDecalBatch();
-        Camera cam = config.getCam();
-        this.getDisplayPos(unitPosition);
-        unitPosition.add(0,0,1.5f);
 
-//        cam.project(unitPosition); // go from world coordinates to screen coordinates
-
-        // Make something
-        // Make a model instance from it
-
-//        batch.render()
-//        batch.add(Decal.newDecal(new TextureRegion(healthBarHigh)));
-        Decal hpBar = Decal.newDecal(3, 0.2f, new TextureRegion(healthBarHigh));
-        hpBar.setPosition(unitPosition);
-
-        Vector3 niceSpot = new Vector3();
+        // Orient the decal
         Plane p = config.getCam().frustum.planes[0];
         Intersector.intersectLinePlane(
                 unitPosition.x, unitPosition.y, unitPosition.z,
                 unitPosition.x + p.normal.x, unitPosition.y + p.normal.y, unitPosition.z + p.normal.z,
-                p, niceSpot);
+                p, lookAt);
+        hpBar.lookAt(lookAt, config.getCam().up);
+//        hpBarBackground.lookAt(lookAt, config.getCam().up);
         
-        hpBar.lookAt(niceSpot, config.getCam().up);
+        // Set the position of the decal
+        this.getDisplayPos(unitPosition);
+        unitPosition.add(0,0,1.5f);
+        hpBar.setPosition(unitPosition);
+//        hpBarBackground.setPosition(
+//                unitPosition.x - (p.normal.x * 0.1f), 
+//                unitPosition.y - (p.normal.y * 0.1f), 
+//                unitPosition.z - (p.normal.z * 0.1f));
+        
+        // Update decal texture (color and size)
+        hpBar.setTextureRegion(HealthBar.getHealthBarTexture(this.getCurrentHealth(), this.getMaxHealth()));
+        hpBar.setWidth(maxWidth * this.getCurrentHealth() / this.getMaxHealth());
                 
-//        hpBar.lookAt(new Vector3(0,0,0), config.getCam().up);
+        // Add the decal for drawing
+//        batch.add(hpBarBackground);
         batch.add(hpBar);
-        
         batch.flush();
-                
-                
-                
-                
-//        drawHealthBar2d(config);
     }
     
-    default void drawHealthBar2d(RenderConfig config) {
-        float currentHealth = getCurrentHealth();
-        float maxHealth = getMaxHealth();
-        SpriteBatch batch = config.getBatch();
-        Camera cam = config.getCam();
-        this.getDisplayPos(unitPosition);
+//    default void drawHealthBar2d(RenderConfig config) {
+////        float currentHealth = getCurrentHealth();
+////        float maxHealth = getMaxHealth();
+////        SpriteBatch batch = config.getBatch();
+////        Camera cam = config.getCam();
+////        this.getDisplayPos(unitPosition);
+////
+////        cam.project(unitPosition); // go from world coordinates to screen coordinates
+////
+////        float scale = (float)Math.pow(1.1, config.zoomFactor);
+////        float width = 100 * scale;
+////        float height = 10 * scale;
+////        float above = 80 * scale;
+////        batch.draw(healthBarBackground, unitPosition.x - (width / 2) , unitPosition.y + above, width, height);
+////        batch.draw(getHealthBar(getCurrentHealth(), getMaxHealth()),
+////                unitPosition.x - (width / 2), unitPosition.y + above, currentHealth / maxHealth * width, height);
+//    }
 
-        cam.project(unitPosition); // go from world coordinates to screen coordinates
-
-        float scale = (float)Math.pow(1.1, config.zoomFactor);
-        float width = 100 * scale;
-        float height = 10 * scale;
-        float above = 80 * scale;
-        batch.draw(healthBarBackground, unitPosition.x - (width / 2) , unitPosition.y + above, width, height);
-        batch.draw(getHealthBar(getCurrentHealth(), getMaxHealth()),
-                unitPosition.x - (width / 2), unitPosition.y + above, currentHealth / maxHealth * width, height);
-    }
-
-    <T> T accept(DamageableVisitor<T> visitor);
+    public abstract <T> T accept(DamageableVisitor<T> visitor);
 
 }
