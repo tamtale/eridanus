@@ -82,7 +82,7 @@ public class TowerDetails {
                 i += 1;
             }
 
-            blocks.add(new BlockSpec(code, x, y, z));
+            blocks.add(new BlockSpec(BlockType.values()[code], x, y, z));
         }
 
 
@@ -142,7 +142,7 @@ public class TowerDetails {
         this.footprint = new TowerFootprint();
 
         for (BlockSpec block : layout) {
-            int code = block.getBlockCode();
+            BlockType code = block.getBlockCode();
             int x = block.getX();
             int y = block.getY();
             int z = block.getZ();
@@ -182,7 +182,7 @@ public class TowerDetails {
     protected void addBlock(BlockSpec bs) {
         //made it protected so that only the TowerBuilder classes are dealing with adding blocks to the
         //towers
-        int code = bs.getBlockCode();
+        BlockType code = bs.getBlockCode();
         int x = bs.getX();
         int y = bs.getY();
         int z = bs.getZ();
@@ -223,7 +223,7 @@ public class TowerDetails {
         int x = bs.getX();
         int y = bs.getY();
         int z = bs.getZ();
-        int code = -1;
+        BlockType code = null;
 
         int modelIdx = -1;
         int blockIdx = -1;
@@ -232,7 +232,7 @@ public class TowerDetails {
 
         System.out.println("removal");
         for (int i = 0; i < layout.size(); i++) {
-            if (code == -1) {
+            if (code == null) {
                 BlockSpec b = layout.get(i);
                 if (x == b.getX() & y == b.getY() & z == b.getZ()) {
                     code = b.getBlockCode();
@@ -288,7 +288,7 @@ public class TowerDetails {
     private String getLayoutStr() {
         String towerStr = "[";
         for (BlockSpec b: layout) {
-            towerStr += b.toString();
+            towerStr += b.toFileStr();
             towerStr += ", ";
         }
         towerStr = towerStr.substring(0, towerStr.length() - 2);

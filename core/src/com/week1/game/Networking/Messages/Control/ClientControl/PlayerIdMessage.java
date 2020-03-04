@@ -1,8 +1,11 @@
-package com.week1.game.Networking.Messages.Control;
+package com.week1.game.Networking.Messages.Control.ClientControl;
 
-import com.week1.game.Networking.Client;
 import com.week1.game.Networking.Messages.MessageType;
+import com.week1.game.Networking.NetworkObjects.Client;
 
+/**
+ * This message is sent to a player right after they connect to the Host
+ */
 public class PlayerIdMessage extends ClientControlMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.PLAYERID;
 

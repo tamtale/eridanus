@@ -272,7 +272,9 @@ public class TowerBuilderCamera {
         int result = selectBlock(screenX, screenY);
         if (result != -1) {
             Vector3 selectedPos = towerBlocks.get(result);
-            boolean removed = WIPTower.removeBlock(new BlockSpec(-1, (int) selectedPos.x, (int) selectedPos.y, (int) selectedPos.z));
+
+            //Note - the block code below is a placeholder(just need to know the three coords, not the material)
+            boolean removed = WIPTower.removeBlock(new BlockSpec(BlockType.OBSIDIAN, (int) selectedPos.x, (int) selectedPos.y, (int) selectedPos.z));
             if (!removed) {
                 towerScreen.showErrorDialog("Couldn't remove selected block because it etiher disconnects the tower from itself or the ground");
                 return;
@@ -332,7 +334,7 @@ public class TowerBuilderCamera {
     public void highlightBlock(int screenX, int screenY) {
         int result = selectInvisiblock(screenX, screenY);
         if (result != -1) {
-            ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(0));
+            ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(BlockType.HIGHLIGHT));
             newbloc.transform.setToTranslation(invisiBlocks.get(result).x * 5f, invisiBlocks.get(result).y * 5f, invisiBlocks.get(result).z * 5f);
             highlightedAddBlock = newbloc;
 
@@ -352,7 +354,7 @@ public class TowerBuilderCamera {
                 block.transform.getTranslation(translation);
                 if (translation.x == selectedPos.x * 5f & translation.y == selectedPos.y * 5f & translation.z == selectedPos.z * 5f) {
 
-                    ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(0));
+                    ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(BlockType.HIGHLIGHT));
                     newbloc.transform.setToTranslation(translation);
                     highlightedAddBlock = newbloc;
 

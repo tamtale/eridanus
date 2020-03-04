@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
+import com.week1.game.MenuScreens.MainMenuScreen;
 
 import java.util.ArrayList;
 
@@ -80,8 +81,14 @@ public class TowerBuilderStage {
     public boolean isDelMode = false;
 
 
-    public TowerBuilderStage(TowerBuilderScreen screen) {
-        this.screen = screen;
+
+    private GameController gameController;
+//    private MainMenuScreen mainMenuScreen;
+
+    public TowerBuilderStage(GameController game, TowerBuilderScreen towerscreen) {
+        this.screen = towerscreen;
+//        this.mainMenuScreen = mainMenuScreen;
+        this.gameController = game;
         stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
         dialogStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
     }
@@ -139,9 +146,10 @@ public class TowerBuilderStage {
         enterName.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                twrName.setText("");
+                System.out.println(twrName.getText());
                 screen.saveTower(twrName.getText());
                 dialog.hide();
+                twrName.setText("");
             }});
         cancelBtn.addListener(new ClickListener() {
         @Override
@@ -154,7 +162,8 @@ public class TowerBuilderStage {
 
 
 
-        startGame = new TextButton("Start Game", normalStyle);
+
+        startGame = new TextButton("Main Menu", new Skin(Gdx.files.internal("uiskin.json")));
     }
 
     private void configureWidgets() {
@@ -172,9 +181,6 @@ public class TowerBuilderStage {
         displaySelection.setPosition(0, 0);
         stage.addActor(displaySelection);
 
-//        displayButton.setSize(128, 48);
-//        displayButton.setPosition(128, 0);
-//        stage.addActor(displayButton);
 
         //Build Mode buttons
         buildModeBtn.setSize(128, 48);
@@ -226,7 +232,6 @@ public class TowerBuilderStage {
                if (buildModeBtn.isChecked()) {
                    screen.displayBuildCore();
                    sw.setLblTxt(screen.getTowerStats());
-
                    buildModeBtn.setStyle(pressedStyle);
                    addBuildButtons();
                } else {
@@ -290,12 +295,13 @@ public class TowerBuilderStage {
             }
         });
 
+
+
         startGame.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (!isBuildMode) {
-                    screen.startGame();
-                }
+                Gdx.app.log("pjb3 - TowerBuilderStage", "Trying to go back to the main Menu Screen");
+                gameController.setScreen(new MainMenuScreen(gameController));
             }
         });
     }
@@ -375,6 +381,7 @@ public class TowerBuilderStage {
 
         d.show(dialogStage);
     }
+
 }
 
 

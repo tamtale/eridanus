@@ -5,7 +5,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.week1.game.GameController;
-import com.week1.game.GameScreen;
+import com.week1.game.MenuScreens.MainMenuScreen;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class TowerBuilderScreen implements Screen {
 
     public TowerBuilderScreen(GameController game) {
         this.game = game;
-        towerStage = new TowerBuilderStage(this);
+        towerStage = new TowerBuilderStage(game, this);
         towerCam = new TowerBuilderCamera(this);
 
         towerCam.initPersCamera();
@@ -84,12 +84,6 @@ public class TowerBuilderScreen implements Screen {
     @Override
     public void dispose() {
 
-
-    }
-
-    public void startGame() {
-        Gdx.app.log("Tower Builder Screen skv2", "starting game");
-        game.setScreen(new GameScreen(game.gameArgs));
     }
 
     public void setCamTower(TowerDetails tower) {
@@ -124,7 +118,6 @@ public class TowerBuilderScreen implements Screen {
     }
 
 
-
     //Builder Input proc to cam methods
     public void addBlock(int screenX, int screenY) {
         towerCam.addBlock(screenX, screenY, towerStage.getMaterialSelection());
@@ -151,8 +144,8 @@ public class TowerBuilderScreen implements Screen {
     }
 
 
-
     public void saveTower(String twrName) {
+        System.out.println(twrName);
         towerCam.WIPTower.setName(twrName);
         towerCam.WIPTower.saveTower();
         towerStage.addTowertoSelections(towerCam.WIPTower);
@@ -176,4 +169,5 @@ public class TowerBuilderScreen implements Screen {
     public void showErrorDialog(String msg) {
         towerStage.showDialog(msg);
     }
+
 }

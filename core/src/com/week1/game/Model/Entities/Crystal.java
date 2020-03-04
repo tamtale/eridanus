@@ -55,6 +55,18 @@ public class Crystal implements Damageable {
         return position.y;
     }
 
+    @Override
+    public float getCurrentHealth() {
+        // TODO
+        return 0;
+    }
+
+    @Override
+    public float getMaxHealth() {
+        // TODO
+        return 100;
+    }
+
 
     public boolean isDead() {
         return false;
@@ -63,6 +75,12 @@ public class Crystal implements Damageable {
     @Override
     public int getPlayerId() {
         return -1;
+    }
+
+    @Override
+    public void getPos(Vector3 pos) {
+        pos.set(position);
+
     }
 }
 

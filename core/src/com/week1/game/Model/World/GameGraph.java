@@ -10,7 +10,6 @@ import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.OutputPath;
 
-
 public class GameGraph implements IndexedGraph<Vector3> {
 
     private int nodeCount;
@@ -20,7 +19,6 @@ public class GameGraph implements IndexedGraph<Vector3> {
     Array<Border> borders = new Array<>();
     private Array<Connection<Vector3>>[][][] edges;
 
-    //TODO: make general
     public GameGraph(Block[][][] blocks){
         super();
         edges = new Array[blocks.length][blocks[0].length][blocks[0][0].length];
@@ -38,10 +36,7 @@ public class GameGraph implements IndexedGraph<Vector3> {
 
     @Override
     public int getIndex(Vector3 node) {
-        int index = (int) (node.x + edges.length * node.y + edges.length * edges[0].length * node.z);
-
-        return index;
-//        return node.getIndex();
+        return (int) (node.x + edges.length * node.y + edges.length * edges[0].length * node.z);
     }
 
     @Override
@@ -65,14 +60,12 @@ public class GameGraph implements IndexedGraph<Vector3> {
     }
 
     public void removeAllConnections(Vector3 fromNode, Building b){
-        b.putRemovedEdges(fromNode, edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z]);
-        edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = new Array<>();
+        // TODO replace with updated connections code (wab2)
     }
 
     public void addVector3(Vector3 Vector3) {
         nodeCount+=1;
         Vector3s.add(Vector3);
-        //vecCoords[(int) Vector3.x][(int) Vector3.y][(int) Vector3.z] = Vector3;
     }
 
     public OutputPath search(Vector3 startNode, Vector3 endNode) {
@@ -97,8 +90,5 @@ public class GameGraph implements IndexedGraph<Vector3> {
         edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = connections;
     }
 
-//    public Vector3 getVector3(int i, int j, int k) {
-//        return vecCoords[i][j][k];
-//    }
 
 }
