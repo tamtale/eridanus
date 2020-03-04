@@ -37,16 +37,43 @@ public class TowerBuilderStage {
     private Dialog dialog;
 
     //make skins
-    private TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
+    private static TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("8e7186")),
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("8e7186")),
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("8e7186")), new BitmapFont());
 
 
-    private TextButton.TextButtonStyle pressedStyle = new TextButton.TextButtonStyle(
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("574053")),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("574053")),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("574053")), new BitmapFont());
+    //old color - 574053
+    private static TextButton.TextButtonStyle pressedStyle = new TextButton.TextButtonStyle(
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("3e363c")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("3e363c")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("3e363c")), new BitmapFont());
+
+    private static ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle(new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-rect", Color.valueOf("9e8196")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-scroll", Color.valueOf("8e7186")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-large", Color.valueOf("8e7186")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-scroll", Color.valueOf("8e7186")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-large", Color.valueOf("8e7186")));
+
+    private static  List.ListStyle listStyle = new List.ListStyle(new BitmapFont(), Color.WHITE, Color.GRAY, new Skin(Gdx.files.internal("uiskin.json")).newDrawable("selection"));
+
+    private static SelectBox.SelectBoxStyle normalSelectBox = new SelectBox.SelectBoxStyle(new BitmapFont(),
+            Color.WHITE, new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-select", Color.valueOf("9e8196")),
+            scrollStyle, listStyle);
+
+    private static ScrollPane.ScrollPaneStyle disabledScrollStyle = new ScrollPane.ScrollPaneStyle(new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-rect", Color.valueOf("3e363c")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-scroll", Color.valueOf("8e7186")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-large", Color.valueOf("8e7186")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-scroll", Color.valueOf("8e7186")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-large", Color.valueOf("8e7186")));
+
+    private static  List.ListStyle disabledListStyle = new List.ListStyle(new BitmapFont(), Color.DARK_GRAY, Color.DARK_GRAY, new Skin(Gdx.files.internal("uiskin.json")).newDrawable("selection"));
+
+
+    private static SelectBox.SelectBoxStyle disabledSelectBox = new SelectBox.SelectBoxStyle(new BitmapFont(),
+            Color.DARK_GRAY, new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-select", Color.valueOf("3e363c")),
+            disabledScrollStyle, disabledListStyle);
+
 
     public boolean isBuildMode = false;
     public boolean isAddMode = false;
@@ -74,7 +101,7 @@ public class TowerBuilderStage {
         //select and display presets
 //        displayButton = new TextButton("Display", normalStyle);
 
-        displaySelection =new SelectBox(new Skin(Gdx.files.internal("uiskin.json")));
+        displaySelection =new SelectBox(normalSelectBox);
         Array<TowerDetails> presets = new Array<>();
         for (TowerDetails p: TowerPresets.presets) {
             presets.add(p);
@@ -86,7 +113,7 @@ public class TowerBuilderStage {
         displaySelection.setItems(presets);
 
         //Build mode buttons
-        materialSelection = new SelectBox<String>(new Skin(Gdx.files.internal("uiskin.json")));
+        materialSelection = new SelectBox<>(normalSelectBox);
         Array<String> materials = new Array<>();
         for (String material: TowerMaterials.materialNames.keySet()) {
             materials.add(material);
@@ -155,17 +182,17 @@ public class TowerBuilderStage {
         stage.addActor(buildModeBtn);
 
         addBlockBtn.setSize(128, 48);
-        addBlockBtn.setPosition(256, 0);
+        addBlockBtn.setPosition(384, 0);
         stage.addActor(addBlockBtn);
         addBlockBtn.setVisible(false);
 
         materialSelection.setSize(128, 48);
-        materialSelection.setPosition(384, 0);
+        materialSelection.setPosition(512, 0);
         stage.addActor(materialSelection);
         materialSelection.setVisible(false);
 
         removeBlockBtn.setSize(128, 48);
-        removeBlockBtn.setPosition(512, 0);
+        removeBlockBtn.setPosition(256, 0);
         stage.addActor(removeBlockBtn);
         removeBlockBtn.setVisible(false);
 
@@ -191,15 +218,6 @@ public class TowerBuilderStage {
             }
         });
 
-//        displayButton.addListener(new ClickListener() {
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                if (!isBuildMode) {
-//                    screen.setCamTower(displaySelection.getSelected());
-//                    sw.setLblTxt(screen.getTowerStats());
-//                }
-//            }
-//        });
 
         buildModeBtn.addListener(new ClickListener() {
            @Override
@@ -292,6 +310,9 @@ public class TowerBuilderStage {
         materialSelection.setVisible(true);
         removeBlockBtn.setVisible(true);
         saveTowerBtn.setVisible(true);
+
+        displaySelection.setDisabled(true);
+        displaySelection.setStyle(disabledSelectBox);
     }
 
     private void removeBuildButtons() {
@@ -311,6 +332,10 @@ public class TowerBuilderStage {
 
         //unhighlight blocks
         screen.stopHighlighting();
+
+        //re-enable display
+        displaySelection.setDisabled(false);
+        displaySelection.setStyle(normalSelectBox);
     }
 
     public String getMaterialSelection() {

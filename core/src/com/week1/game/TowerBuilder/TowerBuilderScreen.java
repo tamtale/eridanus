@@ -62,6 +62,7 @@ public class TowerBuilderScreen implements Screen {
     public void resize(int width, int height) {
         towerCam.resize(width, height);
         towerStage.stage.getViewport().update(width, height);
+        towerStage.dialogStage.getViewport().update(width, height);
 
     }
 

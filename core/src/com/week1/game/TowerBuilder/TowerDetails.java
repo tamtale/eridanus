@@ -1,11 +1,9 @@
 package com.week1.game.TowerBuilder;
 
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerFootprint;
-import com.week1.game.Model.World.Block;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,7 +14,8 @@ import java.util.Scanner;
 //                  -- update stats and block names
 //                  -- clean up load code
 //                  -- make things static if possible
-//                  -- make dialog bigger and show up to the side or over the camera
+//                  -- change dropdowns to purple, have rem, add, type
+//                  -- grey out display box when in build mode
 
 public class TowerDetails {
     private double hp = 0;
@@ -208,6 +207,15 @@ public class TowerDetails {
     }
 
     private boolean checkRemovalSafety(BlockSpec b, int blockIdx, int modelIdx) {
+//        List<Boolean> blockAtHeight = new ArrayList<>();
+//        for (int i = 0; i < height; i++) {
+//            blockAtHeight.add(false);
+//        }
+
+//        for (int i = 0; i < layout.size(); i++) {
+//
+//        }
+
         return true;
     }
 
