@@ -82,7 +82,7 @@ public class GameScreen implements Screen {
 			@Override
 			public void renderSystem(RenderConfig renderConfig) {
 				engine.render(renderConfig);
-				clickOracle.render(renderConfig);
+				clickOracle.render(); // don't need to pass renderconfig here because Click oracle has it already via constructor
 			}
 
 			public double getPlayerMana(int playerId) {
@@ -114,6 +114,7 @@ public class GameScreen implements Screen {
 				Gdx.app.log("pjb3 - GameScreen", "TODO restart not implemented");
 			}
 		}, util);
+		
 		clickOracle = new ClickOracle(
 				new IClickOracleAdapter() {
 
@@ -137,8 +138,8 @@ public class GameScreen implements Screen {
 					}
 
 					@Override
-					public Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
-						return engine.getGameState().findUnitsInBox(cornerA, cornerB);
+					public Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB, RenderConfig renderConfig) {
+						return engine.getGameState().findUnitsInBox(cornerA, cornerB, renderConfig);
 					}
 
 					@Override
@@ -159,9 +160,10 @@ public class GameScreen implements Screen {
 					public int getPlayerId() {
 						return networkClient.getPlayerId();
 					}
-				});
-
+				}, renderer.getRenderConfig());
+		
 		renderer.create();
+
 	}
 
 	@Override

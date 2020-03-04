@@ -179,11 +179,16 @@ public class GameState implements GameRenderable {
         }
     }
 
-    public Array<Unit> findUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
+    public Array<Unit> findUnitsInBox(Vector3 cornerA, Vector3 cornerB, RenderConfig renderConfig) {
         Array<Unit> unitsToSelect = new Array<>();
+        Vector3 scrnCoords = new Vector3();
+        
         for (Unit u : units) {
-            if (Math.min(cornerA.x, cornerB.x) < u.getX() && u.getX() < Math.max(cornerA.x, cornerB.x) &&
-                Math.min(cornerA.y, cornerB.y) < u.getY() && u.getY() < Math.max(cornerA.y, cornerB.y)) {
+            scrnCoords.set(u.getX(), u.getY(), u.getZ());
+            renderConfig.getCam().project(scrnCoords);
+            
+            if (Math.min(cornerA.x, cornerB.x) < scrnCoords.x && scrnCoords.x < Math.max(cornerA.x, cornerB.x) &&
+                Math.min(cornerA.y, cornerB.y) < scrnCoords.y && scrnCoords.y < Math.max(cornerA.y, cornerB.y)) {
                 unitsToSelect.add(u);
             }
         }

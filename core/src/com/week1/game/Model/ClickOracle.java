@@ -33,7 +33,7 @@ public class ClickOracle extends InputAdapter {
     private Clickable passiveSelected = Clickable.NULL;
     private Array<Unit> multiSelected = new Array<>();
     
-//    private RenderConfig renderConfig;
+    private RenderConfig renderConfig;
 
     private Vector3 selectionLocationStart = new Vector3();
     private Vector3 selectionLocationEnd = new Vector3();
@@ -57,8 +57,9 @@ public class ClickOracle extends InputAdapter {
 //    private SpriteBatch batch = new SpriteBatch();
     private SpawnInfo.SpawnType spawnType;
 
-    public ClickOracle(IClickOracleAdapter adapter) {
+    public ClickOracle(IClickOracleAdapter adapter, RenderConfig renderConfig) {
         this.adapter = adapter;
+        this.renderConfig = renderConfig;
     }
 
     @Override
@@ -155,9 +156,11 @@ public class ClickOracle extends InputAdapter {
             
             // Add the units in the drag box to multiselected
             deMultiSelect();
-            Array<Unit> dragSelected = adapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
+            Array<Unit> dragSelected = adapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd, renderConfig);
             for(int u = 0; u < dragSelected.size; u++) { 
-                addToMultiselected(dragSelected.get(u));
+                if (dragSelected.get(u).getPlayerId() == adapter.getPlayerId()) {
+                    addToMultiselected(dragSelected.get(u));
+                }
             }
             
             dragging = false;
@@ -255,7 +258,7 @@ public class ClickOracle extends InputAdapter {
 //        return batch;
 //    }
 
-    public void render(RenderConfig renderConfig) {
+    public void render() {
         SpriteBatch batch = renderConfig.getBatch();
 
         batch.setColor(1, 1,1, 0.5f);
