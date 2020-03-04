@@ -10,6 +10,6 @@ public class DesktopLauncher {
 		config.title = "RTS";
 		config.width = 800;
 		config.height = 800;
-		new LwjglApplication(new GameController(args), config);
+		new LwjglApplication(new GameController(), config);
 	}
 }

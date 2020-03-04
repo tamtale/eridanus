@@ -12,6 +12,10 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
@@ -20,8 +24,17 @@ import com.badlogic.gdx.utils.Pool;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Pair;
+import com.week1.game.Renderer.GameRenderable;
+import com.week1.game.Renderer.RenderConfig;
+import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
+import com.week1.game.Model.Entities.Clickable;
+import com.week1.game.Model.Entities.Unit;
+import com.week1.game.Pair;
 
-public class GameWorld implements RenderableProvider {
+public class GameWorld implements GameRenderable {
     private Block[][][] blocks;
     private int[][] heightMap;
     private boolean refreshHeight = true; // whether or not the map has changed, warranting a new height map.
@@ -42,9 +55,7 @@ public class GameWorld implements RenderableProvider {
     private int chunkHeight;
 
     public GameWorld(IWorldBuilder worldBuilder) {
-        // For now, we'll make a preset 100x100x10 world.
         blocks = worldBuilder.terrain();
-
         this.graph = new GameGraph(blocks);
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
@@ -58,20 +69,13 @@ public class GameWorld implements RenderableProvider {
             }
         }
         Gdx.app.log("Game World - wab2", "Block array built");
-//        model = modelBuilder.createBox(5f, 5f, 5f,
-//                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
-//                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
-
         // Set up the chunk bounding boxes
         chunkSide = (int)Math.pow(blocks.length * blocks[0].length * blocks[0][0].length, 1d/4d);
-//        System.out.println("ChunkSize: " + chunkSide);
         chunkHeight = 5;
-
         int sizeX = (int)Math.ceil(blocks.length / (double)chunkSide);
         int sizeY = (int)Math.ceil(blocks[0].length / (double)chunkSide);
         int sizeZ = (int)Math.ceil(blocks[0][0].length / (double)chunkHeight);
         chunkBoundingBoxes = new BoundingBox[sizeX][sizeY][sizeZ];
-//        System.out.println("numberof Chunks: " + sizeX + ", " + sizeY + ", " + sizeZ);
         activeBlocksPerChunk = new int[sizeX][sizeY][sizeZ];
         Vector3 minCorner = new Vector3();
         Vector3 maxCorner = new Vector3();
@@ -85,8 +89,6 @@ public class GameWorld implements RenderableProvider {
                 }
             }
         }
-
-
 
         // Build the modelinstances and precompute the bounding boxes
         instances = new ModelInstance[blocks.length][blocks[0].length][blocks[0][0].length];
@@ -106,8 +108,6 @@ public class GameWorld implements RenderableProvider {
                 }
             }
         }
-
-
 
     }
 

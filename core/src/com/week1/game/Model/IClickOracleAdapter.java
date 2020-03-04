@@ -20,12 +20,10 @@ public interface IClickOracleAdapter {
     Clickable selectClickable(float screenX, float screenY, Vector3 intersection);
     boolean isPlayerAlive();
     Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB);
-    Array<Building> getBuildings();
     int getGameStateHash();
     String getGameStateString();
     void sendMessage(AMessage msg);
     int getPlayerId();
-    void unproject(Vector3 projected);
     void setTranslationDirection(Direction direction);
     Camera getCamera();
 }

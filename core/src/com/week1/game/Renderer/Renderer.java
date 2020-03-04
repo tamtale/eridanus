@@ -20,20 +20,16 @@ import java.util.Map;
 
 public class Renderer {
     private Batch batch = new SpriteBatch();
-    public ModelBatch modelBatch;
     public Model model;
-    public ModelInstance instance;
     private PerspectiveCamera cam;
     private GameButtonsStage gameButtonsStage;
     private Environment env;
-    private Vector3 touchPos = new Vector3();
     private Vector3 defaultPosition = new Vector3(50, 50, 0);
     private IRendererAdapter adapter;
-    private RenderConfig renderConfig = new RenderConfig(false, false, 0);
+    private RenderConfig renderConfig;
     private BitmapFont font = new BitmapFont();
     private Vector3 panning = new Vector3();
     private Map<Direction, Vector3> directionToVector;
-    private static int DEFAULT_WIDTH = 30;
 
     {
         directionToVector = new HashMap<Direction, Vector3>() {{
@@ -54,22 +50,16 @@ public class Renderer {
         this.util = util;
     }
 
-    public ModelBatch getModelBatch() {
-        return modelBatch;
-    }
-
-    public Environment getEnv() { return env; }
-
     public PerspectiveCamera getCam() {
         return cam;
     }
 
     public void create() {
-        modelBatch = new ModelBatch();
         env = new Environment();
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         env.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        renderConfig = new RenderConfig(false, false, 0, cam, env);
         cam.position.set(-8, 20, 30);
         // cam.lookAt(10,15,0);
         cam.rotate(Vector3.X, 45f);
@@ -79,12 +69,6 @@ public class Renderer {
         cam.update();
         gameButtonsStage = new GameButtonsStage(adapter);
         cam.update();
-    }
-
-    public void render3D(RenderableProvider provider) {
-        modelBatch.begin(cam);
-        modelBatch.render(provider, env);
-        modelBatch.end();
     }
 
     public Camera getCamera() {
@@ -100,7 +84,6 @@ public class Renderer {
     }
 
     public void resize(int x, int y) {
-        // TODO this
         cam.viewportWidth = x;
         cam.viewportHeight = y;
         cam.update();
@@ -143,7 +126,6 @@ public class Renderer {
     }
 
     public void render(float deltaTime) {
-        // Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         updateCamera();

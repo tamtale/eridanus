@@ -1,12 +1,12 @@
-package com.week1.game.Networking;
+package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.Gdx;
-import com.week1.game.TowerBuilder.BlockSpec;
+import com.week1.game.GameControllerSetScreenAdapter;
+import com.week1.game.MenuScreens.ScreenManager;
 
 import java.net.*;
 import java.nio.channels.SocketChannel;
 import java.util.Enumeration;
-import java.util.List;
 
 public class NetworkUtils {
     private static final String TAG = "NetworkUtils - lji1";
@@ -66,52 +66,36 @@ public class NetworkUtils {
     /**
      * Accepts arguments that determine whether this instance will host the game or just
      * act as a client. (Even when hosting, the instance also behaves as a client.)
-     *
-     * @param args - Either "host" or "client <ip address> <port number> <optional - start>"
      * @return The client object
      */
-    public static Client initNetworkObjects(String[] args, INetworkClientToEngineAdapter adapter, List<List<BlockSpec>> details) {
+    public static Client initNetworkObjects(boolean isHost, String hostIP, Integer port, GameControllerSetScreenAdapter gameAdapter) {
         final String TAG = "initNetworkObjects - lji1";
         Gdx.app.log(TAG, "Local host address: " + getLocalHostAddr());
-        
-        Gdx.app.log(TAG, "Arguments: ");
-        for (int i = 0; i < args.length; i++) {
-            Gdx.app.log(TAG, "\t" + args[i]);
-        }
 
         Client c =  null;
         try {
-            if (args[0].equals("host")) {
+            if (isHost) {
                 Gdx.app.log(TAG, "Host option chosen.");
 
                 String localIpAddr = InetAddress.getLocalHost().getHostAddress();
 
                 // create the host instance
-                int port;
-                try {
-                    port = Integer.parseInt(args[1]);
-                } catch (Exception e) {
-                    throw new IndexOutOfBoundsException("Expected arguments in format: host <portnumber> <start (optional)>");
-                }
                 Host h = new Host(port);
                 // start listening for messages from clients
                 h.listenForClientMessages();
 
 
                 // Now make the client stuff
-                c = new Client(localIpAddr, h.getPort(), adapter);
-                c.sendJoinMessage(details);
+                ScreenManager sm = new ScreenManager(gameAdapter, true);
+                c = new Client(localIpAddr, h.getPort(), sm);
 
-            } else if  (args[0].equals("client")) {
+            } else {
                 Gdx.app.log(TAG, "Client option chosen.");
                 // host ip is the number listed under ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address
 
                 try {
-                    String hostIpAddr = args[1];
-                    int hostPort = Integer.parseInt(args[2]);
-                    c = new Client(hostIpAddr, hostPort, adapter);
-                    c.sendJoinMessage(details);
-
+                    ScreenManager sm = new ScreenManager(gameAdapter, false);
+                    c = new Client(hostIP, port, sm);
                 }
                 catch (Exception e) {
                     throw new IndexOutOfBoundsException("Expected arguments in format: client <ip address> <portnumber> <start (optional)>");

@@ -13,8 +13,13 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.week1.game.AIMovement.SteeringAgent;
+import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.Ray;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
+import com.week1.game.Renderer.GameRenderable;
+import com.week1.game.Renderer.RenderConfig;
+import com.week1.game.Util3D;
 import com.week1.game.Model.Unit2StateAdapter;
 import com.week1.game.Util3D;
 
@@ -23,11 +28,12 @@ import java.util.Map;
 
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
+import static java.lang.Math.abs;
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
 import static java.lang.Math.abs;
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
-public class Unit implements Damageable, Damaging, RenderableProvider, Clickable {
+public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     private final int playerID;
     public OutputPath path;
     private Vector3 curNode;
@@ -51,11 +57,8 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
     private double hp;
     private Vector3 vel;
     private double maxHp;
-    private boolean clicked = false;
-    public SteeringAgent agent;
     public int ID;
     public static double speed = 4;
-    public  static int SIZE = 1;
     // 3D STUFF
     private static ModelBuilder BUILDER = new ModelBuilder();
     private Model model;
@@ -117,13 +120,6 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
         } else {
             moveRender(delta);
         }
-//
-//        if (showAttackRadius) {
-//            batch.draw(rangeCircle, displayX - ((float)tempMinionRange), displayY - ((float)tempMinionRange), (float)tempMinionRange * 2, (float)tempMinionRange * 2);
-//        }
-//        batch.draw(getSkin(), displayX - (SIZE / 2f), displayY - (SIZE / 2f), SIZE, SIZE);
-//        // TODO draw this in a UI rendering procedure
-//        drawHealthBar(batch, displayX, displayY, 0, SIZE, this.hp, this.maxHp);
     }
 
     @Override
@@ -162,8 +158,6 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
                 }
                 move(delta);
                 turn++;
-            } else {
-                Gdx.app.log("Unit::step", "nope");
             }
             if (path.getPath().size <= 0) {
                 path = null;
@@ -187,9 +181,6 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
         modelInstance.transform.setToTranslation(displayPosition);
     }
 
-    public SteeringAgent getAgent(){ return agent;}
-
-
     @Override
     public boolean takeDamage(double dmg, Damage.type damageType) {
         this.hp -= dmg;
@@ -201,12 +192,10 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
         }
     }
 
-    @Override
     public float getX() {
         return position.x;
     }
 
-    @Override
     public float getY() {
         return position.y;
     }
@@ -223,7 +212,6 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
     @Override
     public boolean hasTargetInRange(Damageable victim) {
         return Math.sqrt(Math.pow(position.x - victim.getX(), 2) + Math.pow(position.y - victim.getY(), 2)) < tempMinionRange;
-//        return true; // TODO
     }
     
     @Override
@@ -233,7 +221,27 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
 
     @Override
     public int getPlayerId(){return playerID;}
-    
+
+    @Override
+    public void getPos(Vector3 pos) {
+        pos.set(position);
+    }
+
+    @Override
+    public void getDisplayPos(Vector3 pos) {
+        pos.set(displayPosition);
+    }
+
+    @Override
+    public float getCurrentHealth() {
+        return (float) this.hp;
+    }
+
+    @Override
+    public float getMaxHealth() {
+        return (float) this.maxHp;
+    }
+
     public OutputPath getPath(){
         return path;
     }
@@ -264,17 +272,6 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
         System.out.println("vel.x " + vel.x + " vel.y " + vel.y);
         this.distanceTraveled = 0;
         path.removeIndex(0);
-    }
-
-    public float getDisplayX() {
-        return displayPosition.x;
-    }
-    public float getDisplayY() {
-        return displayPosition.y;
-    }
-
-    public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
-        modelInstance.getRenderables(renderables, pool);
     }
 
     public void setGoal(Vector3 goal) {
@@ -333,7 +330,12 @@ public class Unit implements Damageable, Damaging, RenderableProvider, Clickable
         return clickableVisitor.acceptUnit(this);
     }
 
-    public void setAdapter(Unit2StateAdapter unit2StateAdapter) {
-        this.unit2StateAdapter = unit2StateAdapter;
+    @Override
+    public void render(RenderConfig config) {
+        float delta = config.getDelta();
+        if (delta != 0) {
+            moveRender(delta);
+        }
+        config.getModelBatch().render(modelInstance, config.getEnv());
     }
 }

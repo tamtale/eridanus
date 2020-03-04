@@ -12,6 +12,7 @@ import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.OutputPath;
 import com.week1.game.Pair;
 
+public class GameGraph implements IndexedGraph<Vector3> {
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +26,6 @@ public class GameGraph implements IndexedGraph<Vector2> {
     Border[][][][] borders;
     private Array<Connection<Vector2>>[][] edges;
 
-    //TODO: make general
     public GameGraph(Block[][][] blocks){
         super();
         edges = new Array[blocks.length][blocks[0].length];
@@ -91,6 +91,7 @@ public class GameGraph implements IndexedGraph<Vector2> {
         OutputPath path = new OutputPath();
 
         if (pathFinder.searchNodePath(startNode, endNode, heuristic, path)) {
+            System.out.println("return path");
             return path;
         }
         return null;
