@@ -5,6 +5,11 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.week1.game.GameController;
+import com.week1.game.MenuScreens.MainMenuScreen;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TowerBuilderScreen implements Screen {
 
@@ -144,6 +149,21 @@ public class TowerBuilderScreen implements Screen {
         towerCam.WIPTower.setName(twrName);
         towerCam.WIPTower.saveTower();
         towerStage.addTowertoSelections(towerCam.WIPTower);
+    }
+
+    public List<TowerDetails> getCustomTowerList() {
+        ArrayList<TowerDetails> customTowers = new ArrayList<>();
+
+        File customTowerDir = new File("customTowers");
+        File[] customTowerFiles = customTowerDir.listFiles();
+        for (File f: customTowerFiles) {
+            if (!f.getPath().equals("customTowers\\dummy.txt")){
+                customTowers.add(new TowerDetails(f.getPath()));
+            }
+
+        }
+
+        return customTowers;
     }
 
     public void showErrorDialog(String msg) {
