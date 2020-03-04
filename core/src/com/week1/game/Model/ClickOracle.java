@@ -223,6 +223,7 @@ public class ClickOracle extends InputAdapter {
                     public Void acceptBlockLocation(Vector3 vector) {
                         // the player right clicked on a location - move all selected minions to this location
                         if (multiSelected.notEmpty()) {
+                            System.out.println("About to send move message with these minions: " + multiSelected);
                             adapter.sendMessage(new MoveMinionMessage(vector.x, vector.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
                         }
                         return null;

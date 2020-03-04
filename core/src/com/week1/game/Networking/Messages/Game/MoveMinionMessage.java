@@ -47,6 +47,7 @@ public class MoveMinionMessage extends GameMessage {
             }
         }
 
+        System.out.println("Number of good minions: " + goodMinions);
         if (goodMinions > 0) {
             centerX = centerX / goodMinions;
             centerY = centerY / goodMinions;
@@ -56,6 +57,7 @@ public class MoveMinionMessage extends GameMessage {
                 if (minion != null) {
 
                     inputState.moveMinion(x - centerX, y - centerY, minion);
+//                    inputState.moveMinion(x - 100, y - 100, minion);
                 }
             }
         }
