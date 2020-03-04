@@ -42,8 +42,6 @@ public class GameScreen implements Screen {
 	private boolean createdTextures;
 
 	public GameScreen(Client givenNetworkClient) {
-		// Set the logging level
-		Gdx.app.setLogLevel(Application.LOG_INFO);
 		Initializer.init();
 		gameStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 		util = new InfoUtil(true);
