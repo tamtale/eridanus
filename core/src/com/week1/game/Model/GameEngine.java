@@ -9,8 +9,10 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Pool;
 import com.week1.game.Model.Entities.Building;
+import com.week1.game.Model.Entities.PlayerBase;
 import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.World.Basic4WorldBuilder;
 import com.week1.game.Model.World.SmallWorldBuilder;
@@ -51,14 +53,7 @@ public class GameEngine implements GameRenderable {
                 SmallWorldBuilder.ONLY,
                 () -> {
                     Vector3 position = new Vector3();
-                    Tower myBase = null;
-                    Array<Tower> bases = gameState.getPlayerBases();
-                    for (int i = 0; i < bases.size; i++) {
-                        Tower playerBase = bases.get(i);
-                        if (playerBase.getPlayerId() == enginePlayerId) {
-                            myBase = playerBase;
-                        }
-                    }
+                    Tower myBase = gameState.getPlayerBase(this.enginePlayerId);
                     position.set(myBase.getX(), myBase.getY(), 0);
                     adapter.setDefaultLocation(position);
                 });

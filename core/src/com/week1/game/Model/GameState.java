@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.World.Block;
@@ -35,7 +36,7 @@ public class GameState implements GameRenderable {
     private Array<Unit> units = new Array<>();
     private Array<Crystal> crystals = new Array<>();
     private Array<Tower> towers = new Array<>();
-    private Map<Integer, PlayerBase> playerBases = new HashMap<>(); // bases are just special towers, not an entirely separate class
+    private IntMap<PlayerBase> playerBases = new IntMap<>();
     private Array<PlayerStat> playerStats = new Array<>();
     private Array<Damageable> damageables = new Array<>();
     private IWorldBuilder worldBuilder;
@@ -60,6 +61,10 @@ public class GameState implements GameRenderable {
         }
         graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
         this.postInit = postInit;
+    }
+    
+    public PlayerBase getPlayerBase(int playerId) {
+        return playerBases.get(playerId);
     }
 
     /*
@@ -216,7 +221,8 @@ public class GameState implements GameRenderable {
         everythingDamageable.clear();
         everythingDamageable.addAll(units);
         everythingDamageable.addAll(towers);
-        everythingDamageable.addAll(getPlayerBases());
+        playerBases.values().forEach(everythingDamageable::add);
+        everythingDamageable.addAll();
         everythingDamageable.addAll(crystals);
 
         deadEntities.clear();
@@ -337,7 +343,7 @@ public class GameState implements GameRenderable {
         }
 
         // Check if you are the last base alive
-        return playerBases.values().size() == 1;
+        return playerBases.size == 1;
         
     }
     
@@ -353,20 +359,21 @@ public class GameState implements GameRenderable {
             return false; // Can't win if you're dead lol or if the game has not started
         }
 
-        int numPlayersAlive = playerBases.values().size();
+        int numPlayersAlive = playerBases.size;
         return numPlayersAlive <= 1;
     }
 
-    // TODO: Maps from java.util don't play well with gdx arrays
-    Array<Tower> getPlayerBases() {
-        Tower[] pbs = new Tower[playerBases.size()];
-        playerBases.values().toArray(pbs);
-        return new Array<>(pbs);
-    }
+//    // TODO: Maps from java.util don't play well with gdx arrays
+//    Array<Tower> getPlayerBases() {
+//        Tower[] pbs = new Tower[playerBases.size];
+//        playerBases.values().toArray(pbs);
+//        return new Array<>(pbs);
+//    }
 
     public Array<Building> getBuildings() {
         Array<Building> buildings = new Array<>();
-        buildings.addAll(getPlayerBases());
+//        buildings.addAll(getPlayerBases());
+        playerBases.values().forEach(buildings::add);
         buildings.addAll(towers);
         return buildings;
     }
@@ -378,7 +385,7 @@ public class GameState implements GameRenderable {
     }
 
     public PackagedGameState packState(int turn) {
-        return new PackagedGameState(turn, units, towers, getPlayerBases(), playerStats);
+        return new PackagedGameState(turn, units, towers, playerBases, playerStats);
     }
 
     @Override
@@ -414,7 +421,7 @@ public class GameState implements GameRenderable {
         int encodedhash;
         private String gameString;
 
-        public PackagedGameState (int turn, Array<Unit> units, Array<Tower> towers, Array<Tower> bases, Array<PlayerStat> stats) {
+        public PackagedGameState (int turn, Array<Unit> units, Array<Tower> towers, IntMap<PlayerBase> bases, Array<PlayerStat> stats) {
             gameString = "Turn " + turn;
             Unit u;
             for (int i = 0; i < units.size; i++) {
@@ -433,7 +440,9 @@ public class GameState implements GameRenderable {
             Tower pb;
             for (int i = 0; i < bases.size; i ++) {
                 pb = bases.get(i);
-                gameString += pb.toString() + "\n";
+                if (pb != null) {
+                    gameString += pb.toString() + "\n";
+                }
             }
             gameString += "\n";
 
