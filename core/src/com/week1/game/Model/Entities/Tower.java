@@ -29,6 +29,8 @@ public class Tower extends Building implements Damaging {
     private List<BlockSpec> layout;
     private Map<Vector3, Array<Connection<Vector3>>> removedEdges = new HashMap<>();
     
+    private Vector3 highestBlockLocation = null;
+    
     public Tower(float x, float y, float z, TowerDetails towerDetails, int playerID, int towerType) {
         this.x = x;
         this.y = y;
@@ -40,6 +42,8 @@ public class Tower extends Building implements Damaging {
         this.range = towerDetails.getRange();
         this.playerID = playerID;
         this.towerType = towerType;
+        
+        this.highestBlockLocation = new Vector3(x,y,z).add(towerDetails.getHighestBlock().x, towerDetails.getHighestBlock().z, towerDetails.getHighestBlock().y);
         
         this.layout = towerDetails.getLayout();
     }
@@ -192,5 +196,10 @@ public class Tower extends Building implements Damaging {
                 ", range=" + range +
                 ", cost=" + cost +
                 '}';
+    }
+    
+    @Override
+    public void getDisplayPos(Vector3 displayPos) {
+        displayPos.set(highestBlockLocation);
     }
 }

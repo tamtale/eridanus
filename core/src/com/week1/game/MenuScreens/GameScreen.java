@@ -180,7 +180,7 @@ public class GameScreen implements Screen {
 			InputMultiplexer multiplexer = new InputMultiplexer();
 			multiplexer.addProcessor(renderer.getButtonStage());
 			multiplexer.addProcessor(clickOracle);
-			multiplexer.addProcessor(new GameCameraController(renderer.getCamera()));
+			multiplexer.addProcessor(new GameCameraController(renderer.getCamera(), renderer.getRenderConfig()));
 			Gdx.input.setInputProcessor(multiplexer);
 
 			gameStage.dispose();

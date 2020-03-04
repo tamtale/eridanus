@@ -119,16 +119,19 @@ public class GameCameraController extends GestureDetector {
 	};
 
 	protected final CameraGestureListener gestureListener;
+	
+	private RenderConfig renderConfig;
 
-	protected GameCameraController(final CameraGestureListener gestureListener, final Camera camera) {
+	protected GameCameraController(final CameraGestureListener gestureListener, final Camera camera, RenderConfig renderConfig) {
 		super(gestureListener);
 		this.gestureListener = gestureListener;
 		this.gestureListener.controller = this;
 		this.camera = camera;
+		this.renderConfig = renderConfig;
 	}
 
-	public GameCameraController(final Camera camera) {
-		this(new CameraGestureListener(), camera);
+	public GameCameraController(final Camera camera, RenderConfig renderConfig) {
+		this(new CameraGestureListener(), camera, renderConfig);
 	}
 
 	public void update () {
@@ -211,6 +214,13 @@ public class GameCameraController extends GestureDetector {
 		camera.translate(tmpV1.set(camera.direction).scl(amount));
 		if (scrollTarget) target.add(tmpV1);
 		if (autoUpdate) camera.update();
+		
+		if (amount > 0) {
+			renderConfig.zoomFactor++;
+		} else if (amount < 0) {
+			renderConfig.zoomFactor--;
+		}
+		
 		return true;
 	}
 

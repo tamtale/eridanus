@@ -53,6 +53,7 @@ public class Renderer {
     public PerspectiveCamera getCam() {
         return cam;
     }
+    public RenderConfig getRenderConfig() { return renderConfig; }
 
     public void create() {
         env = new Environment();
@@ -87,6 +88,7 @@ public class Renderer {
         cam.viewportWidth = x;
         cam.viewportHeight = y;
         cam.update();
+        renderConfig.update();
         gameButtonsStage.stage.getViewport().update(x, y);
     }
 

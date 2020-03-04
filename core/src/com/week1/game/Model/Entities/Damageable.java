@@ -1,7 +1,10 @@
 package com.week1.game.Model.Entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.Damage;
 import com.week1.game.Renderer.RenderConfig;
@@ -64,13 +67,19 @@ public interface Damageable {
     default void drawHealthBar(RenderConfig config) {
         float currentHealth = getCurrentHealth();
         float maxHealth = getMaxHealth();
-        Batch batch = config.getBatch();
+        SpriteBatch batch = config.getBatch();
         Camera cam = config.getCam();
         this.getDisplayPos(unitPosition);
-        cam.project(unitPosition);
-        batch.draw(healthBarBackground, unitPosition.x, unitPosition.y, 10f, 2f);
+
+        cam.project(unitPosition); // go from world coordinates to screen coordinates
+        
+        float scale = (float)Math.pow(1.1, config.zoomFactor);
+        float width = 100 * scale;
+        float height = 10 * scale;
+        float above = 80 * scale;
+        batch.draw(healthBarBackground, unitPosition.x - (width / 2) , unitPosition.y + above, width, height);
         batch.draw(getHealthBar(getCurrentHealth(), getMaxHealth()),
-            unitPosition.x, unitPosition.y, currentHealth / maxHealth * 10f, 2f);
+            unitPosition.x - (width / 2), unitPosition.y + above, currentHealth / maxHealth * width, height);
     }
 
     <T> T accept(DamageableVisitor<T> visitor);
