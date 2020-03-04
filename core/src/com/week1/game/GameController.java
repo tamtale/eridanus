@@ -4,15 +4,14 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.week1.game.MenuScreens.MainMenuScreen;
 
 public class GameController implements ApplicationListener {
     Screen currScreen;
     public static final float VIRTUAL_WIDTH = 800;
     public static final float VIRTUAL_HEIGHT = 800;
-    public String[] gameArgs;
 
-    public GameController(String[] args) {
-        this.gameArgs = args;
+    public GameController() {
     }
 
     @Override

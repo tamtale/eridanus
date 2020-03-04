@@ -1,95 +1,49 @@
 package com.week1.game.Model.Entities;
 
-import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Damage;
+import com.week1.game.TowerBuilder.BlockSpec;
+import com.week1.game.TowerBuilder.TowerDetails;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.week1.game.Model.StatsConfig.*;
 
 public class Tower extends Building implements Damaging {
     private static final int SIDELENGTH = 3;
-    public float x, y;
+    public float x, y, z;
     private static Texture skin; // TODO change this when we go to 3D to actually use the model of the tower.
-    private int playerID, towerType;
+    protected int playerID;
+    protected int towerType;
     private final static Map<Integer, Texture> colorMap = new HashMap<>();
-    private static Texture rangeCircle;
-    private double hp, maxHp, dmg, range, cost;
-
-    private Damage.type attackType;
-
-
-    public Tower(float x, float y, double hp, double dmg, double range, Damage.type attackType, double cost, int playerID, int towerType) {
+    protected double hp;
+    protected double maxHp;
+    protected double dmg;
+    protected double range;
+    protected double cost;
+    private List<BlockSpec> layout;
+    private Map<Vector3, Array<Connection<Vector3>>> removedEdges = new HashMap<>();
+    
+    public Tower(float x, float y, float z, TowerDetails towerDetails, int playerID, int towerType) {
         this.x = x;
         this.y = y;
-        this.hp = hp;
+        this.z = z;
+        this.hp = towerDetails.getHp();
         this.maxHp = hp;
-        this.dmg = dmg;
-        this.cost = cost;
-        this.range = range;
+        this.dmg = towerDetails.getAtk();
+        this.cost = towerDetails.getPrice();
+        this.range = towerDetails.getRange();
         this.playerID = playerID;
-        this.attackType = attackType;
         this.towerType = towerType;
-    }
-
-    public static void makeTextures() {
-        Pixmap towerScaled = new Pixmap(SIDELENGTH, SIDELENGTH, sniperTexture.getFormat());
-        towerScaled.drawPixmap(sniperTexture, 0, 0, sniperTexture.getWidth(), sniperTexture.getHeight(),
-                0, 0, SIDELENGTH, SIDELENGTH);
-        skin = new Texture(towerScaled);
-
-        // Make the textures for the circles surrounding the tower
-        Pixmap circlePixmap = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
-        circlePixmap.setBlending(Pixmap.Blending.None);
-
-        circlePixmap.setColor(0, 0, 1, .1f);
-        circlePixmap.fillCircle(50, 50, 50);
-        colorMap.put(0, new Texture(circlePixmap));
-
-        circlePixmap.setColor(1, 0, 0, .1f);
-        circlePixmap.fillCircle(50, 50, 50);
-        colorMap.put(1, new Texture(circlePixmap));
-
-        circlePixmap.setColor(0, 0, 0, .1f);
-        circlePixmap.fillCircle(50, 50, 50);
-        colorMap.put(2, new Texture(circlePixmap));
-
-        circlePixmap.setColor(0.5f, 0, 0.5f, .1f);
-        circlePixmap.fillCircle(50, 50, 50);
-        colorMap.put(3, new Texture(circlePixmap));
-
-        circlePixmap.setColor(0.6f, 0.05f, 0.35f, .1f);
-        circlePixmap.fillCircle(50, 50, 50);
-        colorMap.put(4, new Texture(circlePixmap));
-
-        // Make the radius that towers can attack;
-        circlePixmap = new Pixmap(100, 100, Pixmap.Format.RGBA8888);
-        circlePixmap.setBlending(Pixmap.Blending.None);
-        circlePixmap.setColor(1, 1, 1, .5f);
-        circlePixmap.drawCircle(50, 50, 50);
-        rangeCircle = new Texture(circlePixmap);
-        circlePixmap.dispose();
+        
+        this.layout = towerDetails.getLayout();
     }
     
-    public void draw(Batch batch, boolean showAttackRadius, boolean showSpawnRadius) {
-        if (showSpawnRadius) {
-            batch.draw(colorMap.get(playerID), x - (float)placementRange, y - (float)placementRange, (float)placementRange * 2, (float)placementRange * 2);
-        }
-        if (showAttackRadius) {
-            batch.draw(rangeCircle, x - (float)range, y - (float)range, (float)range * 2, (float)range * 2);
-        }
-        batch.draw(getSkin(), this.x - (SIDELENGTH / 2f) + 0.5f, this.y - (SIDELENGTH / 2f) + 0.5f, SIDELENGTH, SIDELENGTH);
-        // TODO draw this in a UI rendering procedure
-        drawHealthBar(batch, x, y, 0.5f, SIDELENGTH, hp, maxHp);
-    }
-
-    public Texture getSkin() {
-        return skin;
-    }
 
     public double getCost() {
         return cost;
@@ -98,6 +52,8 @@ public class Tower extends Building implements Damaging {
     public int getTowerType() {
         return towerType;
     }
+
+    public double getHp() { return hp; }
 
     @Override
     public boolean takeDamage(double dmg, Damage.type damageType) {
@@ -121,6 +77,16 @@ public class Tower extends Building implements Damaging {
     }
 
     @Override
+    public float getCurrentHealth() {
+        return (float) hp;
+    }
+
+    @Override
+    public float getMaxHealth() {
+        return (float) maxHp;
+    }
+
+    @Override
     public boolean isDead() {
         return this.hp <= 0;
     }
@@ -137,6 +103,22 @@ public class Tower extends Building implements Damaging {
 
     @Override
     public int getPlayerId(){return playerID;}
+
+    @Override
+    public void getPos(Vector3 pos) {
+        pos.set(x, y, z);
+    }
+
+    @Override
+    public float getReward() {
+        return (float) cost * (float) towerDestructionBonus;
+    }
+
+    @Override
+    public <T> T accept(DamageableVisitor<T> visitor) {
+        return visitor.acceptTower(this);
+    }
+
     public int getSidelength(){
         return SIDELENGTH;
     }
@@ -181,6 +163,20 @@ public class Tower extends Building implements Damaging {
         else{
             return new Vector3(x, startY, 0);
         }
+    }
+
+    public List<BlockSpec> getLayout() {
+        return layout;
+    }
+
+    @Override
+    public void putRemovedEdges(Vector3 fromNode, Array<Connection<Vector3>> connections) {
+        removedEdges.put(fromNode, connections);
+    }
+
+    @Override
+    public Map<Vector3, Array<Connection<Vector3>>> getRemovedEdges() {
+        return this.removedEdges;
     }
 
     @Override

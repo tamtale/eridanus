@@ -1,4 +1,4 @@
-package com.week1.game;
+package com.week1.game.MenuScreens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -11,15 +11,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.week1.game.GameController;
 import com.week1.game.TowerBuilder.TowerBuilderScreen;
 
+/**
+ * Spashscreen of the game
+ */
 public class MainMenuScreen implements Screen {
     GameController game;
-    Stage stage;
+    public Stage stage;
 
     //Widgets
-    TextButton playButton;
-
+    TextButton playButton, buildTowersButton;
 
     public MainMenuScreen(GameController game) {
         this.game = game;
@@ -33,23 +36,36 @@ public class MainMenuScreen implements Screen {
     }
 
     private void setWidgets() {
-        playButton = new TextButton("play", new Skin(Gdx.files.internal("uiskin.json")));
+        buildTowersButton = new TextButton("Build Towers", new Skin(Gdx.files.internal("uiskin.json")));
+        playButton = new TextButton( "Play Game!", new Skin(Gdx.files.internal("uiskin.json")));
+
     }
 
     private void configureWidgets() {
-        playButton.setSize(128,64);
-        playButton.setPosition(GameController.VIRTUAL_WIDTH/2 - playButton.getWidth()/2 - 10, 24);
         //Set the background image
-        stage.addActor(new Image(new TextureRegionDrawable(new Texture("menu.png"))));
-        stage.addActor(playButton);
+        stage.addActor(new Image(new TextureRegionDrawable(new Texture("nova_menu.png"))));
 
+        buildTowersButton.setSize(128,64);
+        buildTowersButton.setPosition(GameController.VIRTUAL_WIDTH/2 - playButton.getWidth()/2 - 110, 24);
+        stage.addActor(buildTowersButton);
+
+        playButton.setSize(128,64);
+        playButton.setPosition(GameController.VIRTUAL_WIDTH/2 - playButton.getWidth()/2  + 90, 24);
+        stage.addActor(playButton);
     }
 
     private void setListeners() {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new TowerBuilderScreen(game));
+                game.setScreen(new ConnectionScreen(newScreen -> game.setScreen(newScreen)));
+            }
+        });
+
+        buildTowersButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new TowerBuilderScreen(game, MainMenuScreen.this));
             }
         });
     }

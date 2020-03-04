@@ -9,10 +9,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.week1.game.Model.Entities.TowerType;
+import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
-import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
+import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 import com.week1.game.Renderer.TextureUtils;
 
@@ -23,9 +23,9 @@ public class ClickOracle extends InputAdapter {
 
     private static final String TAG = "ClickOracle";
 
-    private IClickOracleToRendererAdapter rendererAdapter;
-    private IClickOracleToEngineAdapter engineAdapter;
-    private IClickOracleToNetworkAdapter networkAdapter;
+    private IClickOracleAdapter adapter;
+    private Clickable selected = Clickable.NULL;
+    private Clickable passiveSelected = Clickable.NULL;
 
     private Vector3 touchPos = new Vector3();
     private Array<Unit> multiSelected = new Array<>();
@@ -52,18 +52,15 @@ public class ClickOracle extends InputAdapter {
     private SpriteBatch batch = new SpriteBatch();
     private SpawnInfo.SpawnType spawnType;
 
-    public ClickOracle(IClickOracleToRendererAdapter rendererAdapter,
-                       IClickOracleToEngineAdapter engineAdapter,
-                       IClickOracleToNetworkAdapter networkAdapter) {
-        this.rendererAdapter = rendererAdapter;
-        this.engineAdapter = engineAdapter;
-        this.networkAdapter = networkAdapter;
+    public ClickOracle(IClickOracleAdapter adapter) {
+        this.adapter = adapter;
+        
     }
 
     @Override
     public boolean keyDown(int keycode) {
         if (keycodeToDirection.containsKey(keycode)) {
-            rendererAdapter.setTranslationDirection(keycodeToDirection.get(keycode));
+            adapter.setTranslationDirection(keycodeToDirection.get(keycode));
             return true;
         }
         return true;
@@ -73,7 +70,7 @@ public class ClickOracle extends InputAdapter {
     @Override
     public boolean keyUp(int keycode) {
         if (keycodeToDirection.containsKey(keycode)) {
-            rendererAdapter.setTranslationDirection(Direction.NONE);
+            adapter.setTranslationDirection(Direction.NONE);
         }
         return true;
     }
@@ -82,8 +79,6 @@ public class ClickOracle extends InputAdapter {
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
         if (button != Input.Buttons.LEFT) return false;
         selectionLocationStart.set(screenX, screenY, 0);
-        rendererAdapter.unproject(selectionLocationStart);
-        Gdx.app.log("ClickOracle - lji1", "Touchdown!");
         return false;
     }
     
@@ -92,9 +87,40 @@ public class ClickOracle extends InputAdapter {
         if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) return false;
         dragging = true;
         selectionLocationEnd.set(screenX, screenY, 0);
-        rendererAdapter.unproject(selectionLocationEnd);
         Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
         return false;
+    }
+
+    long startTime = 0;
+    long endTime = 0;
+    int events = 0;
+    int sum = 0;
+    
+    @Override
+    public boolean mouseMoved (int screenX, int screenY) {
+        endTime = System.nanoTime();
+        int diff = (int)((endTime - startTime) / 1000000);
+        if (diff < 1000) {
+            events++;
+            sum += diff;
+        }
+        startTime = System.nanoTime();
+        
+        setPassiveClickable(adapter.selectClickable(screenX, screenY, touchPos));
+        return true;
+    }
+
+    private void setPassiveClickable (Clickable clickable) {
+        passiveSelected.setHovered(false);
+        passiveSelected = clickable;
+        passiveSelected.setHovered(true);
+    }
+
+    private void setSelectedClickable(Clickable clickable) {
+        Gdx.app.log("setSelectedClickable", "set selected: " + clickable.toString());
+        deMultiSelect();
+        selected = clickable;
+        selected.setSelected(true);
     }
     
     @Override
@@ -102,118 +128,88 @@ public class ClickOracle extends InputAdapter {
         Gdx.app.log("lji1 - ClickOracle", "Click registered, dragging: " + dragging);
 
         // The player must be alive to be able to register any clicks
-        if (!engineAdapter.isPlayerAlive()) {
+        if (!adapter.isPlayerAlive()) {
             Gdx.app.log("lji1 - ClickOracle", "Player has died.");
             return false;
         }
 
-        if (dragging) {
-            dragging = false;
-            
-            // mark the units in the box as selected
-            Array<Unit> unitsToSelect = engineAdapter.getUnitsInBox(selectionLocationStart, selectionLocationEnd);
-
-            deMultiSelect();
-            unitsToSelect.forEach((unit) -> multiSelect(unit));
-
-            Gdx.app.log("lji1 - ClickOracle", "Cleared selection locations.");
-            return false;
-        }
-
         touchPos.set(screenX, screenY, 0);
-        rendererAdapter.unproject(touchPos);
+        // for 3D, get the ray that the click represents.
 
-        int currentGameHash = engineAdapter.getGameStateHash();
-        Gdx.app.log("pjb3 - ClickOracle", "hash int is " + currentGameHash);
-        Gdx.app.log("pjb3 - ClickOracle", "the human readable is: " + engineAdapter.getGameStateString());
+        int currentGameHash = adapter.getGameStateHash();
 
+        Clickable selectedClickable = adapter.selectClickable(screenX, screenY, touchPos);
         if (button == Input.Buttons.LEFT) {
-
-            // Create tower with left click and numberkey down.
-            // For advanced users, we will keep this as the first check, then defer to the other users
-            if (Gdx.input.isKeyPressed(Input.Keys.NUM_1)) {
-                Gdx.app.log("lji1 - ClickOracle", "Spawn basic tower.");
-                networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.BASIC, networkAdapter.getPlayerId(), currentGameHash));
-            } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_2)) {
-                Gdx.app.log("lji1 - ClickOracle", "Spawn sniper tower.");
-                networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.SNIPER, networkAdapter.getPlayerId(), currentGameHash));
-            } else if (Gdx.input.isKeyPressed(Input.Keys.NUM_3)) {
-                Gdx.app.log("lji1 - ClickOracle", "Spawn tank tower.");
-                networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.TANK, networkAdapter.getPlayerId(), currentGameHash));
-            } else {
-
-                Unit unit = engineAdapter.selectUnit(touchPos);
-                if (unit == null) {
-                    Gdx.app.log("ttl4 - ClickOracle", "nothing selected!");
-                    System.out.println("aaaaa");
+            Gdx.app.log("lji1 - ClickOracle", "Left click.");
+            deMultiSelect();
+            setSelectedClickable(selectedClickable);
+            selected.accept(new Clickable.ClickableVisitor<Void>() {
+                @Override
+                public Void acceptUnit(Unit unit) {
+                    if (unit.getPlayerId() == adapter.getPlayerId()) {
+                        multiSelected.add(unit);
+                    }
+                    return null;
+                }
+                @Override
+                public Void acceptBlockLocation(Vector3 vector) {
+                    Gdx.app.log("ClickOracle", "Accepting block location.");
                     if (spawnType == SpawnInfo.SpawnType.UNIT) {
                         Gdx.app.log("pjb3 - ClickOracle", "Spawn unit");
-                        networkAdapter.sendMessage(new CreateMinionMessage(touchPos.x, touchPos.y, 69, networkAdapter.getPlayerId(), currentGameHash));
+                        adapter.sendMessage(new CreateMinionMessage(vector.x, vector.y, vector.z + 1, 69, adapter.getPlayerId(), currentGameHash));
                     } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
                         Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
-                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.BASIC, networkAdapter.getPlayerId(), currentGameHash));
+                        adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 0, adapter.getPlayerId(), currentGameHash));
                     } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
                         Gdx.app.log("pjb3 - ClickOracle", "Spawn Tower 2 tower via state");
-                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.SNIPER, networkAdapter.getPlayerId(), currentGameHash));
+                        adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 1, adapter.getPlayerId(), currentGameHash));
                     } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
                         Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
-                        networkAdapter.sendMessage(new CreateTowerMessage(touchPos.x, touchPos.y, TowerType.TANK, networkAdapter.getPlayerId(), currentGameHash));
+                        adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 2, adapter.getPlayerId(), currentGameHash));
                     }
-
-                } else {
-                    System.out.println("bbbbb");
-                    Gdx.app.log("ttl4 - ClickOracle", "selected selected!");
-                    deMultiSelect();
-                    selectionLocationStart.set(unit.x, unit.y, 0);
-                    selectionLocationEnd.set(unit.x, unit.y, 0);
-                    multiSelect(unit);
+                    return null;
                 }
-            }
+
+                @Override
+                public Void acceptNull() {
+                    return null;
+                }
+            });
             return false;
         }
         // Right click
-        if (multiSelected.notEmpty() && button == Input.Buttons.RIGHT) {
-            // TODO: steering agent behavior
-            
-            System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
-//            Array<Building> buildings = engineAdapter.getBuildings();
-//            boolean overlapped = false;
-//            for(Building building: buildings) {
-//                if(building.overlap(touchPos.x, touchPos.y)) {
-//                    Unit unit = multiSelected.get(0);
-//                    Vector3 point = building.closestPoint(unit.x, unit.y);
-//                    networkAdapter.sendMessage(new MoveMinionMessage(point.x, point.y, networkAdapter.getPlayerId(), multiSelected));
-//                    overlapped = true;
-//                    break;
-//                }
-//            }
-//            if (!overlapped) {
-                networkAdapter.sendMessage(new MoveMinionMessage(touchPos.x, touchPos.y,
-                        networkAdapter.getPlayerId(), multiSelected, currentGameHash));
-//            }
-            return false;
+        if (button == Input.Buttons.RIGHT && multiSelected.notEmpty()) {
+            selectedClickable.accept(new Clickable.ClickableVisitor<Void>() {
+                @Override
+                public Void acceptUnit(Unit unit) {
+                  // TODO attack a different unit
+                    return null;
+                }
 
+                @Override
+                public Void acceptBlockLocation(Vector3 vector) {
+                    adapter.sendMessage(new MoveMinionMessage(vector.x, vector.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+                    return null;
+                }
+
+                @Override
+                public Void acceptNull() {
+                    return null;
+                }
+            });
         }
-        
+
         deMultiSelect();
         return false;
     }
 
 
     private void deMultiSelect() {
-        if (multiSelected.notEmpty()) {
-            multiSelected.forEach((u) -> u.setClicked(false));
-            multiSelected.clear();
-        }
+        selected.setSelected(false);
+        multiSelected.forEach(clickable -> clickable.setSelected(false));
+        multiSelected.clear();
     }
     
-    private void multiSelect(Unit unit) {
-        if (unit.getPlayerId() == networkAdapter.getPlayerId()) {
-            multiSelected.add(unit);
-            unit.setClicked(true);
-        }
-    }
-
     public void setSpawnType(SpawnInfo newInfo) {
         spawnType = newInfo.getType();
     }
@@ -223,19 +219,12 @@ public class ClickOracle extends InputAdapter {
     }
 
     public void render() {
-        batch.setProjectionMatrix(rendererAdapter.getCamera().combined);
-//        Gdx.app.log("projection matrix ", batch.getProjectionMatrix().toString());
-        // selectionMatrix.setToOrtho2D(0, 0, Gdx.graphics.getHeight(), Gdx.graphics.getWidth());
-        // batch.setProjectionMatrix(selectionMatrix);
 
+        batch.setProjectionMatrix(adapter.getCamera().combined);
         batch.setColor(1, 1,1, 0.5f);
         batch.begin();
-        
 
         if (dragging) {
-
-            System.out.println("start: " + selectionLocationStart + " end: " + selectionLocationEnd);
-
             Texture t = TextureUtils.makeUnfilledRectangle(1,1, Color.YELLOW);
             batch.draw(
                     t,
@@ -250,9 +239,4 @@ public class ClickOracle extends InputAdapter {
         batch.setColor(1, 1,1, 1);
     }
 
-    @Override
-    public boolean scrolled(int amount) {
-        rendererAdapter.zoom(amount);
-        return true;
-    }
 }

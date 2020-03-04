@@ -1,12 +1,12 @@
 package com.week1.game.TowerBuilder;
 
 public class BlockSpec {
-    private int blockCode;
+    private BlockType blockCode;
     private int x;
     private int y;
     private int z;
 
-    public BlockSpec(int blockCode, int x, int y, int z) {
+    public BlockSpec(BlockType blockCode, int x, int y, int z) {
         this.blockCode = blockCode;
         this.x = x;
         this.y = y;
@@ -14,11 +14,11 @@ public class BlockSpec {
 
     }
 
-    public int getBlockCode() {
+    public BlockType getBlockCode() {
         return blockCode;
     }
 
-    public void setBlockCode(int blockCode) {
+    public void setBlockCode(BlockType blockCode) {
         this.blockCode = blockCode;
     }
 

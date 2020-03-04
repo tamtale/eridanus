@@ -19,6 +19,8 @@ public class InitMessage extends GameMessage {
     @Override
     public boolean process(GameEngine engine, GameState inputState, InfoUtil util){
         inputState.initializeGame(this.numPlayers);
+        // The InitMessage message is the last initialization message sent by the host, so start the engine.
+        engine.start();
         return true;
     }
 
