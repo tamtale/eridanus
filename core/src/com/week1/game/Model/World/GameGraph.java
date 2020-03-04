@@ -10,7 +10,6 @@ import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.OutputPath;
 
-
 public class GameGraph implements IndexedGraph<Vector3> {
 
     private int nodeCount;
@@ -61,15 +60,12 @@ public class GameGraph implements IndexedGraph<Vector3> {
     }
 
     public void removeAllConnections(Vector3 fromNode, Building b){
-        // TODO: throwing exceptions, so I commented this out (lji1)???
-//        b.putRemovedEdges(fromNode, edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z]);
-//        edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = new Array<>();
+        // TODO replace with updated connections code (wab2)
     }
 
     public void addVector3(Vector3 Vector3) {
         nodeCount+=1;
         Vector3s.add(Vector3);
-        //vecCoords[(int) Vector3.x][(int) Vector3.y][(int) Vector3.z] = Vector3;
     }
 
     public OutputPath search(Vector3 startNode, Vector3 endNode) {
