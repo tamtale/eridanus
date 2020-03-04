@@ -16,8 +16,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
 import com.week1.game.MenuScreens.MainMenuScreen;
 
-import java.util.ArrayList;
-
 public class TowerBuilderStage {
     //TODO - make things static?
 
@@ -114,7 +112,7 @@ public class TowerBuilderStage {
             presets.add(p);
         }
         //Add the custom towers
-        for (TowerDetails custom: screen.getCustomTowerList()) {
+        for (TowerDetails custom: TowerUtils.getCustomTowerList()) {
             presets.add(custom);
         }
         displaySelection.setItems(presets);
