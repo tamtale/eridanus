@@ -17,7 +17,7 @@ import com.week1.game.TowerBuilder.TowerDetails;
 public class CreateTowerMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.CREATETOWER;
 
-    private float x, y, z; // The coordinates of the center of the tower
+    private float x, y, z; // The coordinates of the center of the tower (the core block is the center)
     private int towerType;
 
 
@@ -53,6 +53,7 @@ public class CreateTowerMessage extends GameMessage {
         // The tower can't be hanging off the edge of the map
         // The tower can't be overlapping with an existing structure
         // The tower's base must be fully supported by terrain blocks
+        // The tower can't be overlapping with an existing minion
         if (!checkTowerBlockPlacement(inputState, towerDetails, util)){
             return false;
         }
@@ -64,7 +65,6 @@ public class CreateTowerMessage extends GameMessage {
         }
         
         
-        // TODO: The tower can't be overlapping with an existing minion
 
         // Deduct the mana cost from the creating player
         util.log("pjb3 - CreateTowerMessage", "Used " + towerCost + " mana to create tower.");
