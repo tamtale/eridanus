@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Pool;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.World.Basic4WorldBuilder;
+import com.week1.game.Model.World.CoolWorldBuilder;
 import com.week1.game.Model.World.SmallWorldBuilder;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 
@@ -48,7 +49,7 @@ public class GameEngine implements RenderableProvider {
         this.adapter = adapter;
         Gdx.app.log("wab2- GameEngine", "messageQueue built");
         gameState = new GameState(
-                SmallWorldBuilder.ONLY,
+                CoolWorldBuilder.ONLY,
                 () -> {
                     Vector3 position = new Vector3();
                     Tower myBase = null;

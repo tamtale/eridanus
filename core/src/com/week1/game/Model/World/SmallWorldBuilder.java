@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector3;
  * World builder for a basic 4-player game.
  * 200x200, with plateaus in the middle.
  */
-public class SmallWorldBuilder implements IWorldBuilder {
+public class  SmallWorldBuilder implements IWorldBuilder {
 
     public static SmallWorldBuilder ONLY = new SmallWorldBuilder();
 

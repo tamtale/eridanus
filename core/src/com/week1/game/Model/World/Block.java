@@ -23,7 +23,7 @@ public interface Block {
     float getCost();
     Optional<ModelInstance> modelInstance(float x, float y, float z);
     boolean canSupportTower();
-
+    String getType();
     abstract class TerrainBlock implements Block {
         Model model;
         private float cost;
@@ -57,6 +57,26 @@ public interface Block {
                 // Air shouldn't be able to hold up a tower
                 return false;
             }
+
+            @Override
+            public String getType() {
+                return "AIR";
+            }
+        };
+
+        public static TerrainBlock ZAMBALA = new TerrainBlock(Color.SALMON, 1) {
+
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                ModelInstance instance = new ModelInstance(model);
+                instance.transform.translate(x, y, z);
+                return Optional.of(instance);
+            }
+
+            @Override
+            public String getType() {
+                return "ZAMBALA";
+            }
         };
         public static TerrainBlock STONE = new TerrainBlock(Color.GRAY, 1) {
 
@@ -66,8 +86,52 @@ public interface Block {
                 instance.transform.translate(x, y, z);
                 return Optional.of(instance);
             }
+
+            @Override
+            public String getType() {
+                return "STONE";
+            }
+        };
+
+        public static TerrainBlock FIREBRICK = new TerrainBlock(Color.FIREBRICK, 1.5f) {
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                ModelInstance instance = new ModelInstance(model);
+                instance.transform.setToTranslation(x, y, z);
+                return Optional.of(instance);
+            }
+
+            @Override
+            public String getType() {
+                return "FIREBRICK";
+            }
         };
         public static TerrainBlock DIRT = new TerrainBlock(Color.BROWN, 1.5f) {
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                ModelInstance instance = new ModelInstance(model);
+                instance.transform.setToTranslation(x, y, z);
+                return Optional.of(instance);
+            }
+
+            @Override
+            public String getType() {
+                return "DIRT";
+            }
+        };
+
+        public static TerrainBlock WATER = new TerrainBlock(Color.BLUE, 5f) {
+            @Override
+            public boolean canSupportTower() {
+                // water shouldn't be able to hold up a tower
+                return false;
+            }
+
+            @Override
+            public String getType() {
+                return "WATER";
+            }
+
             @Override
             public Optional<ModelInstance> modelInstance(float x, float y, float z) {
                 ModelInstance instance = new ModelInstance(model);
@@ -90,6 +154,11 @@ public interface Block {
         @Override
         public boolean canSupportTower() {
             return false;
+        }
+
+        @Override
+        public String getType() {
+            return "TOWER";
         }
 
         @Override
