@@ -37,12 +37,6 @@ public class RenderConfig {
         this.delta = delta;
     }
 
-    public void set(boolean showAttackRadius, boolean showSpawnRadius, float delta) {
-        this.showAttackRadius = showAttackRadius;
-        this.showSpawnRadius = showSpawnRadius;
-        this.delta = delta;
-    }
-
     public boolean isShowAttackRadius() {
         return showAttackRadius;
     }

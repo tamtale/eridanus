@@ -237,7 +237,6 @@ public class GameWorld implements GameRenderable {
         return heightMap;
     }
 
-    @Override
     public void getRenderables(Array<Renderable> renderables, Pool<Renderable> pool) {
         for (int i = 0; i < instances.length; i++) {
             for (int j = 0; j < instances[0].length; j++) {
@@ -296,7 +295,7 @@ public class GameWorld implements GameRenderable {
 
 //        System.out.println("\tNonnull: " + nonNull);
 
-            return new Pair<>(closestModelInstance, minDistance);
+        return new Pair<>(closestModelInstance, minDistance);
     }
 
     private int numIntersections;
@@ -406,7 +405,25 @@ public class GameWorld implements GameRenderable {
 
 
     public int[] getWorldDimensions() {
-       return new int[]{blocks.length, blocks[0].length, blocks[0][0].length};
+        return new int[]{blocks.length, blocks[0].length, blocks[0][0].length};
+    }
+
+    @Override
+    public void render(RenderConfig config) {
+        ModelBatch batch = config.getModelBatch();
+        Environment env = config.getEnv();
+        batch.begin(config.getCam());
+        for (ModelInstance[][] instanceArr2: instances) {
+            for (ModelInstance[] instanceArr: instanceArr2) {
+                for (ModelInstance instance: instanceArr) {
+                    if (instance != null) {
+                        batch.render(instance, env);
+                    }
+                }
+            }
+        }
+        batch.end();
+
     }
 
     public int getHeight(int i, int j) {

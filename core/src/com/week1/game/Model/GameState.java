@@ -17,8 +17,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
-import com.badlogic.gdx.utils.Pool;
-import com.week1.game.AIMovement.SteeringAgent;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.World.Block;
@@ -68,7 +66,6 @@ public class GameState implements GameRenderable {
     public GameState(IWorldBuilder worldBuilder, Runnable postInit){
         // TODO tower types in memory after exchange
         this.worldBuilder = worldBuilder;
-        world = new GameWorld(worldBuilder);
         world = new GameWorld(worldBuilder);
         world.getHeightMap();
         graph = world.buildGraph();
@@ -125,6 +122,17 @@ public class GameState implements GameRenderable {
     public void addUnit(Unit u){
         u.ID = minionCount;
         units.add(u);
+        u.setUnit2StateAdapter(new Unit2StateAdapter() {
+            @Override
+            public Block getBlock(int i, int j, int k) {
+                return world.getBlock(i, j, k);
+            }
+
+            @Override
+            public int getHeight(int i, int j) {
+                return world.getHeight(i, j);
+            }
+        });
         clickables.add(u);
         damageables.add(u);
         minionCount += 1;
@@ -143,21 +151,21 @@ public class GameState implements GameRenderable {
     }
 
     public void addBuilding(Tower t, int playerID) {
-        int startX = (int) t.x - 4;
-        int startY = (int) t.y - 4;
-        TowerFootprint footprint = towerLoadouts.getTowerDetails(playerID, t.getTowerType()).getFootprint();
-        boolean[][] fp = footprint.getFp();
-        int i = 0;
-        for(boolean[] bool: fp){
-            int j = 0;
-            for(boolean boo: bool){
-                if(boo){
-                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0), t);
-                }
-                j++;
-            }
-            i++;
-        }
+//        int startX = (int) t.x - 4;
+//        int startY = (int) t.y - 4;
+//        TowerFootprint footprint = towerLoadouts.getTowerDetails(playerID, t.getTowerType()).getFootprint();
+//        boolean[][] fp = footprint.getFp();
+//        int i = 0;
+//        for(boolean[] bool: fp){
+//            int j = 0;
+//            for(boolean boo: bool){
+//                if(boo){
+//                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0), t);
+//                }
+//                j++;
+//            }
+//            i++;
+//        }
 
         List<BlockSpec> blockSpecs = t.getLayout();
         for(int k = 0; k < blockSpecs.size(); k++) {
@@ -171,7 +179,6 @@ public class GameState implements GameRenderable {
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
-        SteeringAgent agent = unit.getAgent();
         Vector2 unitPos = new Vector2((int) unit.getX(), (int) unit.getY()); //TODO: make acutal z;
         unit.setGoal(goal);
         OutputPath path = new OutputPath();
@@ -283,10 +290,10 @@ public class GameState implements GameRenderable {
     private Damageable.DamageableVisitor<Void> deathVisitor = new Damageable.DamageableVisitor<Void>() {
         @Override
         public Void acceptTower(Tower tower) {
-            Map<Vector3, Array<Connection<Vector3>>> edges = tower.getRemovedEdges();
-            for(Vector3 block: edges.keySet()){
-                graph.setConnections(block, edges.get(block));
-            }
+//            Map<Vector3, Array<Connection<Vector3>>> edges = tower.getRemovedEdges();
+//            for(Vector3 block: edges.keySet()){
+//                graph.setConnections(block, edges.get(block));
+//            }
             towers.removeValue(tower, true);
             damageables.removeValue(tower, true);
             return null;

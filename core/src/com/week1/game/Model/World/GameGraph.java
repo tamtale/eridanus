@@ -12,9 +12,6 @@ import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.OutputPath;
 import com.week1.game.Pair;
 
-public class GameGraph implements IndexedGraph<Vector3> {
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class GameGraph implements IndexedGraph<Vector2> {

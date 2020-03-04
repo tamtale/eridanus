@@ -9,7 +9,6 @@ import com.week1.game.Model.GameState;
 import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.World.Block;
 import com.week1.game.Networking.Messages.MessageType;
-import com.week1.game.Model.Entities.TowerType;
 import com.week1.game.InfoUtil;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;

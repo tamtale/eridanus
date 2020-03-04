@@ -20,12 +20,12 @@ public class CoolWorldBuilder implements IWorldBuilder {
                 if (blocks[i][j][0] == null) {
 
                     float blockType = random.nextFloat();
-                    Pair<Integer, Integer> adjBlocks = checkAdjacentBlocks(i, j);
-                    if (adjBlocks.key > 0) {
-                        float min = .35f + .1f * adjBlocks.value;
-                        float max = .98f - .01f * adjBlocks.value;
-                        blockType = min + random.nextFloat() * (max - min);
-                    }
+//                    Pair<Integer, Integer> adjBlocks = checkAdjacentBlocks(i, j);
+//                    if (adjBlocks.key > 0) {
+//                        float min = .35f + .1f * adjBlocks.value;
+//                        float max = .98f - .01f * adjBlocks.value;
+//                        blockType = min + random.nextFloat() * (max - min);
+//                    }
                     if (blockType < 0.75) {
                         blocks[i][j][0] = Block.TerrainBlock.ZAMBALA;
                         spread(i, j, 0, .125f, .125f, .75f, true, Block.TerrainBlock.ZAMBALA);
@@ -130,32 +130,32 @@ public class CoolWorldBuilder implements IWorldBuilder {
         }
     }
 
-    private Pair<Integer, Integer> checkAdjacentBlocks(int i, int j) {
-        int dirtCnt = 0;
-        int watCnt = 0;
-        for (int m = j - 1; m <= j + 1; m++) {
-            if ((m >= 0 && m < blocks[0].length) && i > 0 ) {
-                String type = blocks[i - 1][m][0].getType();
-                if (type.equals("FIREBRICK")) {
-                    dirtCnt++;
-                } else if (type.equals("WATER")) {
-                    if (m == j) {
-                        watCnt+=2;
-                    }
-                    watCnt++;
-                }
-            }
-        }
-        if (j > 0) {
-            String type = blocks[i][j - 1][0].getType();
-            if (type.equals("FIREBRICK")) {
-                dirtCnt++;
-            } else if (type.equals("WATER")) {
-                watCnt+=3;
-            }
-        }
-        return new Pair<>(dirtCnt, watCnt);
-    }
+//    private Pair<Integer, Integer> checkAdjacentBlocks(int i, int j) {
+//        int dirtCnt = 0;
+//        int watCnt = 0;
+//        for (int m = j - 1; m <= j + 1; m++) {
+//            if ((m >= 0 && m < blocks[0].length) && i > 0 ) {
+//                String type = blocks[i - 1][m][0].getType();
+//                if (type.equals("FIREBRICK")) {
+//                    dirtCnt++;
+//                } else if (type.equals("WATER")) {
+//                    if (m == j) {
+//                        watCnt+=2;
+//                    }
+//                    watCnt++;
+//                }
+//            }
+//        }
+//        if (j > 0) {
+//            String type = blocks[i][j - 1][0].getType();
+//            if (type.equals("FIREBRICK")) {
+//                dirtCnt++;
+//            } else if (type.equals("WATER")) {
+//                watCnt+=3;
+//            }
+//        }
+//        return new Pair<>(dirtCnt, watCnt);
+//    }
 
     private void makePlateau(Block[][][] blocks, int startX, int endX, int startY, int endY) {
         for (int i = startX; i <= endX; i++) {

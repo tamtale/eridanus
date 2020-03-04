@@ -10,18 +10,12 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Pool;
-import com.week1.game.AIMovement.SteeringAgent;
-import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.math.collision.Ray;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Util3D;
 import com.week1.game.Model.Unit2StateAdapter;
-import com.week1.game.Util3D;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,14 +39,6 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     private boolean close;
     private boolean selected;
     private float blockSpeed;
-
-    public boolean isClicked() {
-        return clicked;
-    }
-
-    public void setClicked(boolean clicked) {
-        this.clicked = clicked;
-    }
     private int turn = 0;
     private double hp;
     private Vector3 vel;
@@ -137,6 +123,7 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
             if (path.getPath().size > 0) {
                 if (distanceTraveled > distance) {
                     turn = 0;
+                    System.out.println("HELLO");
                     float dx = path.get(0).x - position.x;
                     float dy = path.get(0).y - position.y;
                     int height = unit2StateAdapter.getHeight((int) position.x, (int) position.y);
@@ -276,6 +263,10 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
 
     public void setGoal(Vector3 goal) {
         this.goal.set(goal);
+    }
+
+    public void setUnit2StateAdapter(Unit2StateAdapter unit2StateAdapter) {
+        this.unit2StateAdapter = unit2StateAdapter;
     }
 
     @Override
