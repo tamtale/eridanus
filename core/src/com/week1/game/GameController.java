@@ -43,13 +43,12 @@ public class GameController implements ApplicationListener {
 
         this.currScreen = screen;
 
-
         //This is just for safety
         if (this.currScreen != null) {
             this.currScreen.show();
             this.currScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         } else {
-            System.out.println("Bad Error: Tried to set null screen");
+            Gdx.app.error("GameController", "Bad Error: Tried to set null screen");
         }
     }
 

@@ -27,16 +27,16 @@ public class DesktopLauncher {
 
 	private static Options createOptions() {
 		return new Options()
-				.addOption(
-						Option.builder("l")
-								.longOpt("log")
-								.hasArg().argName("i|e|d")
-								. desc("set the logging level to (i)nfo, (e)rror, (d)ebug")
-								.build()
-				);
+			.addOption(
+				Option.builder("l")
+					.longOpt("log")
+					.hasArg().argName("i|e|d")
+					. desc("set the logging level to (i)nfo, (e)rror, (d)ebug")
+					.build()
+			);
 	}
 
 	private static boolean validate(CommandLine commandLine) {
-	    return true;
+		return true;
 	}
 }

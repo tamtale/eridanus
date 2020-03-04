@@ -111,7 +111,6 @@ public class CreateTowerMessage extends GameMessage {
                 return false;
             }
             
-//            System.out.println("Existing block: " + inputState.getWorld().getBlock(tempX, tempY, tempZ));
             if (inputState.getWorld().getBlock(tempX, tempY, tempZ) != Block.TerrainBlock.AIR) {
                 util.log("lji1 - CreateTowerMessage", "Can't build a tower overlapping with existing blocks");
                 return false;
