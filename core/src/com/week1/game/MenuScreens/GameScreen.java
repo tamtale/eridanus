@@ -20,6 +20,8 @@ import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Renderer.*;
+import com.week1.game.TowerBuilder.TowerPresets;
+import org.apache.commons.cli.CommandLine;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -40,8 +42,6 @@ public class GameScreen implements Screen {
 	private boolean createdTextures;
 
 	public GameScreen(Client givenNetworkClient) {
-		// Set the logging level
-		Gdx.app.setLogLevel(Application.LOG_INFO);
 		Initializer.init();
 		gameStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 		util = new InfoUtil(true);

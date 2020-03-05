@@ -117,7 +117,6 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
             if (path.getPath().size > 0) {
                 if (distanceTraveled > distance) {
                     turn = 0;
-                    Gdx.app.setLogLevel(Application.LOG_NONE);
                     this.lastNode = new Vector3(this.position.x, this.position.y, 0);
                     float dx = path.get(0).x - this.position.x;
                     float dy = path.get(0).y - this.position.y;
@@ -147,7 +146,7 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     }
 
     private void move(float delta) {
-        Gdx.app.log("move", "moving:" + position);
+        Gdx.app.debug("move", "moving:" + position);
         position.set(position.x + (vel.x * delta), position.y + (vel.y * delta), position.z);
         modelInstance.transform.setToTranslation(position);
         this.distanceTraveled += Math.sqrt(Math.pow(vel.x * delta, 2) + Math.pow(vel.y * delta, 2));
@@ -247,7 +246,6 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
         this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
         vel.x = (float) speed * (float) Math.cos(angle);
         vel.y = (float) speed * (float) Math.sin(angle);
-        System.out.println("vel.x " + vel.x + " vel.y " + vel.y);
         this.distanceTraveled = 0;
         path.removeIndex(0);
     }

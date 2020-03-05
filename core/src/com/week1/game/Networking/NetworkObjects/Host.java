@@ -79,7 +79,7 @@ public class Host {
                         String msg = "";
                         while (true) {
                             try {
-                                Gdx.app.log(TAG, "Host is listening for next client message from: "  + player.address);
+                                Gdx.app.debug(TAG, "Host is listening for next client message from: "  + player.address);
                                 msg = player.in.readUTF();
                                 processMessage(msg, player.address, player.port);
 
@@ -132,20 +132,19 @@ public class Host {
             }
         } else {
             // Game has started
-            Gdx.app.log(TAG, "Host received an update message from: " + addr.getHostAddress());
+            Gdx.app.debug(TAG, "Host received an update message from: " + addr.getHostAddress());
             incomingMessages.add(msg);
         }
     }
     
     public void broadcastToRegisteredPlayers(String msg) {
         registry.values().forEach((player) -> {
-            System.out.println("Sending message: " + msg + " to player: " + player.address);
+            Gdx.app.debug(TAG, "Sending message: " + msg + " to player: " + player.address);
             sendMessage(msg, player);
         });
     }
 
     public void sendMessage(String msg, Player player) {
-        System.out.println(player);
         try {
             player.out.writeUTF(msg);
         } catch (IOException e) {
