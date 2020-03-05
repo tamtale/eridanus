@@ -75,16 +75,6 @@ public interface Block {
             }
         };
 
-
-        public static TerrainBlock HIGHLIGHT = new TerrainBlock(Color.YELLOW, 0f) {
-            @Override
-            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
-                ModelInstance instance = new ModelInstance(model);
-                instance.transform.setToTranslation(x, y, z);
-                return Optional.of(instance);
-            }
-        };
-
     }
 
 

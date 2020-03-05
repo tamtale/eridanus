@@ -30,8 +30,6 @@ public class GameWorld implements GameRenderable {
     private int[][][] activeBlocksPerChunk;
     
     public static final float blockOffset = 0.5f;
-    
-    private ModelInstance highlight = null;
 
 //    private Model model;
     private ModelBuilder modelBuilder = new ModelBuilder();
@@ -283,19 +281,19 @@ public class GameWorld implements GameRenderable {
         Vector3 closestCoords = new Vector3();
         
         
-        System.out.println("Chunks: ");
+//        System.out.println("Chunks: ");
         Vector3 throwAway = new Vector3();
         for (int i = 0; i < chunkBoundingBoxes.length; i++) {
             for (int j = 0; j < chunkBoundingBoxes[0].length; j++) {
                 for (int k = 0; k < chunkBoundingBoxes[0][0].length; k++) {
                     if (activeBlocksPerChunk[i][j][k] == 0) {
-                        System.out.println("jIgnoring chunk, because it contains no active blocks.");
+//                        System.out.println("jIgnoring chunk, because it contains no active blocks.");
                         continue;
                     }
 
                     numChunkIntersections++;
                     if (Intersector.intersectRayBounds(ray, chunkBoundingBoxes[i][j][k], throwAway)) {
-                        System.out.println("\t(" + i + ", " + j + ", " + k + ") - " + chunkBoundingBoxes[i][j][k].min + ", " + chunkBoundingBoxes[i][j][k].max + " - " + throwAway);
+//                        System.out.println("\t(" + i + ", " + j + ", " + k + ") - " + chunkBoundingBoxes[i][j][k].min + ", " + chunkBoundingBoxes[i][j][k].max + " - " + throwAway);
                         // now check that chunk and get the closest from that chunk
                         Pair<ModelInstance, Float> chunkResult = getBlockOnRayByChunk(ray, 
                                 minDistance, closestIntersection, closestBox, closestModelInstance, closestCoords,
@@ -350,26 +348,18 @@ public class GameWorld implements GameRenderable {
 
             @Override
             public void setHovered(boolean hovered) {
-//                Material mat = closestModelInstance_final.materials.get(0);
-//                mat.clear();
+                Material mat = closestModelInstance_final.materials.get(0);
+                mat.clear();
                 if (hovered) {
-                    highlight = Block.TerrainBlock.HIGHLIGHT.modelInstance(closestCoords.x, closestCoords.y, closestCoords.z).get();
-//                    mat.set(Unit.hoveredMaterial);
+                    mat.set(Unit.hoveredMaterial);
                 } else {
-                    highlight = null;
-//                    mat.set(originalMaterial);
+                    mat.set(originalMaterial);
                 }
-//                updateCache = true;
             }
 
             @Override
             public <T> T accept(ClickableVisitor<T> clickableVisitor) {
                 return clickableVisitor.acceptBlockLocation(closestCoords);
-            }
-            
-            @Override
-            public String toString() {
-                return "Selected Block: (" + closestCoords.x + ", " + closestCoords.y + ", " + closestCoords.z + ")";
             }
         };
         
@@ -401,11 +391,7 @@ public class GameWorld implements GameRenderable {
         Environment env = config.getEnv();
         batch.begin(config.getCam());
         batch.render(modelCache, env);
-        if (highlight != null) {
-            batch.render(highlight, env);
-        }
         batch.end();
-        
 
     }
 }

@@ -107,7 +107,6 @@ public class ClickOracle extends InputAdapter {
         startTime = System.nanoTime();
         
         setPassiveClickable(adapter.selectClickable(screenX, screenY, touchPos));
-        System.out.println("Found passiveSelected: " + passiveSelected);
         return true;
     }
 
