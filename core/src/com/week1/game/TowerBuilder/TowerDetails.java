@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerFootprint;
+import com.week1.game.Model.World.Block;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -64,11 +65,10 @@ public class TowerDetails {
                 isFirst = false;
                 continue;
             }
-//            System.out.println("block is "+ block);
+
             int i = 0;
             int x = 0,y = 0,z = 0,code = 0;
             for (String coord: block.split(", ")) {
-//                System.out.println("coord is: " + coord);
                 if (i == 0) {
                     x = Integer.parseInt(coord);
                 } else if (i == 1) {
@@ -87,7 +87,6 @@ public class TowerDetails {
 
         return blocks;
     }
-
 
     public TowerDetails(String filename) {
 
@@ -140,7 +139,9 @@ public class TowerDetails {
 
         this.footprint = new TowerFootprint();
 
-        for (BlockSpec block : layout) {
+        for (int i = 0; i < layout.size(); i++) {
+            BlockSpec block = layout.get(i);
+
             BlockType code = block.getBlockCode();
             int x = block.getX();
             int y = block.getY();
@@ -286,7 +287,8 @@ public class TowerDetails {
 
     private String getLayoutStr() {
         String towerStr = "[";
-        for (BlockSpec b: layout) {
+        for (int i = 0; i < layout.size(); i++) {
+            BlockSpec b = layout.get(i);
             towerStr += b.toFileStr();
             towerStr += ", ";
         }
