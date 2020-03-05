@@ -5,7 +5,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.week1.game.GameController;
-import com.week1.game.MenuScreens.MainMenuScreen;
 
 import java.io.File;
 import java.util.ArrayList;

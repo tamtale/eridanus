@@ -11,5 +11,6 @@ public enum BlockType {
     
     EASTEREGG,
 
-    HIGHLIGHT
+    HIGHLIGHT,
+    GROUND_HIGHLIGHT
 }

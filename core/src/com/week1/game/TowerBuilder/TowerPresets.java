@@ -1,6 +1,7 @@
 package com.week1.game.TowerBuilder;
 
 import com.badlogic.gdx.Gdx;
+import com.week1.game.Model.Entities.Tower;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -95,7 +96,35 @@ public class TowerPresets {
             new BlockSpec(BlockType.MOONSTONE, -1, 2, 0),
             new BlockSpec(BlockType.MOONSTONE, 0, 2, 1),
             new BlockSpec(BlockType.MOONSTONE, -1, 2, 1)), "Preset 6");
-    
+
+
+    public static TowerDetails highlightGround = new TowerDetails(Arrays.asList(new BlockSpec(BlockType.GROUND_HIGHLIGHT, -2, -1, 0),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, -1, -1, 0),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 0, -1, 0),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 1, -1, 0),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 2, -1, 0),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, -2, -1, 1),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, -1, -1, 1),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 0, -1, 1),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 1, -1, 1),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 2, -1, 1),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, -2, -1, 2),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, -1, -1, 2),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 0, -1, 2),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 1, -1, 2),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 2, -1, 2),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, -2, -1, -1),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, -1, -1, -1),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 0, -1, -1),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 1, -1, -1),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 2, -1, -1),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, -2, -1, -2),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, -1, -1, -2),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 0, -1, -2),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 1, -1, -2),
+            new BlockSpec(BlockType.GROUND_HIGHLIGHT, 2, -1, -2)),
+            "Highlight ground");
+
     public static TowerDetails base = new TowerDetails(Arrays.asList(
             new BlockSpec(BlockType.SPACEGOLD,-2, 0, -2),
             new BlockSpec(BlockType.OBSIDIAN,-2, 0,  -1),
@@ -154,6 +183,18 @@ public class TowerPresets {
             new BlockSpec(BlockType.MOONSTONE, 1, 2, -1),
             new BlockSpec(BlockType.MOONSTONE, 1, 2, 1)
     ), "Base");
+
+//    private static List<BlockSpec> blockLayout = new ArrayList<>();
+//
+//    static{
+//        for (int x = 0; x < 5; x++) {
+//            for (int y = 0; y < 5; y++) {
+//                blockLayout.add(new BlockSpec(BlockType.HIGHLIGHT, x - 2, -1,  y - 2));
+//            }
+//        }
+//    }
+
+
 
     public static List<TowerDetails> presets = Arrays.asList(towerDetails1, towerDetails2, towerDetails3, towerDetails4, towerDetails5, towerDetails6);
     public static final Integer NUM_PRESETS = 6;

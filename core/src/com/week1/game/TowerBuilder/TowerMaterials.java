@@ -1,5 +1,6 @@
 package com.week1.game.TowerBuilder;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.utils.Array;
+import com.week1.game.Model.World.Block;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -53,13 +55,28 @@ public class TowerMaterials {
 
     //Highlighted block type
     Material mat = new Material();
-    mat.set(new ColorAttribute(ColorAttribute.Diffuse, 84, 68, 79, 1f));
+    mat.set(new ColorAttribute(ColorAttribute.Diffuse, Color.WHITE));
     mat.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.8f));
 
     Model highlighted = modelBuilder.createBox(5f, 5f ,5f,
             mat,
             VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
     modelMap.put(BlockType.HIGHLIGHT, highlighted);
+
+
+    //Ground in Tower editor block type
+    Material mat2 = new Material(TextureAttribute.createDiffuse(new Texture("ground_highlight.png")));
+    mat2.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.5f));
+
+    Model highlighted2 = modelBuilder.createBox(5f, 5f ,5f,
+            mat2,
+            VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
+    modelMap.put(BlockType.GROUND_HIGHLIGHT, highlighted2);
+
+    //Hacky solution to be able to render the tower of highlighted blocks in the tower editor
+    blockHp.put(BlockType.GROUND_HIGHLIGHT, 0);
+    blockAtk.put(BlockType.GROUND_HIGHLIGHT, 0);
+    blockPrice.put(BlockType.GROUND_HIGHLIGHT, 0);
 
     }
 

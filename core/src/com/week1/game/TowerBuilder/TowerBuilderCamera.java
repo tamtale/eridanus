@@ -109,8 +109,9 @@ public class TowerBuilderCamera {
         Gdx.gl.glClear(GL20.GL_ALPHA_BITS);
         camController.update();
 
-
         modelBatch.begin(cam);
+        modelBatch.render(TowerPresets.highlightGround.getModel());
+
         if (towerScreen.isBuildMode()) {
             modelBatch.render(WIPTower.getModel(), environment);
         } else {
