@@ -26,6 +26,11 @@ public interface Clickable {
     public <T> T accept(ClickableVisitor<T> clickableVisitor) {
       return clickableVisitor.acceptNull();
     }
+    
+    @Override
+    public String toString() {
+      return "Clickable.NULL";
+    }
   };
 
   interface ClickableVisitor<T> {
