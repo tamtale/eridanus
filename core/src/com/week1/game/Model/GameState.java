@@ -201,11 +201,9 @@ public class GameState implements GameRenderable {
             }
         }
 
-//        Gdx.app.error("getMinionById - lji1", "Unable to find minion by given ID, returning null.");
         return null;
     }
     public void moveMinion(float dx, float dy, Unit u) {
-        System.out.println("u.x: " + u.getX() + " u.y: " + u.getY() + " dx: " + dx + " dy: " + dy);
         updateGoal(u, new Vector3(u.getX() + dx, u.getY() + dy, 0));
     }
 
