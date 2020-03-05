@@ -155,6 +155,8 @@ public class TowerBuilderScreen implements Screen {
 
         File customTowerDir = new File("customTowers");
         File[] customTowerFiles = customTowerDir.listFiles();
+
+        //TODO: don't know how to fix this one
         for (File f: customTowerFiles) {
             if (!f.getPath().equals("customTowers\\dummy.txt")){
                 customTowers.add(new TowerDetails(f.getPath()));

@@ -110,18 +110,20 @@ public class TowerBuilderStage {
 
         displaySelection =new SelectBox(normalSelectBox);
         Array<TowerDetails> presets = new Array<>();
-        for (TowerDetails p: TowerPresets.presets) {
-            presets.add(p);
+        for (int i = 0; i < TowerPresets.NUM_PRESETS; i++) {
+            presets.add(TowerPresets.presets.get(i));
         }
         //Add the custom towers
-        for (TowerDetails custom: screen.getCustomTowerList()) {
-            presets.add(custom);
+        java.util.List<TowerDetails> customTowers = screen.getCustomTowerList();
+        for (int i = 0; i < customTowers.size(); i++) {
+            presets.add(customTowers.get(i));
         }
         displaySelection.setItems(presets);
 
         //Build mode buttons
         materialSelection = new SelectBox<>(normalSelectBox);
         Array<String> materials = new Array<>();
+        //TODO: don't know how to remove the iterator for a set
         for (String material: TowerMaterials.materialNames.keySet()) {
             materials.add(material);
         }

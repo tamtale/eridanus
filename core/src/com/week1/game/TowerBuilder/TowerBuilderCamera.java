@@ -154,12 +154,15 @@ public class TowerBuilderCamera {
         towerBlocks.clear();
         invisiBlocks.clear();
 
-        for (BlockSpec b : WIPTower.getLayout()) {
+
+        for (int i = 0; i < WIPTower.getLayout().size(); i++) {
+            BlockSpec b = WIPTower.getLayout().get(i);
             Vector3 curpos = new Vector3(b.getX(), b.getY(), b.getZ());
             towerBlocks.add(curpos);
         }
 
-        for (Vector3 p : towerBlocks) {
+        for (int j = 0; j < towerBlocks.size(); j++) {
+            Vector3 p = towerBlocks.get(j);
 
             for (int i = -1; i < 2; i += 2) {
                 Vector3 nbr = new Vector3(p.x + i, p.y, p.z);
@@ -178,8 +181,6 @@ public class TowerBuilderCamera {
                 }
             }
         }
-
-//        Gdx.app.log("skv2", "Recalculated inbisiblocks: \n"+ invisiPoses.toString());
 
     }
 
@@ -308,7 +309,8 @@ public class TowerBuilderCamera {
         invisiBlocks.add(selectedPos);
 
         List<Vector3> nbrs = new ArrayList<>();
-        for (Vector3 invisiPos : invisiBlocks) {
+        for (int i = 0; i < invisiBlocks.size(); i++) {
+            Vector3 invisiPos = invisiBlocks.get(i);
             if (isNbr(selectedPos, invisiPos)) {
                 nbrs.add(invisiPos);
             }
@@ -316,7 +318,8 @@ public class TowerBuilderCamera {
 
         List<Integer> nbrRemovals = new ArrayList<>();
         for (int i = 0; i < nbrs.size(); i++) {
-            for (Vector3 invisiPos : invisiBlocks) {
+            for (int j = 0; j < invisiBlocks.size(); j++) {
+                Vector3 invisiPos = invisiBlocks.get(j);
                 if (isNbr(nbrs.get(i), invisiPos)) {
                     nbrRemovals.add(i);
                     break;
@@ -324,12 +327,12 @@ public class TowerBuilderCamera {
             }
         }
 
-        for (Integer idx: nbrRemovals) {
-            nbrs.remove(idx);
+        for (int j = 0; j < nbrRemovals.size(); j++) {
+            nbrs.remove(nbrRemovals.get(j));
         }
 
-        for (Vector3 pos: nbrs) {
-            invisiBlocks.remove(pos);
+        for (int i = 0; i < nbrs.size(); i++) {
+            invisiBlocks.remove(nbrs.get(i));
         }
 
     }
