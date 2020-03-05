@@ -4,18 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
-import com.week1.game.Model.World.Block;
 import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
@@ -23,6 +20,7 @@ import com.week1.game.TowerBuilder.TowerPresets;
 import com.week1.game.TowerBuilder.TowerUtils;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * This is the screen that you chose your loadout in. This is the screen that is returned to
@@ -33,7 +31,7 @@ public class LoadoutScreen implements Screen {
     private Client networkClient;
     private boolean sentTowers = false, isHostingClient;
     private SelectBox<TowerDetails> tower1, tower2, tower3;
-    private List<BlockSpec> tower1blocks, tower2blocks, tower3blocks;
+    private Array<TowerDetails> allTowerOptions;
 
 
     private TextButton startButton;
@@ -60,7 +58,7 @@ public class LoadoutScreen implements Screen {
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-scroll", Color.valueOf("8e7186")),
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-large", Color.valueOf("8e7186")));
 
-    private static List.ListStyle listStyle = new List.ListStyle(new BitmapFont(), Color.WHITE, Color.GRAY, new Skin(Gdx.files.internal("uiskin.json")).newDrawable("selection"));
+    private static com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle listStyle = new com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle(new BitmapFont(), Color.WHITE, Color.GRAY, new Skin(Gdx.files.internal("uiskin.json")).newDrawable("selection"));
 
     private static SelectBox.SelectBoxStyle normalSelectBox = new SelectBox.SelectBoxStyle(new BitmapFont(),
             Color.WHITE, new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-select", Color.valueOf("9e8196")),
@@ -70,7 +68,13 @@ public class LoadoutScreen implements Screen {
         this.networkClient = client;
         this.isHostingClient = client.getScreenManager().getIsHost();
         this.loadoutStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
-
+        this.allTowerOptions = new Array<>();
+        for (int i = 0; i < TowerPresets.presets.size(); i++) {
+            allTowerOptions.add(TowerPresets.presets.get(i));
+        }
+        for (int i = 0; i < TowerUtils.getCustomTowerList().size(); i++) {
+            allTowerOptions.add(TowerUtils.getCustomTowerList().get(i));
+        }
         if (isHostingClient) {
             startButton = new TextButton("Waiting for all players to chose loadouts...", disabledStyle);
             startButton.setTouchable(Touchable.disabled);
@@ -89,7 +93,34 @@ public class LoadoutScreen implements Screen {
             });
         }
 
-        createLoadoutSelectors();
+
+        TextButton loadoutSelector = new TextButton("Confirm Your Loadout!", new Skin(Gdx.files.internal("uiskin.json")));
+        loadoutSelector.setSize(200,64);
+        loadoutSelector.setPosition(
+                GameController.VIRTUAL_WIDTH / 2 - loadoutSelector.getWidth(),
+                GameController.VIRTUAL_HEIGHT / 2 - loadoutSelector.getHeight());
+
+        loadoutStage.addActor(loadoutSelector);
+        createLoadoutDropdowns();
+
+        loadoutSelector.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                loadoutSelector.setStyle(pressedStyle);
+                loadoutSelector.setText("Loadout confirmed.");
+                loadoutSelector.setTouchable(Touchable.disabled);
+                sendLoadout(Arrays.asList(
+                        tower1.getSelected().getLayout(),
+                        tower2.getSelected().getLayout(),
+                        tower3.getSelected().getLayout()));
+                tower1.setDisabled(false);
+                tower1.setTouchable(Touchable.disabled);
+                tower2.setDisabled(false);
+                tower2.setTouchable(Touchable.disabled);
+                tower3.setDisabled(false);
+                tower3.setTouchable(Touchable.disabled);
+            }
+        });
 
         // Make the font for the title
         Label.LabelStyle label1Style = new Label.LabelStyle();
@@ -117,40 +148,24 @@ public class LoadoutScreen implements Screen {
     }
 
 
-    public void createLoadoutSelectors() {
-//        loadoutSelector.addListener(new ClickListener() {
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                loadoutSelector.setStyle(pressedStyle);
-//                loadoutSelector.setText("Loadout confirmed.");
-//                loadoutSelector.setTouchable(Touchable.disabled);
-//                sendLoadout(Arrays.asList(
-//                        TowerPresets.getTower(1).getLayout(),
-//                        TowerPresets.getTower(3).getLayout(),
-//                        TowerPresets.getTower(5).getLayout()));
-//            }
-//        });
-        Array<TowerDetails> presets = new Array<>();
-
-        for (int i = 0; i < presets.size; i++) {
-            presets.add(presets.get(i));
-        }
-        //Add the custom towers
-        for (int i = 0; i < TowerUtils.getCustomTowerList().size(); i++) {
-            presets.add(TowerUtils.getCustomTowerList().get(i));
-        }
-
-
-
+    public void createLoadoutDropdowns() {
         tower1 =new SelectBox(normalSelectBox);
-        tower1.setItems(presets);
-        tower1.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                screen.setCamTower(displaySelection.getSelected());
-                sw.setLblTxt(screen.getTowerStats());
-            }
-        });
+        tower1.setItems(allTowerOptions);
+        tower1.setSize(200, 64);
+        tower1.setPosition(GameController.VIRTUAL_WIDTH / 8,GameController.VIRTUAL_HEIGHT * 5 / 6 );
+        loadoutStage.addActor(tower1);
+
+        tower2 =new SelectBox(normalSelectBox);
+        tower2.setItems(allTowerOptions);
+        tower2.setSize(200, 64);
+        tower2.setPosition(GameController.VIRTUAL_WIDTH * 3.0f / 8,GameController.VIRTUAL_HEIGHT * 5 / 6 );
+        loadoutStage.addActor(tower2);
+
+        tower3 =new SelectBox(normalSelectBox);
+        tower3.setItems(allTowerOptions);
+        tower3.setSize(200, 64);
+        tower3.setPosition(GameController.VIRTUAL_WIDTH * 5.0f / 8,GameController.VIRTUAL_HEIGHT * 5 / 6 );
+        loadoutStage.addActor(tower3);
     }
 
     public void createNewGame() {
@@ -161,6 +176,8 @@ public class LoadoutScreen implements Screen {
 
     public void sendLoadout(List<List<BlockSpec>> details) {
         if (!sentTowers) {
+
+
             networkClient.sendLoadout(details);
             sentTowers = false;
         }
@@ -173,7 +190,7 @@ public class LoadoutScreen implements Screen {
 
     @Override
     public void render(float delta) {
-//        Gdx.app.log("pjb3 - LoadoutScreen", "rendering");
+        loadoutStage.act();
         loadoutStage.draw();
     }
 
