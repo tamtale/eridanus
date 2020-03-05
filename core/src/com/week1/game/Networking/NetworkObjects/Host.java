@@ -139,13 +139,12 @@ public class Host {
     
     public void broadcastToRegisteredPlayers(String msg) {
         registry.values().forEach((player) -> {
-            System.out.println("Sending message: " + msg + " to player: " + player.address);
+            Gdx.app.debug("Host", "Sending message: " + msg + " to player: " + player.address);
             sendMessage(msg, player);
         });
     }
 
     public void sendMessage(String msg, Player player) {
-        System.out.println(player);
         try {
             player.out.writeUTF(msg);
         } catch (IOException e) {

@@ -15,6 +15,7 @@ import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.PlayerBase;
 import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.World.Basic4WorldBuilder;
+import com.week1.game.Model.World.Medium4WorldBuilder;
 import com.week1.game.Model.World.SmallWorldBuilder;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 
