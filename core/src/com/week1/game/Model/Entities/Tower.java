@@ -43,12 +43,10 @@ public class Tower extends Building implements Damaging {
         this.range = towerDetails.getRange();
         this.playerID = playerID;
         this.towerType = towerType;
-        
         this.highestBlockLocation = new Vector3(x,y,z).add(towerDetails.getHighestBlock().x, towerDetails.getHighestBlock().z, towerDetails.getHighestBlock().y);
-        
         this.layout = towerDetails.getLayout();
     }
-    
+
 
     public double getCost() {
         return cost;
@@ -178,11 +176,6 @@ public class Tower extends Building implements Damaging {
     @Override
     public void putRemovedEdges(Vector3 fromNode, Array<Connection<Vector3>> connections) {
         removedEdges.put(fromNode, connections);
-    }
-
-    @Override
-    public Map<Vector3, Array<Connection<Vector3>>> getRemovedEdges() {
-        return this.removedEdges;
     }
 
     @Override

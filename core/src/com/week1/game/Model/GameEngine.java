@@ -12,11 +12,16 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.Pool;
 import com.week1.game.Model.Entities.Building;
-import com.week1.game.Model.Entities.PlayerBase;
 import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.World.Basic4WorldBuilder;
 import com.week1.game.Model.World.SmallWorldBuilder;
+import com.week1.game.Model.World.CoolWorldBuilder;
+import com.week1.game.Model.World.SmallWorldBuilder;
 import com.week1.game.Networking.Messages.Game.GameMessage;
+
+import com.badlogic.gdx.math.Vector3;
+import com.week1.game.InfoUtil;
+import com.week1.game.Networking.Messages.Game.TaggedMessage;
 
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.InfoUtil;
@@ -50,7 +55,7 @@ public class GameEngine implements GameRenderable {
         this.enginePlayerId = playerId;
         this.replayQueue = replayQueue;
         gameState = new GameState(
-                SmallWorldBuilder.ONLY,
+                CoolWorldBuilder.ONLY,
                 () -> {
                     Vector3 position = new Vector3();
                     Tower myBase = gameState.getPlayerBase(this.enginePlayerId);

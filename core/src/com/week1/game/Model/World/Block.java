@@ -34,7 +34,7 @@ public interface Block {
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
         }
-        
+
         @Override
         public boolean canSupportTower() {
             return true;
@@ -75,6 +75,38 @@ public interface Block {
             }
         };
 
+        public static TerrainBlock FIREBRICK = new TerrainBlock(Color.FIREBRICK, 1.5f) {
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                ModelInstance instance = new ModelInstance(model);
+                instance.transform.setToTranslation(x, y, z);
+                return Optional.of(instance);
+            }
+        };
+
+        public static TerrainBlock ZAMBALA = new TerrainBlock(Color.CORAL, 1f) {
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                ModelInstance instance = new ModelInstance(model);
+                instance.transform.setToTranslation(x, y, z);
+                return Optional.of(instance);
+            }
+        };
+
+        public static TerrainBlock WATER = new TerrainBlock(Color.CYAN, 5f) {
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                ModelInstance instance = new ModelInstance(model);
+                instance.transform.setToTranslation(x, y, z);
+                return Optional.of(instance);
+            }
+
+            @Override
+            public boolean canSupportTower() {
+                return false;
+            }
+        };
+
     }
 
 
@@ -85,7 +117,7 @@ public interface Block {
         TowerBlock(Model model) {
             this.model = model;
         }
-        
+
         @Override
         public boolean canSupportTower() {
             return false;

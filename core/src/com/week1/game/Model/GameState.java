@@ -2,8 +2,17 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.Connection;
+import com.badlogic.gdx.ai.pfa.PathFinder;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.Renderable;
+import com.badlogic.gdx.graphics.g3d.RenderableProvider;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Plane;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
@@ -21,6 +30,11 @@ import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
 import java.util.HashMap;
 import java.util.List;
+import com.week1.game.TowerBuilder.TowerPresets;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -53,7 +67,6 @@ public class GameState implements GameRenderable {
         // TODO tower types in memory after exchange
         this.worldBuilder = worldBuilder;
         world = new GameWorld(worldBuilder);
-        world = new GameWorld(worldBuilder);
         world.getHeightMap();
         graph = world.buildGraph();
         for (Vector3 loc: worldBuilder.crystalLocations()) {
@@ -62,7 +75,7 @@ public class GameState implements GameRenderable {
         graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
         this.postInit = postInit;
     }
-    
+
     public PlayerBase getPlayerBase(int playerId) {
         return playerBases.get(playerId);
     }
@@ -81,9 +94,9 @@ public class GameState implements GameRenderable {
         Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
             playerStats.add(new PlayerStat());
-            
+
             // Create and add a base for each player
-            PlayerBase newBase = new PlayerBase((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z, 
+            PlayerBase newBase = new PlayerBase((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z,
                     towerLoadouts.getTowerDetails(i,-1), i, -1);
             addBase(newBase, i);
         }
@@ -109,6 +122,17 @@ public class GameState implements GameRenderable {
     public void addUnit(Unit u){
         u.ID = minionCount;
         units.add(u);
+        u.setUnit2StateAdapter(new Unit2StateAdapter() {
+            @Override
+            public Block getBlock(int i, int j, int k) {
+                return world.getBlock(i, j, k);
+            }
+
+            @Override
+            public int getHeight(int i, int j) {
+                return world.getHeight(i, j);
+            }
+        });
         clickables.add(u);
         damageables.add(u);
         minionCount += 1;
@@ -119,29 +143,29 @@ public class GameState implements GameRenderable {
         damageables.add(t);
         addBuilding(t, playerID);
     }
-    
+
     public void addBase(PlayerBase pb, int playerID) {
         playerBases.put(playerID, pb);
         damageables.add(pb);
         addBuilding(pb, playerID);
     }
-        
+
     public void addBuilding(Tower t, int playerID) {
-        int startX = (int) t.x - 4;
-        int startY = (int) t.y - 4;
-        TowerFootprint footprint = towerLoadouts.getTowerDetails(playerID, t.getTowerType()).getFootprint();
-        boolean[][] fp = footprint.getFp();
-        int i = 0;
-        for(boolean[] bool: fp){
-            int j = 0;
-            for(boolean boo: bool){
-                if(boo){
-                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0), t);
-                }
-                j++;
-            }
-            i++;
-        }
+//        int startX = (int) t.x - 4;
+//        int startY = (int) t.y - 4;
+//        TowerFootprint footprint = towerLoadouts.getTowerDetails(playerID, t.getTowerType()).getFootprint();
+//        boolean[][] fp = footprint.getFp();
+//        int i = 0;
+//        for(boolean[] bool: fp){
+//            int j = 0;
+//            for(boolean boo: bool){
+//                if(boo){
+//                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0), t);
+//                }
+//                j++;
+//            }
+//            i++;
+//        }
 
         List<BlockSpec> blockSpecs = t.getLayout();
         for(int k = 0; k < blockSpecs.size(); k++) {
@@ -155,18 +179,18 @@ public class GameState implements GameRenderable {
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
-        Vector3 unitPos = new Vector3((int) unit.getX(), (int) unit.getY(), 0); //TODO: make acutal z;
+        Vector2 unitPos = new Vector2((int) unit.getX(), (int) unit.getY()); //TODO: make acutal z;
         unit.setGoal(goal);
         OutputPath path = new OutputPath();
         Array<Building> buildings = this.getBuildings();
 
-        for(Building building: buildings) {
-            if(building.overlap(goal.x, goal.y)) {
-                goal = building.closestPoint(unit.getX(), unit.getY());
-                break;
-            }
-        }
-        Vector3 goalPos = new Vector3(goal);
+//        for(Building building: buildings) {
+//            if(building.overlap(goal.x, goal.y)) {
+//                goal = building.closestPoint(unit.getX(), unit.getY());
+//                break;
+//            }
+//        }
+        Vector2 goalPos = new Vector2(goal.x, goal.y);
 
         long start = System.nanoTime();
         path = graph.search(unitPos, goalPos);
@@ -261,7 +285,7 @@ public class GameState implements GameRenderable {
             // Reward mana.
             playerStats.get(attackingPlayerId).giveMana(deadEntity.getReward());
             // Do other bookkeeping related to death.
-            deadEntity.accept(deathVisitor);        
+            deadEntity.accept(deathVisitor);
         }
     }
 
@@ -271,10 +295,10 @@ public class GameState implements GameRenderable {
     private Damageable.DamageableVisitor<Void> deathVisitor = new Damageable.DamageableVisitor<Void>() {
         @Override
         public Void acceptTower(Tower tower) {
-            Map<Vector3, Array<Connection<Vector3>>> edges = tower.getRemovedEdges();
-            for(Vector3 block: edges.keySet()){
-                graph.setConnections(block, edges.get(block));
-            }
+//            Map<Vector3, Array<Connection<Vector3>>> edges = tower.getRemovedEdges();
+//            for(Vector3 block: edges.keySet()){
+//                graph.setConnections(block, edges.get(block));
+//            }
             towers.removeValue(tower, true);
             damageables.removeValue(tower, true);
             return null;
@@ -287,7 +311,6 @@ public class GameState implements GameRenderable {
             clickables.removeValue(unit, true);
             return null;
         }
-
 
         @Override
         public Void acceptBase(PlayerBase base) {
@@ -349,7 +372,7 @@ public class GameState implements GameRenderable {
 
         // Check if you are the last base alive
         return playerBases.size == 1;
-        
+
     }
     
     public void setTowerInfo(TowerLoadouts info) {
@@ -475,9 +498,9 @@ public class GameState implements GameRenderable {
      * Returns null if there is no clickable.
      */
     public Clickable getClickableOnRay(Ray ray, Vector3 intersection) {
-        
+
         // TODO: doesn't neccessarily find the clickable closest to the camera
-        
+
         // Look through all the standard clickables
         for (Clickable clickable: clickables) {
             if (clickable.intersects(ray, intersection)) {
@@ -485,10 +508,10 @@ public class GameState implements GameRenderable {
             }
         }
 //        Gdx.app.log("GameState.getClickableOnRay", "No clickables (units) found");
-        
+
         // Look through all the blocks
         Clickable clickedBlock = world.getBlockOnRay(ray, intersection);
-        
+
         return clickedBlock;
     }
 }
