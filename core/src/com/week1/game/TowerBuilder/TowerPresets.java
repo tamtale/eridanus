@@ -184,17 +184,6 @@ public class TowerPresets {
             new BlockSpec(BlockType.MOONSTONE, 1, 2, 1)
     ), "Base");
 
-//    private static List<BlockSpec> blockLayout = new ArrayList<>();
-//
-//    static{
-//        for (int x = 0; x < 5; x++) {
-//            for (int y = 0; y < 5; y++) {
-//                blockLayout.add(new BlockSpec(BlockType.HIGHLIGHT, x - 2, -1,  y - 2));
-//            }
-//        }
-//    }
-
-
 
     public static List<TowerDetails> presets = Arrays.asList(towerDetails1, towerDetails2, towerDetails3, towerDetails4, towerDetails5, towerDetails6);
     public static final Integer NUM_PRESETS = 6;

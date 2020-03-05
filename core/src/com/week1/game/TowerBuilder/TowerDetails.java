@@ -13,9 +13,6 @@ import java.util.Scanner;
 //Todos for towers -- ensure that they are connected when deleting blocks
 //                  -- update stats and block names
 //                  -- clean up load code
-//                  -- make things static if possible
-//                  -- change dropdowns to purple, have rem, add, type
-//                  -- grey out display box when in build mode
 
 public class TowerDetails {
     private double hp = 0;
@@ -30,6 +27,8 @@ public class TowerDetails {
     private List<BlockSpec> layout;
     private TowerFootprint footprint;
     private String name = "";
+
+    private float BLOCKLENGTH = TowerMaterials.BLOCKLENGTH;
 
     public List<BlockSpec> getLayout() {
         return layout;
@@ -148,7 +147,7 @@ public class TowerDetails {
             int z = block.getZ();
 
             ModelInstance blockInstance = new ModelInstance(TowerMaterials.modelMap.get(code));
-            blockInstance.transform.setToTranslation(x * 5f, y * 5f, z * 5f);
+            blockInstance.transform.setToTranslation(x * BLOCKLENGTH, y * BLOCKLENGTH, z * BLOCKLENGTH);
             this.model.add(blockInstance);
             this.footprint.setFootPrint(x + 2, z + 2, true);
 
@@ -193,7 +192,7 @@ public class TowerDetails {
 
         //add to the model
         ModelInstance blockInstance = new ModelInstance(TowerMaterials.modelMap.get(code));
-        blockInstance.transform.setToTranslation(x * 5f, y * 5f, z * 5f);
+        blockInstance.transform.setToTranslation(x * BLOCKLENGTH, y * BLOCKLENGTH, z * BLOCKLENGTH);
         this.model.add(blockInstance);
         this.footprint.setFootPrint(x + 2, z + 2, true);
 
@@ -245,7 +244,7 @@ public class TowerDetails {
             m.transform.getTranslation(translation);
 
 
-            if (translation.x == 5f * x & translation.y == 5f * y & translation.z == 5f * z) {
+            if (translation.x == BLOCKLENGTH * x & translation.y == BLOCKLENGTH * y & translation.z == BLOCKLENGTH * z) {
                 modelIdx = i;
             } else {
                 System.out.println((int)translation.y/5);

@@ -10,12 +10,8 @@ import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.utils.Array;
-import com.week1.game.Model.World.Block;
 
-import java.awt.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -58,7 +54,7 @@ public class TowerMaterials {
     mat.set(new ColorAttribute(ColorAttribute.Diffuse, Color.WHITE));
     mat.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.8f));
 
-    Model highlighted = modelBuilder.createBox(5f, 5f ,5f,
+    Model highlighted = modelBuilder.createBox(BLOCKLENGTH, BLOCKLENGTH ,BLOCKLENGTH,
             mat,
             VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
     modelMap.put(BlockType.HIGHLIGHT, highlighted);
@@ -68,7 +64,7 @@ public class TowerMaterials {
     Material mat2 = new Material(TextureAttribute.createDiffuse(new Texture("ground_highlight.png")));
     mat2.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.5f));
 
-    Model highlighted2 = modelBuilder.createBox(5f, 5f ,5f,
+    Model highlighted2 = modelBuilder.createBox(BLOCKLENGTH, BLOCKLENGTH ,BLOCKLENGTH,
             mat2,
             VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
     modelMap.put(BlockType.GROUND_HIGHLIGHT, highlighted2);
@@ -85,7 +81,7 @@ public class TowerMaterials {
         blocknamekey.put(blockname, code);
 
         Material mat = new Material(TextureAttribute.createDiffuse(new Texture(filename)));
-        modelMap.put(code, modelBuilder.createBox(5f, 5f, 5f, mat,
+        modelMap.put(code, modelBuilder.createBox(BLOCKLENGTH, BLOCKLENGTH, BLOCKLENGTH, mat,
                 VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal));
 
         if (code != BlockType.EASTEREGG) {

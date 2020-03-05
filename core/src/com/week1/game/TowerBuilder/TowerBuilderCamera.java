@@ -38,6 +38,8 @@ public class TowerBuilderCamera {
     private List<Vector3> invisiBlocks = new ArrayList<>();
     private List<Vector3> towerBlocks = new ArrayList<>();
 
+    private float BLOCKLENGTH = TowerMaterials.BLOCKLENGTH;
+
     public PerspectiveCamera getCam() {
         return cam;
     }
@@ -190,7 +192,7 @@ public class TowerBuilderCamera {
         for (int i = 0; i < blocks.size(); i++) {
             Vector3 curblock = blocks.get(i);
 
-            Vector3 position = new Vector3(curblock.x * 5f, curblock.y * 5f, curblock.z * 5f);
+            Vector3 position = new Vector3(curblock.x * BLOCKLENGTH, curblock.y * BLOCKLENGTH, curblock.z * BLOCKLENGTH);
             Vector3 dimensions = new Vector3(5, 5, 5);
 
 
@@ -336,7 +338,8 @@ public class TowerBuilderCamera {
         int result = selectInvisiblock(screenX, screenY);
         if (result != -1) {
             ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(BlockType.HIGHLIGHT));
-            newbloc.transform.setToTranslation(invisiBlocks.get(result).x * 5f, invisiBlocks.get(result).y * 5f, invisiBlocks.get(result).z * 5f);
+            newbloc.transform.setToTranslation(invisiBlocks.get(result).x * BLOCKLENGTH,
+                    invisiBlocks.get(result).y * BLOCKLENGTH, invisiBlocks.get(result).z * BLOCKLENGTH);
             highlightedAddBlock = newbloc;
 
         } else {
@@ -353,7 +356,8 @@ public class TowerBuilderCamera {
 
                 Vector3 translation = new Vector3();
                 block.transform.getTranslation(translation);
-                if (translation.x == selectedPos.x * 5f & translation.y == selectedPos.y * 5f & translation.z == selectedPos.z * 5f) {
+                if (translation.x == selectedPos.x * BLOCKLENGTH & translation.y == selectedPos.y * BLOCKLENGTH &
+                        translation.z == selectedPos.z * BLOCKLENGTH) {
 
                     ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(BlockType.HIGHLIGHT));
                     newbloc.transform.setToTranslation(translation);
