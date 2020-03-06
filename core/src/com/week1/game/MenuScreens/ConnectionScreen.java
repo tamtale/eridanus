@@ -37,15 +37,15 @@ public class ConnectionScreen implements Screen {
         connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 
 
-        Pixmap firePix = new Pixmap(Gdx.files.internal("earthdark.png"));
-        Pixmap firePixScaled = new Pixmap((int)GameController.VIRTUAL_WIDTH, (int)GameController.VIRTUAL_HEIGHT, firePix.getFormat());
-        firePixScaled.drawPixmap(firePix,
-                0, 0, firePix.getWidth(), firePix.getHeight(),
-                0, 0, firePixScaled.getWidth(), firePixScaled.getHeight()
+        Pixmap earthPix = new Pixmap(Gdx.files.internal("earthdark.png"));
+        Pixmap earthPixScaled = new Pixmap((int)GameController.VIRTUAL_WIDTH, (int)GameController.VIRTUAL_HEIGHT, earthPix.getFormat());
+        earthPixScaled.drawPixmap(earthPix,
+                0, 0, earthPix.getWidth(), earthPix.getHeight(),
+                0, 0, earthPixScaled.getWidth(), earthPixScaled.getHeight()
         );
-        Texture tex = new Texture(firePixScaled);
-        firePix.dispose();
-        firePixScaled.dispose();
+        Texture tex = new Texture(earthPixScaled);
+        earthPix.dispose();
+        earthPixScaled.dispose();
         TextureRegionDrawable reg = new TextureRegionDrawable(tex);
         connectionStage.addActor(new Image(reg));
 
