@@ -46,6 +46,10 @@ public class ScreenManager {
         Gdx.app.postRunnable(() -> gameControllerSetScreenAdapter.setScreen(new LoadoutScreen(client, isHostScreenManager)));
     }
 
+    public void restartGame(Client c) {
+        Gdx.app.postRunnable(()-> setScreen(new LoadoutScreen(c, c.getScreenManager().getIsHost())));
+    }
+
     public void setReadyToStart() {
         gameReady.run();
         gameReady = null; // Null it out. Needs to be reset before it is called again on a restart.

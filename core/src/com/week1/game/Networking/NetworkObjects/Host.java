@@ -122,19 +122,16 @@ public class Host {
     private void processMessage(String msg, InetAddress addr, int port) {
 //        String msg = new String(packet.getData()).trim();
         
-        if (!gameStarted) {
-//             Game has not started
-            HostControlMessage ctrlMsg = parseHostControlMessage(msg);
-            if (ctrlMsg != null) {
-                ctrlMsg.updateHost(this, addr, port);
-            } else {
-                Gdx.app.error(TAG, "Unrecognized message before start of game.");
-            }
-        } else {
-            // Game has started
-            Gdx.app.debug(TAG, "Host received an update message from: " + addr.getHostAddress());
-            incomingMessages.add(msg);
+
+        HostControlMessage ctrlMsg = parseHostControlMessage(msg);
+        if (ctrlMsg != null) {
+            ctrlMsg.updateHost(this, addr, port);
+            return;
         }
+
+        Gdx.app.debug(TAG, "Host received an update message from: " + addr.getHostAddress());
+        incomingMessages.add(msg);
+
     }
     
     public void broadcastToRegisteredPlayers(String msg) {

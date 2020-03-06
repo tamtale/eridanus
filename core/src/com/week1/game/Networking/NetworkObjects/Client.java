@@ -4,9 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.week1.game.MenuScreens.ScreenManager;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.Control.ClientControl.ClientControlMessage;
-import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToLoadoutMessage;
-import com.week1.game.Networking.Messages.Control.HostControl.SubmitLoadoutMessage;
 import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToGameMessage;
+import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToLoadoutMessage;
+import com.week1.game.Networking.Messages.Control.HostControl.RequestRestartMessage;
+import com.week1.game.Networking.Messages.Control.HostControl.SubmitLoadoutMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.TowerBuilder.BlockSpec;
@@ -121,6 +122,9 @@ public class Client {
         sendStringMessage(MessageFormatter.packageMessage(new RequestGoToLoadoutMessage(-1)));
     }
 
+    public void sendRestartRequest() {
+        sendStringMessage(MessageFormatter.packageMessage(new RequestRestartMessage(playerId)));
+    }
     /**
      * This is needed because I don't want to add the adapter during creation because connection
      * should ha[pen before the game is created
@@ -133,4 +137,5 @@ public class Client {
     public ScreenManager getScreenManager() {
         return screenManager;
     }
+
 }
