@@ -43,6 +43,7 @@ import static com.week1.game.Model.StatsConfig.*;
 
 public class GameState implements GameRenderable {
 
+    private final Unit2StateAdapter u2s;
     private GameGraph graph;
 
     private Array<Clickable> clickables = new Array<>();
@@ -66,6 +67,17 @@ public class GameState implements GameRenderable {
     public GameState(IWorldBuilder worldBuilder, Runnable postInit){
         // TODO tower types in memory after exchange
         this.worldBuilder = worldBuilder;
+        this.u2s = new Unit2StateAdapter() {
+            @Override
+            public Block getBlock(int i, int j, int k) {
+                return world.getBlock(i, j, k);
+            }
+
+            @Override
+            public int getHeight(int i, int j) {
+                return world.getHeight(i, j);
+            }
+        };
         world = new GameWorld(worldBuilder);
         world.getHeightMap();
         graph = world.buildGraph();
@@ -122,17 +134,7 @@ public class GameState implements GameRenderable {
     public void addUnit(Unit u){
         u.ID = minionCount;
         units.add(u);
-        u.setUnit2StateAdapter(new Unit2StateAdapter() {
-            @Override
-            public Block getBlock(int i, int j, int k) {
-                return world.getBlock(i, j, k);
-            }
-
-            @Override
-            public int getHeight(int i, int j) {
-                return world.getHeight(i, j);
-            }
-        });
+        u.setUnit2StateAdapter(u2s);
         clickables.add(u);
         damageables.add(u);
         minionCount += 1;
@@ -151,22 +153,6 @@ public class GameState implements GameRenderable {
     }
 
     public void addBuilding(Tower t, int playerID) {
-//        int startX = (int) t.x - 4;
-//        int startY = (int) t.y - 4;
-//        TowerFootprint footprint = towerLoadouts.getTowerDetails(playerID, t.getTowerType()).getFootprint();
-//        boolean[][] fp = footprint.getFp();
-//        int i = 0;
-//        for(boolean[] bool: fp){
-//            int j = 0;
-//            for(boolean boo: bool){
-//                if(boo){
-//                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0), t);
-//                }
-//                j++;
-//            }
-//            i++;
-//        }
-
         List<BlockSpec> blockSpecs = t.getLayout();
         for(int k = 0; k < blockSpecs.size(); k++) {
             BlockSpec bs = blockSpecs.get(k);
@@ -181,15 +167,8 @@ public class GameState implements GameRenderable {
     public void updateGoal(Unit unit, Vector3 goal) {
         Vector2 unitPos = new Vector2((int) unit.getX(), (int) unit.getY()); //TODO: make acutal z;
         unit.setGoal(goal);
-        OutputPath path = new OutputPath();
-        Array<Building> buildings = this.getBuildings();
+        OutputPath path;
 
-//        for(Building building: buildings) {
-//            if(building.overlap(goal.x, goal.y)) {
-//                goal = building.closestPoint(unit.getX(), unit.getY());
-//                break;
-//            }
-//        }
         Vector2 goalPos = new Vector2(goal.x, goal.y);
 
         long start = System.nanoTime();
@@ -290,10 +269,6 @@ public class GameState implements GameRenderable {
     private Damageable.DamageableVisitor<Void> deathVisitor = new Damageable.DamageableVisitor<Void>() {
         @Override
         public Void acceptTower(Tower tower) {
-//            Map<Vector3, Array<Connection<Vector3>>> edges = tower.getRemovedEdges();
-//            for(Vector3 block: edges.keySet()){
-//                graph.setConnections(block, edges.get(block));
-//            }
             towers.removeValue(tower, true);
             damageables.removeValue(tower, true);
             return null;

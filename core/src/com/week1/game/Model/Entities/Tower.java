@@ -174,11 +174,6 @@ public class Tower extends Building implements Damaging {
         removedEdges.put(fromNode, connections);
     }
 
-//    @Override
-//    public Map<Vector2, Array<Connection<Vector3>>> getRemovedEdges() {
-//        return this.removedEdges;
-//    }
-
     @Override
     public String toString() {
         return "Tower{" +

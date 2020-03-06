@@ -25,7 +25,7 @@ public class MessageFormatter {
         update.messages.forEach((msg) -> {
             GameMessage parsedMsg = parseMessage(msg);
             if (parsedMsg == null) {
-                // Gdx.app.error(TAG, "The following message had an unrecognized MessageType: " + msg);
+                Gdx.app.error(TAG, "The following message had an unrecognized MessageType: " + msg);
             } else {
                 msgList.add(parsedMsg);
             }

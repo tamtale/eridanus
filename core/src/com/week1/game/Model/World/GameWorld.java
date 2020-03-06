@@ -60,12 +60,6 @@ public class GameWorld implements GameRenderable {
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 graph.addVector2(new Vector2(i, j));
-//                if (i > 0) {
-//                    blocks[i][j][0].setConnection(new WeightedBlockEdge(1, blocks[i][j][0], blocks[i - 1][j][0]));
-//                }
-//                for (int k = 1; k < blocks[0][0].length; k++) {
-//                    graph.addVector2(new Vector2(i, j));
-//                }
             }
         }
         Gdx.app.log("Game World - wab2", "Block array built");

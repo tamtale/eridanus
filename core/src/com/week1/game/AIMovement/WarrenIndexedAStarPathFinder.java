@@ -100,6 +100,7 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
                 return true;
             }
 
+            //If it can't find a connection or the nodeRecord runs out, returns false
             if (!this.visitChildren(request.endNode, request.heuristic)) {
                 return false;
             };

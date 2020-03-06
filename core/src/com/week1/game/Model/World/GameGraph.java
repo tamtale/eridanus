@@ -73,12 +73,6 @@ public class GameGraph implements IndexedGraph<Vector2> {
         edges[(int) fromNode.x][(int) fromNode.y].add(border);
     }
 
-    public void removeAllConnections(Vector2 fromNode, Building b){
-        // TODO: throwing exceptions, so I commented this out (lji1)???
-//        b.putRemovedEdges(fromNode, edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z]);
-//        edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = new Array<>();
-    }
-
     public void addVector2(Vector2 Vector2) {
         nodeCount+=1;
         Vector2s.add(Vector2);
