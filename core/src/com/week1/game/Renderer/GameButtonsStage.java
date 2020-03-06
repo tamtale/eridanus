@@ -116,8 +116,8 @@ public class GameButtonsStage {
         stage.addActor(tower2Button);
         stage.addActor(tower3Button);
         stage.addActor(manaLabel);
-        stage.addActor(showAttackRadiusCheckBox);
-        stage.addActor(showSpawnRadiusCheckBox);
+//        stage.addActor(showAttackRadiusCheckBox); TODO add this back in if we get functionality
+//        stage.addActor(showSpawnRadiusCheckBox); TODO add this back in if we get functionality
     }
 
     public void setListeners() {

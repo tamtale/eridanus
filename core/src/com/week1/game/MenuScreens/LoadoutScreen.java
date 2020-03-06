@@ -99,11 +99,12 @@ public class LoadoutScreen implements Screen {
 
         if (isHostingClient) {
             startButton = new TextButton("Waiting for all players to chose loadouts...", disabledStyle);
+            startButton.getLabel().setFontScale(2);
             startButton.setTouchable(Touchable.disabled);
             startButton.setDisabled(true);
-            startButton.setSize(200, 64);
+            startButton.setSize(600, 64);
             startButton.setPosition(
-                    GameController.VIRTUAL_WIDTH / 2 - startButton.getWidth(),
+                    GameController.VIRTUAL_WIDTH / 2 - startButton.getWidth()/2,
                     GameController.VIRTUAL_HEIGHT / 2 - 80 - startButton.getHeight());loadoutStage.addActor(startButton);
 
             startButton.addListener(new ClickListener() {
@@ -117,9 +118,10 @@ public class LoadoutScreen implements Screen {
 
 
         TextButton loadoutSelector = new TextButton("Confirm Your Loadout!", new Skin(Gdx.files.internal("uiskin.json")));
-        loadoutSelector.setSize(200,64);
+        loadoutSelector.getLabel().setFontScale(2);
+        loadoutSelector.setSize(375,64);
         loadoutSelector.setPosition(
-                GameController.VIRTUAL_WIDTH / 2 - loadoutSelector.getWidth(),
+                GameController.VIRTUAL_WIDTH / 2 - loadoutSelector.getWidth()/2,
                 GameController.VIRTUAL_HEIGHT / 2 - loadoutSelector.getHeight());
 
         loadoutStage.addActor(loadoutSelector);
@@ -150,9 +152,10 @@ public class LoadoutScreen implements Screen {
         label1Style.font = myFont;
         label1Style.fontColor = Color.WHITE;
 
-        Label label1 = new Label("LOADOUT Stage. Currently nonfunctional",label1Style);
+        Label label1 = new Label("Loadout Selection. Choose 3 towers",label1Style);
+        label1.setFontScale(2);
         label1.setSize(200, 64);
-        label1.setPosition(GameController.VIRTUAL_WIDTH / 2 - 60,GameController.VIRTUAL_HEIGHT * 3 / 4 );
+        label1.setPosition(GameController.VIRTUAL_WIDTH / 2 - label1.getWidth()/2,GameController.VIRTUAL_HEIGHT * 3 / 4 );
         label1.setAlignment(Align.center);
         loadoutStage.addActor(label1);
 
