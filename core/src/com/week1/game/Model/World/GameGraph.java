@@ -4,39 +4,45 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.OutputPath;
+import com.week1.game.Pair;
 
-public class GameGraph implements IndexedGraph<Vector3> {
+
+
+public class GameGraph implements IndexedGraph<Vector2> {
 
     private int nodeCount;
     private GameHeuristic heuristic = new GameHeuristic();
-    private PathFinder<Vector3> pathFinder;
-    Array<Vector3> Vector3s = new Array<>();
-    Array<Border> borders = new Array<>();
-    private Array<Connection<Vector3>>[][][] edges;
+    private PathFinder<Vector2> pathFinder;
+    Array<Vector2> Vector2s = new Array<>();
+    Border[][][][] borders;
+    private Array<Connection<Vector2>>[][] edges;
 
     public GameGraph(Block[][][] blocks){
         super();
-        edges = new Array[blocks.length][blocks[0].length][blocks[0][0].length];
+        edges = new Array[blocks.length][blocks[0].length];
+        borders = new Border[blocks.length][blocks[0].length][3][3];
         this.pathFinder = new WarrenIndexedAStarPathFinder<>(this);
         this.nodeCount = 0;
         for (int i = 0; i < edges.length; i++) {
             for (int j = 0; j < edges[0].length; j++) {
-                for (int k = 0; k < edges[0][0].length; k++) {
-                    edges[i][j][k] = new Array<>();
-                }
+                edges[i][j] = new Array<>();
             }
         }
         Gdx.app.log("GameGraph - wab2", "Building GameGraph");
     }
 
     @Override
-    public int getIndex(Vector3 node) {
-        return (int) (node.x + edges.length * node.y + edges.length * edges[0].length * node.z);
+    public int getIndex(Vector2 node) {
+        int index = (int) (node.x + edges.length * node.y + edges.length);
+
+        return index;
+//        return node.getIndex();
     }
 
     @Override
@@ -45,30 +51,34 @@ public class GameGraph implements IndexedGraph<Vector3> {
     }
 
     @Override
-    public Array<Connection<Vector3>> getConnections(Vector3 fromNode) {
-        if (fromNode.x < 0 || fromNode.x > edges.length - 1 || fromNode.y < 0 || fromNode.y > edges[0].length - 1
-         || fromNode.z < 0 || fromNode.z > edges[0][0].length - 1){
+    public Array<Connection<Vector2>> getConnections(Vector2 fromNode) {
+        if (fromNode.x < 0 || fromNode.x > edges.length - 1 || fromNode.y < 0 || fromNode.y > edges[0].length - 1){
             return null;
         }
-        return edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z];
+        return edges[(int) fromNode.x][(int) fromNode.y];
 
     }
 
-    public void setConnection(Vector3 fromNode, Vector3 toNode, float weight){
+    public Array<Connection<Vector2>> getConnections(int i, int j){
+        if (i < 0 || i> edges.length - 1 || j < 0 || j > edges[0].length){
+            return null;
+        }
+        return edges[i][j];
+    }
+    public void setConnection(Vector2 fromNode, Vector2 toNode, float weight){
         Border border = new Border(weight, fromNode, toNode);
-        edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z].add(border);
+        int i = (int) fromNode.x - (int) toNode.x + 1;
+        int j = (int) fromNode.y - (int) toNode.y + 1;
+        borders[(int) fromNode.x][(int) fromNode.y][i][j] = border;
+        edges[(int) fromNode.x][(int) fromNode.y].add(border);
     }
 
-    public void removeAllConnections(Vector3 fromNode, Building b){
-        // TODO replace with updated connections code (wab2)
-    }
-
-    public void addVector3(Vector3 Vector3) {
+    public void addVector2(Vector2 Vector2) {
         nodeCount+=1;
-        Vector3s.add(Vector3);
+        Vector2s.add(Vector2);
     }
 
-    public OutputPath search(Vector3 startNode, Vector3 endNode) {
+    public OutputPath search(Vector2 startNode, Vector2 endNode) {
         OutputPath path = new OutputPath();
         if (pathFinder.searchNodePath(startNode, endNode, heuristic, path)) {
             return path;
@@ -76,16 +86,43 @@ public class GameGraph implements IndexedGraph<Vector3> {
         return null;
     }
 
-    public PathFinder<Vector3> getPathFinder() {
+    public PathFinder<Vector2> getPathFinder() {
         return pathFinder;
     }
 
-    public void setPathFinder(PathFinder<Vector3> pathFinder) {
+    public void setPathFinder(PathFinder<Vector2> pathFinder) {
         this.pathFinder = pathFinder;
     }
 
-    public void setConnections(Vector3 fromNode, Array<Connection<Vector3>> connections) {
-        edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = connections;
+    public void setConnections(Vector2 fromNode, Array<Connection<Vector2>> connections) {
+        setConnections((int) fromNode.x, (int) fromNode.y, connections);
+    }
+
+
+    public void setConnections(int i, int j, Array<Connection<Vector2>> connections) {
+        for (Connection<Vector2> connection: connections){
+            setConnection(connection.getFromNode(), connection.getToNode(), connection.getCost());
+        }
+    }
+
+    public Connection<Vector2> getConnection(int fromX, int fromY, int toX, int toY){
+        int i = fromX - toX + 1;
+        int j = fromY - toY + 1;
+        if (i < 0 || i > 2 || j < 0 || j > 2){
+            return null;
+        }
+        return borders[fromX][fromY][i][j];
+    }
+
+    public void removeConnection(int fromX, int fromY, int toX, int toY) {
+        Connection<Vector2> border = getConnection(fromX, fromY, toX, toY);
+        edges[fromX][fromY].removeValue(border, false);
+        int i = fromX - toX + 1;
+        int j = fromY - toY + 1;
+        if (i >= 0 && i <= 2 && j >= 0 && j <= 2){
+            borders[fromX][fromY][i][j] = null;
+        }
+
     }
 
 }
