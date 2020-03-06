@@ -3,14 +3,14 @@ package com.week1.game.MenuScreens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
@@ -34,13 +34,26 @@ public class ConnectionScreen implements Screen {
 
     public ConnectionScreen(GameControllerSetScreenAdapter gameAdapter) {
         this.gameAdapter = gameAdapter;
-//        Gdx.app.log("pjb3 - LoadoutScreen.java", "creating Loadout Screen. In constructor");
         connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
+
+
+        Pixmap earthPix = new Pixmap(Gdx.files.internal("earthdark.png"));
+        Pixmap earthPixScaled = new Pixmap((int)GameController.VIRTUAL_WIDTH, (int)GameController.VIRTUAL_HEIGHT, earthPix.getFormat());
+        earthPixScaled.drawPixmap(earthPix,
+                0, 0, earthPix.getWidth(), earthPix.getHeight(),
+                0, 0, earthPixScaled.getWidth(), earthPixScaled.getHeight()
+        );
+        Texture tex = new Texture(earthPixScaled);
+        earthPix.dispose();
+        earthPixScaled.dispose();
+        TextureRegionDrawable reg = new TextureRegionDrawable(tex);
+        connectionStage.addActor(new Image(reg));
+
 
         hostGameButton= new TextButton("Begin Hosting", new Skin(Gdx.files.internal("uiskin.json")));
         hostGameButton.setSize(200,64);
         hostGameButton.setPosition(GameController.VIRTUAL_WIDTH/2 - 20 - hostGameButton.getWidth(),
-                GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight());
+                GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight()/2);
         connectionStage.addActor(hostGameButton);
         hostGameButton.addListener(new ClickListener() {
             @Override
@@ -107,6 +120,7 @@ public class ConnectionScreen implements Screen {
             // Something was wrong in the input
             Gdx.app.log("pjb3 - ConnectionScreen", "Ruh roh. Something is wrong, with the IP probably");
         } else {
+            switchToWater();
             hostGameButton.remove();
             joinGameButton.remove();
             ipField.setDisabled(true);
@@ -116,6 +130,7 @@ public class ConnectionScreen implements Screen {
 
     private void hostGame() {
         hosting = true;
+        switchToWater();
         hostGameButton.remove();
         joinGameButton.remove();
         ipField.remove();
@@ -129,6 +144,20 @@ public class ConnectionScreen implements Screen {
 //        Gdx.app.log("pjb3 - ConnectionScreen", "Created the Host network object");
         connectionStage.addActor(launchGameButton);
 
+    }
+
+    private void switchToWater() {
+        Pixmap waterPix = new Pixmap(Gdx.files.internal("waterdark.png"));
+        Pixmap waterPixScaled = new Pixmap((int)GameController.VIRTUAL_WIDTH, (int)GameController.VIRTUAL_HEIGHT, waterPix.getFormat());
+        waterPixScaled.drawPixmap(waterPix,
+                0, 0, waterPix.getWidth(), waterPix.getHeight(),
+                0, 0, waterPixScaled.getWidth(), waterPixScaled.getHeight()
+        );
+        Texture tex = new Texture(waterPixScaled);
+        waterPix.dispose();
+        waterPixScaled.dispose();
+        TextureRegionDrawable reg = new TextureRegionDrawable(tex);
+        connectionStage.addActor(new Image(reg));
     }
 
     private void progressToLoadouts() {
