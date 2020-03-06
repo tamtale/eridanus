@@ -3,14 +3,18 @@ package com.week1.game.MenuScreens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
@@ -52,6 +56,19 @@ public class LoadoutScreen implements Screen {
         this.networkClient = client;
         this.isHostingClient = client.getScreenManager().getIsHost();
         this.loadoutStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
+
+        Pixmap firePix = new Pixmap(Gdx.files.internal("firedark.png"));
+        Pixmap firePixScaled = new Pixmap((int)GameController.VIRTUAL_WIDTH, (int)GameController.VIRTUAL_HEIGHT, firePix.getFormat());
+        firePixScaled.drawPixmap(firePix,
+                0, 0, firePix.getWidth(), firePix.getHeight(),
+                0, 0, firePixScaled.getWidth(), firePixScaled.getHeight()
+        );
+        Texture tex = new Texture(firePixScaled);
+        firePix.dispose();
+        firePixScaled.dispose();
+
+        TextureRegionDrawable reg = new TextureRegionDrawable(tex);
+        loadoutStage.addActor(new Image(reg));
 
         if (isHostingClient) {
             startButton = new TextButton("Waiting for all players to chose loadouts...", disabledStyle);
