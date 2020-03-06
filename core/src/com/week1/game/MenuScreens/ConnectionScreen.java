@@ -40,7 +40,7 @@ public class ConnectionScreen implements Screen {
         hostGameButton= new TextButton("Begin Hosting", new Skin(Gdx.files.internal("uiskin.json")));
         hostGameButton.setSize(200,64);
         hostGameButton.setPosition(GameController.VIRTUAL_WIDTH/2 - 20 - hostGameButton.getWidth(),
-                GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight());
+                GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight()/2);
         connectionStage.addActor(hostGameButton);
         hostGameButton.addListener(new ClickListener() {
             @Override
