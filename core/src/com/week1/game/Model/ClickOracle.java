@@ -87,7 +87,7 @@ public class ClickOracle extends InputAdapter {
         if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) return false;
         dragging = true;
         selectionLocationEnd.set(screenX, screenY, 0);
-        Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
+        Gdx.app.debug("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
         return false;
     }
 
@@ -117,7 +117,7 @@ public class ClickOracle extends InputAdapter {
     }
 
     private void setSelectedClickable(Clickable clickable) {
-        Gdx.app.log("setSelectedClickable", "set selected: " + clickable.toString());
+        Gdx.app.debug("setSelectedClickable", "set selected: " + clickable.toString());
         deMultiSelect();
         selected = clickable;
         selected.setSelected(true);
@@ -125,7 +125,7 @@ public class ClickOracle extends InputAdapter {
     
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        Gdx.app.log("lji1 - ClickOracle", "Click registered, dragging: " + dragging);
+        Gdx.app.debug("lji1 - ClickOracle", "Click registered, dragging: " + dragging);
 
         // The player must be alive to be able to register any clicks
         if (!adapter.isPlayerAlive()) {
@@ -140,7 +140,7 @@ public class ClickOracle extends InputAdapter {
 
         Clickable selectedClickable = adapter.selectClickable(screenX, screenY, touchPos);
         if (button == Input.Buttons.LEFT) {
-            Gdx.app.log("lji1 - ClickOracle", "Left click.");
+            Gdx.app.debug("lji1 - ClickOracle", "Left click.");
             deMultiSelect();
             setSelectedClickable(selectedClickable);
             selected.accept(new Clickable.ClickableVisitor<Void>() {
@@ -153,9 +153,8 @@ public class ClickOracle extends InputAdapter {
                 }
                 @Override
                 public Void acceptBlockLocation(Vector3 vector) {
-                    Gdx.app.log("ClickOracle", "Accepting block location.");
                     if (spawnType == SpawnInfo.SpawnType.UNIT) {
-                        Gdx.app.log("pjb3 - ClickOracle", "Spawn unit");
+                        Gdx.app.debug("pjb3 - ClickOracle", "Spawn unit");
                         adapter.sendMessage(new CreateMinionMessage(vector.x, vector.y, vector.z + 1, 69, adapter.getPlayerId(), currentGameHash));
                     } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
                         Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");

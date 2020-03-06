@@ -6,6 +6,16 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
@@ -16,6 +26,13 @@ import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
+import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
+import com.week1.game.Model.Entities.Clickable;
+import com.week1.game.Model.Entities.Unit;
+import com.week1.game.Pair;
 
 public class GameWorld implements GameRenderable {
     private Block[][][] blocks;
@@ -24,16 +41,16 @@ public class GameWorld implements GameRenderable {
     private GameGraph graph;
     private ModelInstance[][][] instances;
     private BoundingBox[][][] boundingBoxes;
-    
+
     private BoundingBox[][][] chunkBoundingBoxes;
     private int[][][] activeBlocksPerChunk;
-    
+
     public static final float blockOffset = 0.5f;
 
 //    private Model model;
     private ModelBuilder modelBuilder = new ModelBuilder();
     AssetManager assets;
-    
+
     private int chunkSide;
     private int chunkHeight;
 
@@ -42,10 +59,7 @@ public class GameWorld implements GameRenderable {
         this.graph = new GameGraph(blocks);
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
-                graph.addVector3(new Vector3(i, j, 0));
-                for (int k = 1; k < blocks[0][0].length; k++) {
-                    graph.addVector3(new Vector3(i, j, k));
-                }
+                graph.addVector2(new Vector2(i, j));
             }
         }
         Gdx.app.log("Game World - wab2", "Block array built");
@@ -69,7 +83,7 @@ public class GameWorld implements GameRenderable {
                 }
             }
         }
-        
+
         // Build the modelinstances and precompute the bounding boxes
         instances = new ModelInstance[blocks.length][blocks[0].length][blocks[0][0].length];
         boundingBoxes = new BoundingBox[blocks.length][blocks[0].length][blocks[0][0].length];
@@ -81,7 +95,7 @@ public class GameWorld implements GameRenderable {
                     int k_final = k;
                     blocks[i][j][k].modelInstance(i, j, k)
                             .ifPresent(modelInstance -> instances[i_final][j_final][k_final] = modelInstance);
-                    
+
                     boundingBoxes[i][j][k] = new BoundingBox();
                     updateBoundingBox(i,j,k);
                     updateActiveBlocks(i, j, k);
@@ -90,22 +104,22 @@ public class GameWorld implements GameRenderable {
         }
 
     }
-    
+
     private void updateActiveBlocks(int i, int j, int k) {
-        
+
         int chunkX = i / chunkSide;
         int chunkY = j / chunkSide;
         int chunkZ = k / chunkHeight;
-        
-        
+
+
         if (instances[i][j][k] == null) {
             activeBlocksPerChunk[chunkX][chunkY][chunkZ]--;
         } else {
             activeBlocksPerChunk[chunkX][chunkY][chunkZ]++;
         }
-        
+
     }
-    
+
     private void updateBoundingBox(int i, int j, int k) {
         if (instances[i][j][k] != null) {
             instances[i][j][k].calculateBoundingBox(boundingBoxes[i][j][k]);
@@ -124,7 +138,26 @@ public class GameWorld implements GameRenderable {
                 .ifPresent(modelInstance -> instances[i][j][k] = modelInstance);
         updateBoundingBox(i,j,k);
         updateActiveBlocks(i,j,k);
+        updateGraph(i, j, block);
         refreshHeight = true;
+    }
+
+    private void updateGraph(int i, int j, Block block) {
+        getHeightMap();
+        int k = heightMap[i][j];
+        for (int m = i - 1; m <= i + 1; m++) {
+            for (int n = j - 1; n <= j + 1; n++) {
+                if ((m != i || n != j) && (m >= 0 && m < heightMap.length && n >= 0 && n < heightMap[0].length)) {
+                    graph.removeConnection(m, n, i, j);
+                    graph.removeConnection(i, j, m, n);
+                    if (Math.abs(heightMap[m][n] - k) <= 1){
+                        graph.setConnection(new Vector2(m, n), new Vector2(i, j), block.getCost());
+                        graph.setConnection(new Vector2(i, j), new Vector2(m, n), blocks[m][n][heightMap[m][n]].getCost());
+                    }
+                }
+            }
+        }
+
     }
 
     public GameGraph buildGraph(){
@@ -132,41 +165,41 @@ public class GameWorld implements GameRenderable {
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
 //                for (int k = 0; k < blocks[0][0].length; k++) {
-                    Vector3 coords = new Vector3(i, j, 0);
+                    Vector2 coords = new Vector2(i, j);
                     if (i > 0 && Math.abs(heightMap[i][j] - heightMap[i - 1][j]) <= 1) {
-                        graph.setConnection(coords, new Vector3(i - 1, j, 0), blocks[i][j][heightMap[i][j]].getCost());
+                        graph.setConnection(coords, new Vector2(i - 1, j), blocks[i][j][heightMap[i][j]].getCost());
                     }
                     if(i < blocks.length - 1) {
                         if (Math.abs(heightMap[i][j] - heightMap[i + 1][j]) <= 1) {
-                            graph.setConnection(coords, new Vector3(i + 1, j, 0), blocks[i][j][heightMap[i][j]].getCost());
+                            graph.setConnection(coords, new Vector2(i + 1, j), blocks[i][j][heightMap[i][j]].getCost());
                         }
                     }
                     if (j > 0 && Math.abs(heightMap[i][j] - heightMap[i][j - 1]) <= 1) {
-                        graph.setConnection(coords, new Vector3(i, j - 1, 0), blocks[i][j][heightMap[i][j]].getCost());
+                        graph.setConnection(coords, new Vector2(i, j - 1), blocks[i][j][heightMap[i][j]].getCost());
                     }
                     if(j < blocks[0].length - 1 && Math.abs(heightMap[i][j] - heightMap[i][j + 1]) <= 1) {
 
-                        graph.setConnection(coords, new Vector3(i, j + 1, 0), blocks[i][j][heightMap[i][j]].getCost());
+                        graph.setConnection(coords, new Vector2(i, j + 1), blocks[i][j][heightMap[i][j]].getCost());
                     }
                     //TODO: climbing jumping into k.
                     if (i > 0 && j > 0
                             && Math.abs(heightMap[i][j] - heightMap[i - 1][j - 1]) <= 1) {
-                        graph.setConnection(coords, new Vector3(i - 1, j - 1, 0),
+                        graph.setConnection(coords, new Vector2(i - 1, j - 1),
                                 blocks[i][j][heightMap[i][j]].getCost() * (float) Math.sqrt(2));
                     }
                     if (i > 0 && j < blocks[0].length - 1
                             && Math.abs(heightMap[i][j] - heightMap[i - 1][j + 1]) <= 1) {
-                        graph.setConnection(coords, new Vector3(i - 1, j + 1, 0),
+                        graph.setConnection(coords, new Vector2(i - 1, j + 1),
                                 blocks[i][j][heightMap[i][j]].getCost() * (float) Math.sqrt(2));
                     }
                     if (i < blocks.length - 1 && j > 0
                             && Math.abs(heightMap[i][j] - heightMap[i + 1][j - 1]) <= 1) {
-                        graph.setConnection(coords, new Vector3(i + 1, j - 1, 0),
+                        graph.setConnection(coords, new Vector2(i + 1, j - 1),
                                 blocks[i][j][heightMap[i][j]].getCost() * (float) Math.sqrt(2));
                     }
                     if (i < blocks.length  - 1 && j < blocks[0].length - 1
                             && Math.abs(heightMap[i][j] - heightMap[i + 1][j + 1]) <= 1) {
-                        graph.setConnection(coords, new Vector3(i + 1, j + 1, 0),
+                        graph.setConnection(coords, new Vector2(i + 1, j + 1),
                                 blocks[i][j][heightMap[i][j]].getCost() * (float) Math.sqrt(2));
                     }
 //                }
@@ -212,16 +245,16 @@ public class GameWorld implements GameRenderable {
 
 
     public Pair<ModelInstance, Float> getBlockOnRayByChunk(
-            Ray ray, 
-            float minDistance, 
+            Ray ray,
+            float minDistance,
             Vector3 closestIntersection,
-            BoundingBox closestBox, 
-            ModelInstance closestModelInstance, 
-            Vector3 closestCoords, 
-            int minx, int miny, int minz, 
+            BoundingBox closestBox,
+            ModelInstance closestModelInstance,
+            Vector3 closestCoords,
+            int minx, int miny, int minz,
             int maxx, int maxy, int maxz) {
         // max is exclusive
-        
+
         int nonNull = 0;
 
         Vector3 intermediateIntersection = new Vector3();
@@ -255,8 +288,8 @@ public class GameWorld implements GameRenderable {
         }
 
 //        System.out.println("\tNonnull: " + nonNull);
-        
-            return new Pair<>(closestModelInstance, minDistance);
+
+        return new Pair<>(closestModelInstance, minDistance);
     }
 
     private int numIntersections;
@@ -267,9 +300,9 @@ public class GameWorld implements GameRenderable {
     public Clickable getBlockOnRay(Ray ray, Vector3 intersection) {
         numIntersections = 0;
         numChunkIntersections = 0;
-        
+
         // If too slow again, could try maintaining a 'visible' group of blocks, which excludes blocks that are buried under others and can't be clicked
-        
+
         // Search in chunks
 //        Vector3 intermediateIntersection = new Vector3();
         Vector3 closestIntersection = new Vector3();
@@ -277,8 +310,8 @@ public class GameWorld implements GameRenderable {
         ModelInstance closestModelInstance = null;
         float minDistance = Float.MAX_VALUE;
         Vector3 closestCoords = new Vector3();
-        
-        
+
+
 //        System.out.println("Chunks: ");
         Vector3 throwAway = new Vector3();
         for (int i = 0; i < chunkBoundingBoxes.length; i++) {
@@ -293,7 +326,7 @@ public class GameWorld implements GameRenderable {
                     if (Intersector.intersectRayBounds(ray, chunkBoundingBoxes[i][j][k], throwAway)) {
 //                        System.out.println("\t(" + i + ", " + j + ", " + k + ") - " + chunkBoundingBoxes[i][j][k].min + ", " + chunkBoundingBoxes[i][j][k].max + " - " + throwAway);
                         // now check that chunk and get the closest from that chunk
-                        Pair<ModelInstance, Float> chunkResult = getBlockOnRayByChunk(ray, 
+                        Pair<ModelInstance, Float> chunkResult = getBlockOnRayByChunk(ray,
                                 minDistance, closestIntersection, closestBox, closestModelInstance, closestCoords,
                                 (int)(chunkBoundingBoxes[i][j][k].min.x + blockOffset),
                                 (int)(chunkBoundingBoxes[i][j][k].min.y + blockOffset),
@@ -303,7 +336,7 @@ public class GameWorld implements GameRenderable {
                                 Math.min((int)(chunkBoundingBoxes[i][j][k].max.z + blockOffset), blocks[0][0].length));
                         closestModelInstance = chunkResult.key;
                         minDistance = chunkResult.value;
-                        
+
                     }
                 }
             }
@@ -317,12 +350,12 @@ public class GameWorld implements GameRenderable {
         ModelInstance closestModelInstance_final = closestModelInstance;
         intersection.set(closestIntersection);
 
-        Gdx.app.log("GameState.getClickableOnRay",
+        Gdx.app.debug("GameState.getClickableOnRay",
                 "Returning clickable for block at i: " + closestCoords.x +
                         " j: " + closestCoords.y +
                         " k: " + closestCoords.z +
                         " intersection: " + intersection);
-        
+
         return new Clickable() {
             private BoundingBox boundingBox = new BoundingBox(closestBox);
             private Material originalMaterial = closestModelInstance_final.model.materials.get(0);
@@ -360,13 +393,13 @@ public class GameWorld implements GameRenderable {
                 return clickableVisitor.acceptBlockLocation(closestCoords);
             }
         };
-        
+
 
     }
-    
-    
+
+
     public int[] getWorldDimensions() {
-       return new int[]{blocks.length, blocks[0].length, blocks[0][0].length};
+        return new int[]{blocks.length, blocks[0].length, blocks[0][0].length};
     }
 
     @Override
@@ -385,5 +418,10 @@ public class GameWorld implements GameRenderable {
         }
         batch.end();
 
+    }
+
+    public int getHeight(int i, int j) {
+        getHeightMap();
+        return heightMap[i][j];
     }
 }

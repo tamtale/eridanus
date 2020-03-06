@@ -4,9 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.week1.game.MenuScreens.ScreenManager;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.Control.ClientControl.ClientControlMessage;
-import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToLoadoutMessage;
-import com.week1.game.Networking.Messages.Control.HostControl.SubmitLoadoutMessage;
 import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToGameMessage;
+import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToLoadoutMessage;
+import com.week1.game.Networking.Messages.Control.HostControl.RequestRestartMessage;
+import com.week1.game.Networking.Messages.Control.HostControl.SubmitLoadoutMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.TowerBuilder.BlockSpec;
@@ -53,10 +54,10 @@ public class Client {
     }
     
     public void sendStringMessage(String msg) {
-        Gdx.app.log(TAG, "About to send message: " + msg + " to: " + hostAddress + ":" + this.hostPort);
+        Gdx.app.debug(TAG, "About to send message: " + msg + " to: " + hostAddress + ":" + this.hostPort);
         try {
             this.out.writeUTF(msg);
-            Gdx.app.log(TAG, "Sent message");
+            Gdx.app.debug(TAG, "Sent message");
         } catch (IOException e) {
             Gdx.app.error(TAG, "Failed to send message: " + msg);
         }
@@ -77,7 +78,7 @@ public class Client {
                     String messages = this.in.readUTF();
                     
                     
-                    Gdx.app.log(TAG, "About to try parsing message: " + messages);
+                    Gdx.app.debug(TAG, "About to try parsing message: " + messages);
                     // try parsing as a control message first
                     ClientControlMessage controlMsg = MessageFormatter.parseClientControlMessage(messages);
                     if (controlMsg != null) {
@@ -121,6 +122,9 @@ public class Client {
         sendStringMessage(MessageFormatter.packageMessage(new RequestGoToLoadoutMessage(-1)));
     }
 
+    public void sendRestartRequest() {
+        sendStringMessage(MessageFormatter.packageMessage(new RequestRestartMessage(playerId)));
+    }
     /**
      * This is needed because I don't want to add the adapter during creation because connection
      * should ha[pen before the game is created
@@ -133,4 +137,5 @@ public class Client {
     public ScreenManager getScreenManager() {
         return screenManager;
     }
+
 }

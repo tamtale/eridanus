@@ -11,6 +11,10 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
  * Static asset initializer to ensure that all the models
  * are ready for use by the time the user has loaded the game.
  */
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+
 public class Initializer {
 
     private static ModelBuilder BUILDER = new ModelBuilder();

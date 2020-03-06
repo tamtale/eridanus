@@ -66,6 +66,7 @@ project(":core") {
 project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx-ai:1.8.1"
+        compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
     }
 }
 
