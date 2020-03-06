@@ -17,11 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//Next things
-// Fill out ui -> need to assets, stage, etc classes
-// tower building
-
-
 public class TowerBuilderCamera {
 
     private PerspectiveCamera cam;
@@ -262,9 +257,6 @@ public class TowerBuilderCamera {
             }
         }
 
-//        System.out.println(towerBlocks);
-//        System.out.println(invisiBlocks);
-
     }
 
     public void deleteBlock(int screenX, int screenY) {
@@ -277,8 +269,7 @@ public class TowerBuilderCamera {
         if (result != -1) {
             Vector3 selectedPos = towerBlocks.get(result);
 
-            //Note - the block code below is a placeholder(just need to know the three coords, not the material)
-            boolean removed = WIPTower.removeBlock(new BlockSpec(BlockType.OBSIDIAN, (int) selectedPos.x, (int) selectedPos.y, (int) selectedPos.z));
+            boolean removed = WIPTower.removeBlock((int) selectedPos.x, (int) selectedPos.y, (int) selectedPos.z);
             if (!removed) {
                 towerScreen.showErrorDialog("Couldn't remove selected block because it etiher disconnects the tower from itself or the ground");
                 return;

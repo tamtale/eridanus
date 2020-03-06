@@ -17,7 +17,6 @@ import com.week1.game.GameController;
 import com.week1.game.MenuScreens.MainMenuScreen;
 
 public class TowerBuilderStage {
-    //TODO - make things static?
 
     private TowerBuilderScreen screen;
     public Stage stage;
@@ -25,7 +24,6 @@ public class TowerBuilderStage {
     private StatsWidget sw;
     private TextButton startGame;
     private SelectBox<TowerDetails> displaySelection;
-//    private TextButton displayButton;
 
     //Build mode buttons
     private TextButton buildModeBtn;
@@ -79,19 +77,16 @@ public class TowerBuilderStage {
     public boolean isDelMode = false;
 
 
-
     private GameController gameController;
-//    private MainMenuScreen mainMenuScreen;
 
     public TowerBuilderStage(GameController game, TowerBuilderScreen towerscreen) {
         this.screen = towerscreen;
-//        this.mainMenuScreen = mainMenuScreen;
         this.gameController = game;
         stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
         dialogStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
     }
 
-    public void setTowerBuilder(TowerBuilderCamera builder) {
+    public void completeCamDependentInit() {
         //Once the towerBuilder field is populated by the TowerScreen, we can access the towers' info
         setWidgets();
         configureWidgets();
@@ -121,11 +116,12 @@ public class TowerBuilderStage {
 
         //Build mode buttons
         materialSelection = new SelectBox<>(normalSelectBox);
+
         Array<String> materials = new Array<>();
-        //TODO: don't know how to remove the iterator for a set
         for (String material: TowerMaterials.materialNames.keySet()) {
             materials.add(material);
         }
+
         materialSelection.setItems(materials);
 
         buildModeBtn = new TextButton("Build Mode", normalStyle);

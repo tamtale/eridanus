@@ -5,16 +5,11 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerFootprint;
-import com.week1.game.Model.World.Block;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
-//Todos for towers -- ensure that they are connected when deleting blocks
-//                  -- update stats and block names
-//                  -- clean up load code
 
 public class TowerDetails {
     private double hp = 0;
@@ -289,10 +284,10 @@ public class TowerDetails {
         return nbrs;
     }
 
-    protected boolean removeBlock(BlockSpec bs) {
-        int x = bs.getX();
-        int y = bs.getY();
-        int z = bs.getZ();
+    protected boolean removeBlock(int x, int y, int z) {
+//        int x = bs.getX();
+//        int y = bs.getY();
+//        int z = bs.getZ();
         BlockType code = null;
 
         int modelIdx = -1;
