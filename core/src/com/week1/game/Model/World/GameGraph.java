@@ -70,9 +70,7 @@ public class GameGraph implements IndexedGraph<Vector3> {
 
     public OutputPath search(Vector3 startNode, Vector3 endNode) {
         OutputPath path = new OutputPath();
-
         if (pathFinder.searchNodePath(startNode, endNode, heuristic, path)) {
-            System.out.println("return path");
             return path;
         }
         return null;
@@ -89,6 +87,5 @@ public class GameGraph implements IndexedGraph<Vector3> {
     public void setConnections(Vector3 fromNode, Array<Connection<Vector3>> connections) {
         edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = connections;
     }
-
 
 }

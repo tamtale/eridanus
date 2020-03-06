@@ -1,6 +1,5 @@
 package com.week1.game.MenuScreens;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
@@ -9,9 +8,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.week1.game.Model.*;
 import com.week1.game.GameController;
 import com.week1.game.InfoUtil;
+import com.week1.game.Model.*;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
@@ -19,7 +18,10 @@ import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkObjects.Client;
-import com.week1.game.Renderer.*;
+import com.week1.game.Renderer.GameCameraController;
+import com.week1.game.Renderer.IRendererAdapter;
+import com.week1.game.Renderer.RenderConfig;
+import com.week1.game.Renderer.Renderer;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -40,21 +42,12 @@ public class GameScreen implements Screen {
 	private boolean createdTextures;
 
 	public GameScreen(Client givenNetworkClient) {
-		// Set the logging level
-		Gdx.app.setLogLevel(Application.LOG_INFO);
 		Initializer.init();
 		gameStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 		util = new InfoUtil(true);
 		// Finish setting up the client.
 		this.networkClient = givenNetworkClient;
 
-		//TODO actually pass the towers.
-		networkClient.addAdapter( new INetworkClientToEngineAdapter() {
-			@Override
-			public void deliverUpdate(List<? extends GameMessage> messages) {
-				engine.receiveMessages(messages);
-			}
-		});
 		engine = new GameEngine(new IEngineAdapter() {
 			@Override
 			public void setDefaultLocation(Vector3 location) {
@@ -77,6 +70,13 @@ public class GameScreen implements Screen {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
 		}, networkClient.getPlayerId(), new ConcurrentLinkedQueue<>(), util);
+
+		networkClient.addAdapter( new INetworkClientToEngineAdapter() {
+			@Override
+			public void deliverUpdate(List<? extends GameMessage> messages) {
+				engine.receiveMessages(messages);
+			}
+		});
 
 		renderer = new Renderer(new IRendererAdapter() {
 			@Override
@@ -111,7 +111,7 @@ public class GameScreen implements Screen {
 
 			@Override
 			public void restartGame() {
-				Gdx.app.log("pjb3 - GameScreen", "TODO restart not implemented");
+				networkClient.sendRestartRequest();
 			}
 		}, util);
 		clickOracle = new ClickOracle(

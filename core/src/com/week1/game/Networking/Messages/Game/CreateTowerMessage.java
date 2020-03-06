@@ -31,8 +31,7 @@ public class CreateTowerMessage extends GameMessage {
 
     @Override
     public boolean process(GameEngine engine, GameState inputState, InfoUtil util){
-        Gdx.app.log("CreateTowerMessage", "Processing CreateTowerMessage!");
-
+        Gdx.app.debug("CreateTowerMessage", "Processing CreateTowerMessage!");
 
         TowerDetails towerDetails = inputState.getTowerDetails(this.playerID, this.towerType);
         double towerCost, towerHealth, towerDmg, towerRange;
@@ -112,7 +111,6 @@ public class CreateTowerMessage extends GameMessage {
                 return false;
             }
             
-//            System.out.println("Existing block: " + inputState.getWorld().getBlock(tempX, tempY, tempZ));
             if (inputState.getWorld().getBlock(tempX, tempY, tempZ) != Block.TerrainBlock.AIR) {
                 util.log("lji1 - CreateTowerMessage", "Can't build a tower overlapping with existing blocks");
                 return false;

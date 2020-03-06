@@ -171,7 +171,7 @@ public class GameState implements GameRenderable {
         long start = System.nanoTime();
         path = graph.search(unitPos, goalPos);
         long end = System.nanoTime();
-        Gdx.app.log("GameState - wab2", "AStar completed in " + (end - start) + " nanoseconds");
+        Gdx.app.debug("GameState - wab2", "AStar completed in " + (end - start) + " nanoseconds");
         if (path != null) {
             unit.setPath(path);
         }else{
@@ -201,11 +201,9 @@ public class GameState implements GameRenderable {
             }
         }
 
-//        Gdx.app.error("getMinionById - lji1", "Unable to find minion by given ID, returning null.");
         return null;
     }
     public void moveMinion(float dx, float dy, Unit u) {
-        System.out.println("u.x: " + u.getX() + " u.y: " + u.getY() + " dx: " + dx + " dy: " + dy);
         updateGoal(u, new Vector3(u.getX() + dx, u.getY() + dy, 0));
     }
 
@@ -321,7 +319,6 @@ public class GameState implements GameRenderable {
         return false;
     }
 
-
     public GameWorld getWorld() {
         return world;
     }
@@ -362,13 +359,6 @@ public class GameState implements GameRenderable {
         int numPlayersAlive = playerBases.size;
         return numPlayersAlive <= 1;
     }
-
-//    // TODO: Maps from java.util don't play well with gdx arrays
-//    Array<Tower> getPlayerBases() {
-//        Tower[] pbs = new Tower[playerBases.size];
-//        playerBases.values().toArray(pbs);
-//        return new Array<>(pbs);
-//    }
 
     public Array<Building> getBuildings() {
         Array<Building> buildings = new Array<>();
@@ -479,8 +469,7 @@ public class GameState implements GameRenderable {
                 return clickable;
             }
         }
-//        Gdx.app.log("GameState.getClickableOnRay", "No clickables (units) found");
-        
+
         // Look through all the blocks
         Clickable clickedBlock = world.getBlockOnRay(ray, intersection);
         

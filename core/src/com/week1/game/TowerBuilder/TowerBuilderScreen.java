@@ -37,6 +37,7 @@ public class TowerBuilderScreen implements Screen {
 
         //Initialization in the TowerStage that depends on TowerCam
         towerStage.completeCamDependentInit();
+
     }
 
 
