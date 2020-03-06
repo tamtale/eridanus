@@ -84,7 +84,6 @@ public class NetworkUtils {
                 // start listening for messages from clients
                 h.listenForClientMessages();
 
-
                 // Now make the client stuff
                 ScreenManager sm = new ScreenManager(gameAdapter, true);
                 c = new Client(localIpAddr, h.getPort(), sm);
