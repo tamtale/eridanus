@@ -38,6 +38,8 @@ public class TowerBuilderCamera {
     private List<Vector3> invisiBlocks = new ArrayList<>();
     private List<Vector3> towerBlocks = new ArrayList<>();
 
+    private float BLOCKLENGTH = TowerMaterials.BLOCKLENGTH;
+
     public PerspectiveCamera getCam() {
         return cam;
     }
@@ -109,8 +111,9 @@ public class TowerBuilderCamera {
         Gdx.gl.glClear(GL20.GL_ALPHA_BITS);
         camController.update();
 
-
         modelBatch.begin(cam);
+        modelBatch.render(TowerPresets.highlightGround.getModel());
+
         if (towerScreen.isBuildMode()) {
             modelBatch.render(WIPTower.getModel(), environment);
         } else {
@@ -151,12 +154,15 @@ public class TowerBuilderCamera {
         towerBlocks.clear();
         invisiBlocks.clear();
 
-        for (BlockSpec b : WIPTower.getLayout()) {
+
+        for (int i = 0; i < WIPTower.getLayout().size(); i++) {
+            BlockSpec b = WIPTower.getLayout().get(i);
             Vector3 curpos = new Vector3(b.getX(), b.getY(), b.getZ());
             towerBlocks.add(curpos);
         }
 
-        for (Vector3 p : towerBlocks) {
+        for (int j = 0; j < towerBlocks.size(); j++) {
+            Vector3 p = towerBlocks.get(j);
 
             for (int i = -1; i < 2; i += 2) {
                 Vector3 nbr = new Vector3(p.x + i, p.y, p.z);
@@ -176,8 +182,6 @@ public class TowerBuilderCamera {
             }
         }
 
-//        Gdx.app.log("skv2", "Recalculated inbisiblocks: \n"+ invisiPoses.toString());
-
     }
 
     private int selectBlockfromArray(int screenX, int screenY, List<Vector3> blocks) {
@@ -189,7 +193,7 @@ public class TowerBuilderCamera {
         for (int i = 0; i < blocks.size(); i++) {
             Vector3 curblock = blocks.get(i);
 
-            Vector3 position = new Vector3(curblock.x * 5f, curblock.y * 5f, curblock.z * 5f);
+            Vector3 position = new Vector3(curblock.x * BLOCKLENGTH, curblock.y * BLOCKLENGTH, curblock.z * BLOCKLENGTH);
             Vector3 dimensions = new Vector3(5, 5, 5);
 
 
@@ -305,7 +309,8 @@ public class TowerBuilderCamera {
         invisiBlocks.add(selectedPos);
 
         List<Vector3> nbrs = new ArrayList<>();
-        for (Vector3 invisiPos : invisiBlocks) {
+        for (int i = 0; i < invisiBlocks.size(); i++) {
+            Vector3 invisiPos = invisiBlocks.get(i);
             if (isNbr(selectedPos, invisiPos)) {
                 nbrs.add(invisiPos);
             }
@@ -313,7 +318,8 @@ public class TowerBuilderCamera {
 
         List<Integer> nbrRemovals = new ArrayList<>();
         for (int i = 0; i < nbrs.size(); i++) {
-            for (Vector3 invisiPos : invisiBlocks) {
+            for (int j = 0; j < invisiBlocks.size(); j++) {
+                Vector3 invisiPos = invisiBlocks.get(j);
                 if (isNbr(nbrs.get(i), invisiPos)) {
                     nbrRemovals.add(i);
                     break;
@@ -321,12 +327,12 @@ public class TowerBuilderCamera {
             }
         }
 
-        for (Integer idx: nbrRemovals) {
-            nbrs.remove(idx);
+        for (int j = 0; j < nbrRemovals.size(); j++) {
+            nbrs.remove(nbrRemovals.get(j));
         }
 
-        for (Vector3 pos: nbrs) {
-            invisiBlocks.remove(pos);
+        for (int i = 0; i < nbrs.size(); i++) {
+            invisiBlocks.remove(nbrs.get(i));
         }
 
     }
@@ -335,7 +341,8 @@ public class TowerBuilderCamera {
         int result = selectInvisiblock(screenX, screenY);
         if (result != -1) {
             ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(BlockType.HIGHLIGHT));
-            newbloc.transform.setToTranslation(invisiBlocks.get(result).x * 5f, invisiBlocks.get(result).y * 5f, invisiBlocks.get(result).z * 5f);
+            newbloc.transform.setToTranslation(invisiBlocks.get(result).x * BLOCKLENGTH,
+                    invisiBlocks.get(result).y * BLOCKLENGTH, invisiBlocks.get(result).z * BLOCKLENGTH);
             highlightedAddBlock = newbloc;
 
         } else {
@@ -352,7 +359,8 @@ public class TowerBuilderCamera {
 
                 Vector3 translation = new Vector3();
                 block.transform.getTranslation(translation);
-                if (translation.x == selectedPos.x * 5f & translation.y == selectedPos.y * 5f & translation.z == selectedPos.z * 5f) {
+                if (translation.x == selectedPos.x * BLOCKLENGTH & translation.y == selectedPos.y * BLOCKLENGTH &
+                        translation.z == selectedPos.z * BLOCKLENGTH) {
 
                     ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(BlockType.HIGHLIGHT));
                     newbloc.transform.setToTranslation(translation);

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerFootprint;
+import com.week1.game.Model.World.Block;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -13,9 +14,6 @@ import java.util.Scanner;
 //Todos for towers -- ensure that they are connected when deleting blocks
 //                  -- update stats and block names
 //                  -- clean up load code
-//                  -- make things static if possible
-//                  -- change dropdowns to purple, have rem, add, type
-//                  -- grey out display box when in build mode
 
 public class TowerDetails {
     private double hp = 0;
@@ -30,6 +28,8 @@ public class TowerDetails {
     private List<BlockSpec> layout;
     private TowerFootprint footprint;
     private String name = "";
+
+    private float BLOCKLENGTH = TowerMaterials.BLOCKLENGTH;
 
     public List<BlockSpec> getLayout() {
         return layout;
@@ -65,11 +65,10 @@ public class TowerDetails {
                 isFirst = false;
                 continue;
             }
-//            System.out.println("block is "+ block);
+
             int i = 0;
             int x = 0,y = 0,z = 0,code = 0;
             for (String coord: block.split(", ")) {
-//                System.out.println("coord is: " + coord);
                 if (i == 0) {
                     x = Integer.parseInt(coord);
                 } else if (i == 1) {
@@ -88,7 +87,6 @@ public class TowerDetails {
 
         return blocks;
     }
-
 
     public TowerDetails(String filename) {
 
@@ -141,14 +139,16 @@ public class TowerDetails {
 
         this.footprint = new TowerFootprint();
 
-        for (BlockSpec block : layout) {
+        for (int i = 0; i < layout.size(); i++) {
+            BlockSpec block = layout.get(i);
+
             BlockType code = block.getBlockCode();
             int x = block.getX();
             int y = block.getY();
             int z = block.getZ();
 
             ModelInstance blockInstance = new ModelInstance(TowerMaterials.modelMap.get(code));
-            blockInstance.transform.setToTranslation(x * 5f, y * 5f, z * 5f);
+            blockInstance.transform.setToTranslation(x * BLOCKLENGTH, y * BLOCKLENGTH, z * BLOCKLENGTH);
             this.model.add(blockInstance);
             this.footprint.setFootPrint(x + 2, z + 2, true);
 
@@ -193,7 +193,7 @@ public class TowerDetails {
 
         //add to the model
         ModelInstance blockInstance = new ModelInstance(TowerMaterials.modelMap.get(code));
-        blockInstance.transform.setToTranslation(x * 5f, y * 5f, z * 5f);
+        blockInstance.transform.setToTranslation(x * BLOCKLENGTH, y * BLOCKLENGTH, z * BLOCKLENGTH);
         this.model.add(blockInstance);
         this.footprint.setFootPrint(x + 2, z + 2, true);
 
@@ -207,14 +207,31 @@ public class TowerDetails {
     }
 
     private boolean checkRemovalSafety(BlockSpec b, int blockIdx, int modelIdx) {
-//        List<Boolean> blockAtHeight = new ArrayList<>();
-//        for (int i = 0; i < height; i++) {
-//            blockAtHeight.add(false);
-//        }
+        List<Boolean> blockAtHeight = new ArrayList<>();
+        for (int i = 0; i < height; i++) {
+            blockAtHeight.add(false);
+        }
 
-//        for (int i = 0; i < layout.size(); i++) {
-//
-//        }
+        for (int i = 0; i < layout.size(); i++) {
+            if (i != blockIdx) {
+                BlockSpec curBlk = layout.get(i);
+                blockAtHeight.set(curBlk.getY(), true);
+            }
+
+        }
+
+        System.out.println(blockAtHeight);
+        boolean prev = true;
+        if (!blockAtHeight.get(0)) {
+            return false;
+        }
+        for (int i = 0; i < height; i++) {
+            if (!prev & blockAtHeight.get(i)) {
+                return false;
+            }
+
+            prev = blockAtHeight.get(i);
+        }
 
         return true;
     }
@@ -245,7 +262,7 @@ public class TowerDetails {
             m.transform.getTranslation(translation);
 
 
-            if (translation.x == 5f * x & translation.y == 5f * y & translation.z == 5f * z) {
+            if (translation.x == BLOCKLENGTH * x & translation.y == BLOCKLENGTH * y & translation.z == BLOCKLENGTH * z) {
                 modelIdx = i;
             } else {
                 System.out.println((int)translation.y/5);
@@ -287,7 +304,8 @@ public class TowerDetails {
 
     private String getLayoutStr() {
         String towerStr = "[";
-        for (BlockSpec b: layout) {
+        for (int i = 0; i < layout.size(); i++) {
+            BlockSpec b = layout.get(i);
             towerStr += b.toFileStr();
             towerStr += ", ";
         }
