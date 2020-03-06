@@ -1,5 +1,6 @@
 package com.week1.game.TowerBuilder;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -206,34 +207,86 @@ public class TowerDetails {
 
     }
 
-    private boolean checkRemovalSafety(BlockSpec b, int blockIdx, int modelIdx) {
-        List<Boolean> blockAtHeight = new ArrayList<>();
-        for (int i = 0; i < height; i++) {
-            blockAtHeight.add(false);
-        }
+    private boolean checkRemovalSafety(int blockIdx) {
 
+        boolean blockAtGroundLevel = false;
+
+        List<BlockSpec> updatedBlocks = new ArrayList<>();
         for (int i = 0; i < layout.size(); i++) {
             if (i != blockIdx) {
-                BlockSpec curBlk = layout.get(i);
-                blockAtHeight.set(curBlk.getY(), true);
+                updatedBlocks.add(layout.get(i));
+                if (layout.get(i).getY() == 0) {
+                    blockAtGroundLevel = true;
+                }
             }
-
         }
 
-        System.out.println(blockAtHeight);
-        boolean prev = true;
-        if (!blockAtHeight.get(0)) {
+        if (!blockAtGroundLevel) {
+            //disconnected from ground
             return false;
         }
-        for (int i = 0; i < height; i++) {
-            if (!prev & blockAtHeight.get(i)) {
-                return false;
+
+        List<BlockSpec> q = new ArrayList<>();
+        q.add(updatedBlocks.get(0));
+
+        List<BlockSpec> seen = new ArrayList<>();
+        while (q.size() != 0) {
+            BlockSpec cur = q.get(0);
+            q.remove(0);
+            seen.add(cur);
+
+            System.out.println(seen);
+            List<BlockSpec> nbrs = getNbrs(cur, updatedBlocks);
+            for (int i = 0; i < nbrs.size(); i++) {
+                if (!seen.contains(nbrs.get(i)) & !q.contains(nbrs.get(i))) {
+                    q.add(nbrs.get(i));
+                }
             }
 
-            prev = blockAtHeight.get(i);
         }
 
+        if (seen.size() != updatedBlocks.size()) {
+            Gdx.app.log("expected " + updatedBlocks.size() + " blocks but only saw " + seen.size() + " blocks", "skv2");
+            System.out.println(updatedBlocks);
+            System.out.println(seen);
+            return false;
+        }
+
+
         return true;
+    }
+
+    private List<BlockSpec> getNbrs(BlockSpec b, List<BlockSpec> blocks) {
+        List<BlockSpec> nbrs = new ArrayList<>();
+        int x = b.getX();
+        int y = b.getY();
+        int z = b.getZ();
+
+        for (int i = 0; i < blocks.size(); i++) {
+            BlockSpec blk = blocks.get(i);
+            int curX = blk.getX();
+            int curY = blk.getY();
+            int curZ = blk.getZ();
+
+            if (curX == x) {
+                if (y == curY) {
+                    if (Math.abs(z - curZ) == 1) {
+                        nbrs.add(blk);
+                    }
+                } else if (z == curZ) {
+                    if (Math.abs((y - curY)) == 1) {
+                        nbrs.add(blk);
+                    }
+                }
+            } else if (y == curY && z == curZ) {
+                if (Math.abs(x - curX) == 1) {
+                    nbrs.add(blk);
+                }
+            }
+
+        }
+
+        return nbrs;
     }
 
     protected boolean removeBlock(BlockSpec bs) {
@@ -265,7 +318,6 @@ public class TowerDetails {
             if (translation.x == BLOCKLENGTH * x & translation.y == BLOCKLENGTH * y & translation.z == BLOCKLENGTH * z) {
                 modelIdx = i;
             } else {
-                System.out.println((int)translation.y/5);
                 newHt = Integer.max(newHt, ((int)translation.y/5) + 1);
 
             }
@@ -276,7 +328,7 @@ public class TowerDetails {
 
         }
 
-        if (!checkRemovalSafety(bs, blockIdx, modelIdx)) {
+        if (!checkRemovalSafety(blockIdx)) {
             return false;
         }
         //remove from model and layout

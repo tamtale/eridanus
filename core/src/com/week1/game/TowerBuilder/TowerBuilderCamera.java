@@ -262,8 +262,8 @@ public class TowerBuilderCamera {
             }
         }
 
-        System.out.println(towerBlocks);
-        System.out.println(invisiBlocks);
+//        System.out.println(towerBlocks);
+//        System.out.println(invisiBlocks);
 
     }
 
