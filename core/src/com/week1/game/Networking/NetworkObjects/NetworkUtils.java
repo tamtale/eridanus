@@ -3,6 +3,9 @@ package com.week1.game.Networking.NetworkObjects;
 import com.badlogic.gdx.Gdx;
 import com.week1.game.GameControllerSetScreenAdapter;
 import com.week1.game.MenuScreens.ScreenManager;
+import com.week1.game.TowerBuilder.BlockSpec;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Option;
 
 import java.net.*;
 import java.nio.channels.SocketChannel;
@@ -83,7 +86,6 @@ public class NetworkUtils {
                 Host h = new Host(port);
                 // start listening for messages from clients
                 h.listenForClientMessages();
-
 
                 // Now make the client stuff
                 ScreenManager sm = new ScreenManager(gameAdapter, true);

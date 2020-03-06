@@ -5,17 +5,33 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.week1.game.MenuScreens.MainMenuScreen;
+import org.apache.commons.cli.*;
 
 public class GameController implements ApplicationListener {
+
     Screen currScreen;
     public static final float VIRTUAL_WIDTH = 800;
     public static final float VIRTUAL_HEIGHT = 800;
+    private CommandLine commandLine;
+    private int logLevel = Gdx.app.LOG_INFO;
 
-    public GameController() {
+    public GameController(CommandLine commandLine) {
+        this.commandLine = commandLine;
+        // Set the logging level (by default, it'll be info).
+        String logArg = commandLine.getOptionValue("log", "i");
+        switch (logArg) {
+            case "e":
+                logLevel = Gdx.app.LOG_ERROR;
+                break;
+            case "d":
+                logLevel = Gdx.app.LOG_DEBUG;
+                break;
+        }
     }
 
     @Override
     public void create() {
+        Gdx.app.setLogLevel(logLevel);
         setScreen(new MainMenuScreen(this));
     }
 
@@ -27,13 +43,12 @@ public class GameController implements ApplicationListener {
 
         this.currScreen = screen;
 
-
         //This is just for safety
         if (this.currScreen != null) {
             this.currScreen.show();
             this.currScreen.resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         } else {
-            System.out.println("Bad Error: Tried to set null screen");
+            Gdx.app.error("GameController", "Bad Error: Tried to set null screen");
         }
     }
 

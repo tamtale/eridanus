@@ -1,13 +1,7 @@
-# COMP 460 - TowerCraft/Space Wizards/Wizards in Space
+# Nova Eridanus
 ## Building
-> $ make build
+> $ ./gradlew build
 
-## Running
-Host
-> $ make run-host 
-
-Client (with start message)
-
-> $ make run-client-start IP=xx.xxx.xxx.xx
-
-See Makefile for the full list of commands.
+## Logging Levels
+Use the `--log <i|e|d>` option in program arguments to set 
+to info, error, or debug logging.  

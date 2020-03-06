@@ -45,4 +45,25 @@ public class BlockSpec {
     public void setZ(int z) {
         this.z = z;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof  BlockSpec) {
+            if (((BlockSpec) o).getX() == x & ((BlockSpec) o).getY() == y & ((BlockSpec) o).getZ() == z & ((BlockSpec) o).getBlockCode() == blockCode) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        //This one is easier to read
+        return "(" + x + ", " + y + ", " + z + ", " + blockCode +")";
+    }
+
+    public String toFileStr() {
+        //This one is for writing to file
+        return "(" + x + ", " + y + ", " + z + ", " + blockCode.ordinal() +")";
+    }
 }

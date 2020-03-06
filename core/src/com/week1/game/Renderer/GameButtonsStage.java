@@ -124,7 +124,7 @@ public class GameButtonsStage {
         unitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("pjb3 - GameButtonsStage", "Clicked the Unit button");
+                Gdx.app.debug("pjb3 - GameButtonsStage", "Clicked the Unit button");
                 adapter.setSelectedSpawnState(new SpawnInfo(SpawnType.UNIT));
                 unselectAndReselect(previouslySelected, unitButton);
             }
@@ -133,7 +133,7 @@ public class GameButtonsStage {
         tower1Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("pjb3 - GameButtonsStage", "Clicked the Tower 1 button");
+                Gdx.app.debug("pjb3 - GameButtonsStage", "Clicked the Tower 1 button");
                 adapter.setSelectedSpawnState(new SpawnInfo(SpawnType.TOWER1));
                 unselectAndReselect(previouslySelected, tower1Button);
             }
@@ -142,7 +142,7 @@ public class GameButtonsStage {
         tower2Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("pjb3 - GameButtonsStage", "Clicked the Tower 2 button");
+                Gdx.app.debug("pjb3 - GameButtonsStage", "Clicked the Tower 2 button");
                 adapter.setSelectedSpawnState(new SpawnInfo(SpawnType.TOWER2));
                 unselectAndReselect(previouslySelected, tower2Button);
             }
@@ -151,7 +151,7 @@ public class GameButtonsStage {
         tower3Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("pjb3 - GameButtonsStage", "Clicked the Tower 3 button");
+                Gdx.app.debug("pjb3 - GameButtonsStage", "Clicked the Tower 3 button");
                 adapter.setSelectedSpawnState(new SpawnInfo(SpawnType.TOWER3));
                 unselectAndReselect(previouslySelected, tower3Button);
             }
@@ -160,7 +160,7 @@ public class GameButtonsStage {
         showAttackRadiusCheckBox.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("pjb3 - GameButtonsStage", "Clicked the ShowAttackRadius toggle. Now: " + !showAttack);
+                Gdx.app.debug("pjb3 - GameButtonsStage", "Clicked the ShowAttackRadius toggle. Now: " + !showAttack);
                 showAttack = !showAttack;
                 if (showAttack) {
                     showAttackRadiusCheckBox.setStyle(pressedBlueStyle);
@@ -173,7 +173,7 @@ public class GameButtonsStage {
         showSpawnRadiusCheckBox.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("pjb3 - GameButtonsStage", "Clicked the ShowSpawnRadius toggle. Now: " + !showSpawn);
+                Gdx.app.debug("pjb3 - GameButtonsStage", "Clicked the ShowSpawnRadius toggle. Now: " + !showSpawn);
                 showSpawn = !showSpawn;
                 if (showSpawn) {
                     showSpawnRadiusCheckBox.setStyle(pressedBlueStyle);
@@ -197,7 +197,6 @@ public class GameButtonsStage {
     public void renderUI(int mana) {
         stage.draw();
         manaLabel.setText(String.format("Mana: %d", mana));
-//        Gdx.app.log("pjb3 - GameButtonStage - renderUI", "We are calling renderUI. Mana is " + mana);
     }
 
     /**

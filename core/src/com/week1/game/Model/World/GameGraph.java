@@ -80,9 +80,7 @@ public class GameGraph implements IndexedGraph<Vector2> {
 
     public OutputPath search(Vector2 startNode, Vector2 endNode) {
         OutputPath path = new OutputPath();
-
         if (pathFinder.searchNodePath(startNode, endNode, heuristic, path)) {
-            System.out.println("return path");
             return path;
         }
         return null;
@@ -126,4 +124,5 @@ public class GameGraph implements IndexedGraph<Vector2> {
         }
 
     }
+
 }

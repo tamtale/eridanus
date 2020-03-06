@@ -123,7 +123,6 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
             if (path.getPath().size > 0) {
                 if (distanceTraveled > distance) {
                     turn = 0;
-                    System.out.println("HELLO");
                     float dx = path.get(0).x - position.x;
                     float dy = path.get(0).y - position.y;
                     int height = unit2StateAdapter.getHeight((int) position.x, (int) position.y);
@@ -156,7 +155,7 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     }
 
     private void move(float delta) {
-        Gdx.app.log("move", "moving:" + position);
+        Gdx.app.debug("move", "moving:" + position);
         position.set(position.x + (vel.x * delta), position.y + (vel.y * delta), position.z);
         modelInstance.transform.setToTranslation(position);
         this.distanceTraveled += Math.sqrt(Math.pow(vel.x * delta, 2) + Math.pow(vel.y * delta, 2));
@@ -256,7 +255,6 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
         this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
         vel.x = (float) speed * (float) Math.cos(angle);
         vel.y = (float) speed * (float) Math.sin(angle);
-        System.out.println("vel.x " + vel.x + " vel.y " + vel.y);
         this.distanceTraveled = 0;
         path.removeIndex(0);
     }
