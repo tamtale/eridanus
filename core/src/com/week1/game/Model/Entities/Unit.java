@@ -15,6 +15,7 @@ import com.week1.game.Model.OutputPath;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Util3D;
+import com.week1.game.Model.Unit2StateAdapter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,9 @@ import java.util.Map;
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 import static java.lang.Math.abs;
+import static com.week1.game.Renderer.TextureUtils.makeTexture;
+import static java.lang.Math.abs;
+import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
 public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     private final int playerID;
@@ -30,9 +34,11 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     private Vector3 lastNode;
     private float distance;
     private float distanceTraveled;
+    Unit2StateAdapter unit2StateAdapter;
     private Vector3 goal = new Vector3();
     private boolean close;
     private boolean selected;
+    private float blockSpeed;
     private int turn = 0;
     private double hp;
     private Vector3 vel;
@@ -117,9 +123,13 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
             if (path.getPath().size > 0) {
                 if (distanceTraveled > distance) {
                     turn = 0;
-                    this.lastNode = new Vector3(this.position.x, this.position.y, 0);
-                    float dx = path.get(0).x - this.position.x;
-                    float dy = path.get(0).y - this.position.y;
+                    float dx = path.get(0).x - position.x;
+                    float dy = path.get(0).y - position.y;
+                    int height = unit2StateAdapter.getHeight((int) position.x, (int) position.y);
+                    int nxtHeight = unit2StateAdapter.getHeight((int) path.get(0).x, (int) path.get(0).y);
+                    this.blockSpeed = 1f/unit2StateAdapter.getBlock((int) position.x, (int) position.y,
+                            height).getCost(); //TODO: 3D
+                    position.z = nxtHeight + 1;
                     this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
                     double angle = Math.atan(dy / dx);
                     if (dx < 0) {
@@ -127,15 +137,14 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
                     } else if (dy < 0) {
                         angle += 2 * Math.PI;
                     }
-                    vel.x = (float) speed * (float) Math.cos(angle);
-                    vel.y = (float) speed * (float) Math.sin(angle);
+                    vel.x = blockSpeed * (float) speed * (float) Math.cos(angle);
+                    vel.y = blockSpeed * (float) speed * (float) Math.sin(angle);
                     path.removeIndex(0);
                     this.distanceTraveled = 0;
                 }
                 move(delta);
                 turn++;
             }
-
             if (path.getPath().size <= 0) {
                 path = null;
                 vel.x = 0;
@@ -252,6 +261,10 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
 
     public void setGoal(Vector3 goal) {
         this.goal.set(goal);
+    }
+
+    public void setUnit2StateAdapter(Unit2StateAdapter unit2StateAdapter) {
+        this.unit2StateAdapter = unit2StateAdapter;
     }
 
     @Override
