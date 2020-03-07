@@ -2,7 +2,9 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -124,8 +126,19 @@ public class GameEngine implements GameRenderable {
         }
     }
 
+
+    Texture backgroundTexture = new Texture("starfield.png");
+
     @Override
     public void render(RenderConfig renderConfig) {
+        // Render the background 
+        SpriteBatch batch = renderConfig.getBatch();
+        batch.begin();
+        batch.draw(backgroundTexture, 0,0,
+                (int)(1920 * 800f / (float)Gdx.graphics.getWidth()), (int)(1080 * 800f / (float)Gdx.graphics.getHeight()), 
+                0, 0,1920, 1080, false, false);
+        batch.end();
+
         gameState.render(renderConfig);
     }
 
