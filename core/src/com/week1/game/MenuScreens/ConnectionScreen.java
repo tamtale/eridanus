@@ -34,9 +34,13 @@ public class ConnectionScreen implements Screen {
     float TEXTSCALE = 2f;
     float TITLESCALE = 2f;
     public static final float INPUTSCALE = 1.3f;
+    private boolean isHostingClient;
+    
+    private Label joinedPlayersLabel;
 
     public ConnectionScreen(GameControllerSetScreenAdapter gameAdapter) {
         this.gameAdapter = gameAdapter;
+        this.isHostingClient = isHostingClient;
         connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 
 
@@ -122,17 +126,40 @@ public class ConnectionScreen implements Screen {
         label1.setPosition(GameController.VIRTUAL_WIDTH / 2 - 80,GameController.VIRTUAL_HEIGHT * 3 / 4 );
         label1.setAlignment(Align.center);
         connectionStage.addActor(label1);
+        
 
         Gdx.input.setInputProcessor(connectionStage);
     }
+    
+    public void updateJoinedPlayers(java.util.List<String> joinedPlayers) {
+        StringBuilder s = new StringBuilder("Joined Players:\n");
+        joinedPlayers.forEach(player -> s.append(player).append("\n"));
+        joinedPlayersLabel.setText(s.toString());
+        joinedPlayersLabel.setPosition(joinedPlayersLabel.getX(), joinedPlayersLabel.getY() - 40);
+    }
 
+    private void addPlayerList() {
+        System.out.println("Added player list");
+        // Display the joined players
+        joinedPlayersLabel = new Label("Joined Players: ", labelStyle);
+        joinedPlayersLabel.setFontScale(TITLESCALE);
+        joinedPlayersLabel.setSize(200, 64);
+        joinedPlayersLabel.setPosition(
+                GameController.VIRTUAL_WIDTH / 2 - joinedPlayersLabel.getWidth() / 2,
+                GameController.VIRTUAL_HEIGHT / 2 - 160);
+        joinedPlayersLabel.setAlignment(Align.center);
+        connectionStage.addActor(joinedPlayersLabel);
+        System.out.println("done adding");
+    }
+    
     private void joinGame(String ip) {
-        networkClient = NetworkUtils.initNetworkObjects(false, ip, 42069, gameAdapter);
+        switchToWater();
+        addPlayerList();
+        networkClient = NetworkUtils.initNetworkObjects(false, ip, 42069, gameAdapter, this);
         if (networkClient == null) {
             // Something was wrong in the input
             Gdx.app.log("pjb3 - ConnectionScreen", "Ruh roh. Something is wrong, with the IP probably");
         } else {
-            switchToWater();
             hostGameButton.remove();
             joinGameButton.remove();
             ipField.setDisabled(true);
@@ -146,16 +173,21 @@ public class ConnectionScreen implements Screen {
         hostGameButton.remove();
         joinGameButton.remove();
         ipField.remove();
+        
         Label label1 = new Label("Your Ip is " + NetworkUtils.getLocalHostAddr(), labelStyle);
         label1.setFontScale(TEXTSCALE);
         label1.setSize(200, 64);
         label1.setPosition(GameController.VIRTUAL_WIDTH/2 - label1.getWidth()/2, GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight() + 64 );
         label1.setAlignment(Align.center);
         connectionStage.addActor(label1);
+        addPlayerList();
+        
 //        10.122.178.55
-        networkClient = NetworkUtils.initNetworkObjects(true, null, 42069, gameAdapter);
+        networkClient = NetworkUtils.initNetworkObjects(true, null, 42069, gameAdapter, this);
 //        Gdx.app.log("pjb3 - ConnectionScreen", "Created the Host network object");
         connectionStage.addActor(launchGameButton);
+        
+        
 
     }
 
