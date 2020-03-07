@@ -33,7 +33,7 @@ public class ConnectionScreen implements Screen {
     Label.LabelStyle labelStyle;
     float TEXTSCALE = 2f;
     float TITLESCALE = 2f;
-    float INPUTSCALE = 1.3f;
+    public static final float INPUTSCALE = 1.3f;
 
     public ConnectionScreen(GameControllerSetScreenAdapter gameAdapter) {
         this.gameAdapter = gameAdapter;

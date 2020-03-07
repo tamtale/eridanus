@@ -28,6 +28,8 @@ import com.week1.game.TowerBuilder.TowerUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * This is the screen that you chose your loadout in. This is the screen that is returned to
@@ -42,6 +44,7 @@ public class LoadoutScreen implements Screen {
 
 
     private TextButton startButton;
+    private TextField mapSeedField;
 
     private static TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down"),
@@ -97,25 +100,6 @@ public class LoadoutScreen implements Screen {
         TextureRegionDrawable reg = new TextureRegionDrawable(tex);
         loadoutStage.addActor(new Image(reg));
 
-        if (isHostingClient) {
-            startButton = new TextButton("Waiting for all players to chose loadouts...", disabledStyle);
-            startButton.getLabel().setFontScale(2);
-            startButton.setTouchable(Touchable.disabled);
-            startButton.setDisabled(true);
-            startButton.setSize(600, 64);
-            startButton.setPosition(
-                    GameController.VIRTUAL_WIDTH / 2 - startButton.getWidth()/2,
-                    GameController.VIRTUAL_HEIGHT / 2 - 80 - startButton.getHeight());loadoutStage.addActor(startButton);
-
-            startButton.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    Gdx.app.log("pjb3 LoadoutScreen", "About to send start message.");
-                    networkClient.sendGoToGame();
-                }
-            });
-        }
-
 
         TextButton loadoutSelector = new TextButton("Confirm Your Loadout!", new Skin(Gdx.files.internal("uiskin.json")));
         loadoutSelector.getLabel().setFontScale(2);
@@ -159,6 +143,47 @@ public class LoadoutScreen implements Screen {
         label1.setAlignment(Align.center);
         loadoutStage.addActor(label1);
 
+
+        if (isHostingClient) {
+            // Set up the map seed field and label
+            Label mapSeedLabel = new Label("Enter a map seed:  ", label1Style);
+            mapSeedLabel.setFontScale(2);
+            mapSeedLabel.setSize(200, 64);
+            mapSeedLabel.setPosition(GameController.VIRTUAL_WIDTH / 2 - mapSeedLabel.getWidth(),GameController.VIRTUAL_HEIGHT / 2);
+            mapSeedLabel.setAlignment(Align.right);
+            loadoutStage.addActor(mapSeedLabel);
+            
+            String mapSeedPlaceholderText = generateRandomSeed();
+            Skin uiskin = new Skin(Gdx.files.internal("uiskin.json"));
+            TextField.TextFieldStyle textFieldStyle = uiskin.get(TextField.TextFieldStyle.class);
+            textFieldStyle.font.getData().scale(ConnectionScreen.INPUTSCALE);
+            mapSeedField = new TextField(mapSeedPlaceholderText, textFieldStyle);
+            mapSeedField.setSize(250, 64);
+            mapSeedField.setPosition(GameController.VIRTUAL_WIDTH / 2, GameController.VIRTUAL_HEIGHT / 2);
+            loadoutStage.addActor(mapSeedField);
+
+            startButton = new TextButton("Waiting for all players to chose loadouts...", disabledStyle);
+            startButton.getLabel().setFontScale(2);
+            startButton.setTouchable(Touchable.disabled);
+            startButton.setDisabled(true);
+            startButton.setSize(600, 64);
+            startButton.setPosition(
+                    GameController.VIRTUAL_WIDTH / 2 - startButton.getWidth()/2,
+                    GameController.VIRTUAL_HEIGHT / 2 - 80 - startButton.getHeight());loadoutStage.addActor(startButton);
+
+            startButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Gdx.app.log("pjb3 LoadoutScreen", "About to send start message.");
+
+                    String enteredSeed = mapSeedField.getText();
+                    Gdx.app.log("lji1 LoadoutScreen", "Using seed: " + enteredSeed);
+                    networkClient.sendGoToGame(enteredSeed);
+                }
+            });
+
+        }
+
         networkClient.getScreenManager().setGameReadySequence(()-> {
             if (isHostingClient) {
                 startButton.setDisabled(false);
@@ -172,6 +197,20 @@ public class LoadoutScreen implements Screen {
         Gdx.input.setInputProcessor(loadoutStage);
     }
 
+    private String generateRandomSeed() {
+        StringBuilder randomSeed = new StringBuilder();
+        
+        Character[] seedCharacters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 
+                'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 
+                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        int seedLength = 10;
+        
+        for (int i = 0; i < seedLength; i++) {
+            randomSeed.append(seedCharacters[ThreadLocalRandom.current().nextInt(0, seedCharacters.length)]);
+        }
+        
+        return randomSeed.toString();
+    }
 
     public void createLoadoutDropdowns() {
         tower1 =new SelectBox(normalSelectBox);
