@@ -32,7 +32,9 @@ public class Border implements Connection<Vector2> {
     
     @Override
     public boolean equals(Object object){
-        return  (((Border) object).fromNode.toString().equals(this.fromNode.toString()) &&
-                ((Border) object).toNode.toString().equals(this.toNode.toString()));
+        return  ((Border) object).fromNode.x == this.fromNode.x &&
+                ((Border) object).fromNode.y == this.fromNode.y &&
+                ((Border) object).toNode.x == this.toNode.x &&
+                ((Border) object).toNode.y == this.toNode.y;
     }
 }

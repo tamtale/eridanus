@@ -10,9 +10,5 @@ public abstract class Building extends Damageable{
 
     public abstract boolean overlap(float x, float y);
     public abstract Vector3 closestPoint(float x, float y);
-
-
-//    public abstract Map<Vector3, Array<Connection<Vector3>>> getRemovedEdges();
-
     public abstract void putRemovedEdges(Vector3 fromNode, Array<Connection<Vector3>> connections);
 }

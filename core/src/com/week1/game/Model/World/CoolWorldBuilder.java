@@ -130,32 +130,6 @@ public class CoolWorldBuilder implements IWorldBuilder {
         }
     }
 
-//    private Pair<Integer, Integer> checkAdjacentBlocks(int i, int j) {
-//        int dirtCnt = 0;
-//        int watCnt = 0;
-//        for (int m = j - 1; m <= j + 1; m++) {
-//            if ((m >= 0 && m < blocks[0].length) && i > 0 ) {
-//                String type = blocks[i - 1][m][0].getType();
-//                if (type.equals("FIREBRICK")) {
-//                    dirtCnt++;
-//                } else if (type.equals("WATER")) {
-//                    if (m == j) {
-//                        watCnt+=2;
-//                    }
-//                    watCnt++;
-//                }
-//            }
-//        }
-//        if (j > 0) {
-//            String type = blocks[i][j - 1][0].getType();
-//            if (type.equals("FIREBRICK")) {
-//                dirtCnt++;
-//            } else if (type.equals("WATER")) {
-//                watCnt+=3;
-//            }
-//        }
-//        return new Pair<>(dirtCnt, watCnt);
-//    }
 
     private void makePlateau(Block[][][] blocks, int startX, int endX, int startY, int endY) {
         for (int i = startX; i <= endX; i++) {

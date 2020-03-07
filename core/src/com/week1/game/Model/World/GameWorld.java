@@ -7,15 +7,6 @@ import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.maps.MapLayers;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g3d.*;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
@@ -26,13 +17,6 @@ import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
-import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Pool;
-import com.week1.game.Model.Entities.Clickable;
-import com.week1.game.Model.Entities.Unit;
-import com.week1.game.Pair;
 
 public class GameWorld implements GameRenderable {
     private Block[][][] blocks;
@@ -60,12 +44,6 @@ public class GameWorld implements GameRenderable {
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 graph.addVector2(new Vector2(i, j));
-//                if (i > 0) {
-//                    blocks[i][j][0].setConnection(new WeightedBlockEdge(1, blocks[i][j][0], blocks[i - 1][j][0]));
-//                }
-//                for (int k = 1; k < blocks[0][0].length; k++) {
-//                    graph.addVector2(new Vector2(i, j));
-//                }
             }
         }
         Gdx.app.log("Game World - wab2", "Block array built");
@@ -356,7 +334,7 @@ public class GameWorld implements GameRenderable {
         ModelInstance closestModelInstance_final = closestModelInstance;
         intersection.set(closestIntersection);
 
-        Gdx.app.log("GameState.getClickableOnRay",
+        Gdx.app.debug("GameState.getClickableOnRay",
                 "Returning clickable for block at i: " + closestCoords.x +
                         " j: " + closestCoords.y +
                         " k: " + closestCoords.z +

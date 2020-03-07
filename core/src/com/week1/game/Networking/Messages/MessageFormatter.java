@@ -35,44 +35,46 @@ public class MessageFormatter {
 
     public static GameMessage parseMessage(String msg) {
         AMessage prototypeMessage = g.fromJson(msg, PrototypeMessage.class);
-//            Gdx.app.log(TAG, "Parsed Message: " + parsedMsg);
-        GameMessage parsedMsg = null;
+
         if (prototypeMessage.messageTypeID == MessageType.TEST) {
-            parsedMsg = g.fromJson(msg, TestMessage.class);
+            return g.fromJson(msg, TestMessage.class);
         } else if (prototypeMessage.messageTypeID == MessageType.CREATEMINION){
-            parsedMsg = g.fromJson(msg, CreateMinionMessage.class);
+            return g.fromJson(msg, CreateMinionMessage.class);
         } else if (prototypeMessage.messageTypeID == MessageType.MOVE){
-            parsedMsg = g.fromJson(msg, MoveMinionMessage.class);
+            return g.fromJson(msg, MoveMinionMessage.class);
         } else if (prototypeMessage.messageTypeID == MessageType.CREATETOWER){
-            parsedMsg = g.fromJson(msg, CreateTowerMessage.class);
+            return g.fromJson(msg, CreateTowerMessage.class);
         } else if (prototypeMessage.messageTypeID == MessageType.INIT){
-            parsedMsg = g.fromJson(msg, InitMessage.class);
+            return g.fromJson(msg, InitMessage.class);
         } else if (prototypeMessage.messageTypeID == MessageType.SYNCERR){
-            parsedMsg = g.fromJson(msg, SyncIssueMessage.class);
+            return g.fromJson(msg, SyncIssueMessage.class);
         } else if (prototypeMessage.messageTypeID == MessageType.CHECKSYNC){
-            parsedMsg = g.fromJson(msg, CheckSyncMessage.class);
+            return g.fromJson(msg, CheckSyncMessage.class);
         } else if (prototypeMessage.messageTypeID == MessageType.TOWERDETAILS){
-            parsedMsg = g.fromJson(msg, TowerDetailsMessage.class);
+            return g.fromJson(msg, TowerDetailsMessage.class);
         }
-        return parsedMsg;
+        Gdx.app.debug(TAG, "Failed to parse as game message.");
+        return null;
     }
     
     public static HostControlMessage parseHostControlMessage(String jsonString) {
         AMessage parsedMsg = g.fromJson(jsonString, PrototypeMessage.class);
         
-        System.out.println("About to parse as host control message: " + jsonString);
+        Gdx.app.debug(TAG, "About to parse as host control message: " + jsonString);
         
         if (parsedMsg != null) {
             if (parsedMsg.messageTypeID == MessageType.REQUESTGOTOGAME) {
                 return g.fromJson(jsonString, RequestGoToGameMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.REQUESTGOTOLOADOUT) {
                 return g.fromJson(jsonString, RequestGoToLoadoutMessage.class);
+            } else if (parsedMsg.messageTypeID == MessageType.REQUESTRESTART) {
+                return g.fromJson(jsonString, RequestRestartMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.SUBMITLOADOUT) {
                 return g.fromJson(jsonString, SubmitLoadoutMessage.class);
             }
         }
 
-        Gdx.app.debug(TAG, "Failed to parse as control message.");
+        Gdx.app.debug(TAG, "Failed to parse as host control message.");
         return null;
     }
 
@@ -87,6 +89,8 @@ public class MessageFormatter {
                 return g.fromJson(jsonString, GoToGameMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.READYTOSTART) {
                 return g.fromJson(jsonString, ReadyToStartMessage.class);
+            } else if (parsedMsg.messageTypeID == MessageType.RESTART) {
+                return g.fromJson(jsonString, RestartMessage.class);
             }
         }
         

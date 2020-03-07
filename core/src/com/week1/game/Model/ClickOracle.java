@@ -29,7 +29,6 @@ public class ClickOracle extends InputAdapter {
 
     private Vector3 touchPos = new Vector3();
     
-//    private Clickable selected = Clickable.NULL;
     private Clickable passiveSelected = Clickable.NULL;
     private Array<Unit> multiSelected = new Array<>();
     
@@ -46,15 +45,6 @@ public class ClickOracle extends InputAdapter {
         keycodeToDirection.put(Input.Keys.RIGHT, Direction.RIGHT);
     }
 
-//    private SpriteBatch cursorBatch = new SpriteBatch(); // TODO: is it okay that this is a different SpriteBatch than the one used in the GameEngine?
-//    {
-//        Matrix4 projection = new Matrix4();
-//        projection.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-//        cursorBatch.setProjectionMatrix(projection);
-//    }
-
-
-//    private SpriteBatch batch = new SpriteBatch();
     private SpawnInfo.SpawnType spawnType;
 
     public ClickOracle(IClickOracleAdapter adapter, RenderConfig renderConfig) {
@@ -70,7 +60,6 @@ public class ClickOracle extends InputAdapter {
         }
         return true;
     }
-
 
     @Override
     public boolean keyUp(int keycode) {
@@ -123,12 +112,6 @@ public class ClickOracle extends InputAdapter {
         passiveSelected.setHovered(true);
     }
 
-//    private void setSelectedClickable(Clickable clickable) {
-//        Gdx.app.log("setSelectedClickable", "set selected: " + clickable.toString());
-//        deMultiSelect();
-//        selected = clickable;
-//        selected.setSelected(true);
-//    }
     private void addToMultiselected(Unit u) {
         u.setSelected(true);
         multiSelected.add(u);
@@ -136,7 +119,7 @@ public class ClickOracle extends InputAdapter {
     
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        Gdx.app.log("lji1 - ClickOracle", "Click registered, dragging: " + dragging);
+        Gdx.app.debug("lji1 - ClickOracle", "Click registered, dragging: " + dragging);
 
         // The player must be alive to be able to register any clicks
         if (!adapter.isPlayerAlive()) {
@@ -235,18 +218,11 @@ public class ClickOracle extends InputAdapter {
                     }
                 });
             }
-            
-            
-            
         }
-
-
         return false;
     }
 
-
     private void deMultiSelect() {
-//        selected.setSelected(false);
         multiSelected.forEach(clickable -> clickable.setSelected(false));
         multiSelected.clear();
     }
@@ -254,10 +230,6 @@ public class ClickOracle extends InputAdapter {
     public void setSpawnType(SpawnInfo newInfo) {
         spawnType = newInfo.getType();
     }
-
-//    public SpriteBatch getBatch() {
-//        return batch;
-//    }
 
     public void render() {
         SpriteBatch batch = renderConfig.getBatch();
@@ -280,5 +252,4 @@ public class ClickOracle extends InputAdapter {
         batch.end();
         batch.setColor(1, 1,1, 1);
     }
-
 }

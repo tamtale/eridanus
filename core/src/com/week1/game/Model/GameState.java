@@ -1,17 +1,8 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.pfa.Connection;
-import com.badlogic.gdx.ai.pfa.PathFinder;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.Renderable;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
@@ -28,21 +19,13 @@ import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
-import java.util.HashMap;
 import java.util.List;
-import com.week1.game.TowerBuilder.TowerPresets;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 import static com.week1.game.Model.StatsConfig.*;
 
-
 public class GameState implements GameRenderable {
 
+    private final Unit2StateAdapter u2s;
     private GameGraph graph;
 
     private Array<Clickable> clickables = new Array<>();
@@ -66,6 +49,17 @@ public class GameState implements GameRenderable {
     public GameState(IWorldBuilder worldBuilder, Runnable postInit){
         // TODO tower types in memory after exchange
         this.worldBuilder = worldBuilder;
+        this.u2s = new Unit2StateAdapter() {
+            @Override
+            public Block getBlock(int i, int j, int k) {
+                return world.getBlock(i, j, k);
+            }
+
+            @Override
+            public int getHeight(int i, int j) {
+                return world.getHeight(i, j);
+            }
+        };
         world = new GameWorld(worldBuilder);
         world.getHeightMap();
         graph = world.buildGraph();
@@ -122,17 +116,7 @@ public class GameState implements GameRenderable {
     public void addUnit(Unit u){
         u.ID = minionCount;
         units.add(u);
-        u.setUnit2StateAdapter(new Unit2StateAdapter() {
-            @Override
-            public Block getBlock(int i, int j, int k) {
-                return world.getBlock(i, j, k);
-            }
-
-            @Override
-            public int getHeight(int i, int j) {
-                return world.getHeight(i, j);
-            }
-        });
+        u.setUnit2StateAdapter(u2s);
         clickables.add(u);
         damageables.add(u);
         minionCount += 1;
@@ -151,22 +135,6 @@ public class GameState implements GameRenderable {
     }
 
     public void addBuilding(Tower t, int playerID) {
-//        int startX = (int) t.x - 4;
-//        int startY = (int) t.y - 4;
-//        TowerFootprint footprint = towerLoadouts.getTowerDetails(playerID, t.getTowerType()).getFootprint();
-//        boolean[][] fp = footprint.getFp();
-//        int i = 0;
-//        for(boolean[] bool: fp){
-//            int j = 0;
-//            for(boolean boo: bool){
-//                if(boo){
-//                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0), t);
-//                }
-//                j++;
-//            }
-//            i++;
-//        }
-
         List<BlockSpec> blockSpecs = t.getLayout();
         for(int k = 0; k < blockSpecs.size(); k++) {
             BlockSpec bs = blockSpecs.get(k);
@@ -181,21 +149,14 @@ public class GameState implements GameRenderable {
     public void updateGoal(Unit unit, Vector3 goal) {
         Vector2 unitPos = new Vector2((int) unit.getX(), (int) unit.getY()); //TODO: make acutal z;
         unit.setGoal(goal);
-        OutputPath path = new OutputPath();
-        Array<Building> buildings = this.getBuildings();
+        OutputPath path;
 
-//        for(Building building: buildings) {
-//            if(building.overlap(goal.x, goal.y)) {
-//                goal = building.closestPoint(unit.getX(), unit.getY());
-//                break;
-//            }
-//        }
         Vector2 goalPos = new Vector2(goal.x, goal.y);
 
         long start = System.nanoTime();
         path = graph.search(unitPos, goalPos);
         long end = System.nanoTime();
-        Gdx.app.log("GameState - wab2", "AStar completed in " + (end - start) + " nanoseconds");
+        Gdx.app.debug("GameState - wab2", "AStar completed in " + (end - start) + " nanoseconds");
         if (path != null) {
             unit.setPath(path);
         }else{
@@ -230,11 +191,9 @@ public class GameState implements GameRenderable {
             }
         }
 
-//        Gdx.app.error("getMinionById - lji1", "Unable to find minion by given ID, returning null.");
         return null;
     }
     public void moveMinion(float dx, float dy, Unit u) {
-        System.out.println("u.x: " + u.getX() + " u.y: " + u.getY() + " dx: " + dx + " dy: " + dy);
         updateGoal(u, new Vector3(u.getX() + dx, u.getY() + dy, 0));
     }
 
@@ -295,10 +254,6 @@ public class GameState implements GameRenderable {
     private Damageable.DamageableVisitor<Void> deathVisitor = new Damageable.DamageableVisitor<Void>() {
         @Override
         public Void acceptTower(Tower tower) {
-//            Map<Vector3, Array<Connection<Vector3>>> edges = tower.getRemovedEdges();
-//            for(Vector3 block: edges.keySet()){
-//                graph.setConnections(block, edges.get(block));
-//            }
             towers.removeValue(tower, true);
             damageables.removeValue(tower, true);
             return null;
@@ -349,7 +304,6 @@ public class GameState implements GameRenderable {
         return false;
     }
 
-
     public GameWorld getWorld() {
         return world;
     }
@@ -390,13 +344,6 @@ public class GameState implements GameRenderable {
         int numPlayersAlive = playerBases.size;
         return numPlayersAlive <= 1;
     }
-
-//    // TODO: Maps from java.util don't play well with gdx arrays
-//    Array<Tower> getPlayerBases() {
-//        Tower[] pbs = new Tower[playerBases.size];
-//        playerBases.values().toArray(pbs);
-//        return new Array<>(pbs);
-//    }
 
     public Array<Building> getBuildings() {
         Array<Building> buildings = new Array<>();
@@ -507,7 +454,6 @@ public class GameState implements GameRenderable {
                 return clickable;
             }
         }
-//        Gdx.app.log("GameState.getClickableOnRay", "No clickables (units) found");
 
         // Look through all the blocks
         Clickable clickedBlock = world.getBlockOnRay(ray, intersection);

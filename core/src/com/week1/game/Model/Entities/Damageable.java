@@ -89,8 +89,6 @@ public abstract class Damageable {
             maxWidth = hpBarWidthFactor * (float)Math.log(this.getMaxHealth());
         }
         
-        System.out.println("Max width: " + maxWidth);
-        
         DecalBatch batch = config.getDecalBatch();
 
         // Orient the decal

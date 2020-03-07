@@ -5,14 +5,9 @@ import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
-import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.OutputPath;
-import com.week1.game.Pair;
-
-
 
 public class GameGraph implements IndexedGraph<Vector2> {
 
@@ -73,12 +68,6 @@ public class GameGraph implements IndexedGraph<Vector2> {
         edges[(int) fromNode.x][(int) fromNode.y].add(border);
     }
 
-    public void removeAllConnections(Vector2 fromNode, Building b){
-        // TODO: throwing exceptions, so I commented this out (lji1)???
-//        b.putRemovedEdges(fromNode, edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z]);
-//        edges[(int) fromNode.x][(int) fromNode.y][(int) fromNode.z] = new Array<>();
-    }
-
     public void addVector2(Vector2 Vector2) {
         nodeCount+=1;
         Vector2s.add(Vector2);
@@ -86,9 +75,7 @@ public class GameGraph implements IndexedGraph<Vector2> {
 
     public OutputPath search(Vector2 startNode, Vector2 endNode) {
         OutputPath path = new OutputPath();
-
         if (pathFinder.searchNodePath(startNode, endNode, heuristic, path)) {
-            System.out.println("return path");
             return path;
         }
         return null;
@@ -130,6 +117,5 @@ public class GameGraph implements IndexedGraph<Vector2> {
         if (i >= 0 && i <= 2 && j >= 0 && j <= 2){
             borders[fromX][fromY][i][j] = null;
         }
-
     }
 }
