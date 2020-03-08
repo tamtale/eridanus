@@ -1,33 +1,16 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.Renderable;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.IntMap;
-import com.badlogic.gdx.utils.Pool;
+import com.week1.game.InfoUtil;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.Tower;
-import com.week1.game.Model.World.Basic4WorldBuilder;
-import com.week1.game.Model.World.SmallWorldBuilder;
 import com.week1.game.Model.World.CoolWorldBuilder;
-import com.week1.game.Model.World.SmallWorldBuilder;
+import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
-
-import com.badlogic.gdx.math.Vector3;
-import com.week1.game.InfoUtil;
 import com.week1.game.Networking.Messages.Game.TaggedMessage;
-
-import com.badlogic.gdx.math.Vector3;
-import com.week1.game.InfoUtil;
-import com.week1.game.Networking.Messages.Game.TaggedMessage;
+import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 
@@ -35,8 +18,6 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Queue;
-import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
-import com.week1.game.Networking.Messages.MessageType;
 
 import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
 
@@ -132,18 +113,8 @@ public class GameEngine implements GameRenderable {
     }
 
 
-    Texture backgroundTexture = new Texture("starfield.png");
-
     @Override
     public void render(RenderConfig renderConfig) {
-        // Render the background 
-        SpriteBatch batch = renderConfig.getBatch();
-        batch.begin();
-        batch.draw(backgroundTexture, 0,0,
-                (int)(1920 * 800f / (float)Gdx.graphics.getWidth()), (int)(1080 * 800f / (float)Gdx.graphics.getHeight()), 
-                0, 0,1920, 1080, false, false);
-        batch.end();
-
         gameState.render(renderConfig);
     }
 
