@@ -1,5 +1,6 @@
 package com.week1.game.Networking.Messages.Game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
@@ -42,21 +43,23 @@ public class MoveMinionMessage extends GameMessage {
             Unit minion = inputState.getMinionById(id);
             if (minion != null) {
                 goodMinions++;
-                centerX += minion.getX();
-                centerY += minion.getY();
+//                centerX += minion.getX();
+//                centerY += minion.getY();
             }
         }
 
         System.out.println("Number of good minions: " + goodMinions);
         if (goodMinions > 0) {
-            centerX = centerX / goodMinions;
-            centerY = centerY / goodMinions;
+//            centerX = centerX / goodMinions;
+//            centerY = centerY / goodMinions;
 
             for (Integer id : minionIDs) {
                 Unit minion = inputState.getMinionById(id);
                 if (minion != null) {
-
-                    inputState.moveMinion(x - centerX, y - centerY, minion);
+                    float finx = x;
+                    float finy = y;
+                    Gdx.app.log("goal ", finx + " " + finy);
+                    inputState.moveMinion(x, y, minion);
 //                    inputState.moveMinion(x - 100, y - 100, minion);
                 }
             }
