@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
@@ -27,7 +28,7 @@ import static com.week1.game.Renderer.TextureUtils.makeTexture;
 import static java.lang.Math.abs;
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
-public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
+public class Unit extends Damageable implements Damaging, GameRenderable, Clickable {
     private final int playerID;
     public OutputPath path;
     private Vector3 curNode;
@@ -51,7 +52,7 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     private ModelInstance modelInstance;
     private Vector3 position = new Vector3();
     private Vector3 displayPosition = new Vector3();
-
+    
     /*
      * Material to apply to a selected unit.
      */
@@ -112,6 +113,7 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     public float getReward() {
         return 0;
     }
+
 
     @Override
     public <T> T accept(DamageableVisitor<T> visitor) {

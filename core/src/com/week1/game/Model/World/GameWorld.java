@@ -1,21 +1,11 @@
 package com.week1.game.Model.World;
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.maps.MapLayers;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g3d.*;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
@@ -26,13 +16,6 @@ import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
-import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Pool;
-import com.week1.game.Model.Entities.Clickable;
-import com.week1.game.Model.Entities.Unit;
-import com.week1.game.Pair;
 
 public class GameWorld implements GameRenderable {
     private Block[][][] blocks;
@@ -40,6 +23,8 @@ public class GameWorld implements GameRenderable {
     private boolean refreshHeight = true; // whether or not the map has changed, warranting a new height map.
     private GameGraph graph;
     private ModelInstance[][][] instances;
+    private boolean updateCache = true; // Whether or not the cache needs to be updated.
+    private ModelCache modelCache = new ModelCache();
     private BoundingBox[][][] boundingBoxes;
 
     private BoundingBox[][][] chunkBoundingBoxes;
@@ -140,6 +125,7 @@ public class GameWorld implements GameRenderable {
         updateActiveBlocks(i,j,k);
         updateGraph(i, j, block);
         refreshHeight = true;
+        updateCache = true;
     }
 
     private void updateGraph(int i, int j, Block block) {
@@ -404,18 +390,24 @@ public class GameWorld implements GameRenderable {
 
     @Override
     public void render(RenderConfig config) {
-        ModelBatch batch = config.getModelBatch();
-        Environment env = config.getEnv();
-        batch.begin(config.getCam());
-        for (ModelInstance[][] instanceArr2: instances) {
-            for (ModelInstance[] instanceArr: instanceArr2) {
-                for (ModelInstance instance: instanceArr) {
-                    if (instance != null) {
-                        batch.render(instance, env);
+        if (updateCache) {
+            modelCache.begin();
+            for (ModelInstance[][] instanceArr2: instances) {
+                for (ModelInstance[] instanceArr: instanceArr2) {
+                    for (ModelInstance instance: instanceArr) {
+                        if (instance != null) {
+                            modelCache.add(instance);
+                        }
                     }
                 }
             }
+            modelCache.end();
+            updateCache = false;
         }
+        ModelBatch batch = config.getModelBatch();
+        Environment env = config.getEnv();
+        batch.begin(config.getCam());
+        batch.render(modelCache, env);
         batch.end();
 
     }

@@ -6,14 +6,13 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.math.Vector3;
-
-import com.week1.game.Model.Direction;
 import com.week1.game.InfoUtil;
-
+import com.week1.game.Model.Direction;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +29,8 @@ public class Renderer {
     private BitmapFont font = new BitmapFont();
     private Vector3 panning = new Vector3();
     private Map<Direction, Vector3> directionToVector;
+    private Texture spaceBackground;
+    static Pixmap spacePix = new Pixmap(Gdx.files.internal("starfield.png"));
 
     {
         directionToVector = new HashMap<Direction, Vector3>() {{
@@ -48,18 +49,20 @@ public class Renderer {
                     InfoUtil util) {
         this.adapter = clickOracleAdapter;
         this.util = util;
-    }
-
-    public PerspectiveCamera getCam() {
-        return cam;
-    }
-
-    public void create() {
+        
         env = new Environment();
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         env.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         renderConfig = new RenderConfig(false, false, 0, cam, env);
+    }
+
+    public PerspectiveCamera getCam() {
+        return cam;
+    }
+    public RenderConfig getRenderConfig() { return renderConfig; }
+
+    public void create() {
         cam.position.set(-8, 20, 30);
         // cam.lookAt(10,15,0);
         cam.rotate(Vector3.X, 45f);
@@ -84,9 +87,20 @@ public class Renderer {
     }
 
     public void resize(int x, int y) {
+        // Remake the background with the correct scale.
+        Pixmap spacePixScaled = new Pixmap(x, y, spacePix.getFormat());
+        spacePixScaled.drawPixmap(spacePix,
+                0, 0, spacePix.getWidth(), spacePix.getHeight(),
+                0, 0, spacePixScaled.getWidth(), spacePixScaled.getHeight()
+        );
+        spaceBackground = new Texture(spacePixScaled);
+        spacePixScaled.dispose();
+
+
         cam.viewportWidth = x;
         cam.viewportHeight = y;
         cam.update();
+        renderConfig.update();
         gameButtonsStage.stage.getViewport().update(x, y);
     }
 
@@ -98,15 +112,6 @@ public class Renderer {
         winState = winOrLoss;
 
         gameButtonsStage.endGame(winState);
-    }
-
-    public void renderInfo() {
-        Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        startBatch();
-        font.setColor(Color.WHITE);
-        font.draw(batch, "Host IP:" + adapter.getHostAddr(), 50, 50);
-        endBatch();
     }
 
     public void drawPlayerUI() {
@@ -128,6 +133,11 @@ public class Renderer {
     public void render(float deltaTime) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        batch.begin();
+        batch.draw(spaceBackground, 0,0);
+        batch.end();
+
         updateCamera();
         renderConfig.set(getShowAttackRadius(), getShowSpawnRadius(), deltaTime);
         adapter.renderSystem(renderConfig);

@@ -1,6 +1,7 @@
 package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.Gdx;
+import com.week1.game.Networking.Messages.Control.ClientControl.JoinedPlayersMessage;
 import com.week1.game.Networking.Messages.Control.ClientControl.PlayerIdMessage;
 import com.week1.game.Networking.Messages.Control.HostControl.HostControlMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
@@ -73,6 +74,12 @@ public class Host {
                     // Tell them their playerID
                     String playerIdMessage = MessageFormatter.packageMessage(new PlayerIdMessage(player.playerId));
                     sendMessage(playerIdMessage, player);
+                    
+                    // Tell everyone that someone has joined the game
+                    List<String> joinedPlayers = new ArrayList<>();
+                    registry.forEach((addr, plyr) -> joinedPlayers.add(plyr.playerId + ": " + addr.getHostAddress()));
+                    java.util.Collections.sort(joinedPlayers);
+                    broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new JoinedPlayersMessage(-1, joinedPlayers)));
 
                     // spawn a thread to listen on this socket
                     new Thread(() -> {

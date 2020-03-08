@@ -2,6 +2,7 @@ package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Damage;
@@ -28,7 +29,9 @@ public class Tower extends Building implements Damaging {
     protected double cost;
     private List<BlockSpec> layout;
     private Map<Vector3, Array<Connection<Vector3>>> removedEdges = new HashMap<>();
-
+    
+    private Vector3 highestBlockLocation = null;
+    
     public Tower(float x, float y, float z, TowerDetails towerDetails, int playerID, int towerType) {
         this.x = x;
         this.y = y;
@@ -40,7 +43,7 @@ public class Tower extends Building implements Damaging {
         this.range = towerDetails.getRange();
         this.playerID = playerID;
         this.towerType = towerType;
-
+        this.highestBlockLocation = new Vector3(x,y,z).add(towerDetails.getHighestBlock().x, towerDetails.getHighestBlock().z, towerDetails.getHighestBlock().y);
         this.layout = towerDetails.getLayout();
     }
 
@@ -113,6 +116,7 @@ public class Tower extends Building implements Damaging {
     public float getReward() {
         return (float) cost * (float) towerDestructionBonus;
     }
+
 
     @Override
     public <T> T accept(DamageableVisitor<T> visitor) {
@@ -187,5 +191,10 @@ public class Tower extends Building implements Damaging {
                 ", range=" + range +
                 ", cost=" + cost +
                 '}';
+    }
+    
+    @Override
+    public void getDisplayPos(Vector3 displayPos) {
+        displayPos.set(highestBlockLocation);
     }
 }

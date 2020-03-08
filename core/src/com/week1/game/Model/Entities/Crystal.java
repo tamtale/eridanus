@@ -4,19 +4,23 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.Damage;
+import com.week1.game.Renderer.RenderConfig;
+
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
 /*
  * Crystals are damageable entities that give mana any time it's hit by a unit.
  */
-public class Crystal implements Damageable {
+public class Crystal extends Damageable {
 
     public  static int SIZE = 1;
 
     private static Texture selectedSkin = makeTexture(SIZE, SIZE, Color.CYAN);
     private Vector3 position = new Vector3();
+    
 
     public Crystal(float x, float y) {
         position.set(x, y, 0);
@@ -55,17 +59,6 @@ public class Crystal implements Damageable {
         return position.y;
     }
 
-    @Override
-    public float getCurrentHealth() {
-        // TODO
-        return 0;
-    }
-
-    @Override
-    public float getMaxHealth() {
-        // TODO
-        return 100;
-    }
 
 
     public boolean isDead() {
@@ -81,6 +74,22 @@ public class Crystal implements Damageable {
     public void getPos(Vector3 pos) {
         pos.set(position);
 
+    }
+
+
+    @Override
+    public float getCurrentHealth() {
+        // TODO
+        return 0;
+    }
+    @Override
+    public float getMaxHealth() {
+        // TODO
+        return 100;
+    }
+    @Override
+    public void drawHealthBar(RenderConfig config) {
+        // Don't draw a health bar
     }
 }
 

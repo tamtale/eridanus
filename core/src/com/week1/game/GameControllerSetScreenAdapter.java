@@ -9,4 +9,5 @@ import com.badlogic.gdx.Screen;
  */
 public interface GameControllerSetScreenAdapter {
     void setScreen(Screen newScreen);
+    Screen getScreen();
 }
