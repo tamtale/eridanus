@@ -108,9 +108,9 @@ public class Client {
         return this.playerId;
     }
     
-    public void sendGoToGame() {
+    public void sendGoToGame(long mapSeed) {
         // the client doesn't know its player id until later, so just use -1
-        this.sendStringMessage(MessageFormatter.packageMessage(new RequestGoToGameMessage(-1)));
+        this.sendStringMessage(MessageFormatter.packageMessage(new RequestGoToGameMessage(mapSeed, -1)));
     }
 
     public void sendLoadout(List<List<BlockSpec>> details) {

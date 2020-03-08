@@ -5,6 +5,8 @@ import com.badlogic.gdx.Screen;
 import com.week1.game.GameControllerSetScreenAdapter;
 import com.week1.game.Networking.NetworkObjects.Client;
 
+import java.sql.Connection;
+
 /**
  * This class helps unify the changing of screens during menu progressions.
  * It is stored within the Client instance so network things can change the screen as
@@ -14,20 +16,24 @@ public class ScreenManager {
     private GameControllerSetScreenAdapter gameControllerSetScreenAdapter;
     private boolean isHostScreenManager;
     private GameScreen actualGameScreen;
+    private ConnectionScreen connectionScreen;
     private Runnable gameReady;
 
-    public ScreenManager(GameControllerSetScreenAdapter gameControllerSetScreenAdapter, boolean isHost) {
+    public ScreenManager(GameControllerSetScreenAdapter gameControllerSetScreenAdapter, boolean isHost, ConnectionScreen connectionScreen) {
         this.gameControllerSetScreenAdapter = gameControllerSetScreenAdapter;
         this.isHostScreenManager = isHost;
+        this.connectionScreen = connectionScreen;
     }
 
     public void setScreen(Screen screen) {
         Gdx.app.postRunnable(()-> gameControllerSetScreenAdapter.setScreen(screen));
     }
 
+    public Screen getScreen() { return gameControllerSetScreenAdapter.getScreen(); }
     public Screen getGameScreen() {
         return actualGameScreen;
     }
+    public ConnectionScreen getConnectionScreen() { return connectionScreen; }
 
     public void setGameScreen(GameScreen actualGame) {
         this.actualGameScreen = actualGame;

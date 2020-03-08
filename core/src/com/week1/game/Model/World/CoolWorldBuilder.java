@@ -1,8 +1,6 @@
 package com.week1.game.Model.World;
 
-import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Vector3;
-import com.week1.game.Pair;
 
 import java.util.Random;
 
@@ -10,22 +8,19 @@ public class CoolWorldBuilder implements IWorldBuilder {
 
     Block[][][] blocks;
     public static CoolWorldBuilder ONLY = new CoolWorldBuilder();
+    private long seed;
+    private Random random;
+
     @Override
     public Block[][][] terrain() {
         // empty block
-        blocks = new Block[90][30][15];
-        Random random = new Random();
+        blocks = new Block[90][90][15];
+        this.random = new Random(seed);
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 if (blocks[i][j][0] == null) {
 
                     float blockType = random.nextFloat();
-//                    Pair<Integer, Integer> adjBlocks = checkAdjacentBlocks(i, j);
-//                    if (adjBlocks.key > 0) {
-//                        float min = .35f + .1f * adjBlocks.value;
-//                        float max = .98f - .01f * adjBlocks.value;
-//                        blockType = min + random.nextFloat() * (max - min);
-//                    }
                     if (blockType < 0.75) {
                         blocks[i][j][0] = Block.TerrainBlock.ZAMBALA;
                         spread(i, j, 0, .125f, .125f, .75f, true, Block.TerrainBlock.ZAMBALA);
@@ -57,25 +52,24 @@ public class CoolWorldBuilder implements IWorldBuilder {
     }
 
     private void spread(int i, int j, int k, float ortho, float diag, float sticky, boolean height, Block.TerrainBlock block) {
-        Random spread = new Random();
         int m = i;
         int n = j;
-        while (spread.nextFloat() < sticky) {
+        while (random.nextFloat() < sticky) {
             if (height){
 //                int lim = blocks[0][0].length - 1;
                 float incr = .975f - .01f * k;
-                if (spread.nextFloat() > incr && k < 2) {
+                if (random.nextFloat() > incr && k < 2) {
                     k++;
                     diag = 0;
                     ortho = .25f;
                     sticky *= 1.7f;
                     sticky = Math.min(sticky, .99f);
                 }
-                if (spread.nextFloat() < .02 && k > 0) {
+                if (random.nextFloat() < .02 && k > 0) {
                     k--;
                 }
             }
-            float dir = spread.nextFloat();
+            float dir = random.nextFloat();
             if ((m > 0 && m < blocks.length - 1) && (n > 0 && n < blocks[0].length - 1)) {
                 if (dir < ortho) {
                     blocks[m][n - 1][k] = block;
@@ -121,8 +115,7 @@ public class CoolWorldBuilder implements IWorldBuilder {
         }
     }
     private void heightBuild(int i, int j, Block.TerrainBlock block) {
-        Random height = new Random();
-        float plateau = height.nextFloat();
+        float plateau = random.nextFloat();
         if (plateau < .98) {
             blocks[i][j][0] = block;
         } else {
@@ -143,12 +136,19 @@ public class CoolWorldBuilder implements IWorldBuilder {
     public Vector3[] startLocations() {
         return new Vector3[] {
                 new Vector3(10, 10, 1),
-                new Vector3(20, 20, 1),
+                new Vector3(80, 80, 1),
+                new Vector3(80, 10, 1),
+                new Vector3(10, 80, 1)
         };
     }
 
     @Override
     public Vector3[] crystalLocations() {
         return new Vector3[0];
+    }
+
+    @Override
+    public void addSeed(long mapSeed) {
+        this.seed = mapSeed;
     }
 }

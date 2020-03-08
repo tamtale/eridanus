@@ -60,13 +60,6 @@ public class GameState implements GameRenderable {
                 return world.getHeight(i, j);
             }
         };
-        world = new GameWorld(worldBuilder);
-        world.getHeightMap();
-        graph = world.buildGraph();
-        for (Vector3 loc: worldBuilder.crystalLocations()) {
-            crystals.add(new Crystal(loc.x, loc.y));
-        }
-        graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
         this.postInit = postInit;
     }
 
@@ -80,7 +73,33 @@ public class GameState implements GameRenderable {
 
      This will create the bases for all of the players and give them all an amount of currency.
      */
-    public void initializeGame(int numPlayers) {
+    public void initializeGame(long mapSeed, int numPlayers) {
+        boolean[] mapReady = {false};
+        
+        // Needs to happen in initializeGame, so that the host can send the mapSeed,
+        // needs to happen in postRunnable because initializeGame is not called on the right thread
+        Gdx.app.postRunnable(() -> {
+            worldBuilder.addSeed(mapSeed);
+            world = new GameWorld(worldBuilder);
+            world.getHeightMap();
+            graph = world.buildGraph();
+            for (Vector3 loc: worldBuilder.crystalLocations()) {
+                crystals.add(new Crystal(loc.x, loc.y));
+            }
+            graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
+            
+            // notify the GameState that it can proceed with initialization
+            mapReady[0] = true; // 'the array trick'
+        });
+        
+        try {
+            while(!mapReady[0]) {
+                Thread.sleep(10);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
 
@@ -382,7 +401,6 @@ public class GameState implements GameRenderable {
             damageables.get(i).drawHealthBar(config);
         }
         batch2D.end();
-
     }
 
 

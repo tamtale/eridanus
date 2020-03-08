@@ -114,7 +114,6 @@ public abstract class Damageable {
         batch.flush();
     }
     
-
     public abstract <T> T accept(DamageableVisitor<T> visitor);
 
 }

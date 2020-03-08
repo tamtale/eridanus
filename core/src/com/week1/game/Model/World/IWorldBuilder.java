@@ -17,4 +17,6 @@ public interface IWorldBuilder {
      * Locations of crystals on the map.
      */
     Vector3[] crystalLocations();
+
+    void addSeed(long mapSeed);
 }
