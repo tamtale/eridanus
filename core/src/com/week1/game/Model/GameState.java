@@ -79,6 +79,7 @@ public class GameState implements GameRenderable {
         // Needs to happen in initializeGame, so that the host can send the mapSeed,
         // needs to happen in postRunnable because initializeGame is not called on the right thread
         Gdx.app.postRunnable(() -> {
+            worldBuilder.addSeed(mapSeed);
             world = new GameWorld(worldBuilder);
             world.getHeightMap();
             graph = world.buildGraph();

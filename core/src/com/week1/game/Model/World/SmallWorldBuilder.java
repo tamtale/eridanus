@@ -45,4 +45,9 @@ public class SmallWorldBuilder implements IWorldBuilder {
     public Vector3[] crystalLocations() {
         return new Vector3[0];
     }
+
+    @Override
+    public void addSeed(String mapSeed) {
+
+    }
 }
