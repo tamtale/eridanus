@@ -1,6 +1,5 @@
 package com.week1.game.Model.World;
 
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.*;
@@ -40,6 +39,8 @@ public class GameWorld implements GameRenderable {
     private boolean refreshHeight = true; // whether or not the map has changed, warranting a new height map.
     private GameGraph graph;
     private ModelInstance[][][] instances;
+    private boolean updateCache = true; // Whether or not the cache needs to be updated.
+    private ModelCache modelCache = new ModelCache();
     private BoundingBox[][][] boundingBoxes;
 
     private BoundingBox[][][] chunkBoundingBoxes;
@@ -140,6 +141,7 @@ public class GameWorld implements GameRenderable {
         updateActiveBlocks(i,j,k);
         updateGraph(i, j, block);
         refreshHeight = true;
+        updateCache = true;
     }
 
     private void updateGraph(int i, int j, Block block) {
@@ -404,18 +406,24 @@ public class GameWorld implements GameRenderable {
 
     @Override
     public void render(RenderConfig config) {
-        ModelBatch batch = config.getModelBatch();
-        Environment env = config.getEnv();
-        batch.begin(config.getCam());
-        for (ModelInstance[][] instanceArr2: instances) {
-            for (ModelInstance[] instanceArr: instanceArr2) {
-                for (ModelInstance instance: instanceArr) {
-                    if (instance != null) {
-                        batch.render(instance, env);
+        if (updateCache) {
+            modelCache.begin();
+            for (ModelInstance[][] instanceArr2: instances) {
+                for (ModelInstance[] instanceArr: instanceArr2) {
+                    for (ModelInstance instance: instanceArr) {
+                        if (instance != null) {
+                            modelCache.add(instance);
+                        }
                     }
                 }
             }
+            modelCache.end();
+            updateCache = false;
         }
+        ModelBatch batch = config.getModelBatch();
+        Environment env = config.getEnv();
+        batch.begin(config.getCam());
+        batch.render(modelCache, env);
         batch.end();
 
     }

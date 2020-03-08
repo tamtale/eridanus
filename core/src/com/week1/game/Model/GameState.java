@@ -395,7 +395,6 @@ public class GameState implements GameRenderable {
             damageables.get(i).drawHealthBar(config);
         }
         batch2D.end();
-
     }
 
 
