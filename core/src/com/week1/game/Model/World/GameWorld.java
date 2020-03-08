@@ -17,6 +17,8 @@ import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 
+import java.util.Optional;
+
 public class GameWorld implements GameRenderable {
     private Block[][][] blocks;
     private int[][] heightMap;
@@ -118,9 +120,12 @@ public class GameWorld implements GameRenderable {
     }
     public void setBlock(int i, int j, int k, Block block) {
         blocks[i][j][k] = block;
-        blocks[i][j][k]
-                .modelInstance(i,j,k)
-                .ifPresent(modelInstance -> instances[i][j][k] = modelInstance);
+        Optional<ModelInstance> modelInstance = blocks[i][j][k].modelInstance(i,j,k);
+        if (modelInstance.isPresent()) {
+            instances[i][j][k] = modelInstance.get();
+        } else {
+            instances[i][j][k] = null;
+        }
         updateBoundingBox(i,j,k);
         updateActiveBlocks(i,j,k);
         updateGraph(i, j, block);
