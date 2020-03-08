@@ -14,7 +14,7 @@ public class RenderConfig {
     private boolean showAttackRadius, showSpawnRadius;
     private float delta;
     /* Batch used to draw health bar and other HUD stuff.*/
-    private Batch batch = new SpriteBatch();
+    private SpriteBatch batch = new SpriteBatch();
     /* ModelBatch used to draw 3D models.*/
     private ModelBatch modelBatch = new ModelBatch();
     /* Camera used to view the world*/
@@ -49,7 +49,7 @@ public class RenderConfig {
         return delta;
     }
 
-    public Batch getBatch() {
+    public SpriteBatch getBatch() {
         return batch;
     }
 
