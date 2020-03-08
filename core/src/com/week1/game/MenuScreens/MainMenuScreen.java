@@ -45,12 +45,14 @@ public class MainMenuScreen implements Screen {
         //Set the background image
         stage.addActor(new Image(new TextureRegionDrawable(new Texture("nova_menu.png"))));
 
-        buildTowersButton.setSize(128,64);
-        buildTowersButton.setPosition(GameController.VIRTUAL_WIDTH/2 - playButton.getWidth()/2 - 110, 24);
+        buildTowersButton.setSize(200,64);
+        buildTowersButton.getLabel().setFontScale(1.5f);
+        buildTowersButton.setPosition(GameController.VIRTUAL_WIDTH/2 - buildTowersButton.getWidth() - 50, 24);
         stage.addActor(buildTowersButton);
 
-        playButton.setSize(128,64);
-        playButton.setPosition(GameController.VIRTUAL_WIDTH/2 - playButton.getWidth()/2  + 90, 24);
+        playButton.setSize(200,64);
+        playButton.getLabel().setFontScale(1.5f);
+        playButton.setPosition(GameController.VIRTUAL_WIDTH/2 + 50, 24);
         stage.addActor(playButton);
     }
 
