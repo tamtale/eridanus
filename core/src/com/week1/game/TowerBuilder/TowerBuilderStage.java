@@ -2,6 +2,7 @@ package com.week1.game.TowerBuilder;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -32,6 +33,7 @@ public class TowerBuilderStage {
     private TextButton removeBlockBtn;
     private SelectBox<String> materialSelection;
     private Dialog dialog;
+    Texture tex;
 
     //make skins
     private static TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
@@ -161,12 +163,26 @@ public class TowerBuilderStage {
 
 
         startGame = new TextButton("Main Menu", new Skin(Gdx.files.internal("uiskin.json")));
+        startGame.setStyle(normalStyle);
     }
 
     private void configureWidgets() {
 
         //Add the background image
-        stage.addActor(new Image(new TextureRegionDrawable(new Texture("fuzzy_galaxy.png"))));
+//        stage.addActor(new Image(new TextureRegionDrawable(new Texture("star_background.png"))));
+
+        Pixmap firePix = new Pixmap(Gdx.files.internal("star_background.png"));
+        Pixmap firePixScaled = new Pixmap((int)GameController.VIRTUAL_WIDTH, (int)GameController.VIRTUAL_HEIGHT, firePix.getFormat());
+        firePixScaled.drawPixmap(firePix,
+                0, 0, firePix.getWidth(), firePix.getHeight(),
+                0, 0, firePixScaled.getWidth(), firePixScaled.getHeight()
+        );
+        tex = new Texture(firePixScaled);
+        firePix.dispose();
+        firePixScaled.dispose();
+
+        TextureRegionDrawable reg = new TextureRegionDrawable(tex);
+        stage.addActor(new Image(reg));
 
         //Stats widget things
         sw.setSize(200,150);

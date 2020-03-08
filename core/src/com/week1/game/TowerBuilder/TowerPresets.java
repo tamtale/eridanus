@@ -184,6 +184,17 @@ public class TowerPresets {
             new BlockSpec(BlockType.MOONSTONE, 1, 2, 1)
     ), "Base");
 
+    //These are
+    public static TowerDetails guns = new TowerDetails(Arrays.asList(new BlockSpec(BlockType.FIRE, -2, 0, 0),
+            new BlockSpec(BlockType.EARTH, 0, 0, 0),
+            new BlockSpec(BlockType.WATER, 2, 0, 0)),
+            "guns");
+
+
+    public static TowerDetails materials = new TowerDetails(Arrays.asList(new BlockSpec(BlockType.MOONSTONE, -2, 0, 0),
+            new BlockSpec(BlockType.OBSIDIAN, 0, 0, 0),
+            new BlockSpec(BlockType.SPACEGOLD, 2, 0, 0)),
+            "materials");
 
     public static List<TowerDetails> presets = Arrays.asList(towerDetails1, towerDetails2, towerDetails3, towerDetails4, towerDetails5, towerDetails6);
     public static final Integer NUM_PRESETS = 6;
