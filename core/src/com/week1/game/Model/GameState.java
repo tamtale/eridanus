@@ -277,6 +277,7 @@ public class GameState implements GameRenderable {
         @Override
         public Void acceptTower(Tower t) {
             // Remove the tower from the map
+            System.out.println("Tower has died.");
             List<BlockSpec> blockSpecs = t.getLayout();
             for(int k = 0; k < blockSpecs.size(); k++) {
                 BlockSpec bs = blockSpecs.get(k);
