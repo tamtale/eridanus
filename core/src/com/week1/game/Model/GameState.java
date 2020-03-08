@@ -24,7 +24,6 @@ import java.util.List;
 import static com.week1.game.Model.StatsConfig.*;
 
 public class GameState implements GameRenderable {
-
     private final Unit2StateAdapter u2s;
     private GameGraph graph;
 
@@ -45,6 +44,10 @@ public class GameState implements GameRenderable {
      */
     private Runnable postInit;
     private boolean fullyInitialized = false;
+    
+    private GameState getGameState() {
+        return this;
+    }
 
     public GameState(IWorldBuilder worldBuilder, Runnable postInit){
         // TODO tower types in memory after exchange
@@ -272,9 +275,21 @@ public class GameState implements GameRenderable {
      */
     private Damageable.DamageableVisitor<Void> deathVisitor = new Damageable.DamageableVisitor<Void>() {
         @Override
-        public Void acceptTower(Tower tower) {
-            towers.removeValue(tower, true);
-            damageables.removeValue(tower, true);
+        public Void acceptTower(Tower t) {
+            // Remove the tower from the map
+            List<BlockSpec> blockSpecs = t.getLayout();
+            for(int k = 0; k < blockSpecs.size(); k++) {
+                BlockSpec bs = blockSpecs.get(k);
+                getGameState().world.setBlock(
+                        (int)(t.x + bs.getX()),
+                        (int)(t.y + bs.getZ()),
+                        (int)(t.z + bs.getY()),
+                        Block.TerrainBlock.AIR);
+            }
+            
+            // Remove the tower from the game state
+            towers.removeValue(t, true);
+            damageables.removeValue(t, true);
             return null;
         }
 
