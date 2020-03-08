@@ -44,4 +44,9 @@ public class Medium4WorldBuilder implements IWorldBuilder {
     public Vector3[] crystalLocations() {
         return new Vector3[] {};
     }
+
+    @Override
+    public void addSeed(long mapSeed) {
+        
+    }
 }
