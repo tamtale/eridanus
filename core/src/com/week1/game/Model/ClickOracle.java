@@ -73,7 +73,6 @@ public class ClickOracle extends InputAdapter {
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
         if (button != Input.Buttons.LEFT) return false;
         selectionLocationStart.set(screenX, Gdx.graphics.getHeight() - screenY, 0);
-        System.out.println("Start coords: " + selectionLocationStart);
         return false;
     }
     
@@ -83,7 +82,7 @@ public class ClickOracle extends InputAdapter {
         dragging = true;
         passiveSelected.setHovered(false);
         selectionLocationEnd.set(screenX, Gdx.graphics.getHeight() - screenY, 0);
-        Gdx.app.log("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
+        Gdx.app.debug("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
         return false;
     }
 

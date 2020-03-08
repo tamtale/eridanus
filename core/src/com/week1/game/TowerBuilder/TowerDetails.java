@@ -166,22 +166,17 @@ public class TowerDetails {
             price += TowerMaterials.blockPrice.get(code);
             
             
-//            System.out.println("Looking at block with coords: (" + x + ", " + y + ", " + z + ")");
             if (block.getY() > maxHeight) {
-//                System.out.println("New max height");
                 averageLocationOfHighestBlock.set(block.getX(), block.getY(), block.getZ());
                 maxHeight = block.getY();
                 numBlocksAtMaxHeight = 1;
             } else if (block.getY() == maxHeight) {
-//                System.out.println("Another block at max height");
                 averageLocationOfHighestBlock.add(block.getX(), block.getY(), block.getZ());
                 numBlocksAtMaxHeight++;
             }
-//            System.out.println("Current: " + maxHeight + ", " + numBlocksAtMaxHeight + ", " + averageLocationOfHighestBlock);
             
         }
         
-//        System.out.println("Number of blocks: "  + numBlocksAtMaxHeight);
         // Divide to find the average location of the highest blocks (this is where to put the health bar)
         averageLocationOfHighestBlock.scl(1f / ((float)numBlocksAtMaxHeight));
 

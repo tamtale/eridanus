@@ -212,8 +212,8 @@ public class GameState implements GameRenderable {
 
         return null;
     }
-    public void moveMinion(float dx, float dy, Unit u) {
-        updateGoal(u, new Vector3(u.getX() + dx, u.getY() + dy, 0));
+    public void moveMinion(float x, float y, Unit u) {
+        updateGoal(u, new Vector3(x, y, 0));
     }
 
     private Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
