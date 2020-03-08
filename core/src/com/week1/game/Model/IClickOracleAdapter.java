@@ -8,6 +8,7 @@ import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.AMessage;
+import com.week1.game.Renderer.RenderConfig;
 
 /*
  * Adapter for the click oracle to interact with the rest of the system.
@@ -19,7 +20,7 @@ public interface IClickOracleAdapter {
      */
     Clickable selectClickable(float screenX, float screenY, Vector3 intersection);
     boolean isPlayerAlive();
-    Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB);
+    Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB, RenderConfig renderConfig);
     int getGameStateHash();
     String getGameStateString();
     void sendMessage(AMessage msg);

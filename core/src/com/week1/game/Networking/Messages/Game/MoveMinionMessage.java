@@ -22,14 +22,14 @@ public class MoveMinionMessage extends GameMessage {
         minions.forEach((minion) -> minionIDs.add(minion.ID));
     }
 
-    public MoveMinionMessage(float x, float y, int playerID, int intHash, int ... ids) {
-        super(playerID, MESSAGE_TYPE, intHash);
-        this.x = x;
-        this.y = y;
-        for (int id: ids) {
-          minionIDs.add(id);
-        }
-    }
+//    public MoveMinionMessage(float x, float y, int playerID, int intHash, int ... ids) {
+//        super(playerID, MESSAGE_TYPE, intHash);
+//        this.x = x;
+//        this.y = y;
+//        for (int id: ids) {
+//          minionIDs.add(id);
+//        }
+//    }
 
 
     @Override
@@ -47,6 +47,7 @@ public class MoveMinionMessage extends GameMessage {
             }
         }
 
+        System.out.println("Number of good minions: " + goodMinions);
         if (goodMinions > 0) {
             centerX = centerX / goodMinions;
             centerY = centerY / goodMinions;
@@ -56,6 +57,7 @@ public class MoveMinionMessage extends GameMessage {
                 if (minion != null) {
 
                     inputState.moveMinion(x - centerX, y - centerY, minion);
+//                    inputState.moveMinion(x - 100, y - 100, minion);
                 }
             }
         }

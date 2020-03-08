@@ -85,7 +85,7 @@ public class GameScreen implements Screen {
 			@Override
 			public void renderSystem(RenderConfig renderConfig) {
 				engine.render(renderConfig);
-				clickOracle.render();
+				clickOracle.render(); // don't need to pass renderconfig here because Click oracle has it already via constructor
 			}
 
 			public double getPlayerMana(int playerId) {
@@ -117,6 +117,7 @@ public class GameScreen implements Screen {
 				networkClient.sendRestartRequest();
 			}
 		}, util);
+		
 		clickOracle = new ClickOracle(
 				new IClickOracleAdapter() {
 
@@ -140,8 +141,8 @@ public class GameScreen implements Screen {
 					}
 
 					@Override
-					public Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
-						return engine.getGameState().findUnitsInBox(cornerA, cornerB);
+					public Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB, RenderConfig renderConfig) {
+						return engine.getGameState().findUnitsInBox(cornerA, cornerB, renderConfig);
 					}
 
 					@Override
@@ -162,9 +163,10 @@ public class GameScreen implements Screen {
 					public int getPlayerId() {
 						return networkClient.getPlayerId();
 					}
-				});
-
+				}, renderer.getRenderConfig());
+		
 		renderer.create();
+
 	}
 
 	@Override
@@ -183,7 +185,7 @@ public class GameScreen implements Screen {
 			InputMultiplexer multiplexer = new InputMultiplexer();
 			multiplexer.addProcessor(renderer.getButtonStage());
 			multiplexer.addProcessor(clickOracle);
-			multiplexer.addProcessor(new GameCameraController(renderer.getCamera()));
+			multiplexer.addProcessor(new GameCameraController(renderer.getCamera(), renderer.getRenderConfig()));
 			Gdx.input.setInputProcessor(multiplexer);
 
 			gameStage.dispose();

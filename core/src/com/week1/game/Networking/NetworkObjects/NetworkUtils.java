@@ -2,6 +2,7 @@ package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.GameControllerSetScreenAdapter;
+import com.week1.game.MenuScreens.ConnectionScreen;
 import com.week1.game.MenuScreens.ScreenManager;
 import com.week1.game.TowerBuilder.BlockSpec;
 import org.apache.commons.cli.CommandLine;
@@ -71,7 +72,7 @@ public class NetworkUtils {
      * act as a client. (Even when hosting, the instance also behaves as a client.)
      * @return The client object
      */
-    public static Client initNetworkObjects(boolean isHost, String hostIP, Integer port, GameControllerSetScreenAdapter gameAdapter) {
+    public static Client initNetworkObjects(boolean isHost, String hostIP, Integer port, GameControllerSetScreenAdapter gameAdapter, ConnectionScreen connectionScreen) {
         final String TAG = "initNetworkObjects - lji1";
         Gdx.app.log(TAG, "Local host address: " + getLocalHostAddr());
 
@@ -88,7 +89,7 @@ public class NetworkUtils {
                 h.listenForClientMessages();
 
                 // Now make the client stuff
-                ScreenManager sm = new ScreenManager(gameAdapter, true);
+                ScreenManager sm = new ScreenManager(gameAdapter, true, connectionScreen);
                 c = new Client(localIpAddr, h.getPort(), sm);
 
             } else {
@@ -96,7 +97,7 @@ public class NetworkUtils {
                 // host ip is the number listed under ipconfig > Wireless LAN adapter Wi-Fi > IPv4 Address
 
                 try {
-                    ScreenManager sm = new ScreenManager(gameAdapter, false);
+                    ScreenManager sm = new ScreenManager(gameAdapter, false, connectionScreen);
                     c = new Client(hostIP, port, sm);
                 }
                 catch (Exception e) {

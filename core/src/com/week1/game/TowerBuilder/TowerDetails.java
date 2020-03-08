@@ -23,8 +23,8 @@ public class TowerDetails {
     private Array<ModelInstance> model = new Array<>();
     private List<BlockSpec> layout;
     private TowerFootprint footprint;
+    private Vector3 averageLocationOfHighestBlock = new Vector3();
     private String name = "";
-
     private float BLOCKLENGTH = TowerMaterials.BLOCKLENGTH;
 
     public List<BlockSpec> getLayout() {
@@ -49,6 +49,10 @@ public class TowerDetails {
 
     public Array<ModelInstance> getModel() {
         return model;
+    }
+    
+    public Vector3 getHighestBlock() {
+        return averageLocationOfHighestBlock;
     }
 
     private List<BlockSpec> parseLayoutString(String layout) {
@@ -114,6 +118,11 @@ public class TowerDetails {
         this.layout = layout;
         this.name = name;
 
+        // TODO: remove
+        if(layout.get(0).getBlockCode() == BlockType.SPACEGOLD) {
+            System.out.println("Init base!");
+        }
+        
         //generate model and stats
         populateFields();
     }
@@ -122,19 +131,21 @@ public class TowerDetails {
     /*
         Overloaded constructor to allow us to bypass automatic stat generation, if necessary for testing
      */
-    public TowerDetails(TowerFootprint fp, double health, double price, double range, double damage) {
-        this.footprint = fp;
-        this.hp = health;
-        this.price = price;
-        this.range = range;
-        this.atk = damage;
-    }
+//    public TowerDetails(TowerFootprint fp, double health, double price, double range, double damage) {
+//        this.footprint = fp;
+//        this.hp = health;
+//        this.price = price;
+//        this.range = range;
+//        this.atk = damage;
+//    }
 
     private void populateFields() {
         int base_blocks = 0;
 
         this.footprint = new TowerFootprint();
 
+        int maxHeight = Integer.MIN_VALUE;
+        int numBlocksAtMaxHeight = 0;
         for (int i = 0; i < layout.size(); i++) {
             BlockSpec block = layout.get(i);
 
@@ -153,7 +164,26 @@ public class TowerDetails {
             rawAtk += TowerMaterials.blockAtk.get(code);
             height = Integer.max(height, y + 1);
             price += TowerMaterials.blockPrice.get(code);
+            
+            
+//            System.out.println("Looking at block with coords: (" + x + ", " + y + ", " + z + ")");
+            if (block.getY() > maxHeight) {
+//                System.out.println("New max height");
+                averageLocationOfHighestBlock.set(block.getX(), block.getY(), block.getZ());
+                maxHeight = block.getY();
+                numBlocksAtMaxHeight = 1;
+            } else if (block.getY() == maxHeight) {
+//                System.out.println("Another block at max height");
+                averageLocationOfHighestBlock.add(block.getX(), block.getY(), block.getZ());
+                numBlocksAtMaxHeight++;
+            }
+//            System.out.println("Current: " + maxHeight + ", " + numBlocksAtMaxHeight + ", " + averageLocationOfHighestBlock);
+            
         }
+        
+//        System.out.println("Number of blocks: "  + numBlocksAtMaxHeight);
+        // Divide to find the average location of the highest blocks (this is where to put the health bar)
+        averageLocationOfHighestBlock.scl(1f / ((float)numBlocksAtMaxHeight));
 
         //We aren't calculating armour multipliers, etc
         atk = rawAtk * 0.05;

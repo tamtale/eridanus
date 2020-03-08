@@ -5,14 +5,9 @@ import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
-import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.OutputPath;
-import com.week1.game.Pair;
-
-
 
 public class GameGraph implements IndexedGraph<Vector2> {
 
@@ -122,7 +117,5 @@ public class GameGraph implements IndexedGraph<Vector2> {
         if (i >= 0 && i <= 2 && j >= 0 && j <= 2){
             borders[fromX][fromY][i][j] = null;
         }
-
     }
-
 }

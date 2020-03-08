@@ -49,18 +49,20 @@ public class Renderer {
                     InfoUtil util) {
         this.adapter = clickOracleAdapter;
         this.util = util;
-    }
-
-    public PerspectiveCamera getCam() {
-        return cam;
-    }
-
-    public void create() {
+        
         env = new Environment();
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         env.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         renderConfig = new RenderConfig(false, false, 0, cam, env);
+    }
+
+    public PerspectiveCamera getCam() {
+        return cam;
+    }
+    public RenderConfig getRenderConfig() { return renderConfig; }
+
+    public void create() {
         cam.position.set(-8, 20, 30);
         // cam.lookAt(10,15,0);
         cam.rotate(Vector3.X, 45f);
@@ -98,6 +100,7 @@ public class Renderer {
         cam.viewportWidth = x;
         cam.viewportHeight = y;
         cam.update();
+        renderConfig.update();
         gameButtonsStage.stage.getViewport().update(x, y);
     }
 

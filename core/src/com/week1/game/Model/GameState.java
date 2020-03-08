@@ -1,17 +1,8 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.pfa.Connection;
-import com.badlogic.gdx.ai.pfa.PathFinder;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.Renderable;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
@@ -28,18 +19,9 @@ import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
-import java.util.HashMap;
 import java.util.List;
-import com.week1.game.TowerBuilder.TowerPresets;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 import static com.week1.game.Model.StatsConfig.*;
-
 
 public class GameState implements GameRenderable {
 
@@ -78,13 +60,6 @@ public class GameState implements GameRenderable {
                 return world.getHeight(i, j);
             }
         };
-        world = new GameWorld(worldBuilder);
-        world.getHeightMap();
-        graph = world.buildGraph();
-        for (Vector3 loc: worldBuilder.crystalLocations()) {
-            crystals.add(new Crystal(loc.x, loc.y));
-        }
-        graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
         this.postInit = postInit;
     }
 
@@ -98,7 +73,33 @@ public class GameState implements GameRenderable {
 
      This will create the bases for all of the players and give them all an amount of currency.
      */
-    public void initializeGame(int numPlayers) {
+    public void initializeGame(long mapSeed, int numPlayers) {
+        boolean[] mapReady = {false};
+        
+        // Needs to happen in initializeGame, so that the host can send the mapSeed,
+        // needs to happen in postRunnable because initializeGame is not called on the right thread
+        Gdx.app.postRunnable(() -> {
+            worldBuilder.addSeed(mapSeed);
+            world = new GameWorld(worldBuilder);
+            world.getHeightMap();
+            graph = world.buildGraph();
+            for (Vector3 loc: worldBuilder.crystalLocations()) {
+                crystals.add(new Crystal(loc.x, loc.y));
+            }
+            graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
+            
+            // notify the GameState that it can proceed with initialization
+            mapReady[0] = true; // 'the array trick'
+        });
+        
+        try {
+            while(!mapReady[0]) {
+                Thread.sleep(10);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
 
@@ -182,11 +183,16 @@ public class GameState implements GameRenderable {
         }
     }
 
-    public Array<Unit> findUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
+    public Array<Unit> findUnitsInBox(Vector3 cornerA, Vector3 cornerB, RenderConfig renderConfig) {
         Array<Unit> unitsToSelect = new Array<>();
+        Vector3 scrnCoords = new Vector3();
+        
         for (Unit u : units) {
-            if (Math.min(cornerA.x, cornerB.x) < u.getX() && u.getX() < Math.max(cornerA.x, cornerB.x) &&
-                Math.min(cornerA.y, cornerB.y) < u.getY() && u.getY() < Math.max(cornerA.y, cornerB.y)) {
+            scrnCoords.set(u.getX(), u.getY(), u.getZ());
+            renderConfig.getCam().project(scrnCoords);
+            
+            if (Math.min(cornerA.x, cornerB.x) < scrnCoords.x && scrnCoords.x < Math.max(cornerA.x, cornerB.x) &&
+                Math.min(cornerA.y, cornerB.y) < scrnCoords.y && scrnCoords.y < Math.max(cornerA.y, cornerB.y)) {
                 unitsToSelect.add(u);
             }
         }

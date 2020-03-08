@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
+import com.week1.game.GameControllerSetScreenAdapter;
 import com.week1.game.TowerBuilder.TowerBuilderScreen;
 
 /**
@@ -60,7 +61,17 @@ public class MainMenuScreen implements Screen {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new ConnectionScreen(newScreen -> game.setScreen(newScreen)));
+                game.setScreen(new ConnectionScreen(new GameControllerSetScreenAdapter() {
+                    @Override
+                    public void setScreen(Screen newScreen) {
+                        game.setScreen(newScreen);
+                    }
+
+                    @Override
+                    public Screen getScreen() {
+                        return game.getScreen();
+                    }
+                }));
             }
         });
 

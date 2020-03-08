@@ -20,9 +20,11 @@ import java.util.Arrays;
 public class RequestGoToGameMessage extends HostControlMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.REQUESTGOTOGAME;
     private final static String TAG = "StartMessage";
+    private long mapSeed;
     
-    public RequestGoToGameMessage(int playerID) {
+    public RequestGoToGameMessage(long mapSeed, int playerID) {
         super(playerID, MESSAGE_TYPE);
+        this.mapSeed = mapSeed;
     }
 
     @Override 
@@ -48,7 +50,7 @@ public class RequestGoToGameMessage extends HostControlMessage {
         h.broadcastToRegisteredPlayers(MessageFormatter.packageMessage(
                 new Update(Arrays.asList(
                     MessageFormatter.packageMessage(new TowerDetailsMessage(-1, h.towerDetails, 0)),
-                    MessageFormatter.packageMessage(new InitMessage(h.registry.size(), -1, 0))
+                    MessageFormatter.packageMessage(new InitMessage(mapSeed, h.registry.size(), -1, 0))
                 ))
         ));
         
