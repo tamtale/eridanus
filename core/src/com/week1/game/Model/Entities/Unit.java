@@ -53,7 +53,6 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     private Vector3 position = new Vector3();
     private Vector3 displayPosition = new Vector3();
     
-
     /*
      * Material to apply to a selected unit.
      */

@@ -98,16 +98,11 @@ public abstract class Damageable {
                 unitPosition.x + p.normal.x, unitPosition.y + p.normal.y, unitPosition.z + p.normal.z,
                 p, lookAt);
         hpBar.lookAt(lookAt, config.getCam().up);
-//        hpBarBackground.lookAt(lookAt, config.getCam().up);
         
         // Set the position of the decal
         this.getDisplayPos(unitPosition);
         unitPosition.add(0,0,1.5f);
         hpBar.setPosition(unitPosition);
-//        hpBarBackground.setPosition(
-//                unitPosition.x - (p.normal.x * 0.1f), 
-//                unitPosition.y - (p.normal.y * 0.1f), 
-//                unitPosition.z - (p.normal.z * 0.1f));
         
         // Update decal texture (color and size)
         hpBar.setTextureRegion(HealthBar.getHealthBarTexture(this.getCurrentHealth(), this.getMaxHealth()));
@@ -119,23 +114,6 @@ public abstract class Damageable {
         batch.flush();
     }
     
-//    default void drawHealthBar2d(RenderConfig config) {
-////        float currentHealth = getCurrentHealth();
-////        float maxHealth = getMaxHealth();
-////        SpriteBatch batch = config.getBatch();
-////        Camera cam = config.getCam();
-////        this.getDisplayPos(unitPosition);
-////
-////        cam.project(unitPosition); // go from world coordinates to screen coordinates
-////
-////        float scale = (float)Math.pow(1.1, config.zoomFactor);
-////        float width = 100 * scale;
-////        float height = 10 * scale;
-////        float above = 80 * scale;
-////        batch.draw(healthBarBackground, unitPosition.x - (width / 2) , unitPosition.y + above, width, height);
-////        batch.draw(getHealthBar(getCurrentHealth(), getMaxHealth()),
-////                unitPosition.x - (width / 2), unitPosition.y + above, currentHealth / maxHealth * width, height);
-//    }
 
     public abstract <T> T accept(DamageableVisitor<T> visitor);
 
