@@ -9,10 +9,10 @@ public class InitMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.INIT;
     private final static String TAG = "InitMessage";
 
-    private String mapSeed;
+    private long mapSeed;
     private int numPlayers;
 
-    public InitMessage(String mapSeed, int numPlayers, int playerID, int intHash){
+    public InitMessage(long mapSeed, int numPlayers, int playerID, int intHash){
         super(playerID, MESSAGE_TYPE, intHash);
         this.mapSeed = mapSeed;
         this.numPlayers = numPlayers;

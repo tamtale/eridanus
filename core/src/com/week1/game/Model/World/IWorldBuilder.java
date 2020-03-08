@@ -18,5 +18,5 @@ public interface IWorldBuilder {
      */
     Vector3[] crystalLocations();
 
-    void addSeed(String mapSeed);
+    void addSeed(long mapSeed);
 }

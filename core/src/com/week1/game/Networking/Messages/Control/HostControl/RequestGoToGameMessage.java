@@ -20,9 +20,9 @@ import java.util.Arrays;
 public class RequestGoToGameMessage extends HostControlMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.REQUESTGOTOGAME;
     private final static String TAG = "StartMessage";
-    private String mapSeed;
+    private long mapSeed;
     
-    public RequestGoToGameMessage(String mapSeed, int playerID) {
+    public RequestGoToGameMessage(long mapSeed, int playerID) {
         super(playerID, MESSAGE_TYPE);
         this.mapSeed = mapSeed;
     }

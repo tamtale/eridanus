@@ -26,6 +26,7 @@ import com.week1.game.TowerBuilder.TowerDetails;
 import com.week1.game.TowerBuilder.TowerPresets;
 import com.week1.game.TowerBuilder.TowerUtils;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -176,13 +177,14 @@ public class LoadoutScreen implements Screen {
                 public void clicked(InputEvent event, float x, float y) {
                     Gdx.app.log("pjb3 LoadoutScreen", "About to send start message.");
 
-                    String enteredSeed = mapSeedField.getText();
+                    long enteredSeed = parseMapSeed(mapSeedField.getText());
                     Gdx.app.log("lji1 LoadoutScreen", "Using seed: " + enteredSeed);
                     networkClient.sendGoToGame(enteredSeed);
                 }
             });
 
         }
+        
 
         networkClient.getScreenManager().setGameReadySequence(()-> {
             if (isHostingClient) {
@@ -195,14 +197,24 @@ public class LoadoutScreen implements Screen {
 
         createNewGame(); // MAKE the game but dont start it yet.
         Gdx.input.setInputProcessor(loadoutStage);
+ 
+ 
+    }
+    private long parseMapSeed(String mapSeed) {
+        try {
+            return Long.parseLong(mapSeed);
+        } catch (NumberFormatException e){
+            return 123456789;
+        }
     }
 
     private String generateRandomSeed() {
         StringBuilder randomSeed = new StringBuilder();
         
-        Character[] seedCharacters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 
-                'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 
-                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+//        Character[] seedCharacters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 
+//                'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 
+//                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        Character[] seedCharacters = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
         int seedLength = 10;
         
         for (int i = 0; i < seedLength; i++) {

@@ -8,14 +8,14 @@ public class CoolWorldBuilder implements IWorldBuilder {
 
     Block[][][] blocks;
     public static CoolWorldBuilder ONLY = new CoolWorldBuilder();
-    private String seed;
+    private long seed;
     private Random random;
 
     @Override
     public Block[][][] terrain() {
         // empty block
-        blocks = new Block[90][30][15];
-        this.random = new Random(Long.parseLong(seed));
+        blocks = new Block[90][90][15];
+        this.random = new Random(seed);
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 if (blocks[i][j][0] == null) {
@@ -136,7 +136,9 @@ public class CoolWorldBuilder implements IWorldBuilder {
     public Vector3[] startLocations() {
         return new Vector3[] {
                 new Vector3(10, 10, 1),
-                new Vector3(20, 20, 1),
+                new Vector3(80, 80, 1),
+                new Vector3(80, 10, 1),
+                new Vector3(10, 80, 1)
         };
     }
 
@@ -146,7 +148,7 @@ public class CoolWorldBuilder implements IWorldBuilder {
     }
 
     @Override
-    public void addSeed(String mapSeed) {
+    public void addSeed(long mapSeed) {
         this.seed = mapSeed;
     }
 }

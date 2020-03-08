@@ -47,7 +47,7 @@ public class SmallWorldBuilder implements IWorldBuilder {
     }
 
     @Override
-    public void addSeed(String mapSeed) {
+    public void addSeed(long mapSeed) {
 
     }
 }

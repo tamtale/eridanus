@@ -73,7 +73,7 @@ public class GameState implements GameRenderable {
 
      This will create the bases for all of the players and give them all an amount of currency.
      */
-    public void initializeGame(String mapSeed, int numPlayers) {
+    public void initializeGame(long mapSeed, int numPlayers) {
         boolean[] mapReady = {false};
         
         // Needs to happen in initializeGame, so that the host can send the mapSeed,
