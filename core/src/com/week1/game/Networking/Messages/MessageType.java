@@ -16,9 +16,11 @@ public enum MessageType {
     GOTOLOADOUT,
     GOTOGAME,
     READYTOSTART,
+    RESTART,
     
     // Host Control Messages
-    REQUESTGOTOGAME,
     SUBMITLOADOUT,
+    REQUESTGOTOGAME,
     REQUESTGOTOLOADOUT,
+    REQUESTRESTART,
 }
