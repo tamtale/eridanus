@@ -1,9 +1,7 @@
 package com.week1.game.TowerBuilder;
 
 import com.badlogic.gdx.Gdx;
-import com.week1.game.Model.Entities.Tower;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,88 +12,88 @@ public class TowerPresets {
 
 
     private static TowerDetails towerDetails1 = new TowerDetails(Arrays.asList(
-            new BlockSpec(BlockType.OBSIDIAN, 0,0,0),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 0, 1),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 0, -1),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 0, 0),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 0, 0),
-            new BlockSpec(BlockType.MOONSTONE, 0, 1, 0),
+            new BlockSpec(BlockType.ETHERITE, 0,0,0),
+            new BlockSpec(BlockType.ETHERITE, 0, 0, 1),
+            new BlockSpec(BlockType.ETHERITE, 0, 0, -1),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, 1, 0, 0),
+            new BlockSpec(BlockType.KUIPERIUM, 0, 1, 0),
             new BlockSpec(BlockType.FIRE, 0, 2, 0)), "Preset 1");
 
     private static TowerDetails towerDetails2 =  new TowerDetails(Arrays.asList(
-            new BlockSpec(BlockType.SPACEGOLD, 0,0,0),
-            new BlockSpec(BlockType.SPACEGOLD, 0,1,0),
-            new BlockSpec(BlockType.SPACEGOLD, 0,2,0),
-            new BlockSpec(BlockType.SPACEGOLD, 0,3,0),
+            new BlockSpec(BlockType.NOVACORE, 0,0,0),
+            new BlockSpec(BlockType.NOVACORE, 0,1,0),
+            new BlockSpec(BlockType.NOVACORE, 0,2,0),
+            new BlockSpec(BlockType.NOVACORE, 0,3,0),
             new BlockSpec(BlockType.EARTH, 0,4,0),
             new BlockSpec(BlockType.WATER, 0,5,0),
             new BlockSpec(BlockType.FIRE, 0,6,0)), "Preset 2");
 
     private static TowerDetails towerDetails3 = new TowerDetails(Arrays.asList(
-            new BlockSpec(BlockType.OBSIDIAN, 0, 0, -1),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, 0, 0, -1),
+            new BlockSpec(BlockType.ETHERITE, 0, 0, 0),
             new BlockSpec(BlockType.EARTH, 0, 0, 1),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 0, -1),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, -1),
             new BlockSpec(BlockType.EARTH, -1, 0, 0),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 0, 1),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, 1),
             new BlockSpec(BlockType.EARTH, 1, 0, -1),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 0, 0),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 0, 1),
-            new BlockSpec(BlockType.OBSIDIAN, 2, 0, -1),
+            new BlockSpec(BlockType.ETHERITE, 1, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, 1, 0, 1),
+            new BlockSpec(BlockType.ETHERITE, 2, 0, -1),
             new BlockSpec(BlockType.EARTH, 2, 0, 0),
-            new BlockSpec(BlockType.OBSIDIAN, 2, 0, 1)), "Preset 3");
+            new BlockSpec(BlockType.ETHERITE, 2, 0, 1)), "Preset 3");
 
     private static TowerDetails towerDetails4 = new TowerDetails(Arrays.asList(
-            new BlockSpec(BlockType.OBSIDIAN, 0, 0, 0),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 1, 0),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 1, 0),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 1, 0),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 1, -1),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 1, 1),
-            new BlockSpec(BlockType.WATER, -1, 2, 0),
-            new BlockSpec(BlockType.SPACEGOLD, 0, 2, 0),
-            new BlockSpec(BlockType.WATER, 1, 2, 0),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 2, 1),
-            new BlockSpec(BlockType.WATER, 0, 2, 1),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 2, 1),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 2, -1),
-            new BlockSpec(BlockType.WATER, 0, 2, -1),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 2, -1)), "Preset 4");
+            new BlockSpec(BlockType.NOVACORE, 0, 2, 0),
+            new BlockSpec(BlockType.ETHERITE, 0, 1, 0),
+            new BlockSpec(BlockType.WATER, 1, 1, 0),
+            new BlockSpec(BlockType.WATER, -1, 1, 0),
+            new BlockSpec(BlockType.WATER, 0, 1, -1),
+            new BlockSpec(BlockType.WATER, 0, 1, 1),
+            new BlockSpec(BlockType.KUIPERIUM, -1, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, 0, 0, 0),
+            new BlockSpec(BlockType.KUIPERIUM, 1, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, 1),
+            new BlockSpec(BlockType.KUIPERIUM, 0, 0, 1),
+            new BlockSpec(BlockType.ETHERITE, 1, 0, 1),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, -1),
+            new BlockSpec(BlockType.KUIPERIUM, 0, 0, -1),
+            new BlockSpec(BlockType.ETHERITE, 1, 0, -1)), "Preset 4");
 
     private static TowerDetails towerDetails5 = new TowerDetails(Arrays.asList(
-            new BlockSpec(BlockType.MOONSTONE, -1, 0, 0),
-            new BlockSpec(BlockType.MOONSTONE, 0, 0, 0),
-            new BlockSpec(BlockType.MOONSTONE, 1, 0, 0),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 0, 1),
-            new BlockSpec(BlockType.MOONSTONE, 0, 0, 1),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 0, 1),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 0, -1),
-            new BlockSpec(BlockType.MOONSTONE, 0, 0, -1),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 0, -1),
-            new BlockSpec(BlockType.SPACEGOLD, 0, 1, 0),
-            new BlockSpec(BlockType.SPACEGOLD, 0, 2, 0),
+            new BlockSpec(BlockType.KUIPERIUM, -1, 0, 0),
+            new BlockSpec(BlockType.KUIPERIUM, 0, 0, 0),
+            new BlockSpec(BlockType.KUIPERIUM, 1, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, 1),
+            new BlockSpec(BlockType.KUIPERIUM, 0, 0, 1),
+            new BlockSpec(BlockType.ETHERITE, 1, 0, 1),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, -1),
+            new BlockSpec(BlockType.KUIPERIUM, 0, 0, -1),
+            new BlockSpec(BlockType.ETHERITE, 1, 0, -1),
+            new BlockSpec(BlockType.NOVACORE, 0, 1, 0),
+            new BlockSpec(BlockType.NOVACORE, 0, 2, 0),
             new BlockSpec(BlockType.FIRE, 0, 3, 0),
             new BlockSpec(BlockType.FIRE, 0, 4, 0)), "Preset 5");
 
     private static TowerDetails towerDetails6 = new TowerDetails(Arrays.asList(
-            new BlockSpec(BlockType.OBSIDIAN, 0, 0, -1),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 0, -1),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 0, 0),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 0, 0),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 0, 1),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 0, 1),
+            new BlockSpec(BlockType.ETHERITE, 0, 0, -1),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, -1),
+            new BlockSpec(BlockType.ETHERITE, 0, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, 0, 0, 1),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, 1),
             new BlockSpec(BlockType.FIRE, 0, 1, -1),
-            new BlockSpec(BlockType.SPACEGOLD, -1, 1, -1),
+            new BlockSpec(BlockType.NOVACORE, -1, 1, -1),
             new BlockSpec(BlockType.WATER, 0, 1, 0),
             new BlockSpec(BlockType.WATER, -1, 1, 0),
-            new BlockSpec(BlockType.SPACEGOLD, 0, 1, 1),
+            new BlockSpec(BlockType.NOVACORE, 0, 1, 1),
             new BlockSpec(BlockType.FIRE, -1, 1, 1),
-            new BlockSpec(BlockType.MOONSTONE, 0, 2, -1),
-            new BlockSpec(BlockType.MOONSTONE, -1, 2, -1),
-            new BlockSpec(BlockType.MOONSTONE, 0, 2, 0),
-            new BlockSpec(BlockType.MOONSTONE, -1, 2, 0),
-            new BlockSpec(BlockType.MOONSTONE, 0, 2, 1),
-            new BlockSpec(BlockType.MOONSTONE, -1, 2, 1)), "Preset 6");
+            new BlockSpec(BlockType.KUIPERIUM, 0, 2, -1),
+            new BlockSpec(BlockType.KUIPERIUM, -1, 2, -1),
+            new BlockSpec(BlockType.KUIPERIUM, 0, 2, 0),
+            new BlockSpec(BlockType.KUIPERIUM, -1, 2, 0),
+            new BlockSpec(BlockType.KUIPERIUM, 0, 2, 1),
+            new BlockSpec(BlockType.KUIPERIUM, -1, 2, 1)), "Preset 6");
 
 
     public static TowerDetails highlightGround = new TowerDetails(Arrays.asList(new BlockSpec(BlockType.GROUND_HIGHLIGHT, -2, -1, 0),
@@ -126,62 +124,62 @@ public class TowerPresets {
             "Highlight ground");
 
     public static TowerDetails base = new TowerDetails(Arrays.asList(
-            new BlockSpec(BlockType.SPACEGOLD,-2, 0, -2),
-            new BlockSpec(BlockType.OBSIDIAN,-2, 0,  -1),
-            new BlockSpec(BlockType.OBSIDIAN,-2, 0, 0),
-            new BlockSpec(BlockType.OBSIDIAN,-2, 0, 1),
-            new BlockSpec(BlockType.SPACEGOLD,-2, 0, 2),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 0, -2),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 0,  -1),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 0, 0),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 0, 1),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 0, 2),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 0, -2),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 0,  -1),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 0, 0),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 0, 1),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 0, 2),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 0, -2),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 0,  -1),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 0, 0),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 0, 1),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 0, 2),
-            new BlockSpec(BlockType.SPACEGOLD, 2, 0, -2),
-            new BlockSpec(BlockType.OBSIDIAN, 2, 0,  -1),
-            new BlockSpec(BlockType.OBSIDIAN, 2, 0, 0),
-            new BlockSpec(BlockType.OBSIDIAN, 2, 0, 1),
-            new BlockSpec(BlockType.SPACEGOLD, 2, 0, 2),
+            new BlockSpec(BlockType.NOVACORE,-2, 0, -2),
+            new BlockSpec(BlockType.ETHERITE,-2, 0,  -1),
+            new BlockSpec(BlockType.ETHERITE,-2, 0, 0),
+            new BlockSpec(BlockType.ETHERITE,-2, 0, 1),
+            new BlockSpec(BlockType.NOVACORE,-2, 0, 2),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, -2),
+            new BlockSpec(BlockType.ETHERITE, -1, 0,  -1),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, 1),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, 2),
+            new BlockSpec(BlockType.ETHERITE, 0, 0, -2),
+            new BlockSpec(BlockType.ETHERITE, 0, 0,  -1),
+            new BlockSpec(BlockType.ETHERITE, 0, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, 0, 0, 1),
+            new BlockSpec(BlockType.ETHERITE, 0, 0, 2),
+            new BlockSpec(BlockType.ETHERITE, 1, 0, -2),
+            new BlockSpec(BlockType.ETHERITE, 1, 0,  -1),
+            new BlockSpec(BlockType.ETHERITE, 1, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, 1, 0, 1),
+            new BlockSpec(BlockType.ETHERITE, 1, 0, 2),
+            new BlockSpec(BlockType.NOVACORE, 2, 0, -2),
+            new BlockSpec(BlockType.ETHERITE, 2, 0,  -1),
+            new BlockSpec(BlockType.ETHERITE, 2, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, 2, 0, 1),
+            new BlockSpec(BlockType.NOVACORE, 2, 0, 2),
 
-            new BlockSpec(BlockType.SPACEGOLD,-2, 1, -2),
-            new BlockSpec(BlockType.OBSIDIAN,-2, 1,  -1),
-            new BlockSpec(BlockType.OBSIDIAN,-2, 1, 0),
-            new BlockSpec(BlockType.OBSIDIAN,-2, 1, 1),
-            new BlockSpec(BlockType.SPACEGOLD,-2, 1, 2),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 1, -2),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 1,  -1),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 1, 0),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 1, 1),
-            new BlockSpec(BlockType.OBSIDIAN, -1, 1, 2),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 1, -2),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 1,  -1),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 1, 0),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 1, 1),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 1, 2),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 1, -2),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 1,  -1),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 1, 0),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 1, 1),
-            new BlockSpec(BlockType.OBSIDIAN, 1, 1, 2),
-            new BlockSpec(BlockType.SPACEGOLD, 2, 1, -2),
-            new BlockSpec(BlockType.OBSIDIAN, 2, 1,  -1),
-            new BlockSpec(BlockType.OBSIDIAN, 2, 1, 0),
-            new BlockSpec(BlockType.OBSIDIAN, 2, 1, 1),
-            new BlockSpec(BlockType.SPACEGOLD, 2, 1, 2),
-            new BlockSpec(BlockType.MOONSTONE, 0, 2, 0),
-            new BlockSpec(BlockType.MOONSTONE, -1, 2, -1),
-            new BlockSpec(BlockType.MOONSTONE, -1, 2, 1),
-            new BlockSpec(BlockType.MOONSTONE, 1, 2, -1),
-            new BlockSpec(BlockType.MOONSTONE, 1, 2, 1)
+            new BlockSpec(BlockType.NOVACORE,-2, 1, -2),
+            new BlockSpec(BlockType.ETHERITE,-2, 1,  -1),
+            new BlockSpec(BlockType.ETHERITE,-2, 1, 0),
+            new BlockSpec(BlockType.ETHERITE,-2, 1, 1),
+            new BlockSpec(BlockType.NOVACORE,-2, 1, 2),
+            new BlockSpec(BlockType.ETHERITE, -1, 1, -2),
+            new BlockSpec(BlockType.ETHERITE, -1, 1,  -1),
+            new BlockSpec(BlockType.ETHERITE, -1, 1, 0),
+            new BlockSpec(BlockType.ETHERITE, -1, 1, 1),
+            new BlockSpec(BlockType.ETHERITE, -1, 1, 2),
+            new BlockSpec(BlockType.ETHERITE, 0, 1, -2),
+            new BlockSpec(BlockType.ETHERITE, 0, 1,  -1),
+            new BlockSpec(BlockType.ETHERITE, 0, 1, 0),
+            new BlockSpec(BlockType.ETHERITE, 0, 1, 1),
+            new BlockSpec(BlockType.ETHERITE, 0, 1, 2),
+            new BlockSpec(BlockType.ETHERITE, 1, 1, -2),
+            new BlockSpec(BlockType.ETHERITE, 1, 1,  -1),
+            new BlockSpec(BlockType.ETHERITE, 1, 1, 0),
+            new BlockSpec(BlockType.ETHERITE, 1, 1, 1),
+            new BlockSpec(BlockType.ETHERITE, 1, 1, 2),
+            new BlockSpec(BlockType.NOVACORE, 2, 1, -2),
+            new BlockSpec(BlockType.ETHERITE, 2, 1,  -1),
+            new BlockSpec(BlockType.ETHERITE, 2, 1, 0),
+            new BlockSpec(BlockType.ETHERITE, 2, 1, 1),
+            new BlockSpec(BlockType.NOVACORE, 2, 1, 2),
+            new BlockSpec(BlockType.KUIPERIUM, 0, 2, 0),
+            new BlockSpec(BlockType.KUIPERIUM, -1, 2, -1),
+            new BlockSpec(BlockType.KUIPERIUM, -1, 2, 1),
+            new BlockSpec(BlockType.KUIPERIUM, 1, 2, -1),
+            new BlockSpec(BlockType.KUIPERIUM, 1, 2, 1)
     ), "Base");
 
     //These are
@@ -191,9 +189,9 @@ public class TowerPresets {
             "guns");
 
 
-    public static TowerDetails materials = new TowerDetails(Arrays.asList(new BlockSpec(BlockType.MOONSTONE, -2, 0, 0),
-            new BlockSpec(BlockType.OBSIDIAN, 0, 0, 0),
-            new BlockSpec(BlockType.SPACEGOLD, 2, 0, 0)),
+    public static TowerDetails materials = new TowerDetails(Arrays.asList(new BlockSpec(BlockType.KUIPERIUM, -2, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, 0, 0, 0),
+            new BlockSpec(BlockType.NOVACORE, 2, 0, 0)),
             "materials");
 
     public static List<TowerDetails> presets = Arrays.asList(towerDetails1, towerDetails2, towerDetails3, towerDetails4, towerDetails5, towerDetails6);
@@ -212,7 +210,7 @@ public class TowerPresets {
 
     public static TowerDetails getBuildCore() {
         ArrayList<BlockSpec> layout = new ArrayList<>();
-        layout.add(new BlockSpec(BlockType.OBSIDIAN, 0, 0, 0));
+        layout.add(new BlockSpec(BlockType.ETHERITE, 0, 0, 0));
         return new TowerDetails(layout, "Building core");
 
     }
