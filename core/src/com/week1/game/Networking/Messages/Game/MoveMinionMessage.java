@@ -56,9 +56,6 @@ public class MoveMinionMessage extends GameMessage {
             for (Integer id : minionIDs) {
                 Unit minion = inputState.getMinionById(id);
                 if (minion != null) {
-                    float finx = x;
-                    float finy = y;
-                    Gdx.app.log("goal ", finx + " " + finy);
                     inputState.moveMinion(x, y, minion);
 //                    inputState.moveMinion(x - 100, y - 100, minion);
                 }
