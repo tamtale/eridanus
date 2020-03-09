@@ -244,7 +244,6 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
 
     public void setPath(OutputPath path) {
         this.path = path;
-
         if (path.getPath().size >= 2) {
             path.removeIndex(0);
             float dx = path.get(0).x - this.position.x;
