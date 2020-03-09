@@ -244,21 +244,24 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
 
     public void setPath(OutputPath path) {
         this.path = path;
-        path.removeIndex(0);
-        float dx = path.get(0).x- this.position.x;
-        float dy = path.get(0).y - this.position.y;
-        double angle = Math.atan(dy/dx);
-        if (dx < 0) {
-            angle += Math.PI;
-        } else if (dy < 0) {
-            angle += 2 * Math.PI;
+
+        if (path.getPath().size >= 2) {
+            path.removeIndex(0);
+            float dx = path.get(0).x - this.position.x;
+            float dy = path.get(0).y - this.position.y;
+            double angle = Math.atan(dy / dx);
+            if (dx < 0) {
+                angle += Math.PI;
+            } else if (dy < 0) {
+                angle += 2 * Math.PI;
+            }
+            this.lastNode = new Vector3(this.position.x, this.position.y, 0);
+            this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
+            vel.x = (float) speed * (float) Math.cos(angle);
+            vel.y = (float) speed * (float) Math.sin(angle);
+            this.distanceTraveled = 0;
+            path.removeIndex(0);
         }
-        this.lastNode = new Vector3(this.position.x, this.position.y, 0);
-        this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
-        vel.x = (float) speed * (float) Math.cos(angle);
-        vel.y = (float) speed * (float) Math.sin(angle);
-        this.distanceTraveled = 0;
-        path.removeIndex(0);
     }
 
     public void setGoal(Vector3 goal) {
