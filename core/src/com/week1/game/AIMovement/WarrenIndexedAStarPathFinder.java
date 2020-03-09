@@ -53,7 +53,7 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
 
     public boolean searchNodePath(N startNode, N endNode, Heuristic<N> heuristic, GraphPath<N> outPath) {
         boolean found = this.search(startNode, endNode, heuristic);
-        Gdx.app.log("wab2 - AStar", "found? " + found);
+        Gdx.app.debug("wab2 - AStar", "found? " + found);
         if (found) {
             this.generateNodePath(startNode, outPath);
         }
