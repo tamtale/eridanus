@@ -39,10 +39,10 @@ public class ClickOracle extends InputAdapter {
     private boolean dragging = false;
     private Map<Integer, Direction> keycodeToDirection = new HashMap<>();
     {
-        keycodeToDirection.put(Input.Keys.UP, Direction.UP);
-        keycodeToDirection.put(Input.Keys.DOWN, Direction.DOWN);
-        keycodeToDirection.put(Input.Keys.LEFT, Direction.LEFT);
-        keycodeToDirection.put(Input.Keys.RIGHT, Direction.RIGHT);
+        keycodeToDirection.put(Input.Keys.W, Direction.UP);
+        keycodeToDirection.put(Input.Keys.A, Direction.LEFT);
+        keycodeToDirection.put(Input.Keys.S, Direction.DOWN);
+        keycodeToDirection.put(Input.Keys.D, Direction.RIGHT);
     }
 
     private SpawnInfo.SpawnType spawnType;
@@ -55,7 +55,7 @@ public class ClickOracle extends InputAdapter {
     @Override
     public boolean keyDown(int keycode) {
         if (keycodeToDirection.containsKey(keycode)) {
-            adapter.setTranslationDirection(keycodeToDirection.get(keycode));
+            adapter.setRotationDirection(keycodeToDirection.get(keycode));
             return true;
         }
         return true;
@@ -64,7 +64,7 @@ public class ClickOracle extends InputAdapter {
     @Override
     public boolean keyUp(int keycode) {
         if (keycodeToDirection.containsKey(keycode)) {
-            adapter.setTranslationDirection(Direction.NONE);
+            adapter.setRotationDirection(Direction.NONE);
         }
         return true;
     }
@@ -90,7 +90,8 @@ public class ClickOracle extends InputAdapter {
     long endTime = 0;
     int events = 0;
     int sum = 0;
-    
+
+    private static int SCREEN_THRESHOLD = 15;
     @Override
     public boolean mouseMoved (int screenX, int screenY) {
         endTime = System.nanoTime();
@@ -102,6 +103,19 @@ public class ClickOracle extends InputAdapter {
         startTime = System.nanoTime();
         
         setPassiveClickable(adapter.selectClickable(screenX, screenY, touchPos));
+
+        // If the mouse is on the edge of the screen, translate the camera.
+        if (screenX < SCREEN_THRESHOLD) {
+            adapter.setTranslationDirection(Direction.LEFT);
+        } else if (screenX > Gdx.graphics.getWidth() - SCREEN_THRESHOLD) {
+            adapter.setTranslationDirection(Direction.RIGHT);
+        } else if (screenY < SCREEN_THRESHOLD) {
+            adapter.setTranslationDirection(Direction.UP);
+        } else if (screenY > Gdx.graphics.getHeight() - SCREEN_THRESHOLD) {
+            adapter.setTranslationDirection(Direction.DOWN);
+        } else {
+            adapter.setTranslationDirection(Direction.NONE);
+        }
         return true;
     }
 

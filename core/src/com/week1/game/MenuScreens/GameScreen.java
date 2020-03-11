@@ -4,10 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -69,6 +66,11 @@ public class GameScreen implements Screen {
 			}
 
 			@Override
+			public void setCenter(Vector3 center) {
+			    renderer.setCenter(center);
+			}
+
+			@Override
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
@@ -124,6 +126,11 @@ public class GameScreen implements Screen {
 					@Override
 					public void setTranslationDirection(Direction direction) {
 						renderer.setPanning(direction);
+					}
+
+					@Override
+					public void setRotationDirection(Direction direction) {
+						renderer.setDeltaRotation(direction);
 					}
 
 					public Camera getCamera() {
