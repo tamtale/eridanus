@@ -14,6 +14,7 @@ public class CoolWorldBuilder implements IWorldBuilder {
     private long seed;
     private Random random;
 
+    //TODO: can just be an arraylist
     final static Map<Integer, Pair<Block.TerrainBlock, Block.TerrainBlock>> blockColors = new HashMap<Integer, Pair<Block.TerrainBlock, Block.TerrainBlock>>() {{
         this.put(0, new Pair<>(Block.TerrainBlock.ZAMBALA, Block.TerrainBlock.FIREBRICK));
         this.put(1, new Pair<>(Block.TerrainBlock.PURPLE, Block.TerrainBlock.PINK));
@@ -26,7 +27,8 @@ public class CoolWorldBuilder implements IWorldBuilder {
         blocks = new Block[90][90][15];
         this.random = new Random(seed);
         
-        blockTextures = blockColors.get(random.nextInt(blockColors.size())); // randomly pick a color scheme
+//        blockTextures = blockColors.get(random.nextInt(blockColors.size())); // randomly pick a color scheme
+        blockTextures = blockColors.get(1); // randomly pick a color scheme
         
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
@@ -34,12 +36,12 @@ public class CoolWorldBuilder implements IWorldBuilder {
 
                     float blockType = random.nextFloat();
                     if (blockType < 0.75) {
-                        blocks[i][j][0] = Block.TerrainBlock.ZAMBALA;
-                        spread(i, j, 0, .125f, .125f, .75f, true, blockTextures.key);
+                        blocks[i][j][0] = blockTextures.key;
+                        spread(i, j, 0, .125f, .125f, .75f, true, blockTextures.key); //zamb
                         //heightBuild(i, j, Block.TerrainBlock.ZAMBALA);
                     } else if (blockType < .98) {
-                        blocks[i][j][0] = Block.TerrainBlock.FIREBRICK;
-                        spread(i, j, 0, .125f, .125f, .85f, true, blockTextures.value);
+                        blocks[i][j][0] = blockTextures.value;
+                        spread(i, j, 0, .125f, .125f, .85f, true, blockTextures.value); //fire
                         //heightBuild(i, j, Block.TerrainBlock.FIREBRICK);
                     } else {
                         blocks[i][j][0] = Block.TerrainBlock.WATER;
