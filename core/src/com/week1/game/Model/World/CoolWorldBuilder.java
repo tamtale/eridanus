@@ -1,7 +1,10 @@
 package com.week1.game.Model.World;
 
 import com.badlogic.gdx.math.Vector3;
+import com.week1.game.Pair;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class CoolWorldBuilder implements IWorldBuilder {
@@ -11,11 +14,20 @@ public class CoolWorldBuilder implements IWorldBuilder {
     private long seed;
     private Random random;
 
+    final static Map<Integer, Pair<Block.TerrainBlock, Block.TerrainBlock>> blockColors = new HashMap<Integer, Pair<Block.TerrainBlock, Block.TerrainBlock>>() {{
+        this.put(0, new Pair<>(Block.TerrainBlock.ZAMBALA, Block.TerrainBlock.FIREBRICK));
+        this.put(1, new Pair<>(Block.TerrainBlock.PURPLE, Block.TerrainBlock.PINK));
+    }};
+    Pair<Block.TerrainBlock, Block.TerrainBlock> blockTextures;
+    
     @Override
     public Block[][][] terrain() {
         // empty block
         blocks = new Block[90][90][15];
         this.random = new Random(seed);
+        
+        blockTextures = blockColors.get(random.nextInt(blockColors.size())); // randomly pick a color scheme
+        
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 if (blocks[i][j][0] == null) {
@@ -23,11 +35,11 @@ public class CoolWorldBuilder implements IWorldBuilder {
                     float blockType = random.nextFloat();
                     if (blockType < 0.75) {
                         blocks[i][j][0] = Block.TerrainBlock.ZAMBALA;
-                        spread(i, j, 0, .125f, .125f, .75f, true, Block.TerrainBlock.ZAMBALA);
+                        spread(i, j, 0, .125f, .125f, .75f, true, blockTextures.key);
                         //heightBuild(i, j, Block.TerrainBlock.ZAMBALA);
                     } else if (blockType < .98) {
                         blocks[i][j][0] = Block.TerrainBlock.FIREBRICK;
-                        spread(i, j, 0, .125f, .125f, .85f, true, Block.TerrainBlock.FIREBRICK);
+                        spread(i, j, 0, .125f, .125f, .85f, true, blockTextures.value);
                         //heightBuild(i, j, Block.TerrainBlock.FIREBRICK);
                     } else {
                         blocks[i][j][0] = Block.TerrainBlock.WATER;
@@ -127,7 +139,7 @@ public class CoolWorldBuilder implements IWorldBuilder {
     private void makePlateau(Block[][][] blocks, int startX, int endX, int startY, int endY) {
         for (int i = startX; i <= endX; i++) {
             for (int j = startY; j <= endY; j++) {
-                blocks[i][j][1] = Block.TerrainBlock.FIREBRICK;
+                blocks[i][j][1] = blockTextures.value;
             }
         }
     }

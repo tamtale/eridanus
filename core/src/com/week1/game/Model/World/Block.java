@@ -92,6 +92,24 @@ public interface Block {
                 return Optional.of(instance);
             }
         };
+        
+        public static TerrainBlock PURPLE = new TerrainBlock(Color.PURPLE, 1f) {
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                ModelInstance instance = new ModelInstance(model);
+                instance.transform.setToTranslation(x, y, z);
+                return Optional.of(instance);
+            }
+        };
+        
+        public static TerrainBlock PINK = new TerrainBlock(Color.PINK, 1f) {
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                ModelInstance instance = new ModelInstance(model);
+                instance.transform.setToTranslation(x, y, z);
+                return Optional.of(instance);
+            }
+        };
 
         public static TerrainBlock WATER = new TerrainBlock(Color.CYAN, 5f) {
             @Override
