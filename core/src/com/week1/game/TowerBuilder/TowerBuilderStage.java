@@ -246,13 +246,13 @@ public class TowerBuilderStage {
                    screen.displayBuildCore();
                    sw.setLblTxt(screen.getTowerStats());
                    buildModeBtn.setStyle(pressedStyle);
-                   addBuildButtons();
+                   activateBuildMode();
                } else {
                    screen.setCamTower(displaySelection.getSelected());
                    sw.setLblTxt(screen.getTowerStats());
 
                    buildModeBtn.setStyle(normalStyle);
-                   removeBuildButtons();
+                   deactivateBuildMode();
                }
 
            }
@@ -261,19 +261,10 @@ public class TowerBuilderStage {
         addBlockBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                isAddMode = !isAddMode;
                 if (addBlockBtn.isChecked()) {
-                    addBlockBtn.setStyle(pressedStyle);
-
-                    //uncheck other buttons
-                    screen.stopHighlighting();
-
-                    isDelMode = false;
-                    removeBlockBtn.setChecked(false);
-                    removeBlockBtn.setStyle(normalStyle);
-
+                    activateAdd();
                 } else {
-                    addBlockBtn.setStyle(normalStyle);
+                    deactivateAdd();
                 }
              }
         });
@@ -282,19 +273,11 @@ public class TowerBuilderStage {
         removeBlockBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                isDelMode = !isDelMode;
+                System.out.println("remove button is " + removeBlockBtn.isChecked());
                 if (removeBlockBtn.isChecked()) {
-                    removeBlockBtn.setStyle(pressedStyle);
-
-                    //uncheck other buttons
-                    screen.stopHighlighting();
-
-                    isAddMode = false;
-                    addBlockBtn.setChecked(false);
-                    addBlockBtn.setStyle(normalStyle);
-
+                    activateRemove();
                 } else {
-                    removeBlockBtn.setStyle(normalStyle);
+                    deactivateRemove();
                 }
             }
         });
@@ -302,9 +285,7 @@ public class TowerBuilderStage {
         saveTowerBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //TODO - this
                 dialog.show(dialogStage);
-//                screen.saveTower();
             }
         });
 
@@ -322,39 +303,6 @@ public class TowerBuilderStage {
     public void render() {
         stage.act();
         stage.draw();
-    }
-
-    private void addBuildButtons() {
-        addBlockBtn.setVisible(true);
-        materialSelection.setVisible(true);
-        removeBlockBtn.setVisible(true);
-        saveTowerBtn.setVisible(true);
-
-        displaySelection.setDisabled(true);
-        displaySelection.setStyle(disabledSelectBox);
-    }
-
-    private void removeBuildButtons() {
-        //Hide buttons
-        addBlockBtn.setVisible(false);
-        materialSelection.setVisible(false);
-        removeBlockBtn.setVisible(false);
-        saveTowerBtn.setVisible(false);
-
-        //Change modes
-        isAddMode = false;
-        isDelMode = false;
-
-        //set unpressed styles
-        addBlockBtn.setStyle(normalStyle);
-        removeBlockBtn.setStyle(normalStyle);
-
-        //unhighlight blocks
-        screen.stopHighlighting();
-
-        //re-enable display
-        displaySelection.setDisabled(false);
-        displaySelection.setStyle(normalSelectBox);
     }
 
     public String getMaterialSelection() {
@@ -393,6 +341,83 @@ public class TowerBuilderStage {
         });
 
         d.show(dialogStage);
+    }
+
+
+    private void activateAdd() {
+        if (isDelMode) {
+            deactivateRemove();
+        }
+
+        isAddMode = true;
+
+        //press button and stop highlighting previous mode block
+        screen.stopHighlighting();
+        addBlockBtn.setStyle(pressedStyle);
+        addBlockBtn.setChecked(true);
+
+    }
+
+    private void deactivateAdd() {
+        isAddMode = false;
+
+        //uncheck the button
+        addBlockBtn.setChecked(false);
+        addBlockBtn.setStyle(normalStyle);
+    }
+
+    private void activateRemove() {
+        if (isAddMode) {
+            deactivateAdd();
+        }
+
+        isDelMode = true;
+
+        //press button and stop highlighting previous mode block
+        screen.stopHighlighting();
+        removeBlockBtn.setStyle(pressedStyle);
+        removeBlockBtn.setChecked(true);
+    }
+
+    private void deactivateRemove() {
+        isDelMode = false;
+        removeBlockBtn.setStyle(normalStyle);
+        removeBlockBtn.setChecked(false);
+    }
+
+    private void activateBuildMode() {
+        //display build mode actors
+        addBlockBtn.setVisible(true);
+        materialSelection.setVisible(true);
+        removeBlockBtn.setVisible(true);
+        saveTowerBtn.setVisible(true);
+
+        //hide display select box
+        displaySelection.setDisabled(true);
+        displaySelection.setStyle(disabledSelectBox);
+
+        //uncheck all buttons
+        addBlockBtn.setChecked(false);
+        removeBlockBtn.setChecked(false);
+
+    }
+
+    private void deactivateBuildMode() {
+        deactivateAdd();
+        deactivateRemove();
+
+        //hide actors
+        addBlockBtn.setVisible(false);
+        materialSelection.setVisible(false);
+        removeBlockBtn.setVisible(false);
+        saveTowerBtn.setVisible(false);
+
+        //unhighlight blocks
+        screen.stopHighlighting();
+
+        //re-enable display
+        displaySelection.setDisabled(false);
+        displaySelection.setStyle(normalSelectBox);
     }
 
 }
