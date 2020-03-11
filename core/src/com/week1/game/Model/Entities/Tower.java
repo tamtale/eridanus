@@ -184,11 +184,10 @@ public class Tower extends Building implements Damaging {
     final private int effectOffset = r.nextInt(spawnerInterval);
     public void doSpecialEffect(int communicationTurn, GameState state) {
         
-        System.out.println("effect offset: " + effectOffset);
+//            new BlockSpec(BlockType.SPAWNER, 0, 2, 0)), "Preset 1");
         
         // Spawner special effect
         if (!spawnerCounts.keySet().isEmpty() && (communicationTurn + effectOffset) % spawnerInterval == 0) {
-            System.out.println("Starting minion spawn.");
             int minionX = -1;
             int minionY = -1;
             int minionZ = -1;
@@ -208,7 +207,6 @@ public class Tower extends Building implements Damaging {
                         // Generate random coordinates near the spawner tower
                         minionX = r.nextInt(maxX - minX) + minX;
                         minionY = r.nextInt(maxY - minY) + minY;
-                        System.out.println("(" + minionX + ", " + minionY + ", " + minionZ);
                         for (int potentialZ = 0; potentialZ < dims[2]; potentialZ++) {
                             if (state.getWorld().getBlock(minionX, minionY, potentialZ) != Block.TerrainBlock.AIR) {
                                 minionZ = potentialZ;
