@@ -12,18 +12,26 @@ import java.util.List;
 import java.util.Scanner;
 
 public class TowerDetails {
-    private double hp = 0;
-    private double atk = 0;
-    private int height = 0;
-    private double range = 0;
-    private int rawHp = 0;
-    private int rawAtk = 0;
-    private int armour = 1;
-    private double price = 0;
     private Array<ModelInstance> model = new Array<>();
     private List<BlockSpec> layout;
     private TowerFootprint footprint;
     private String name = "";
+
+
+    //these stats are based off the raw blocks
+    private int rawHeight = 0;
+    private int rawHp = 0;
+    private int rawAtk = 0;
+    private double price = 0;
+
+    //These stats are based off raw stats and multipliers
+    private double hp = 0;
+    private double atk = 0;
+    private double range = 0;
+    private int armour = 1;
+
+    //For penalizing small bases
+    private int baseSize = 0;
 
     private float BLOCKLENGTH = TowerMaterials.BLOCKLENGTH;
 
@@ -80,7 +88,6 @@ public class TowerDetails {
             blocks.add(new BlockSpec(BlockType.values()[code], x, y, z));
         }
 
-
         return blocks;
     }
 
@@ -102,7 +109,7 @@ public class TowerDetails {
             System.out.println(twrName);
             layout = blocks;
             name = twrName;
-            populateFields();
+            calcRawStats();
 
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
@@ -115,7 +122,7 @@ public class TowerDetails {
         this.name = name;
 
         //generate model and stats
-        populateFields();
+        calcRawStats();
     }
 
     
@@ -130,9 +137,7 @@ public class TowerDetails {
         this.atk = damage;
     }
 
-    private void populateFields() {
-        int base_blocks = 0;
-
+    private void calcRawStats() {
         this.footprint = new TowerFootprint();
 
         for (int i = 0; i < layout.size(); i++) {
@@ -151,14 +156,25 @@ public class TowerDetails {
             //Generate the tower stats
             rawHp += TowerMaterials.blockHp.get(code);
             rawAtk += TowerMaterials.blockAtk.get(code);
-            height = Integer.max(height, y + 1);
+            rawHeight = Integer.max(rawHeight, y + 1);
             price += TowerMaterials.blockPrice.get(code);
+
+
+            //Getting the base size
+            if (y == 0) {
+                baseSize += 1;
+            }
         }
 
-        //We aren't calculating armour multipliers, etc
+        calcFinalStats();
+    }
+
+    private void calcFinalStats() {
         atk = rawAtk * 0.05;
-        hp = rawHp * armour;
-        range = height * 3;
+        range = rawHeight * 3;
+
+        //penalties up to basesize of 5
+        hp = rawHp * Math.min(1, baseSize/5);
 
     }
 
@@ -193,12 +209,18 @@ public class TowerDetails {
         this.model.add(blockInstance);
         this.footprint.setFootPrint(x + 2, z + 2, true);
 
+        if (y == 0) {
+            baseSize += 1;
+        }
+
         //populate the fields
-        this.atk += TowerMaterials.blockAtk.get(code);
-        this.hp += TowerMaterials.blockHp.get(code);
-        height = Integer.max(height, y + 1);
-        range = height * 3;
+        this.rawAtk += TowerMaterials.blockAtk.get(code);
+        this.rawHp += TowerMaterials.blockHp.get(code);
+        rawHeight = Integer.max(rawHeight, y + 1);
+//        range = rawHeight * 3;
         this.price += TowerMaterials.blockPrice.get(code);
+
+        calcFinalStats();
 
     }
 
@@ -285,9 +307,6 @@ public class TowerDetails {
     }
 
     protected boolean removeBlock(int x, int y, int z) {
-//        int x = bs.getX();
-//        int y = bs.getY();
-//        int z = bs.getZ();
         BlockType code = null;
 
         int modelIdx = -1;
@@ -332,19 +351,19 @@ public class TowerDetails {
 
 
         //update the fields
-        this.atk -= TowerMaterials.blockAtk.get(code);
-        this.hp -= TowerMaterials.blockHp.get(code);
+        this.rawAtk -= TowerMaterials.blockAtk.get(code);
+        this.rawHp -= TowerMaterials.blockHp.get(code);
         this.price -= TowerMaterials.blockPrice.get(code);
 
         //updating range and footprint
         if (shrinkFootprint) {
+            baseSize -= 1;
             this.footprint.setFootPrint(x + 2, z + 2, false);
         }
 
-        height = newHt;
-        range = newHt * 3;
+        rawHeight = newHt;
 
-
+        calcFinalStats();
         return true;
 
     }
