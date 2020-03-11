@@ -12,5 +12,7 @@ public enum BlockType {
     EASTEREGG,
 
     HIGHLIGHT,
-    GROUND_HIGHLIGHT
+    GROUND_HIGHLIGHT,
+
+    SPAWNER
 }

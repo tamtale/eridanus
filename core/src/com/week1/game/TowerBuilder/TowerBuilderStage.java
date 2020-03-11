@@ -120,7 +120,7 @@ public class TowerBuilderStage {
         materialSelection = new SelectBox<>(normalSelectBox);
 
         Array<String> materials = new Array<>();
-        for (String material: TowerMaterials.materialNames.keySet()) {
+        for (String material: TowerMaterials.materialCodes.keySet()) {
             materials.add(material);
         }
 
@@ -273,7 +273,6 @@ public class TowerBuilderStage {
         removeBlockBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("remove button is " + removeBlockBtn.isChecked());
                 if (removeBlockBtn.isChecked()) {
                     activateRemove();
                 } else {

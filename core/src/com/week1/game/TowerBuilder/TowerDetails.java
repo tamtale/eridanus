@@ -106,7 +106,6 @@ public class TowerDetails {
             myReader.close();
 
             String twrName = filename.substring(13, filename.length() - 11);
-            System.out.println(twrName);
             layout = blocks;
             name = twrName;
             calcRawStats();
@@ -252,7 +251,6 @@ public class TowerDetails {
             q.remove(0);
             seen.add(cur);
 
-            System.out.println(seen);
             List<BlockSpec> nbrs = getNbrs(cur, updatedBlocks);
             for (int i = 0; i < nbrs.size(); i++) {
                 if (!seen.contains(nbrs.get(i)) & !q.contains(nbrs.get(i))) {
@@ -263,9 +261,7 @@ public class TowerDetails {
         }
 
         if (seen.size() != updatedBlocks.size()) {
-            Gdx.app.log("expected " + updatedBlocks.size() + " blocks but only saw " + seen.size() + " blocks", "skv2");
-            System.out.println(updatedBlocks);
-            System.out.println(seen);
+            Gdx.app.log("Unable to remove: TowerDetails expected " + updatedBlocks.size() + " blocks but only saw " + seen.size() + " blocks", "skv2");
             return false;
         }
 
@@ -314,7 +310,6 @@ public class TowerDetails {
         boolean shrinkFootprint = true;
         int newHt = 0;
 
-        System.out.println("removal");
         for (int i = 0; i < layout.size(); i++) {
             if (code == null) {
                 BlockSpec b = layout.get(i);
