@@ -96,6 +96,7 @@ public class GameEngine implements GameRenderable {
         gameState.updateMana(1);
         gameState.dealDamage(1);
         gameState.moveUnits(THRESHOLD);
+        gameState.doTowerSpecialAbilities(communicationTurn);
 
         // Check the win/loss/restart conditions
         if (!sentWinLoss) {

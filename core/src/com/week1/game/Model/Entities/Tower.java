@@ -1,22 +1,28 @@
 package com.week1.game.Model.Entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Damage;
+import com.week1.game.Model.GameState;
+import com.week1.game.Model.World.Block;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.week1.game.Model.StatsConfig.*;
 
 public class Tower extends Building implements Damaging {
     private static final int SIDELENGTH = 3;
+    private static final Random r = new Random(123456789);
     public float x, y, z;
     private static Texture skin; // TODO change this when we go to 3D to actually use the model of the tower.
     protected int playerID;
@@ -29,7 +35,7 @@ public class Tower extends Building implements Damaging {
     protected double cost;
     private List<BlockSpec> layout;
     private Map<Vector3, Array<Connection<Vector3>>> removedEdges = new HashMap<>();
-    
+    private Map<Integer, Integer> spawnerCounts;
     private Vector3 highestBlockLocation = null;
     
     public Tower(float x, float y, float z, TowerDetails towerDetails, int playerID, int towerType) {
@@ -45,6 +51,7 @@ public class Tower extends Building implements Damaging {
         this.towerType = towerType;
         this.highestBlockLocation = new Vector3(x,y,z).add(towerDetails.getHighestBlock().x, towerDetails.getHighestBlock().z, towerDetails.getHighestBlock().y);
         this.layout = towerDetails.getLayout();
+        this.spawnerCounts = towerDetails.getSpawnerCounts();
     }
 
 
@@ -171,6 +178,59 @@ public class Tower extends Building implements Damaging {
 
     public List<BlockSpec> getLayout() {
         return layout;
+    }
+    
+    public void doSpecialEffect(int communicationTurn, GameState state) {
+        
+        // Spawner special effect
+        if (!spawnerCounts.keySet().isEmpty() && communicationTurn % 5 == 0) {
+            int minionX = -1;
+            int minionY = -1;
+            int minionZ = -1;
+            
+            int[] dims = state.getWorld().getWorldDimensions();
+            
+            int minX = Math.max((int)x - 5, 0);
+            int maxX = Math.min((int)x + 5, dims[0] - 1);
+            int minY = Math.max((int)y - 5, 0);
+            int maxY = Math.min((int)y + 5, dims[1] - 1);
+
+            while (true) {
+                // Generate random coordinates near the spawner tower
+                minionX = ThreadLocalRandom.current().nextInt(minX, maxX);
+                minionY = ThreadLocalRandom.current().nextInt(minY, maxY);
+                System.out.println("(" + minionX + ", " + minionY + ", " + minionZ);
+                for (int potentialZ = 0; potentialZ < dims[2]; potentialZ++) {
+                    if (state.getWorld().getBlock(minionX, minionY, potentialZ) != Block.TerrainBlock.AIR) {
+                        minionZ = potentialZ;
+                    }
+                }
+                minionZ++; // Minion should go on top of the highest non-air block
+
+                // Make sure the z coordinate is on the map
+                if (dims[2] <= minionZ || minionZ < 0) {
+                    continue; // generate new coordinates
+                }
+                
+                // Make sure supporting block is an okay place to spawn
+                if (!state.getWorld().getBlock(minionX, minionY, minionZ - 1).allowMinionToSpawnOn()) {
+                    continue; // generate new coordinates
+                }
+                
+                break; // The random coordinates generated are acceptable; spawn the minion
+            }
+            
+            Gdx.app.debug("Tower- lji1", "About to spawn a minion at: " + minionX + ", " + minionY + ", " + minionZ);
+            
+            // Create and place the minion
+            final float finalMinionX = minionX;
+            final float finalMinionY = minionY;
+            final float finalMinionZ = minionZ;
+            Gdx.app.postRunnable(() -> {
+                Unit unit = new Unit(finalMinionX, finalMinionY, finalMinionZ, tempMinion1Health, playerID);
+                state.addUnit(unit);
+            });
+        }
     }
 
     @Override

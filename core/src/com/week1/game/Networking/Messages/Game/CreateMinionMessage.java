@@ -43,11 +43,15 @@ public class CreateMinionMessage extends GameMessage {
         }
         
         // Test to see if the minion is going to be placed on top of a tower or base
-        for (Building building : inputState.getBuildings()) {
-            if (building.overlap(this.x, this.y)) {
-                util.log("lji1 - CreateMinionMessage", "Overlapping with base or tower.");
-                return false;
-            }
+//        for (Building building : inputState.getBuildings()) {
+//            if (building.overlap(this.x, this.y)) {
+//                util.log("lji1 - CreateMinionMessage", "Overlapping with base or tower.");
+//                return false;
+//            }
+//        }
+        if (!inputState.getWorld().getBlock((int)x, (int)y, (int)z - 1).allowMinionToSpawnOn()) {
+            util.log("lji1 - CreateMinionMessage", "Not allowed to spawn minion on tower.");
+            return false;
         }
 
 
