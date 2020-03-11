@@ -31,14 +31,15 @@ public class Renderer {
     static Pixmap spacePix = new Pixmap(Gdx.files.internal("starfield.png"));
     private float deltaRotation = 0f;
     private float totalRotation = 0f;
+    private static float PAN_SCALE = 1.5f;
     private Map<Direction, Vector3> directionToVector;
     {
         directionToVector = new HashMap<Direction, Vector3>() {{
-            put(Direction.UP, new Vector3(0, 1, 0));
-            put(Direction.DOWN, new Vector3(0, -1, 0));
-            put(Direction.LEFT, new Vector3(-1, 0, 0));
-            put(Direction.RIGHT, new Vector3(1, 0, 0));
-            put(Direction.NONE, new Vector3(0, 0, 0));
+            put(Direction.UP, new Vector3(0, 1, 0).scl(PAN_SCALE));
+            put(Direction.DOWN, new Vector3(0, -1, 0).scl(PAN_SCALE));
+            put(Direction.LEFT, new Vector3(-1, 0, 0).scl(PAN_SCALE));
+            put(Direction.RIGHT, new Vector3(1, 0, 0).scl(PAN_SCALE));
+            put(Direction.NONE, new Vector3(0, 0, 0).scl(PAN_SCALE));
         }};
     }
 
@@ -121,7 +122,6 @@ public class Renderer {
     }
 
     public void setPanning(Direction direction) {
-        Vector3 panningDirection = directionToVector.get(direction);
         panning.set(directionToVector.get(direction));
         // Make sure panning is relative to the current rotation.
         panning.rotate(Vector3.Z, totalRotation);

@@ -91,7 +91,7 @@ public class ClickOracle extends InputAdapter {
     int events = 0;
     int sum = 0;
 
-    private static int SCREEN_THRESHOLD = 15;
+    private static int SCREEN_THRESHOLD = 30;
     @Override
     public boolean mouseMoved (int screenX, int screenY) {
         endTime = System.nanoTime();
