@@ -19,7 +19,8 @@ public class TowerPresets {
             new BlockSpec(BlockType.OBSIDIAN, 0, 0, -1),
             new BlockSpec(BlockType.OBSIDIAN, -1, 0, 0),
             new BlockSpec(BlockType.OBSIDIAN, 1, 0, 0),
-            new BlockSpec(BlockType.MOONSTONE, 0, 1, 0),
+//            new BlockSpec(BlockType.MOONSTONE, 0, 1, 0),
+            new BlockSpec(BlockType.SPAWNER, 0, 1, 0),
 //            new BlockSpec(BlockType.FIRE, 0, 2, 0)), "Preset 1");
             new BlockSpec(BlockType.SPAWNER, 0, 2, 0)), "Preset 1");
 

@@ -180,10 +180,15 @@ public class Tower extends Building implements Damaging {
         return layout;
     }
     
+    final private int spawnerInterval = 50;
+    final private int effectOffset = r.nextInt(spawnerInterval);
     public void doSpecialEffect(int communicationTurn, GameState state) {
         
+        System.out.println("effect offset: " + effectOffset);
+        
         // Spawner special effect
-        if (!spawnerCounts.keySet().isEmpty() && communicationTurn % 5 == 0) {
+        if (!spawnerCounts.keySet().isEmpty() && (communicationTurn + effectOffset) % spawnerInterval == 0) {
+            System.out.println("Starting minion spawn.");
             int minionX = -1;
             int minionY = -1;
             int minionZ = -1;
@@ -194,42 +199,48 @@ public class Tower extends Building implements Damaging {
             int maxX = Math.min((int)x + 5, dims[0] - 1);
             int minY = Math.max((int)y - 5, 0);
             int maxY = Math.min((int)y + 5, dims[1] - 1);
+            
+            // At each interval, spawn a minion for each spawner block in the tower
+            // TODO: spawn different minions for  different types of spawner block
+            for (int spawnerType : spawnerCounts.keySet()) {
+                for (int i = 0; i < spawnerCounts.get(spawnerType); i++) {
+                    while (true) {
+                        // Generate random coordinates near the spawner tower
+                        minionX = r.nextInt(maxX - minX) + minX;
+                        minionY = r.nextInt(maxY - minY) + minY;
+                        System.out.println("(" + minionX + ", " + minionY + ", " + minionZ);
+                        for (int potentialZ = 0; potentialZ < dims[2]; potentialZ++) {
+                            if (state.getWorld().getBlock(minionX, minionY, potentialZ) != Block.TerrainBlock.AIR) {
+                                minionZ = potentialZ;
+                            }
+                        }
+                        minionZ++; // Minion should go on top of the highest non-air block
 
-            while (true) {
-                // Generate random coordinates near the spawner tower
-                minionX = ThreadLocalRandom.current().nextInt(minX, maxX);
-                minionY = ThreadLocalRandom.current().nextInt(minY, maxY);
-                System.out.println("(" + minionX + ", " + minionY + ", " + minionZ);
-                for (int potentialZ = 0; potentialZ < dims[2]; potentialZ++) {
-                    if (state.getWorld().getBlock(minionX, minionY, potentialZ) != Block.TerrainBlock.AIR) {
-                        minionZ = potentialZ;
+                        // Make sure the z coordinate is on the map
+                        if (dims[2] <= minionZ || minionZ < 0) {
+                            continue; // generate new coordinates
+                        }
+
+                        // Make sure supporting block is an okay place to spawn
+                        if (!state.getWorld().getBlock(minionX, minionY, minionZ - 1).allowMinionToSpawnOn()) {
+                            continue; // generate new coordinates
+                        }
+
+                        break; // The random coordinates generated are acceptable; spawn the minion
                     }
-                }
-                minionZ++; // Minion should go on top of the highest non-air block
 
-                // Make sure the z coordinate is on the map
-                if (dims[2] <= minionZ || minionZ < 0) {
-                    continue; // generate new coordinates
+                    Gdx.app.debug("Tower- lji1", "About to spawn a minion at: " + minionX + ", " + minionY + ", " + minionZ);
+
+                    // Create and place the minion
+                    final float finalMinionX = minionX;
+                    final float finalMinionY = minionY;
+                    final float finalMinionZ = minionZ;
+                    Gdx.app.postRunnable(() -> {
+                        Unit unit = new Unit(finalMinionX, finalMinionY, finalMinionZ, tempMinion1Health, playerID);
+                        state.addUnit(unit);
+                    });
                 }
-                
-                // Make sure supporting block is an okay place to spawn
-                if (!state.getWorld().getBlock(minionX, minionY, minionZ - 1).allowMinionToSpawnOn()) {
-                    continue; // generate new coordinates
-                }
-                
-                break; // The random coordinates generated are acceptable; spawn the minion
             }
-            
-            Gdx.app.debug("Tower- lji1", "About to spawn a minion at: " + minionX + ", " + minionY + ", " + minionZ);
-            
-            // Create and place the minion
-            final float finalMinionX = minionX;
-            final float finalMinionY = minionY;
-            final float finalMinionZ = minionZ;
-            Gdx.app.postRunnable(() -> {
-                Unit unit = new Unit(finalMinionX, finalMinionY, finalMinionZ, tempMinion1Health, playerID);
-                state.addUnit(unit);
-            });
         }
     }
 
