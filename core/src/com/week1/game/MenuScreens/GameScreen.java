@@ -95,18 +95,8 @@ public class GameScreen implements Screen {
 			}
 
 			@Override
-			public String getHostAddr() {
-				return networkClient.getHostAddr();
-			}
-
-			@Override
 			public int getPlayerId() {
 				return networkClient.getPlayerId();
-			}
-
-			@Override
-			public String getClientAddr() {
-				return null;
 			}
 
 			@Override
