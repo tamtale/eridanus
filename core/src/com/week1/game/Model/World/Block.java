@@ -45,7 +45,7 @@ public interface Block {
             return cost;
         }
 
-        private static ModelBuilder BUILDER = new ModelBuilder();
+        public static ModelBuilder BUILDER = new ModelBuilder();
         public static TerrainBlock AIR = new TerrainBlock(Color.GOLD, 0) {
             @Override
             public Optional<ModelInstance> modelInstance(float x, float y, float z) {
@@ -92,6 +92,7 @@ public interface Block {
                 return Optional.of(instance);
             }
         };
+        
 
         public static TerrainBlock WATER = new TerrainBlock(Color.CYAN, 5f) {
             @Override

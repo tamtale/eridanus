@@ -62,7 +62,9 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
     }
 
     protected boolean search(N startNode, N endNode, Heuristic<N> heuristic) {
-        this.initSearch(startNode, endNode, heuristic);
+        if (this.initSearch(startNode, endNode, heuristic) == false) {
+            return false;
+        };
 
         do {
             this.current = (WarrenIndexedAStarPathFinder.NodeRecord)this.openList.pop();
@@ -111,7 +113,7 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
         return true;
     }
 
-    protected void initSearch(N startNode, N endNode, Heuristic<N> heuristic) {
+    protected boolean initSearch(N startNode, N endNode, Heuristic<N> heuristic) {
         if (this.metrics != null) {
             this.metrics.reset();
         }
@@ -122,11 +124,15 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
 
         this.openList.clear();
         WarrenIndexedAStarPathFinder.NodeRecord<N> startRecord = this.getNodeRecord(startNode);
+        if (startRecord == null) {
+            return false;
+        }
         startRecord.node = startNode;
         startRecord.connection = null;
         startRecord.costSoFar = 0.0F;
         this.addToOpenList(startRecord, heuristic.estimate(startNode, endNode));
         this.current = null;
+        return true;
     }
 
     protected boolean visitChildren(N endNode, Heuristic<N> heuristic) {
