@@ -45,7 +45,7 @@ public interface Block {
             return cost;
         }
 
-        private static ModelBuilder BUILDER = new ModelBuilder();
+        public static ModelBuilder BUILDER = new ModelBuilder();
         public static TerrainBlock AIR = new TerrainBlock(Color.GOLD, 0) {
             @Override
             public Optional<ModelInstance> modelInstance(float x, float y, float z) {
@@ -93,41 +93,6 @@ public interface Block {
             }
         };
         
-        public static TerrainBlock PURPLE = new TerrainBlock(Color.PURPLE, 1f) {
-            @Override
-            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
-                ModelInstance instance = new ModelInstance(model);
-                instance.transform.setToTranslation(x, y, z);
-                return Optional.of(instance);
-            }
-        };
-        
-        public static TerrainBlock PINK = new TerrainBlock(Color.PINK, 1f) {
-            @Override
-            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
-                ModelInstance instance = new ModelInstance(model);
-                instance.transform.setToTranslation(x, y, z);
-                return Optional.of(instance);
-            }
-        };
-        
-        public static TerrainBlock DARKGREEN = new TerrainBlock(new Color(0x660000), 1f) {
-            @Override
-            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
-                ModelInstance instance = new ModelInstance(model);
-                instance.transform.setToTranslation(x, y, z);
-                return Optional.of(instance);
-            }
-        };
-
-        public static TerrainBlock GREEN = new TerrainBlock(Color.LIME, 1f) {
-            @Override
-            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
-                ModelInstance instance = new ModelInstance(model);
-                instance.transform.setToTranslation(x, y, z);
-                return Optional.of(instance);
-            }
-        };
 
         public static TerrainBlock WATER = new TerrainBlock(Color.CYAN, 5f) {
             @Override
