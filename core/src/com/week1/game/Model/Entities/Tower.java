@@ -194,10 +194,10 @@ public class Tower extends Building implements Damaging {
             
             int[] dims = state.getWorld().getWorldDimensions();
             
-            int minX = Math.max((int)x - 5, 0);
-            int maxX = Math.min((int)x + 5, dims[0] - 1);
-            int minY = Math.max((int)y - 5, 0);
-            int maxY = Math.min((int)y + 5, dims[1] - 1);
+            int minX = Math.max((int)x - 1, 0);
+            int maxX = Math.min((int)x + 1, dims[0] - 1);
+            int minY = Math.max((int)y - 1, 0);
+            int maxY = Math.min((int)y + 1, dims[1] - 1);
             
             // At each interval, spawn a minion for each spawner block in the tower
             // TODO: spawn different minions for  different types of spawner block
@@ -229,13 +229,24 @@ public class Tower extends Building implements Damaging {
 
                     Gdx.app.debug("Tower- lji1", "About to spawn a minion at: " + minionX + ", " + minionY + ", " + minionZ);
 
+                    int minXMove = Math.max((int)x - 5, 0);
+                    int maxXMove = Math.min((int)x + 5, dims[0] - 1);
+                    int minYMove = Math.max((int)y - 5, 0);
+                    int maxYMove = Math.min((int)y + 5, dims[1] - 1);
+                    int moveX  = r.nextInt(maxXMove - minXMove) + minXMove;
+                    int moveY = r.nextInt(maxYMove - minYMove) + minYMove;
+                    
                     // Create and place the minion
                     final float finalMinionX = minionX;
                     final float finalMinionY = minionY;
                     final float finalMinionZ = minionZ;
+                    
+                    final float finalMoveX = moveX;
+                    final float finalMoveY = moveY;
                     Gdx.app.postRunnable(() -> {
                         Unit unit = new Unit(finalMinionX, finalMinionY, finalMinionZ, tempMinion1Health, playerID);
                         state.addUnit(unit);
+                        state.moveMinion(finalMoveX,finalMoveY, unit);
                     });
                 }
             }
