@@ -5,9 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
@@ -18,9 +16,6 @@ import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Renderer.TextureUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ClickOracle extends InputAdapter {
 
@@ -39,13 +34,6 @@ public class ClickOracle extends InputAdapter {
     private Vector3 selectionLocationEnd = new Vector3();
     private boolean dragging = false;
 
-    private Map<Integer, Direction> keycodeToDirection = new HashMap<>();
-    {
-        keycodeToDirection.put(Input.Keys.W, Direction.UP);
-        keycodeToDirection.put(Input.Keys.A, Direction.LEFT);
-        keycodeToDirection.put(Input.Keys.S, Direction.DOWN);
-        keycodeToDirection.put(Input.Keys.D, Direction.RIGHT);
-    }
     private ClickOracleCommand nullCommand = () -> {};
     private ClickOracleCommand panUp = () -> adapter.setTranslationDirection(Direction.UP);
     private ClickOracleCommand panDown = () -> adapter.setTranslationDirection(Direction.DOWN);
@@ -292,6 +280,10 @@ public class ClickOracle extends InputAdapter {
 }
 
 @FunctionalInterface
+/*
+ * Interface for any command to execute by the ClickOracle.
+ * This is primarily to allow easy modification of keybindings.
+ */
 interface ClickOracleCommand {
     void execute();
 }
