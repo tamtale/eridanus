@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.InfoUtil;
 import com.week1.game.Model.Direction;
+import com.week1.game.Model.RotationDirection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -127,17 +128,13 @@ public class Renderer {
         panning.rotate(Vector3.Z, totalRotation);
     }
 
-    public void setDeltaRotation(Direction direction) {
+    public void setDeltaRotation(RotationDirection direction) {
         switch (direction) {
-            case UP:
-            case DOWN:
-                deltaRotation = 0f;
-                break;
-            case LEFT:
-                deltaRotation = -1f;
-                break;
-            case RIGHT:
+            case CLOCKWISE:
                 deltaRotation = 1f;
+                break;
+            case COUNTERCLOCKWISE:
+                deltaRotation = -1f;
                 break;
             case NONE:
                 deltaRotation = 0f;

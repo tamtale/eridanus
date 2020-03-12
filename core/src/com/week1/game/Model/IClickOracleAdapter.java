@@ -28,6 +28,6 @@ public interface IClickOracleAdapter {
     /* Inform the world camera to translate in the given direction, relative to the current view.*/
     void setTranslationDirection(Direction direction);
     /* Inform the world camera to rotate according to the given direction. */
-    void setRotationDirection(Direction direction);
+    void setRotationDirection(RotationDirection direction);
     Camera getCamera();
 }

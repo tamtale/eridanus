@@ -129,7 +129,7 @@ public class GameScreen implements Screen {
 					}
 
 					@Override
-					public void setRotationDirection(Direction direction) {
+					public void setRotationDirection(RotationDirection direction) {
 						renderer.setDeltaRotation(direction);
 					}
 
