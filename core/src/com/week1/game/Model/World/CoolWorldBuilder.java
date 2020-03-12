@@ -3,9 +3,7 @@ package com.week1.game.Model.World;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Pair;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class CoolWorldBuilder implements IWorldBuilder {
 
@@ -15,9 +13,10 @@ public class CoolWorldBuilder implements IWorldBuilder {
     private Random random;
 
     //TODO: can just be an arraylist
-    final static Map<Integer, Pair<Block.TerrainBlock, Block.TerrainBlock>> blockColors = new HashMap<Integer, Pair<Block.TerrainBlock, Block.TerrainBlock>>() {{
-        this.put(0, new Pair<>(Block.TerrainBlock.ZAMBALA, Block.TerrainBlock.FIREBRICK));
-        this.put(1, new Pair<>(Block.TerrainBlock.PURPLE, Block.TerrainBlock.PINK));
+    final static List<Pair<Block.TerrainBlock, Block.TerrainBlock>> blockColors = new ArrayList<Pair<Block.TerrainBlock, Block.TerrainBlock>>() {{
+        this.add(new Pair<>(Block.TerrainBlock.ZAMBALA, Block.TerrainBlock.FIREBRICK));
+        this.add(new Pair<>(Block.TerrainBlock.PURPLE, Block.TerrainBlock.PINK));
+        this.add(new Pair<>(Block.TerrainBlock.DARKGREEN, Block.TerrainBlock.GREEN));
     }};
     Pair<Block.TerrainBlock, Block.TerrainBlock> blockTextures;
     
@@ -27,8 +26,8 @@ public class CoolWorldBuilder implements IWorldBuilder {
         blocks = new Block[90][90][15];
         this.random = new Random(seed);
         
-//        blockTextures = blockColors.get(random.nextInt(blockColors.size())); // randomly pick a color scheme
-        blockTextures = blockColors.get(1); // randomly pick a color scheme
+        blockTextures = blockColors.get(random.nextInt(blockColors.size())); // randomly pick a color scheme
+//        blockTextures = blockColors.get(2); 
         
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {

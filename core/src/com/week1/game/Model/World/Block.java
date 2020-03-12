@@ -111,7 +111,7 @@ public interface Block {
             }
         };
         
-        public static TerrainBlock PURPLE = new TerrainBlock(Color.PURPLE, 1f) {
+        public static TerrainBlock DARKGREEN = new TerrainBlock(new Color(0x660000), 1f) {
             @Override
             public Optional<ModelInstance> modelInstance(float x, float y, float z) {
                 ModelInstance instance = new ModelInstance(model);
@@ -120,7 +120,7 @@ public interface Block {
             }
         };
 
-        public static TerrainBlock PINK = new TerrainBlock(Color.PINK, 1f) {
+        public static TerrainBlock GREEN = new TerrainBlock(Color.LIME, 1f) {
             @Override
             public Optional<ModelInstance> modelInstance(float x, float y, float z) {
                 ModelInstance instance = new ModelInstance(model);
