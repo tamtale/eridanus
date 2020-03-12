@@ -1,6 +1,5 @@
 package com.week1.game.Renderer;
 
-import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.SpawnInfo;
 
 /*
@@ -13,13 +12,8 @@ public interface IRendererAdapter {
      * Render the rest of the system given the config.
      */
     void renderSystem(RenderConfig renderConfig);
-
     double getPlayerMana(int playerId);
-
     void restartGame();
-
-    String getHostAddr();
     int getPlayerId();
-    String getClientAddr();
 
 }
