@@ -5,16 +5,14 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
-import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
+import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Renderer.TextureUtils;
 
@@ -79,6 +77,13 @@ public class ClickOracle extends InputAdapter {
     @Override
     public boolean touchDragged (int screenX, int screenY, int pointer) {
         if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) return false;
+
+        // The player must be alive to be able to register any clicks
+        if (!adapter.isPlayerAlive()) {
+            Gdx.app.debug("pjb3 - ClickOracle", "Player has already died. ignoring touchDragged");
+            return false;
+        }
+
         dragging = true;
         passiveSelected.setHovered(false);
         selectionLocationEnd.set(screenX, Gdx.graphics.getHeight() - screenY, 0);
@@ -122,7 +127,7 @@ public class ClickOracle extends InputAdapter {
 
         // The player must be alive to be able to register any clicks
         if (!adapter.isPlayerAlive()) {
-            Gdx.app.log("lji1 - ClickOracle", "Player has died.");
+            Gdx.app.debug("lji1 - ClickOracle", "Player has died.");
             return false;
         }
 
@@ -171,13 +176,13 @@ public class ClickOracle extends InputAdapter {
                             Gdx.app.log("pjb3 - ClickOracle", "Spawn unit");
                             adapter.sendMessage(new CreateMinionMessage(vector.x, vector.y, vector.z + 1, 69, adapter.getPlayerId(), currentGameHash));
                         } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
-                            Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+                            Gdx.app.log("pjb3 - ClickOracle", "Spawn tower 1 via state");
                             adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 0, adapter.getPlayerId(), currentGameHash));
                         } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
-                            Gdx.app.log("pjb3 - ClickOracle", "Spawn Tower 2 tower via state");
+                            Gdx.app.log("pjb3 - ClickOracle", "Spawn tower 2 via state");
                             adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 1, adapter.getPlayerId(), currentGameHash));
                         } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
-                            Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+                            Gdx.app.log("pjb3 - ClickOracle", "Spawn tower 3 via state");
                             adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 2, adapter.getPlayerId(), currentGameHash));
                         }
                         return null;
