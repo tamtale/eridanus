@@ -35,8 +35,9 @@ public class MessageFormatter {
 
     public static GameMessage parseMessage(String msg) {
         AMessage prototypeMessage = g.fromJson(msg, PrototypeMessage.class);
-
-        if (prototypeMessage.messageTypeID == MessageType.TEST) {
+        if (msg == null) {
+            return null;
+        } else  if (prototypeMessage.messageTypeID == MessageType.TEST) {
             return g.fromJson(msg, TestMessage.class);
         } else if (prototypeMessage.messageTypeID == MessageType.CREATEMINION){
             return g.fromJson(msg, CreateMinionMessage.class);
