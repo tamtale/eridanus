@@ -101,6 +101,7 @@ public class Renderer {
         cam.viewportHeight = y;
         cam.update();
         renderConfig.update();
+        gameButtonsStage.stage.getViewport().apply();
         gameButtonsStage.stage.getViewport().update(x, y);
     }
 
