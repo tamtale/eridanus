@@ -66,6 +66,11 @@ public class GameScreen implements Screen {
 			}
 
 			@Override
+			public void setCenter(Vector3 center) {
+			    renderer.setCenter(center);
+			}
+
+			@Override
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
@@ -90,18 +95,8 @@ public class GameScreen implements Screen {
 			}
 
 			@Override
-			public String getHostAddr() {
-				return networkClient.getHostAddr();
-			}
-
-			@Override
 			public int getPlayerId() {
 				return networkClient.getPlayerId();
-			}
-
-			@Override
-			public String getClientAddr() {
-				return null;
 			}
 
 			@Override
@@ -121,6 +116,11 @@ public class GameScreen implements Screen {
 					@Override
 					public void setTranslationDirection(Direction direction) {
 						renderer.setPanning(direction);
+					}
+
+					@Override
+					public void setRotationDirection(RotationDirection direction) {
+						renderer.setDeltaRotation(direction);
 					}
 
 					public Camera getCamera() {
