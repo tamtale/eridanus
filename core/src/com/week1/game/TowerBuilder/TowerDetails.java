@@ -7,9 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerFootprint;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class TowerDetails {
     private double hp = 0;
@@ -26,6 +24,11 @@ public class TowerDetails {
     private Vector3 averageLocationOfHighestBlock = new Vector3();
     private String name = "";
     private float BLOCKLENGTH = TowerMaterials.BLOCKLENGTH;
+    
+    // Maps the spawner block type to the count of that spawner block in the tower
+    // -> the tower will spawn a number of minions of each type proportional to
+    //    the number of the corresponding spawner blocks in the tower
+    private Map<Integer, Integer> spawnerBlockCounts = new HashMap<>();
 
     public List<BlockSpec> getLayout() {
         return layout;
@@ -53,6 +56,10 @@ public class TowerDetails {
     
     public Vector3 getHighestBlock() {
         return averageLocationOfHighestBlock;
+    }
+    
+    public Map<Integer, Integer> getSpawnerCounts() {
+        return spawnerBlockCounts;
     }
 
     private List<BlockSpec> parseLayoutString(String layout) {
@@ -173,6 +180,15 @@ public class TowerDetails {
             } else if (block.getY() == maxHeight) {
                 averageLocationOfHighestBlock.add(block.getX(), block.getY(), block.getZ());
                 numBlocksAtMaxHeight++;
+            }
+            
+            if (code == BlockType.SPAWNER) {
+                // TODO: When there are multiple minion types, different spawner blocks will increase different counts
+                if (spawnerBlockCounts.get(0) == null) {
+                    spawnerBlockCounts.put(0, 1);
+                } else {
+                    spawnerBlockCounts.put(0, spawnerBlockCounts.get(0) + 1);
+                }
             }
             
         }

@@ -22,6 +22,7 @@ public interface Block {
     float getCost();
     Optional<ModelInstance> modelInstance(float x, float y, float z);
     boolean canSupportTower();
+    boolean allowMinionToSpawnOn();
 
     abstract class TerrainBlock implements Block {
         Model model;
@@ -39,6 +40,11 @@ public interface Block {
         public boolean canSupportTower() {
             return true;
         }
+        
+        @Override
+        public boolean allowMinionToSpawnOn() {
+            return true;
+        }
 
         @Override
         public float getCost() {
@@ -54,6 +60,11 @@ public interface Block {
             @Override
             public boolean canSupportTower() {
                 // Air shouldn't be able to hold up a tower
+                return false;
+            }
+
+            @Override
+            public boolean allowMinionToSpawnOn() {
                 return false;
             }
         };
@@ -123,6 +134,11 @@ public interface Block {
         public boolean canSupportTower() {
             return false;
         }
+        
+        @Override
+        public boolean allowMinionToSpawnOn() {
+            return false;
+        }
 
         @Override
         public float getCost() {
@@ -143,6 +159,7 @@ public interface Block {
             put(BlockType.SPACEGOLD, new TowerBlock(Initializer.spaceGold));
             put(BlockType.EARTH, new TowerBlock(Initializer.earthBlock));
             put(BlockType.FIRE, new TowerBlock(Initializer.fireBlock));
+            put(BlockType.SPAWNER, new TowerBlock(Initializer.spawner));
             put(BlockType.EASTEREGG, new TowerBlock(Initializer.easterEgg));
         }};
     }

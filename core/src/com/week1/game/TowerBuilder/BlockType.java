@@ -9,6 +9,8 @@ public enum BlockType {
     FIRE,
     EARTH,
     
+    SPAWNER,
+    
     EASTEREGG,
 
     HIGHLIGHT,

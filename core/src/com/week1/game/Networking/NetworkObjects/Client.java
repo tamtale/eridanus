@@ -54,7 +54,7 @@ public class Client {
     }
     
     public void sendStringMessage(String msg) {
-        Gdx.app.debug(TAG, "About to send message: " + msg + " to: " + hostAddress + ":" + this.hostPort);
+        Gdx.app.log(TAG, "About to send message: " + msg + " to: " + hostAddress + ":" + this.hostPort);
         try {
             this.out.writeUTF(msg);
             Gdx.app.debug(TAG, "Sent message");
@@ -78,7 +78,7 @@ public class Client {
                     String messages = this.in.readUTF();
                     
                     
-                    Gdx.app.debug(TAG, "About to try parsing message: " + messages);
+                    Gdx.app.log(TAG, "About to try parsing message: " + messages);
                     // try parsing as a control message first
                     ClientControlMessage controlMsg = MessageFormatter.parseClientControlMessage(messages);
                     if (controlMsg != null) {

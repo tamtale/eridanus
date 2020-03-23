@@ -270,6 +270,16 @@ public class GameState implements GameRenderable {
         }
     }
 
+    public void doTowerSpecialAbilities(int communicationTurn) {
+        for (int i = 0; i < towers.size; i++) {
+            Tower t = towers.get(i);
+            
+            t.doSpecialEffect(communicationTurn, this);
+            
+        }
+        
+    }
+    
     /**
      * Visitor handling when a damageable is killed.
      */
