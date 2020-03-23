@@ -172,4 +172,12 @@ public class GameEngine implements GameRenderable {
     public int getTurn() {
         return communicationTurn;
     }
+
+    public String getTowerName(int playerId, int slot) {
+        return gameState.getTowerDetails(playerId, slot).getName();
+    }
+
+    public int getTowerCost(int playerId, int slot) {
+        return gameState.getTowerDetails(playerId, slot).getCost();
+    }
 }

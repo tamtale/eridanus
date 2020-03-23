@@ -27,8 +27,6 @@ public class TowerDetailsMessage extends GameMessage {
     public boolean process(GameEngine engine, GameState inputState, InfoUtil util){
         Gdx.app.log("TowerDetailsMessage", "Processing TowerDetailsMessage!");
         inputState.setTowerInfo(new TowerLoadouts(details));
-        
-        
         return true;
     }
 

@@ -22,7 +22,7 @@ public class TowerDetails {
     private List<BlockSpec> layout;
     private TowerFootprint footprint;
     private Vector3 averageLocationOfHighestBlock = new Vector3();
-    private String name = "";
+    private String name = "init";
     private float BLOCKLENGTH = TowerMaterials.BLOCKLENGTH;
     
     // Maps the spawner block type to the count of that spawner block in the tower
@@ -110,7 +110,7 @@ public class TowerDetails {
             myReader.close();
 
             String twrName = filename.substring(13, filename.length() - 11);
-            System.out.println(twrName);
+            Gdx.app.log("pjb3 - TowerDetails", "printing tower name:" + twrName);
             layout = blocks;
             name = twrName;
             populateFields();
@@ -417,5 +417,14 @@ public class TowerDetails {
             e.printStackTrace();
         }
 
+    }
+
+    public String getName() {
+//        return name;
+        return "yup";
+    }
+
+    public int getCost() {
+        return (int)price;
     }
 }
