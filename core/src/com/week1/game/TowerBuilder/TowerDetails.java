@@ -24,6 +24,10 @@ public class TowerDetails {
     private Vector3 averageLocationOfHighestBlock = new Vector3();
     private String name = "";
     private float BLOCKLENGTH = TowerMaterials.BLOCKLENGTH;
+    
+    // Maps the spawner block type to the count of that spawner block in the tower
+    // -> the tower will spawn a number of minions of each type proportional to
+    //    the number of the corresponding spawner blocks in the tower
     private Map<Integer, Integer> spawnerBlockCounts = new HashMap<>();
 
     public List<BlockSpec> getLayout() {

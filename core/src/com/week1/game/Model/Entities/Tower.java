@@ -184,8 +184,6 @@ public class Tower extends Building implements Damaging {
     final private int effectOffset = r.nextInt(spawnerInterval);
     public void doSpecialEffect(int communicationTurn, GameState state) {
         
-//            new BlockSpec(BlockType.SPAWNER, 0, 2, 0)), "Preset 1");
-        
         // Spawner special effect
         if (!spawnerCounts.keySet().isEmpty() && (communicationTurn + effectOffset) % spawnerInterval == 0) {
             int minionX = -1;
