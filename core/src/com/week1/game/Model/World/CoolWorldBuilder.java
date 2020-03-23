@@ -1,8 +1,13 @@
 package com.week1.game.Model.World;
 
+import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
+import com.week1.game.Pair;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.Color;
 
-import java.util.Random;
+import java.util.*;
 
 public class CoolWorldBuilder implements IWorldBuilder {
 
@@ -11,23 +16,36 @@ public class CoolWorldBuilder implements IWorldBuilder {
     private long seed;
     private Random random;
 
+    final static List<Pair<Material, Material>> blockColors = new ArrayList<Pair<Material, Material>> () {{
+        this.add(new Pair<>(new Material(ColorAttribute.createDiffuse(Color.PURPLE)), new Material(ColorAttribute.createDiffuse(Color.PINK))));
+        this.add(new Pair<>(new Material(ColorAttribute.createDiffuse(Color.FIREBRICK)), new Material(ColorAttribute.createDiffuse(Color.CORAL))));
+        this.add(new Pair<>(new Material(ColorAttribute.createDiffuse(new Color(0x660000))), new Material(ColorAttribute.createDiffuse(Color.LIME))));
+    }};
+    
     @Override
     public Block[][][] terrain() {
         // empty block
         blocks = new Block[90][90][15];
         this.random = new Random(seed);
+        
+        Pair<Material, Material> materials = blockColors.get(random.nextInt(blockColors.size()));
+        Block.TerrainBlock.FIREBRICK.model.materials.get(0).clear();
+        Block.TerrainBlock.FIREBRICK.model.materials.get(0).set(materials.key);
+        Block.TerrainBlock.ZAMBALA.model.materials.get(0).clear();
+        Block.TerrainBlock.ZAMBALA.model.materials.get(0).set(materials.value);
+        
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 if (blocks[i][j][0] == null) {
 
                     float blockType = random.nextFloat();
                     if (blockType < 0.75) {
-                        blocks[i][j][0] = Block.TerrainBlock.ZAMBALA;
-                        spread(i, j, 0, .125f, .125f, .75f, true, Block.TerrainBlock.ZAMBALA);
+                        blocks[i][j][0] = Block.TerrainBlock.FIREBRICK;
+                        spread(i, j, 0, .125f, .125f, .75f, true, Block.TerrainBlock.ZAMBALA); //zamb
                         //heightBuild(i, j, Block.TerrainBlock.ZAMBALA);
                     } else if (blockType < .98) {
-                        blocks[i][j][0] = Block.TerrainBlock.FIREBRICK;
-                        spread(i, j, 0, .125f, .125f, .85f, true, Block.TerrainBlock.FIREBRICK);
+                        blocks[i][j][0] = Block.TerrainBlock.ZAMBALA;
+                        spread(i, j, 0, .125f, .125f, .85f, true, Block.TerrainBlock.FIREBRICK); //fire
                         //heightBuild(i, j, Block.TerrainBlock.FIREBRICK);
                     } else {
                         blocks[i][j][0] = Block.TerrainBlock.WATER;
