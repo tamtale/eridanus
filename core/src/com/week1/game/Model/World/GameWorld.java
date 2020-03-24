@@ -80,7 +80,7 @@ public class GameWorld implements GameRenderable {
                     int k_final = k;
                     blocks[i][j][k].modelInstance(i, j, k)
                             .ifPresent(modelInstance -> {
-                                modelInstances[i_final * WIDTH * HEIGHT + j_final * HEIGHT + k_final] = modelInstance;
+                                setModelInstance(i_final, j_final, k_final, modelInstance);
                             });
 
                     boundingBoxes[i][j][k] = new BoundingBox();
@@ -106,24 +106,24 @@ public class GameWorld implements GameRenderable {
         int chunkZ = k / chunkHeight;
 
 
-        if (modelInstances[i * WIDTH * HEIGHT + j * HEIGHT + k] == null) {
+        if (getModelInstance(i, j, k) == null) {
             activeBlocksPerChunk[chunkX][chunkY][chunkZ]--;
         } else {
             activeBlocksPerChunk[chunkX][chunkY][chunkZ]++;
         }
     }
 
-    private ModelInstance getInstance(int i, int j, int k) {
+    private ModelInstance getModelInstance(int i, int j, int k) {
         return modelInstances[i * WIDTH * HEIGHT + j * HEIGHT + k];
     }
 
-    private void setInstance(int i, int j, int k, ModelInstance instance) {
+    private void setModelInstance(int i, int j, int k, ModelInstance instance) {
         modelInstances[i * WIDTH * HEIGHT + j * HEIGHT + k] = instance;
     }
 
 
     private void updateBoundingBox(int i, int j, int k) {
-        ModelInstance instance = getInstance(i, j, k);
+        ModelInstance instance = getModelInstance(i, j, k);
         if (instance != null) {
             instance.calculateBoundingBox(boundingBoxes[i][j][k]);
             boundingBoxes[i][j][k].mul(instance.transform);
@@ -138,9 +138,9 @@ public class GameWorld implements GameRenderable {
         blocks[i][j][k] = block;
         Optional<ModelInstance> modelInstance = blocks[i][j][k].modelInstance(i,j,k);
         if (modelInstance.isPresent()) {
-            setInstance(i, j, k, modelInstance.get());
+            setModelInstance(i, j, k, modelInstance.get());
         } else {
-            setInstance(i, j, k, null);
+            setModelInstance(i, j, k, null);
         }
         updateBoundingBox(i,j,k);
         updateActiveBlocks(i,j,k);
@@ -256,7 +256,7 @@ public class GameWorld implements GameRenderable {
         for (int i = minx; i < maxx; i++) {
             for (int j = miny; j < maxy; j++) {
                 for (int k = minz; k < maxz; k++) {
-                    ModelInstance modelInstance = getInstance(i, j, k);
+                    ModelInstance modelInstance = getModelInstance(i, j, k);
                     // Ignore the null model instances, which correspond to empty spaces in the map
                     if (modelInstance == null) {
                         continue;
