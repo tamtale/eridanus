@@ -71,6 +71,11 @@ public class GameScreen implements Screen {
 			}
 
 			@Override
+			public void zoom(float amount) {
+				renderer.zoom(amount);
+			}
+
+            @Override
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}

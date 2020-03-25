@@ -30,9 +30,6 @@ public class RenderConfig {
     /* Lighting and other global properties of the world.*/
     private Environment env;
     
-    public int zoomFactor = 0;
-
-
     public RenderConfig(boolean showAttackRadius, boolean showSpawnRadius, float delta, Camera cam, Environment env) {
         this.showAttackRadius = showAttackRadius;
         this.showSpawnRadius = showSpawnRadius;

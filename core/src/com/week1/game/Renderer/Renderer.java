@@ -88,6 +88,13 @@ public class Renderer {
         batch.draw(t, x, y);
     }
 
+    public void zoom(float amount) {
+        // Might need a camera update, but seems to happen often enough on the render loop that 
+        // it doesn't cause problems to omit here
+        Camera camera = renderConfig.getCam();
+        camera.translate(new Vector3(camera.direction).scl(amount));
+    }
+    
     public void resize(int x, int y) {
         // Remake the background with the correct scale.
         Pixmap spacePixScaled = new Pixmap(x, y, spacePix.getFormat());

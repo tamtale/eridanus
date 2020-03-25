@@ -215,12 +215,6 @@ public class GameCameraController extends GestureDetector {
 		if (scrollTarget) target.add(tmpV1);
 		if (autoUpdate) camera.update();
 		
-		if (amount > 0) {
-			renderConfig.zoomFactor++;
-		} else if (amount < 0) {
-			renderConfig.zoomFactor--;
-		}
-		
 		return true;
 	}
 
