@@ -46,20 +46,18 @@ public class MainMenuScreen implements Screen {
 
     private void configureWidgets() {
 
-        Pixmap firePix = new Pixmap(Gdx.files.internal("menu2.png"));
-        Pixmap firePixScaled = new Pixmap((int)GameController.VIRTUAL_WIDTH, (int)GameController.VIRTUAL_HEIGHT, firePix.getFormat());
-        firePixScaled.drawPixmap(firePix,
-                0, 0, firePix.getWidth(), firePix.getHeight(),
-                0, 0, firePixScaled.getWidth(), firePixScaled.getHeight()
+        Pixmap backroundPix = new Pixmap(Gdx.files.internal("menu2.png"));
+        Pixmap backgroundPixScaled = new Pixmap((int)GameController.VIRTUAL_WIDTH, (int)GameController.VIRTUAL_HEIGHT, backroundPix.getFormat());
+        backgroundPixScaled.drawPixmap(backroundPix,
+                0, 0, backroundPix.getWidth(), backroundPix.getHeight(),
+                0, 0, backgroundPixScaled.getWidth(), backgroundPixScaled.getHeight()
         );
-        tex = new Texture(firePixScaled);
-        firePix.dispose();
-        firePixScaled.dispose();
+        tex = new Texture(backgroundPixScaled);
+        backroundPix.dispose();
+        backgroundPixScaled.dispose();
 
         TextureRegionDrawable reg = new TextureRegionDrawable(tex);
         stage.addActor(new Image(reg));
-        //Set the background image
-//        stage.addActor(new Image(new TextureRegionDrawable(new Texture("nova_menu.png"))));
 
         buildTowersButton.setSize(200,64);
         buildTowersButton.getLabel().setFontScale(1.5f);

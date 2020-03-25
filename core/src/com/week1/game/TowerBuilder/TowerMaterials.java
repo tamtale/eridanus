@@ -50,34 +50,6 @@ public class TowerMaterials {
     //Easter egg
     addBlockType("cat_boi.png", "easter egg", BlockType.EASTEREGG, 10, 10,0);
 
-//    //Spawner block type
-//    blocknamekey.put("Spawner", BlockType.SPAWNER);
-//    int attr = VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates;
-//
-//    Texture rest_of_door = new Texture("rest_of_door.png");
-//    modelBuilder.begin();
-//    modelBuilder.part("front", GL20.GL_TRIANGLES, attr, new Material(TextureAttribute.createDiffuse(new Texture("door_simple.png"))))
-//            .rect(-2f,-2f,-2f, -2f,2f,-2f,  2f,2f,-2, 2f,-2f,-2f, 0,0,-1);
-//    modelBuilder.part("back", GL20.GL_TRIANGLES, attr, new Material(TextureAttribute.createDiffuse(rest_of_door)))
-//            .rect(-2f,2f,2f, -2f,-2f,2f,  2f,-2f,2f, 2f,2f,2f, 0,0,1);
-//    modelBuilder.part("bottom", GL20.GL_TRIANGLES, attr, new Material(TextureAttribute.createDiffuse(rest_of_door)))
-//            .rect(-2f,-2f,2f, -2f,-2f,-2f,  2f,-2f,-2f, 2f,-2f,2f, 0,-1,0);
-//    modelBuilder.part("top", GL20.GL_TRIANGLES, attr, new Material(TextureAttribute.createDiffuse(rest_of_door)))
-//            .rect(-2f,2f,-2f, -2f,2f,2f,  2f,2f,2f, 2f,2f,-2f, 0,1,0);
-//    modelBuilder.part("left", GL20.GL_TRIANGLES, attr, new Material(TextureAttribute.createDiffuse(rest_of_door)))
-//            .rect(-2f,-2f,2f, -2f,2f,2f,  -2f,2f,-2f, -2f,-2f,-2f, -1,0,0);
-//    modelBuilder.part("right", GL20.GL_TRIANGLES, attr, new Material(TextureAttribute.createDiffuse(rest_of_door)))
-//            .rect(2f,-2f,-2f, 2f,2f,-2f,  2f,2f,2f, 2f,-2f,2f, 1,0,0);
-//    Model door_block = modelBuilder.end();
-//
-//    modelMap.put(BlockType.SPAWNER, door_block);
-//
-//    blockHp.put(BlockType.SPAWNER, 5);
-//    blockAtk.put(BlockType.SPAWNER, 0);
-//    blockPrice.put(BlockType.SPAWNER, 50);
-////    materialNames.put("spawner", )
-//    materialCodes.put("Spawner", BlockType.SPAWNER);
-
     //Highlighted block type
     Material mat = new Material();
     mat.set(new ColorAttribute(ColorAttribute.Diffuse, Color.WHITE));
