@@ -159,17 +159,25 @@ public class GameEngine implements GameRenderable {
      */
     public int getGameStateHash() {
         GameState.PackagedGameState wrapped = gameState.packState(communicationTurn);
-//        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
+//        Gdx.app.debug("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
         return wrapped.getHash();
     }
 
     public String getGameStateString() {
         GameState.PackagedGameState wrapped = gameState.packState(communicationTurn);
-//        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
+//        Gdx.app.debug("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
         return wrapped.getGameString();
     }
 
     public int getTurn() {
         return communicationTurn;
+    }
+
+    public String getTowerName(int playerId, int slot) {
+        return gameState.getTowerDetails(playerId, slot).getName();
+    }
+
+    public int getTowerCost(int playerId, int slot) {
+        return gameState.getTowerDetails(playerId, slot).getCost();
     }
 }

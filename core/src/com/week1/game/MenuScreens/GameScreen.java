@@ -94,9 +94,24 @@ public class GameScreen implements Screen {
 				return engine.getGameState().getPlayerStats(playerId).getMana();
 			}
 
-			@Override
+            @Override
+            public String getTowerName(int slotNum) {
+                return engine.getTowerName(networkClient.getPlayerId(), slotNum);
+            }
+
+            @Override
+            public int getTowerCost(int slotNum) {
+                return engine.getTowerCost(networkClient.getPlayerId(), slotNum);
+            }
+
+            @Override
 			public int getPlayerId() {
 				return networkClient.getPlayerId();
+			}
+
+			@Override
+			public int getUnitCost() {
+				return (int)StatsConfig.tempMinion1Cost;
 			}
 
 			@Override

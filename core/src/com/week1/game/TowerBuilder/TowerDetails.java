@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerFootprint;
+import com.week1.game.Model.TowerLite;
 
 import java.io.*;
 import java.util.*;
@@ -30,7 +31,7 @@ public class TowerDetails {
 
     //For penalizing small bases
     private int baseSize = 0;
-
+    private String name = "init";
     private float BLOCKLENGTH = TowerMaterials.BLOCKLENGTH;
     
     // Maps the spawner block type to the count of that spawner block in the tower
@@ -130,6 +131,11 @@ public class TowerDetails {
     public TowerDetails(List<BlockSpec> layout, String name) {
         this.layout = layout;
         this.name = name;
+
+        // TODO: remove
+        if(layout.get(0).getBlockCode() == BlockType.SPACEGOLD) {
+            System.out.println("Init base!");
+        }
         
         //generate model and stats
         calcRawStats();
@@ -423,5 +429,17 @@ public class TowerDetails {
             e.printStackTrace();
         }
 
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getCost() {
+        return (int)price;
+    }
+
+    public TowerLite getTowerLite() {
+        return new TowerLite(name, layout);
     }
 }

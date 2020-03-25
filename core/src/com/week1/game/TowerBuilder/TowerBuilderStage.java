@@ -293,7 +293,7 @@ public class TowerBuilderStage {
         startGame.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("pjb3 - TowerBuilderStage", "Trying to go back to the main Menu Screen");
+                Gdx.app.debug("pjb3 - TowerBuilderStage", "Trying to go back to the main Menu Screen");
                 gameController.setScreen(new MainMenuScreen(gameController));
             }
         });

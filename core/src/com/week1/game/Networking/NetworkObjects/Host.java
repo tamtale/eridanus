@@ -1,12 +1,12 @@
 package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.Gdx;
+import com.week1.game.Model.TowerLite;
 import com.week1.game.Networking.Messages.Control.ClientControl.JoinedPlayersMessage;
 import com.week1.game.Networking.Messages.Control.ClientControl.PlayerIdMessage;
 import com.week1.game.Networking.Messages.Control.HostControl.HostControlMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.Update;
-import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -34,7 +34,7 @@ public class Host {
     private int nextPlayerId = 0;
     public static final int DANGEROUS_HARDCODED_MESSAGE_SIZE = 4096;
 
-    public Map<Integer, List<List<BlockSpec>>> towerDetails = new HashMap<>(); // first index is implicitly the player id
+    public Map<Integer, List<TowerLite>> towerDetails = new HashMap<>(); // first index is implicitly the player id
     public Map<InetAddress, Player> registry = new HashMap<>();
 
     public int runningPlayerId = 0;

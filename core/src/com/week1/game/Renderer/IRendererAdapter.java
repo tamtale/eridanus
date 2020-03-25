@@ -12,8 +12,16 @@ public interface IRendererAdapter {
      * Render the rest of the system given the config.
      */
     void renderSystem(RenderConfig renderConfig);
+
     double getPlayerMana(int playerId);
+
     void restartGame();
+
     int getPlayerId();
 
+    String getTowerName(int slotNum);
+
+    int getTowerCost(int slotNum);
+
+    int getUnitCost();
 }
