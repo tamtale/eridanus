@@ -22,6 +22,7 @@ public class TowerBuilderStage {
     private TowerBuilderScreen screen;
     public Stage stage;
     public Stage dialogStage;
+    public Stage backgroundImgStage;
     private StatsWidget sw;
     private TextButton startGame;
     private SelectBox<TowerDetails> displaySelection;
@@ -86,6 +87,7 @@ public class TowerBuilderStage {
         this.gameController = game;
         stage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
         dialogStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
+        backgroundImgStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
     }
 
     public void completeCamDependentInit() {
@@ -168,9 +170,7 @@ public class TowerBuilderStage {
 
     private void configureWidgets() {
 
-        //Add the background image
-//        stage.addActor(new Image(new TextureRegionDrawable(new Texture("star_background.png"))));
-
+        //Add the background image to the img stage
         Pixmap firePix = new Pixmap(Gdx.files.internal("star_background.png"));
         Pixmap firePixScaled = new Pixmap((int)GameController.VIRTUAL_WIDTH, (int)GameController.VIRTUAL_HEIGHT, firePix.getFormat());
         firePixScaled.drawPixmap(firePix,
@@ -182,7 +182,7 @@ public class TowerBuilderStage {
         firePixScaled.dispose();
 
         TextureRegionDrawable reg = new TextureRegionDrawable(tex);
-        stage.addActor(new Image(reg));
+        backgroundImgStage.addActor(new Image(reg));
 
         //Stats widget things
         sw.setSize(200,150);
@@ -322,6 +322,10 @@ public class TowerBuilderStage {
     public void renderDialogs() {
         dialogStage.act();
         dialogStage.draw();
+    }
+
+    public void renderBackgroundImg() {
+        backgroundImgStage.draw();
     }
 
     public void showDialog(String msg) {
