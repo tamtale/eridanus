@@ -130,27 +130,10 @@ public class TowerDetails {
     public TowerDetails(List<BlockSpec> layout, String name) {
         this.layout = layout;
         this.name = name;
-
-        // TODO: remove
-        if(layout.get(0).getBlockCode() == BlockType.NOVACORE) {
-            System.out.println("Init base!");
-        }
         
         //generate model and stats
         calcRawStats();
     }
-
-    
-    /*
-        Overloaded constructor to allow us to bypass automatic stat generation, if necessary for testing
-     */
-//    public TowerDetails(TowerFootprint fp, double health, double price, double range, double damage) {
-//        this.footprint = fp;
-//        this.hp = health;
-//        this.price = price;
-//        this.range = range;
-//        this.atk = damage;
-//    }
 
     private void calcRawStats() {
         this.footprint = new TowerFootprint();
