@@ -194,7 +194,9 @@ public class TowerBuilderCamera {
         for (int i = 0; i < blocks.size(); i++) {
             Vector3 curblock = blocks.get(i);
 
-            Vector3 position = new Vector3(curblock.x * BLOCKLENGTH, curblock.y * BLOCKLENGTH, curblock.z * BLOCKLENGTH);
+
+            Vector3 position = new Vector3(curblock.x * BLOCKLENGTH/2f, curblock.y * BLOCKLENGTH/2f, curblock.z * BLOCKLENGTH/2f);
+//            Vector3 position = new Vector3(curblock.x * BLOCKLENGTH, curblock.y * BLOCKLENGTH, curblock.z * BLOCKLENGTH);
             Vector3 dimensions = new Vector3(5, 5, 5);
 
 
