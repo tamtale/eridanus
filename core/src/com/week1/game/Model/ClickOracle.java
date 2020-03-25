@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
@@ -15,9 +16,6 @@ import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Renderer.TextureUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ClickOracle extends InputAdapter {
 
@@ -35,12 +33,33 @@ public class ClickOracle extends InputAdapter {
     private Vector3 selectionLocationStart = new Vector3();
     private Vector3 selectionLocationEnd = new Vector3();
     private boolean dragging = false;
-    private Map<Integer, Direction> keycodeToDirection = new HashMap<>();
+
+    private ClickOracleCommand nullCommand = () -> {};
+    private ClickOracleCommand panUp = () -> adapter.setTranslationDirection(Direction.UP);
+    private ClickOracleCommand panDown = () -> adapter.setTranslationDirection(Direction.DOWN);
+    private ClickOracleCommand panLeft = () -> adapter.setTranslationDirection(Direction.LEFT);
+    private ClickOracleCommand panRight = () -> adapter.setTranslationDirection(Direction.RIGHT);
+    private ClickOracleCommand panStop = () -> adapter.setTranslationDirection(Direction.NONE);
+    private ClickOracleCommand rotateClockwise = () -> adapter.setRotationDirection(RotationDirection.CLOCKWISE);
+    private ClickOracleCommand rotateCounterclockwise = () -> adapter.setRotationDirection(RotationDirection.COUNTERCLOCKWISE);
+    private ClickOracleCommand rotateStop = () -> adapter.setRotationDirection(RotationDirection.NONE);
+    private IntMap<ClickOracleCommand> keyDownCommands = new IntMap<ClickOracleCommand>();
     {
-        keycodeToDirection.put(Input.Keys.UP, Direction.UP);
-        keycodeToDirection.put(Input.Keys.DOWN, Direction.DOWN);
-        keycodeToDirection.put(Input.Keys.LEFT, Direction.LEFT);
-        keycodeToDirection.put(Input.Keys.RIGHT, Direction.RIGHT);
+        keyDownCommands.put(Input.Keys.W, panUp);
+        keyDownCommands.put(Input.Keys.A, panLeft);
+        keyDownCommands.put(Input.Keys.S, panDown);
+        keyDownCommands.put(Input.Keys.D, panRight);
+        keyDownCommands.put(Input.Keys.E, rotateClockwise);
+        keyDownCommands.put(Input.Keys.Q, rotateCounterclockwise);
+    }
+    private IntMap<ClickOracleCommand> keyUpCommands = new IntMap<ClickOracleCommand>();
+    {
+        keyUpCommands.put(Input.Keys.W, panStop);
+        keyUpCommands.put(Input.Keys.A, panStop);
+        keyUpCommands.put(Input.Keys.S, panStop);
+        keyUpCommands.put(Input.Keys.D, panStop);
+        keyUpCommands.put(Input.Keys.E, rotateStop);
+        keyUpCommands.put(Input.Keys.Q, rotateStop);
     }
 
     private SpawnInfo.SpawnType spawnType;
@@ -52,18 +71,13 @@ public class ClickOracle extends InputAdapter {
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycodeToDirection.containsKey(keycode)) {
-            adapter.setTranslationDirection(keycodeToDirection.get(keycode));
-            return true;
-        }
+        keyDownCommands.get(keycode, nullCommand).execute();
         return true;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        if (keycodeToDirection.containsKey(keycode)) {
-            adapter.setTranslationDirection(Direction.NONE);
-        }
+        keyUpCommands.get(keycode, nullCommand).execute();
         return true;
     }
 
@@ -96,6 +110,9 @@ public class ClickOracle extends InputAdapter {
     int events = 0;
     int sum = 0;
 
+    private static int SCREEN_THRESHOLD = 30;
+    private boolean edgePanning = false; // Panning due to mouse on edge.
+
     @Override
     public boolean mouseMoved (int screenX, int screenY) {
         endTime = System.nanoTime();
@@ -107,6 +124,24 @@ public class ClickOracle extends InputAdapter {
         startTime = System.nanoTime();
 
         setPassiveClickable(adapter.selectClickable(screenX, screenY, touchPos));
+
+        // If the mouse is on the edge of the screen, translate the camera.
+        if (screenX < SCREEN_THRESHOLD) {
+            edgePanning = true;
+            panLeft.execute();
+        } else if (screenX > Gdx.graphics.getWidth() - SCREEN_THRESHOLD) {
+            edgePanning = true;
+            panRight.execute();
+        } else if (screenY < SCREEN_THRESHOLD) {
+            edgePanning = true;
+            panUp.execute();
+        } else if (screenY > Gdx.graphics.getHeight() - SCREEN_THRESHOLD) {
+            edgePanning = true;
+            panDown.execute();
+        } else if (edgePanning) {
+            edgePanning = false;
+            panStop.execute();
+        }
         return true;
     }
 
@@ -256,4 +291,13 @@ public class ClickOracle extends InputAdapter {
         batch.end();
         batch.setColor(1, 1,1, 1);
     }
+}
+
+@FunctionalInterface
+/*
+ * Interface for any command to execute by the ClickOracle.
+ * This is primarily to allow easy modification of keybindings.
+ */
+interface ClickOracleCommand {
+    void execute();
 }

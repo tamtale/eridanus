@@ -26,6 +26,7 @@ public class Initializer {
     public static Model spaceObsidian;
     public static Model spaceGold;
     public static Model easterEgg;
+    public static Model spawner;
     
     public static void init() {
         waterBlock = fileBasedModel("water2.png");
@@ -35,6 +36,7 @@ public class Initializer {
         spaceObsidian = fileBasedModel("space_obsidian2.png");
         spaceGold = fileBasedModel("gold2.png");
         easterEgg = fileBasedModel("cat_boi.png");
+        spawner = fileBasedModel("water_wip.png");
     }
     
     private static Model fileBasedModel(String fileName) {

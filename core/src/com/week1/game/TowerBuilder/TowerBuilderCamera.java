@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.week1.game.GameController;
 
 
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class TowerBuilderCamera {
         cam.far = 300f;
         cam.update();
 
-        viewport = new FitViewport(800, 800, cam);
+        viewport = new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT, cam);
     }
 
     private void initModelBatch() {

@@ -76,8 +76,8 @@ public class Client {
 //                    udpSocket.receive(packet);
 //                    String messages = new String(packet.getData()).trim();
                     String messages = this.in.readUTF();
-                    
-                    
+
+
                     Gdx.app.debug(TAG, "About to try parsing message: " + messages);
                     // try parsing as a control message first
                     ClientControlMessage controlMsg = MessageFormatter.parseClientControlMessage(messages);

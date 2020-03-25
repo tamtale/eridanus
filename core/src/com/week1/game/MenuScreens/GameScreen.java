@@ -4,10 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -69,6 +66,11 @@ public class GameScreen implements Screen {
 			}
 
 			@Override
+			public void setCenter(Vector3 center) {
+			    renderer.setCenter(center);
+			}
+
+			@Override
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
@@ -93,18 +95,8 @@ public class GameScreen implements Screen {
 			}
 
 			@Override
-			public String getHostAddr() {
-				return networkClient.getHostAddr();
-			}
-
-			@Override
 			public int getPlayerId() {
 				return networkClient.getPlayerId();
-			}
-
-			@Override
-			public String getClientAddr() {
-				return null;
 			}
 
 			@Override
@@ -124,6 +116,11 @@ public class GameScreen implements Screen {
 					@Override
 					public void setTranslationDirection(Direction direction) {
 						renderer.setPanning(direction);
+					}
+
+					@Override
+					public void setRotationDirection(RotationDirection direction) {
+						renderer.setDeltaRotation(direction);
 					}
 
 					public Camera getCamera() {
@@ -176,6 +173,7 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
+		gameStage.getViewport().apply();
 		if (!engine.started()) {
 			gameStage.draw();
 			return;
@@ -199,6 +197,7 @@ public class GameScreen implements Screen {
 	public void resize(int width, int height) {
 		renderer.resize(width, height);
 		if (!engine.started()) {
+			gameStage.getViewport().apply();
 			gameStage.getViewport().update(width, height);
 		}
 	}

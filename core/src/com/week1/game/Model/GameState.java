@@ -158,9 +158,9 @@ public class GameState implements GameRenderable {
 
     public void addBuilding(Tower t, int playerID) {
         List<BlockSpec> blockSpecs = t.getLayout();
-        for(int k = 0; k < blockSpecs.size(); k++) {
+        for (int k = 0; k < blockSpecs.size(); k++) {
             BlockSpec bs = blockSpecs.get(k);
-            this.world.setBlock(
+            world.setBlock(
                     (int)(t.x + bs.getX()),
                     (int)(t.y + bs.getZ()),
                     (int)(t.z + bs.getY()),
@@ -270,6 +270,16 @@ public class GameState implements GameRenderable {
         }
     }
 
+    public void doTowerSpecialAbilities(int communicationTurn) {
+        for (int i = 0; i < towers.size; i++) {
+            Tower t = towers.get(i);
+            
+            t.doSpecialEffect(communicationTurn, this);
+            
+        }
+        
+    }
+    
     /**
      * Visitor handling when a damageable is killed.
      */
