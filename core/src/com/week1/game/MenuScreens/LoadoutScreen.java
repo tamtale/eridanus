@@ -169,7 +169,7 @@ public class LoadoutScreen implements Screen {
             startButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    Gdx.app.log("pjb3 LoadoutScreen", "About to send start message.");
+                    Gdx.app.debug("pjb3 LoadoutScreen", "About to send start message.");
 
                     long enteredSeed = parseMapSeed(mapSeedField.getText());
                     Gdx.app.log("lji1 LoadoutScreen", "Using seed: " + enteredSeed);
@@ -241,7 +241,7 @@ public class LoadoutScreen implements Screen {
     public void createNewGame() {
         GameScreen futureGame = new GameScreen(networkClient);
         networkClient.getScreenManager().setGameScreen(futureGame);
-        Gdx.app.log("pjb3 - LoutoutScreen", "the GameScreen is being created NOW. It has been added to the client");
+        Gdx.app.debug("pjb3 - LoutoutScreen", "the GameScreen is being created NOW. It has been added to the client");
     }
 
     public void sendLoadout(List<TowerLite> details) {

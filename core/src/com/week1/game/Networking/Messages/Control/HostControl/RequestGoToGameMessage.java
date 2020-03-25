@@ -33,7 +33,7 @@ public class RequestGoToGameMessage extends HostControlMessage {
         for (Player player: h.registry.values()) {
             if (! h.towerDetails.containsKey(player.playerId)) {
                 // If there is no tower details for a player, you cannot allow the game to start yet.
-                Gdx.app.log("pjb3 - StartMessage", "CANNOT start the game without all TowerLoadouts. Missing player " + player.playerId);
+                Gdx.app.debug("pjb3 - StartMessage", "CANNOT start the game without all TowerLoadouts. Missing player " + player.playerId);
                 return;
             }
         }

@@ -26,7 +26,7 @@ public class SubmitLoadoutMessage extends HostControlMessage {
 
     @Override
     public void updateHost(Host h, InetAddress addr, int port) {
-//        Gdx.app.log("pjb3 -  SendLoadoutMessage", "Adding the tower details for the player " + playerID);
+//        Gdx.app.debug("pjb3 -  SendLoadoutMessage", "Adding the tower details for the player " + playerID);
         h.towerDetails.put(playerID, details);
 
         // See if there are any more towerDetails missing. If there are, nor more action needed.

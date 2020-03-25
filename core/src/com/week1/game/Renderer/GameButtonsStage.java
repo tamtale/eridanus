@@ -189,7 +189,7 @@ public class GameButtonsStage {
         restartGame.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("pjb3 - RestartButton", "We are restarting the game now");
+                Gdx.app.debug("pjb3 - RestartButton", "We are restarting the game now");
                 adapter.restartGame();
 
             }
@@ -201,7 +201,6 @@ public class GameButtonsStage {
         manaLabel.setText(String.format("Mana: %d", mana));
         if (firstTimeRender) {
             firstTimeRender = false;
-            Gdx.app.log("PJB# the name is: ", adapter.getTowerName(0));
             tower1Button.setText(adapter.getTowerName(0) + "\nCost: " + adapter.getTowerCost(0));
             tower2Button.setText(adapter.getTowerName(1) + "\nCost: " + adapter.getTowerCost(1));
             tower3Button.setText(adapter.getTowerName(2) + "\nCost: " + adapter.getTowerCost(2));

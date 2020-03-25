@@ -200,16 +200,16 @@ public class ClickOracle extends InputAdapter {
                         // if the player left clicks on a block, spawn something on that block
                         Gdx.app.log("ClickOracle", "Accepting block location.");
                         if (spawnType == SpawnInfo.SpawnType.UNIT) {
-                            Gdx.app.log("pjb3 - ClickOracle", "Spawn unit");
+                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn unit");
                             adapter.sendMessage(new CreateMinionMessage(vector.x, vector.y, vector.z + 1, 69, adapter.getPlayerId(), currentGameHash));
                         } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
-                            Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn basic tower via state");
                             adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 0, adapter.getPlayerId(), currentGameHash));
                         } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
-                            Gdx.app.log("pjb3 - ClickOracle", "Spawn Tower 2 tower via state");
+                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn Tower 2 tower via state");
                             adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 1, adapter.getPlayerId(), currentGameHash));
                         } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
-                            Gdx.app.log("pjb3 - ClickOracle", "Spawn basic tower via state");
+                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn basic tower via state");
                             adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 2, adapter.getPlayerId(), currentGameHash));
                         }
                         return null;

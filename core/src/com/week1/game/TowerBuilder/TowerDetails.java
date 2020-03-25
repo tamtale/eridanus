@@ -111,7 +111,7 @@ public class TowerDetails {
             myReader.close();
 
             String twrName = filename.substring(13, filename.length() - 11);
-            Gdx.app.log("pjb3 - TowerDetails", "printing tower name:" + twrName);
+            Gdx.app.debug("pjb3 - TowerDetails", "printing tower name:" + twrName);
             layout = blocks;
             name = twrName;
             populateFields();
@@ -125,7 +125,7 @@ public class TowerDetails {
     public TowerDetails(List<BlockSpec> layout, String name) {
         this.layout = layout;
         this.name = name;
-        Gdx.app.log("pjb3 - TowerDetails", "printing tower name:" + name);
+        Gdx.app.debug("pjb3 - TowerDetails", "printing tower name:" + name);
         // TODO: remove
         if(layout.get(0).getBlockCode() == BlockType.SPACEGOLD) {
             System.out.println("Init base!");
@@ -214,7 +214,6 @@ public class TowerDetails {
     }
 
     public void setName(String name) {
-        Gdx.app.log("PJB# TowerDetails", "setting the name to be:" + name + "!");
         this.name = name;
     }
 
@@ -423,7 +422,6 @@ public class TowerDetails {
 
     public String getName() {
         return name;
-//        return "yup";
     }
 
     public int getCost() {
