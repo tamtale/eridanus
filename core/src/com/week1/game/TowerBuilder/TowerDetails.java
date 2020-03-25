@@ -15,7 +15,6 @@ public class TowerDetails {
     private List<BlockSpec> layout;
     private TowerFootprint footprint;
     private Vector3 averageLocationOfHighestBlock = new Vector3();
-    private String name = "";
 
     //these stats are based off the raw blocks
     private double rawHeight = 0;
@@ -131,11 +130,6 @@ public class TowerDetails {
     public TowerDetails(List<BlockSpec> layout, String name) {
         this.layout = layout;
         this.name = name;
-
-        // TODO: remove
-        if(layout.get(0).getBlockCode() == BlockType.SPACEGOLD) {
-            System.out.println("Init base!");
-        }
         
         //generate model and stats
         calcRawStats();
