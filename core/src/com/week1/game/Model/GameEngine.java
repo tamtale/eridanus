@@ -44,6 +44,7 @@ public class GameEngine implements GameRenderable {
                     Tower myBase = gameState.getPlayerBase(this.enginePlayerId);
                     position.set(myBase.getX(), myBase.getY(), 0);
                     adapter.setDefaultLocation(position);
+                    adapter.zoom(-20); // 20 is arbitrary, but feels reasonable for initial camera zoom
 
                     // Give the system the center of the map for camera rotation.
                     int[] dimensions = getGameState().getWorld().getWorldDimensions();

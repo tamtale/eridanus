@@ -70,10 +70,10 @@ public class GameScreen implements Screen {
 			    renderer.setCenter(center);
 			}
 
-            @Override
-            public RenderConfig getRenderConfig() {
-                return renderer.getRenderConfig();
-            }
+			@Override
+			public void zoom(float amount) {
+				renderer.zoom(amount);
+			}
 
             @Override
 			public void sendMessage(AMessage msg) {
