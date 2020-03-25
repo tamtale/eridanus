@@ -132,7 +132,6 @@ public class GameCameraController extends GestureDetector {
 
 	public GameCameraController(final Camera camera, RenderConfig renderConfig) {
 		this(new CameraGestureListener(), camera, renderConfig);
-		
 	}
 
 	public void update () {
