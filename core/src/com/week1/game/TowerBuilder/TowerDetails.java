@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerFootprint;
+import com.week1.game.Model.TowerLite;
 
 import java.io.*;
 import java.util.*;
@@ -124,7 +125,7 @@ public class TowerDetails {
     public TowerDetails(List<BlockSpec> layout, String name) {
         this.layout = layout;
         this.name = name;
-
+        Gdx.app.log("pjb3 - TowerDetails", "printing tower name:" + name);
         // TODO: remove
         if(layout.get(0).getBlockCode() == BlockType.SPACEGOLD) {
             System.out.println("Init base!");
@@ -213,6 +214,7 @@ public class TowerDetails {
     }
 
     public void setName(String name) {
+        Gdx.app.log("PJB# TowerDetails", "setting the name to be:" + name + "!");
         this.name = name;
     }
 
@@ -420,11 +422,15 @@ public class TowerDetails {
     }
 
     public String getName() {
-//        return name;
-        return "yup";
+        return name;
+//        return "yup";
     }
 
     public int getCost() {
         return (int)price;
+    }
+
+    public TowerLite getTowerLite() {
+        return new TowerLite(name, layout);
     }
 }

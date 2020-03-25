@@ -1,11 +1,11 @@
 package com.week1.game.Networking.Messages.Control.HostControl;
 
+import com.week1.game.Model.TowerLite;
 import com.week1.game.Networking.Messages.Control.ClientControl.ReadyToStartMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Networking.NetworkObjects.Host;
 import com.week1.game.Networking.NetworkObjects.Player;
-import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.net.InetAddress;
 import java.util.List;
@@ -17,9 +17,9 @@ public class SubmitLoadoutMessage extends HostControlMessage {
 
     private final static MessageType MESSAGE_TYPE = MessageType.SUBMITLOADOUT;
 
-    private List<List<BlockSpec>> details;
+    private List<TowerLite> details;
 
-    public SubmitLoadoutMessage(int playerID, List<List<BlockSpec>> details){
+    public SubmitLoadoutMessage(int playerID, List<TowerLite> details){
         super(playerID, MESSAGE_TYPE);
         this.details = details;
     }
