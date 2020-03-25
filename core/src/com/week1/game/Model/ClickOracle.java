@@ -104,6 +104,7 @@ public class ClickOracle extends InputAdapter {
     int sum = 0;
 
     private static int SCREEN_THRESHOLD = 30;
+    private boolean edgePanning = false; // Panning due to mouse on edge.
     @Override
     public boolean mouseMoved (int screenX, int screenY) {
         endTime = System.nanoTime();
@@ -118,14 +119,19 @@ public class ClickOracle extends InputAdapter {
 
         // If the mouse is on the edge of the screen, translate the camera.
         if (screenX < SCREEN_THRESHOLD) {
+            edgePanning = true;
             panLeft.execute();
         } else if (screenX > Gdx.graphics.getWidth() - SCREEN_THRESHOLD) {
+            edgePanning = true;
             panRight.execute();
         } else if (screenY < SCREEN_THRESHOLD) {
+            edgePanning = true;
             panUp.execute();
         } else if (screenY > Gdx.graphics.getHeight() - SCREEN_THRESHOLD) {
+            edgePanning = true;
             panDown.execute();
-        } else {
+        } else if (edgePanning) {
+            edgePanning = false;
             panStop.execute();
         }
         return true;
