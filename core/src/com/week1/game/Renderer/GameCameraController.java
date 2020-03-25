@@ -211,18 +211,10 @@ public class GameCameraController extends GestureDetector {
 	}
 
 	public boolean zoom (float amount) {
-		System.out.println("zooming: " + amount);
 		if (!alwaysScroll && activateKey != 0 && !activatePressed) return false;
 		camera.translate(tmpV1.set(camera.direction).scl(amount));
 		if (scrollTarget) target.add(tmpV1);
 		if (autoUpdate) camera.update();
-		
-//		if (amount > 0) {
-//			renderConfig.zoomFactor++;
-//		} else if (amount < 0) {
-//			renderConfig.zoomFactor--;
-//		}
-//		renderConfig.zoomFactor = -30;
 		
 		return true;
 	}
