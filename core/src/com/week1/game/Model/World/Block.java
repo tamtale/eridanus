@@ -17,6 +17,7 @@ public interface Block {
     float getCost();
     Optional<ModelInstance> modelInstance(float x, float y, float z);
     boolean canSupportTower();
+    boolean allowMinionToSpawnOn();
 
     abstract class TerrainBlock implements Block {
         Model model;
@@ -29,9 +30,14 @@ public interface Block {
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
         }
-        
+
         @Override
         public boolean canSupportTower() {
+            return true;
+        }
+        
+        @Override
+        public boolean allowMinionToSpawnOn() {
             return true;
         }
 
@@ -40,7 +46,7 @@ public interface Block {
             return cost;
         }
 
-        private static ModelBuilder BUILDER = new ModelBuilder();
+        public static ModelBuilder BUILDER = new ModelBuilder();
         public static TerrainBlock AIR = new TerrainBlock(Color.GOLD, 0) {
             @Override
             public Optional<ModelInstance> modelInstance(float x, float y, float z) {
@@ -49,6 +55,11 @@ public interface Block {
             @Override
             public boolean canSupportTower() {
                 // Air shouldn't be able to hold up a tower
+                return false;
+            }
+
+            @Override
+            public boolean allowMinionToSpawnOn() {
                 return false;
             }
         };
@@ -70,6 +81,39 @@ public interface Block {
             }
         };
 
+        public static TerrainBlock FIREBRICK = new TerrainBlock(Color.FIREBRICK, 1.5f) {
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                ModelInstance instance = new ModelInstance(model);
+                instance.transform.setToTranslation(x, y, z);
+                return Optional.of(instance);
+            }
+        };
+
+        public static TerrainBlock ZAMBALA = new TerrainBlock(Color.CORAL, 1f) {
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                ModelInstance instance = new ModelInstance(model);
+                instance.transform.setToTranslation(x, y, z);
+                return Optional.of(instance);
+            }
+        };
+        
+
+        public static TerrainBlock WATER = new TerrainBlock(Color.CYAN, 5f) {
+            @Override
+            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+                ModelInstance instance = new ModelInstance(model);
+                instance.transform.setToTranslation(x, y, z);
+                return Optional.of(instance);
+            }
+
+            @Override
+            public boolean canSupportTower() {
+                return false;
+            }
+        };
+
     }
 
 
@@ -80,9 +124,14 @@ public interface Block {
         TowerBlock(Model model) {
             this.model = model;
         }
-        
+
         @Override
         public boolean canSupportTower() {
+            return false;
+        }
+        
+        @Override
+        public boolean allowMinionToSpawnOn() {
             return false;
         }
 
@@ -105,6 +154,7 @@ public interface Block {
             put(BlockType.NOVACORE, new TowerBlock(Initializer.spaceGold));
             put(BlockType.EARTH, new TowerBlock(Initializer.earthBlock));
             put(BlockType.FIRE, new TowerBlock(Initializer.fireBlock));
+            put(BlockType.SPAWNER, new TowerBlock(Initializer.spawner));
             put(BlockType.EASTEREGG, new TowerBlock(Initializer.easterEgg));
         }};
     }

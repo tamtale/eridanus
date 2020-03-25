@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
+import com.week1.game.GameControllerSetScreenAdapter;
 import com.week1.game.TowerBuilder.TowerBuilderScreen;
 
 /**
@@ -60,12 +61,14 @@ public class MainMenuScreen implements Screen {
         //Set the background image
 //        stage.addActor(new Image(new TextureRegionDrawable(new Texture("nova_menu.png"))));
 
-        buildTowersButton.setSize(128,64);
-        buildTowersButton.setPosition(GameController.VIRTUAL_WIDTH/2 - playButton.getWidth()/2 - 110, 24);
+        buildTowersButton.setSize(200,64);
+        buildTowersButton.getLabel().setFontScale(1.5f);
+        buildTowersButton.setPosition(GameController.VIRTUAL_WIDTH/2 - buildTowersButton.getWidth() - 50, 24);
         stage.addActor(buildTowersButton);
 
-        playButton.setSize(128,64);
-        playButton.setPosition(GameController.VIRTUAL_WIDTH/2 - playButton.getWidth()/2  + 90, 24);
+        playButton.setSize(200,64);
+        playButton.getLabel().setFontScale(1.5f);
+        playButton.setPosition(GameController.VIRTUAL_WIDTH/2 + 50, 24);
         stage.addActor(playButton);
     }
 
@@ -73,7 +76,17 @@ public class MainMenuScreen implements Screen {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new ConnectionScreen(newScreen -> game.setScreen(newScreen)));
+                game.setScreen(new ConnectionScreen(new GameControllerSetScreenAdapter() {
+                    @Override
+                    public void setScreen(Screen newScreen) {
+                        game.setScreen(newScreen);
+                    }
+
+                    @Override
+                    public Screen getScreen() {
+                        return game.getScreen();
+                    }
+                }));
             }
         });
 

@@ -40,15 +40,15 @@ public class CreateTowerMessage extends GameMessage {
         towerDmg = towerDetails.getAtk();
         towerRange = towerDetails.getRange();
 
-        
-       
+
+
         // Does the player have enough mana
         if (towerCost > inputState.getPlayerStats(playerID).getMana()) {
             // Do not have enough mana!
             util.log("pjb3 - CreateTowerMessage", "Not enough mana to create tower. Need " + towerCost);
             return false; // indicate it was NOT placed
         }
-        
+
         // The tower can't be hanging off the edge of the map
         // The tower can't be overlapping with an existing structure
         // The tower's base must be fully supported by terrain blocks
@@ -62,8 +62,6 @@ public class CreateTowerMessage extends GameMessage {
             util.log("pjb3 - CreateTowerMessage", "Not close enough to an existing tower or home base");
             return false;
         }
-        
-        
 
         // Deduct the mana cost from the creating player
         util.log("pjb3 - CreateTowerMessage", "Used " + towerCost + " mana to create tower.");
@@ -72,7 +70,7 @@ public class CreateTowerMessage extends GameMessage {
         // Only create the tower once we're sure it's safe to do so
         Tower tower = new Tower((int) x, (int) y, (int) z, towerDetails, playerID, towerType);
         inputState.addTower(tower, playerID);
-        
+
         return true;
     }
 
@@ -80,14 +78,14 @@ public class CreateTowerMessage extends GameMessage {
     public String toString() {
         return "CreateTowerMessage: " + x + ", " + y + ", " + towerType + ", " + playerID;
     }
-    
-    
+
+
     /*
         Checks that the tower is completely supported by the map
         and that it doesn't overlap with an existing blocks
      */
     private boolean checkTowerBlockPlacement(GameState inputState, TowerDetails towerDetails, InfoUtil util) {
-        
+
         int[] dimensions = inputState.getWorld().getWorldDimensions();
         int maxX = dimensions[0];
         int maxY = dimensions[1];
@@ -96,26 +94,25 @@ public class CreateTowerMessage extends GameMessage {
         int tempX;
         int tempY;
         int tempZ;
-        
+
         Array<Unit> minions = inputState.getUnits();
 
         for(BlockSpec bs : towerDetails.getLayout()) {
             tempX = (int)(x + bs.getX());
-            tempY = (int)(y + bs.getZ()); 
+            tempY = (int)(y + bs.getZ());
             tempZ = (int)(z + bs.getY()); // Notice that x,z are the flat coords and y is for height
-            
+
             if (!((0 <= tempX && tempX < maxX) &&
                     (0 <= tempY && tempY < maxY) &&
                     (0 <= tempZ && tempZ < maxZ))) {
                 util.log("lji1 - CreateTowerMessage", "Can't build tower off the map.");
                 return false;
             }
-            
             if (inputState.getWorld().getBlock(tempX, tempY, tempZ) != Block.TerrainBlock.AIR) {
                 util.log("lji1 - CreateTowerMessage", "Can't build a tower overlapping with existing blocks");
                 return false;
             }
-            
+
             if (bs.getY() == 0 && !(inputState.getWorld().getBlock(tempX, tempY, tempZ - 1).canSupportTower())) {
                 util.log("lji1 - CreateTowerMessage", "Tower not fully supported by terrain");
                 return false;
@@ -123,7 +120,7 @@ public class CreateTowerMessage extends GameMessage {
 
             for(int u = 0; u < minions.size; u++) {
                 Unit minion = minions.get(u);
-                if ((((int)minion.getX() == tempX) || ((int)minion.getX() + 1 == tempX)) && 
+                if ((((int)minion.getX() == tempX) || ((int)minion.getX() + 1 == tempX)) &&
                         (((int)minion.getY() == tempY) || ((int)minion.getY() + 1 == tempY))) {
                     util.log("lji1 - CreateTowerMessage", "Tower overlaps with minion.");
                     return false;

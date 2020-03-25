@@ -1,26 +1,16 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.Renderable;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.IntMap;
-import com.badlogic.gdx.utils.Pool;
-import com.week1.game.Model.Entities.Building;
-import com.week1.game.Model.Entities.PlayerBase;
-import com.week1.game.Model.Entities.Tower;
-import com.week1.game.Model.World.Basic4WorldBuilder;
-import com.week1.game.Model.World.SmallWorldBuilder;
-import com.week1.game.Networking.Messages.Game.GameMessage;
-
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.week1.game.InfoUtil;
+import com.week1.game.Model.Entities.Building;
+import com.week1.game.Model.Entities.Tower;
+import com.week1.game.Model.World.CoolWorldBuilder;
+import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
+import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.Game.TaggedMessage;
+import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 
@@ -28,8 +18,6 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Queue;
-import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
-import com.week1.game.Networking.Messages.MessageType;
 
 import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
 
@@ -50,12 +38,16 @@ public class GameEngine implements GameRenderable {
         this.enginePlayerId = playerId;
         this.replayQueue = replayQueue;
         gameState = new GameState(
-                SmallWorldBuilder.ONLY,
+                CoolWorldBuilder.ONLY,
                 () -> {
                     Vector3 position = new Vector3();
                     Tower myBase = gameState.getPlayerBase(this.enginePlayerId);
                     position.set(myBase.getX(), myBase.getY(), 0);
                     adapter.setDefaultLocation(position);
+
+                    // Give the system the center of the map for camera rotation.
+                    int[] dimensions = getGameState().getWorld().getWorldDimensions();
+                    adapter.setCenter(new Vector3(dimensions[0] / 2f, dimensions[1] / 2f, dimensions[2] / 2f));
                 });
         Gdx.app.log("wab2- GameEngine", "gameState built");
         this.util = util;
@@ -108,6 +100,7 @@ public class GameEngine implements GameRenderable {
         gameState.updateMana(1);
         gameState.dealDamage(1);
         gameState.moveUnits(THRESHOLD);
+        gameState.doTowerSpecialAbilities(communicationTurn);
 
         // Check the win/loss/restart conditions
         if (!sentWinLoss) {
@@ -123,6 +116,7 @@ public class GameEngine implements GameRenderable {
             adapter.gameOver();
         }
     }
+
 
     @Override
     public void render(RenderConfig renderConfig) {

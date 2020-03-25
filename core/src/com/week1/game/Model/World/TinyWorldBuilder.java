@@ -3,16 +3,15 @@ package com.week1.game.Model.World;
 import com.badlogic.gdx.math.Vector3;
 
 /**
- * World builder for a basic 4-player game.
- * 200x200, with plateaus in the middle.
+ * Tiny world for testing.
  */
-public class SmallWorldBuilder implements IWorldBuilder {
+public class TinyWorldBuilder implements IWorldBuilder {
 
-    public static SmallWorldBuilder ONLY = new SmallWorldBuilder();
+    public static TinyWorldBuilder ONLY = new TinyWorldBuilder();
 
     @Override
     public Block[][][] terrain() {
-        Block[][][] blocks = new Block[90][30][15];
+        Block[][][] blocks = new Block[20][20][5];
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 blocks[i][j][0] = Block.TerrainBlock.STONE;
@@ -21,23 +20,14 @@ public class SmallWorldBuilder implements IWorldBuilder {
                 }
             }
         }
-        makePlateau(blocks, 0, 5, 0, 5);
         return blocks;
     }
 
-    private void makePlateau(Block[][][] blocks, int startX, int endX, int startY, int endY) {
-        for (int i = startX; i <= endX; i++) {
-            for (int j = startY; j <= endY; j++) {
-                blocks[i][j][1] = Block.TerrainBlock.DIRT;
-            }
-        }
-    }
 
     @Override
     public Vector3[] startLocations() {
         return new Vector3[] {
                 new Vector3(10, 10, 1),
-                new Vector3(35, 10, 1),
         };
     }
 

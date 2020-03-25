@@ -10,7 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.week1.game.GameController;
 import com.week1.game.Model.SpawnInfo;
 import com.week1.game.Model.SpawnInfo.SpawnType;
 
@@ -52,7 +53,7 @@ public class GameButtonsStage {
     private static Label.LabelStyle clearStyle = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
 
     public GameButtonsStage(IRendererAdapter adapter) {
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new ExtendViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
         this.adapter = adapter;
 
         setWidgets();
@@ -116,8 +117,8 @@ public class GameButtonsStage {
         stage.addActor(tower2Button);
         stage.addActor(tower3Button);
         stage.addActor(manaLabel);
-        stage.addActor(showAttackRadiusCheckBox);
-        stage.addActor(showSpawnRadiusCheckBox);
+//        stage.addActor(showAttackRadiusCheckBox); TODO add this back in if we get functionality
+//        stage.addActor(showSpawnRadiusCheckBox); TODO add this back in if we get functionality
     }
 
     public void setListeners() {

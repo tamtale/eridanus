@@ -53,7 +53,7 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
 
     public boolean searchNodePath(N startNode, N endNode, Heuristic<N> heuristic, GraphPath<N> outPath) {
         boolean found = this.search(startNode, endNode, heuristic);
-        Gdx.app.log("wab2 - AStar", "found? " + found);
+        Gdx.app.debug("wab2 - AStar", "found? " + found);
         if (found) {
             this.generateNodePath(startNode, outPath);
         }
@@ -62,7 +62,9 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
     }
 
     protected boolean search(N startNode, N endNode, Heuristic<N> heuristic) {
-        this.initSearch(startNode, endNode, heuristic);
+        if (this.initSearch(startNode, endNode, heuristic) == false) {
+            return false;
+        };
 
         do {
             this.current = (WarrenIndexedAStarPathFinder.NodeRecord)this.openList.pop();
@@ -100,7 +102,10 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
                 return true;
             }
 
-            this.visitChildren(request.endNode, request.heuristic);
+            //If it can't find a connection or the nodeRecord runs out, returns false
+            if (!this.visitChildren(request.endNode, request.heuristic)) {
+                return false;
+            };
             lastTime = currentTime;
         } while(this.openList.size > 0);
 
@@ -108,7 +113,7 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
         return true;
     }
 
-    protected void initSearch(N startNode, N endNode, Heuristic<N> heuristic) {
+    protected boolean initSearch(N startNode, N endNode, Heuristic<N> heuristic) {
         if (this.metrics != null) {
             this.metrics.reset();
         }
@@ -119,18 +124,22 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
 
         this.openList.clear();
         WarrenIndexedAStarPathFinder.NodeRecord<N> startRecord = this.getNodeRecord(startNode);
+        if (startRecord == null) {
+            return false;
+        }
         startRecord.node = startNode;
         startRecord.connection = null;
         startRecord.costSoFar = 0.0F;
         this.addToOpenList(startRecord, heuristic.estimate(startNode, endNode));
         this.current = null;
+        return true;
     }
 
-    protected void visitChildren(N endNode, Heuristic<N> heuristic) {
+    protected boolean visitChildren(N endNode, Heuristic<N> heuristic) {
         Array<Connection<N>> connections = this.graph.getConnections(this.current.node);
         if (connections == null){
             Gdx.app.error("wab2 - connections", "Connections are null meaning someones out of bounds");
-            return;
+            return false;
         }
         for(int i = 0; i < connections.size; ++i) {
             if (this.metrics != null) {
@@ -141,6 +150,9 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
             N node = connection.getToNode();
             float nodeCost = this.current.costSoFar + connection.getCost();
             WarrenIndexedAStarPathFinder.NodeRecord<N> nodeRecord = this.getNodeRecord(node);
+            if (nodeRecord == null) {
+                return false;
+            }
             float nodeHeuristic;
             if (nodeRecord.category == 2) {
                 if (nodeRecord.costSoFar <= nodeCost) {
@@ -163,7 +175,7 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
             nodeRecord.connection = connection;
             this.addToOpenList(nodeRecord, nodeCost + nodeHeuristic);
         }
-
+        return true;
     }
 
     protected void generateConnectionPath(N startNode, GraphPath<Connection<N>> outPath) {
@@ -196,6 +208,9 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
 
     protected WarrenIndexedAStarPathFinder.NodeRecord<N> getNodeRecord(N node) {
         int index = this.graph.getIndex(node);
+        if (index >= nodeRecords.length) {
+            return null;
+        }
         WarrenIndexedAStarPathFinder.NodeRecord<N> nr = this.nodeRecords[index];
         if (nr != null) {
             if (nr.searchId != this.searchId) {

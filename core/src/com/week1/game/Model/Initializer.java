@@ -11,6 +11,10 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
  * Static asset initializer to ensure that all the models
  * are ready for use by the time the user has loaded the game.
  */
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+
 public class Initializer {
 
     private static ModelBuilder BUILDER = new ModelBuilder();
@@ -22,6 +26,7 @@ public class Initializer {
     public static Model spaceObsidian;
     public static Model spaceGold;
     public static Model easterEgg;
+    public static Model spawner;
     
     public static void init() {
         waterBlock = fileBasedModel("water2.png");
@@ -31,6 +36,7 @@ public class Initializer {
         spaceObsidian = fileBasedModel("space_obsidian2.png");
         spaceGold = fileBasedModel("gold2.png");
         easterEgg = fileBasedModel("cat_boi.png");
+        spawner = fileBasedModel("water_wip.png");
     }
     
     private static Model fileBasedModel(String fileName) {

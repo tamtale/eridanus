@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
@@ -15,6 +16,7 @@ import com.week1.game.Model.OutputPath;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Util3D;
+import com.week1.game.Model.Unit2StateAdapter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,17 +24,22 @@ import java.util.Map;
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 import static java.lang.Math.abs;
+import static com.week1.game.Renderer.TextureUtils.makeTexture;
+import static java.lang.Math.abs;
+import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
-public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
+public class Unit extends Damageable implements Damaging, GameRenderable, Clickable {
     private final int playerID;
     public OutputPath path;
     private Vector3 curNode;
     private Vector3 lastNode;
     private float distance;
     private float distanceTraveled;
+    Unit2StateAdapter unit2StateAdapter;
     private Vector3 goal = new Vector3();
     private boolean close;
     private boolean selected;
+    private float blockSpeed;
     private int turn = 0;
     private double hp;
     private Vector3 vel;
@@ -45,7 +52,7 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
     private ModelInstance modelInstance;
     private Vector3 position = new Vector3();
     private Vector3 displayPosition = new Vector3();
-
+    
     /*
      * Material to apply to a selected unit.
      */
@@ -107,6 +114,7 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
         return 0;
     }
 
+
     @Override
     public <T> T accept(DamageableVisitor<T> visitor) {
         return visitor.acceptUnit(this);
@@ -117,9 +125,13 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
             if (path.getPath().size > 0) {
                 if (distanceTraveled > distance) {
                     turn = 0;
-                    this.lastNode = new Vector3(this.position.x, this.position.y, 0);
-                    float dx = path.get(0).x - this.position.x;
-                    float dy = path.get(0).y - this.position.y;
+                    float dx = path.get(0).x - position.x;
+                    float dy = path.get(0).y - position.y;
+                    int height = unit2StateAdapter.getHeight((int) position.x, (int) position.y);
+                    int nxtHeight = unit2StateAdapter.getHeight((int) path.get(0).x, (int) path.get(0).y);
+                    this.blockSpeed = 1f/unit2StateAdapter.getBlock((int) position.x, (int) position.y,
+                            height).getCost(); //TODO: 3D
+                    position.z = nxtHeight + 1;
                     this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
                     double angle = Math.atan(dy / dx);
                     if (dx < 0) {
@@ -127,15 +139,14 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
                     } else if (dy < 0) {
                         angle += 2 * Math.PI;
                     }
-                    vel.x = (float) speed * (float) Math.cos(angle);
-                    vel.y = (float) speed * (float) Math.sin(angle);
+                    vel.x = blockSpeed * (float) speed * (float) Math.cos(angle);
+                    vel.y = blockSpeed * (float) speed * (float) Math.sin(angle);
                     path.removeIndex(0);
                     this.distanceTraveled = 0;
                 }
                 move(delta);
                 turn++;
             }
-
             if (path.getPath().size <= 0) {
                 path = null;
                 vel.x = 0;
@@ -233,25 +244,31 @@ public class Unit implements Damageable, Damaging, GameRenderable, Clickable {
 
     public void setPath(OutputPath path) {
         this.path = path;
-        path.removeIndex(0);
-        float dx = path.get(0).x- this.position.x;
-        float dy = path.get(0).y - this.position.y;
-        double angle = Math.atan(dy/dx);
-        if (dx < 0) {
-            angle += Math.PI;
-        } else if (dy < 0) {
-            angle += 2 * Math.PI;
+        if (path.getPath().size >= 2) {
+            path.removeIndex(0);
+            float dx = path.get(0).x - this.position.x;
+            float dy = path.get(0).y - this.position.y;
+            double angle = Math.atan(dy / dx);
+            if (dx < 0) {
+                angle += Math.PI;
+            } else if (dy < 0) {
+                angle += 2 * Math.PI;
+            }
+            this.lastNode = new Vector3(this.position.x, this.position.y, 0);
+            this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
+            vel.x = (float) speed * (float) Math.cos(angle);
+            vel.y = (float) speed * (float) Math.sin(angle);
+            this.distanceTraveled = 0;
+            path.removeIndex(0);
         }
-        this.lastNode = new Vector3(this.position.x, this.position.y, 0);
-        this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
-        vel.x = (float) speed * (float) Math.cos(angle);
-        vel.y = (float) speed * (float) Math.sin(angle);
-        this.distanceTraveled = 0;
-        path.removeIndex(0);
     }
 
     public void setGoal(Vector3 goal) {
         this.goal.set(goal);
+    }
+
+    public void setUnit2StateAdapter(Unit2StateAdapter unit2StateAdapter) {
+        this.unit2StateAdapter = unit2StateAdapter;
     }
 
     @Override

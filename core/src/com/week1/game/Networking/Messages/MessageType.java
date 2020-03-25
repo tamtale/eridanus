@@ -17,6 +17,7 @@ public enum MessageType {
     GOTOGAME,
     READYTOSTART,
     RESTART,
+    JOINEDPLAYERS,
     
     // Host Control Messages
     SUBMITLOADOUT,

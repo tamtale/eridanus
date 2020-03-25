@@ -1,6 +1,5 @@
 package com.week1.game.Model.World;
 
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
 
 /**
@@ -55,5 +54,10 @@ public class Basic4WorldBuilder implements IWorldBuilder {
         return new Vector3[] {
                 new Vector3(100, 100, 0),
         };
+    }
+
+    @Override
+    public void addSeed(long mapSeed) {
+
     }
 }

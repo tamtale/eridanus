@@ -66,6 +66,11 @@ public class GameScreen implements Screen {
 			}
 
 			@Override
+			public void setCenter(Vector3 center) {
+			    renderer.setCenter(center);
+			}
+
+			@Override
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
@@ -82,7 +87,7 @@ public class GameScreen implements Screen {
 			@Override
 			public void renderSystem(RenderConfig renderConfig) {
 				engine.render(renderConfig);
-				clickOracle.render();
+				clickOracle.render(); // don't need to pass renderconfig here because Click oracle has it already via constructor
 			}
 
 			public double getPlayerMana(int playerId) {
@@ -90,18 +95,8 @@ public class GameScreen implements Screen {
 			}
 
 			@Override
-			public String getHostAddr() {
-				return networkClient.getHostAddr();
-			}
-
-			@Override
 			public int getPlayerId() {
 				return networkClient.getPlayerId();
-			}
-
-			@Override
-			public String getClientAddr() {
-				return null;
 			}
 
 			@Override
@@ -114,12 +109,18 @@ public class GameScreen implements Screen {
 				networkClient.sendRestartRequest();
 			}
 		}, util);
+		
 		clickOracle = new ClickOracle(
 				new IClickOracleAdapter() {
 
 					@Override
 					public void setTranslationDirection(Direction direction) {
 						renderer.setPanning(direction);
+					}
+
+					@Override
+					public void setRotationDirection(RotationDirection direction) {
+						renderer.setDeltaRotation(direction);
 					}
 
 					public Camera getCamera() {
@@ -137,8 +138,8 @@ public class GameScreen implements Screen {
 					}
 
 					@Override
-					public Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
-						return engine.getGameState().findUnitsInBox(cornerA, cornerB);
+					public Array<Unit> getUnitsInBox(Vector3 cornerA, Vector3 cornerB, RenderConfig renderConfig) {
+						return engine.getGameState().findUnitsInBox(cornerA, cornerB, renderConfig);
 					}
 
 					@Override
@@ -159,9 +160,10 @@ public class GameScreen implements Screen {
 					public int getPlayerId() {
 						return networkClient.getPlayerId();
 					}
-				});
-
+				}, renderer.getRenderConfig());
+		
 		renderer.create();
+
 	}
 
 	@Override
@@ -171,6 +173,7 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
+		gameStage.getViewport().apply();
 		if (!engine.started()) {
 			gameStage.draw();
 			return;
@@ -180,7 +183,7 @@ public class GameScreen implements Screen {
 			InputMultiplexer multiplexer = new InputMultiplexer();
 			multiplexer.addProcessor(renderer.getButtonStage());
 			multiplexer.addProcessor(clickOracle);
-			multiplexer.addProcessor(new GameCameraController(renderer.getCamera()));
+			multiplexer.addProcessor(new GameCameraController(renderer.getCamera(), renderer.getRenderConfig()));
 			Gdx.input.setInputProcessor(multiplexer);
 
 			gameStage.dispose();
@@ -194,6 +197,7 @@ public class GameScreen implements Screen {
 	public void resize(int width, int height) {
 		renderer.resize(width, height);
 		if (!engine.started()) {
+			gameStage.getViewport().apply();
 			gameStage.getViewport().update(width, height);
 		}
 	}

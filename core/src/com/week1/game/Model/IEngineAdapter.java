@@ -10,4 +10,6 @@ public interface IEngineAdapter {
     void setDefaultLocation(Vector3 location);
     void endGame(int winOrLoss); // loss is 0, win is 1
     void gameOver();
+    /* Inform the rest of the system where the center of the map is.*/
+    void setCenter(Vector3 center);
 }

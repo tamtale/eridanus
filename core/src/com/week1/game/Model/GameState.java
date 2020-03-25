@@ -1,9 +1,9 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
@@ -19,16 +19,12 @@ import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import static com.week1.game.Model.StatsConfig.*;
 
-
 public class GameState implements GameRenderable {
-
+    private final Unit2StateAdapter u2s;
     private GameGraph graph;
 
     private Array<Clickable> clickables = new Array<>();
@@ -48,21 +44,28 @@ public class GameState implements GameRenderable {
      */
     private Runnable postInit;
     private boolean fullyInitialized = false;
+    
+    private GameState getGameState() {
+        return this;
+    }
 
     public GameState(IWorldBuilder worldBuilder, Runnable postInit){
         // TODO tower types in memory after exchange
         this.worldBuilder = worldBuilder;
-        world = new GameWorld(worldBuilder);
-        world = new GameWorld(worldBuilder);
-        world.getHeightMap();
-        graph = world.buildGraph();
-        for (Vector3 loc: worldBuilder.crystalLocations()) {
-            crystals.add(new Crystal(loc.x, loc.y));
-        }
-        graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
+        this.u2s = new Unit2StateAdapter() {
+            @Override
+            public Block getBlock(int i, int j, int k) {
+                return world.getBlock(i, j, k);
+            }
+
+            @Override
+            public int getHeight(int i, int j) {
+                return world.getHeight(i, j);
+            }
+        };
         this.postInit = postInit;
     }
-    
+
     public PlayerBase getPlayerBase(int playerId) {
         return playerBases.get(playerId);
     }
@@ -73,7 +76,33 @@ public class GameState implements GameRenderable {
 
      This will create the bases for all of the players and give them all an amount of currency.
      */
-    public void initializeGame(int numPlayers) {
+    public void initializeGame(long mapSeed, int numPlayers) {
+        boolean[] mapReady = {false};
+        
+        // Needs to happen in initializeGame, so that the host can send the mapSeed,
+        // needs to happen in postRunnable because initializeGame is not called on the right thread
+        Gdx.app.postRunnable(() -> {
+            worldBuilder.addSeed(mapSeed);
+            world = new GameWorld(worldBuilder);
+            world.getHeightMap();
+            graph = world.buildGraph();
+            for (Vector3 loc: worldBuilder.crystalLocations()) {
+                crystals.add(new Crystal(loc.x, loc.y));
+            }
+            graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
+            
+            // notify the GameState that it can proceed with initialization
+            mapReady[0] = true; // 'the array trick'
+        });
+        
+        try {
+            while(!mapReady[0]) {
+                Thread.sleep(10);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
 
@@ -81,9 +110,9 @@ public class GameState implements GameRenderable {
         Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
             playerStats.add(new PlayerStat());
-            
+
             // Create and add a base for each player
-            PlayerBase newBase = new PlayerBase((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z, 
+            PlayerBase newBase = new PlayerBase((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z,
                     towerLoadouts.getTowerDetails(i,-1), i, -1);
             addBase(newBase, i);
         }
@@ -109,6 +138,7 @@ public class GameState implements GameRenderable {
     public void addUnit(Unit u){
         u.ID = minionCount;
         units.add(u);
+        u.setUnit2StateAdapter(u2s);
         clickables.add(u);
         damageables.add(u);
         minionCount += 1;
@@ -119,34 +149,18 @@ public class GameState implements GameRenderable {
         damageables.add(t);
         addBuilding(t, playerID);
     }
-    
+
     public void addBase(PlayerBase pb, int playerID) {
         playerBases.put(playerID, pb);
         damageables.add(pb);
         addBuilding(pb, playerID);
     }
-        
-    public void addBuilding(Tower t, int playerID) {
-        int startX = (int) t.x - 4;
-        int startY = (int) t.y - 4;
-        TowerFootprint footprint = towerLoadouts.getTowerDetails(playerID, t.getTowerType()).getFootprint();
-        boolean[][] fp = footprint.getFp();
-        int i = 0;
-        for(boolean[] bool: fp){
-            int j = 0;
-            for(boolean boo: bool){
-                if(boo){
-                    graph.removeAllConnections(new Vector3(startX + i, startY + j, 0), t);
-                }
-                j++;
-            }
-            i++;
-        }
 
+    public void addBuilding(Tower t, int playerID) {
         List<BlockSpec> blockSpecs = t.getLayout();
-        for(int k = 0; k < blockSpecs.size(); k++) {
+        for (int k = 0; k < blockSpecs.size(); k++) {
             BlockSpec bs = blockSpecs.get(k);
-            this.world.setBlock(
+            world.setBlock(
                     (int)(t.x + bs.getX()),
                     (int)(t.y + bs.getZ()),
                     (int)(t.z + bs.getY()),
@@ -155,18 +169,11 @@ public class GameState implements GameRenderable {
     }
 
     public void updateGoal(Unit unit, Vector3 goal) {
-        Vector3 unitPos = new Vector3((int) unit.getX(), (int) unit.getY(), 0); //TODO: make acutal z;
+        Vector2 unitPos = new Vector2((int) unit.getX(), (int) unit.getY()); //TODO: make acutal z;
         unit.setGoal(goal);
-        OutputPath path = new OutputPath();
-        Array<Building> buildings = this.getBuildings();
+        OutputPath path;
 
-        for(Building building: buildings) {
-            if(building.overlap(goal.x, goal.y)) {
-                goal = building.closestPoint(unit.getX(), unit.getY());
-                break;
-            }
-        }
-        Vector3 goalPos = new Vector3(goal);
+        Vector2 goalPos = new Vector2(goal.x, goal.y);
 
         long start = System.nanoTime();
         path = graph.search(unitPos, goalPos);
@@ -179,11 +186,16 @@ public class GameState implements GameRenderable {
         }
     }
 
-    public Array<Unit> findUnitsInBox(Vector3 cornerA, Vector3 cornerB) {
+    public Array<Unit> findUnitsInBox(Vector3 cornerA, Vector3 cornerB, RenderConfig renderConfig) {
         Array<Unit> unitsToSelect = new Array<>();
+        Vector3 scrnCoords = new Vector3();
+        
         for (Unit u : units) {
-            if (Math.min(cornerA.x, cornerB.x) < u.getX() && u.getX() < Math.max(cornerA.x, cornerB.x) &&
-                Math.min(cornerA.y, cornerB.y) < u.getY() && u.getY() < Math.max(cornerA.y, cornerB.y)) {
+            scrnCoords.set(u.getX(), u.getY(), u.getZ());
+            renderConfig.getCam().project(scrnCoords);
+            
+            if (Math.min(cornerA.x, cornerB.x) < scrnCoords.x && scrnCoords.x < Math.max(cornerA.x, cornerB.x) &&
+                Math.min(cornerA.y, cornerB.y) < scrnCoords.y && scrnCoords.y < Math.max(cornerA.y, cornerB.y)) {
                 unitsToSelect.add(u);
             }
         }
@@ -203,8 +215,8 @@ public class GameState implements GameRenderable {
 
         return null;
     }
-    public void moveMinion(float dx, float dy, Unit u) {
-        updateGoal(u, new Vector3(u.getX() + dx, u.getY() + dy, 0));
+    public void moveMinion(float x, float y, Unit u) {
+        updateGoal(u, new Vector3(x, y, 0));
     }
 
     private Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
@@ -254,22 +266,41 @@ public class GameState implements GameRenderable {
             // Reward mana.
             playerStats.get(attackingPlayerId).giveMana(deadEntity.getReward());
             // Do other bookkeeping related to death.
-            deadEntity.accept(deathVisitor);        
+            deadEntity.accept(deathVisitor);
         }
     }
 
+    public void doTowerSpecialAbilities(int communicationTurn) {
+        for (int i = 0; i < towers.size; i++) {
+            Tower t = towers.get(i);
+            
+            t.doSpecialEffect(communicationTurn, this);
+            
+        }
+        
+    }
+    
     /**
      * Visitor handling when a damageable is killed.
      */
     private Damageable.DamageableVisitor<Void> deathVisitor = new Damageable.DamageableVisitor<Void>() {
         @Override
-        public Void acceptTower(Tower tower) {
-            Map<Vector3, Array<Connection<Vector3>>> edges = tower.getRemovedEdges();
-            for(Vector3 block: edges.keySet()){
-                graph.setConnections(block, edges.get(block));
+        public Void acceptTower(Tower t) {
+            // Remove the tower from the map
+            System.out.println("Tower has died.");
+            List<BlockSpec> blockSpecs = t.getLayout();
+            for(int k = 0; k < blockSpecs.size(); k++) {
+                BlockSpec bs = blockSpecs.get(k);
+                getGameState().world.setBlock(
+                        (int)(t.x + bs.getX()),
+                        (int)(t.y + bs.getZ()),
+                        (int)(t.z + bs.getY()),
+                        Block.TerrainBlock.AIR);
             }
-            towers.removeValue(tower, true);
-            damageables.removeValue(tower, true);
+            
+            // Remove the tower from the game state
+            towers.removeValue(t, true);
+            damageables.removeValue(t, true);
             return null;
         }
 
@@ -280,7 +311,6 @@ public class GameState implements GameRenderable {
             clickables.removeValue(unit, true);
             return null;
         }
-
 
         @Override
         public Void acceptBase(PlayerBase base) {
@@ -341,7 +371,7 @@ public class GameState implements GameRenderable {
 
         // Check if you are the last base alive
         return playerBases.size == 1;
-        
+
     }
     
     public void setTowerInfo(TowerLoadouts info) {
@@ -397,7 +427,6 @@ public class GameState implements GameRenderable {
             damageables.get(i).drawHealthBar(config);
         }
         batch2D.end();
-
     }
 
 
@@ -460,9 +489,9 @@ public class GameState implements GameRenderable {
      * Returns null if there is no clickable.
      */
     public Clickable getClickableOnRay(Ray ray, Vector3 intersection) {
-        
+
         // TODO: doesn't neccessarily find the clickable closest to the camera
-        
+
         // Look through all the standard clickables
         for (Clickable clickable: clickables) {
             if (clickable.intersects(ray, intersection)) {
@@ -472,7 +501,7 @@ public class GameState implements GameRenderable {
 
         // Look through all the blocks
         Clickable clickedBlock = world.getBlockOnRay(ray, intersection);
-        
+
         return clickedBlock;
     }
 }

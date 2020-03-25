@@ -31,9 +31,16 @@ public class ConnectionScreen implements Screen {
     Label waitJoinMsg;
     TextField ipField;
     Label.LabelStyle labelStyle;
+    float TEXTSCALE = 2f;
+    float TITLESCALE = 2f;
+    public static final float INPUTSCALE = 1.3f;
+    private boolean isHostingClient;
+    
+    private Label joinedPlayersLabel;
 
     public ConnectionScreen(GameControllerSetScreenAdapter gameAdapter) {
         this.gameAdapter = gameAdapter;
+        this.isHostingClient = isHostingClient;
         connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 
 
@@ -51,7 +58,8 @@ public class ConnectionScreen implements Screen {
 
 
         hostGameButton= new TextButton("Begin Hosting", new Skin(Gdx.files.internal("uiskin.json")));
-        hostGameButton.setSize(200,64);
+        hostGameButton.getLabel().setFontScale(TEXTSCALE);
+        hostGameButton.setSize(350,64);
         hostGameButton.setPosition(GameController.VIRTUAL_WIDTH/2 - 20 - hostGameButton.getWidth(),
                 GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight()/2);
         connectionStage.addActor(hostGameButton);
@@ -64,8 +72,9 @@ public class ConnectionScreen implements Screen {
 
 
         // Make the joinGameButton
-        joinGameButton = new TextButton("JoinGame", new Skin(Gdx.files.internal("uiskin.json")));
-        joinGameButton.setSize(200,64);
+        joinGameButton = new TextButton("Join Game", new Skin(Gdx.files.internal("uiskin.json")));
+        joinGameButton.getLabel().setFontScale(TEXTSCALE);
+        joinGameButton.setSize(350,64);
         joinGameButton.setPosition(GameController.VIRTUAL_WIDTH / 2 + 20 ,
                 GameController.VIRTUAL_HEIGHT / 2 - joinGameButton.getHeight());
         connectionStage.addActor(joinGameButton);
@@ -76,10 +85,11 @@ public class ConnectionScreen implements Screen {
             }
         });
 
-        launchGameButton = new TextButton("Press when done waiting for players", new Skin(Gdx.files.internal("uiskin.json")));
-        launchGameButton.setSize(300,64);
+        launchGameButton = new TextButton("Create game with connected players!", new Skin(Gdx.files.internal("uiskin.json")));
+        launchGameButton.getLabel().setFontScale(INPUTSCALE);
+        launchGameButton.setSize(500,64);
         launchGameButton.setPosition(
-                GameController.VIRTUAL_WIDTH / 2 - launchGameButton.getWidth(),
+                GameController.VIRTUAL_WIDTH / 2 - launchGameButton.getWidth()/2,
                 GameController.VIRTUAL_HEIGHT / 2 - 80);
         launchGameButton.addListener(new ClickListener() {
             @Override
@@ -96,31 +106,60 @@ public class ConnectionScreen implements Screen {
         labelStyle.fontColor = Color.WHITE;
 
         waitJoinMsg = new Label("Waiting for all players to join and for the host to start...", labelStyle);
+        waitJoinMsg.setFontScale(TEXTSCALE);
+        waitJoinMsg.setAlignment(Align.center);
         waitJoinMsg.setSize(300,64);
-        waitJoinMsg.setPosition(GameController.VIRTUAL_WIDTH / 2 - waitJoinMsg.getWidth(), GameController.VIRTUAL_HEIGHT / 2 - 80);
+        waitJoinMsg.setPosition(GameController.VIRTUAL_WIDTH / 2 - waitJoinMsg.getWidth()/2, GameController.VIRTUAL_HEIGHT / 2 - 80);
 
-        ipField = new TextField("10.122.178.55", new Skin(Gdx.files.internal("uiskin.json")));
-        ipField.setSize(200,64);
+        Skin uiskin = new Skin(Gdx.files.internal("uiskin.json"));
+        TextField.TextFieldStyle textFieldStyle = uiskin.get(TextField.TextFieldStyle.class);
+        textFieldStyle.font.getData().scale(INPUTSCALE);
+        ipField = new TextField("10.122.178.55", textFieldStyle);
+        ipField.setSize(joinGameButton.getWidth(),64);
         ipField.setPosition(GameController.VIRTUAL_WIDTH / 2 + 20 ,GameController.VIRTUAL_HEIGHT / 2);
         connectionStage.addActor(ipField);
 
 
         Label label1 = new Label("Connection Stage. Choose Host OR Join", labelStyle);
+        label1.setFontScale(TITLESCALE);
         label1.setSize(200, 64);
-        label1.setPosition(GameController.VIRTUAL_WIDTH / 2 - 60,GameController.VIRTUAL_HEIGHT * 3 / 4 );
+        label1.setPosition(GameController.VIRTUAL_WIDTH / 2 - 80,GameController.VIRTUAL_HEIGHT * 3 / 4 );
         label1.setAlignment(Align.center);
         connectionStage.addActor(label1);
+        
 
         Gdx.input.setInputProcessor(connectionStage);
     }
+    
+    public void updateJoinedPlayers(java.util.List<String> joinedPlayers) {
+        StringBuilder s = new StringBuilder("Joined Players:\n");
+        joinedPlayers.forEach(player -> s.append(player).append("\n"));
+        joinedPlayersLabel.setText(s.toString());
+        joinedPlayersLabel.setPosition(joinedPlayersLabel.getX(), joinedPlayersLabel.getY() - 40);
+    }
 
+    private void addPlayerList() {
+        System.out.println("Added player list");
+        // Display the joined players
+        joinedPlayersLabel = new Label("Joined Players: ", labelStyle);
+        joinedPlayersLabel.setFontScale(TITLESCALE);
+        joinedPlayersLabel.setSize(200, 64);
+        joinedPlayersLabel.setPosition(
+                GameController.VIRTUAL_WIDTH / 2 - joinedPlayersLabel.getWidth() / 2,
+                GameController.VIRTUAL_HEIGHT / 2 - 160);
+        joinedPlayersLabel.setAlignment(Align.center);
+        connectionStage.addActor(joinedPlayersLabel);
+        System.out.println("done adding");
+    }
+    
     private void joinGame(String ip) {
-        networkClient = NetworkUtils.initNetworkObjects(false, ip, 42069, gameAdapter);
+        switchToWater();
+        addPlayerList();
+        networkClient = NetworkUtils.initNetworkObjects(false, ip, 42069, gameAdapter, this);
         if (networkClient == null) {
             // Something was wrong in the input
             Gdx.app.log("pjb3 - ConnectionScreen", "Ruh roh. Something is wrong, with the IP probably");
         } else {
-            switchToWater();
             hostGameButton.remove();
             joinGameButton.remove();
             ipField.setDisabled(true);
@@ -134,15 +173,21 @@ public class ConnectionScreen implements Screen {
         hostGameButton.remove();
         joinGameButton.remove();
         ipField.remove();
+        
         Label label1 = new Label("Your Ip is " + NetworkUtils.getLocalHostAddr(), labelStyle);
+        label1.setFontScale(TEXTSCALE);
         label1.setSize(200, 64);
-        label1.setPosition(GameController.VIRTUAL_WIDTH/2 - 20 - hostGameButton.getWidth(), GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight() + 64 );
+        label1.setPosition(GameController.VIRTUAL_WIDTH/2 - label1.getWidth()/2, GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight() + 64 );
         label1.setAlignment(Align.center);
         connectionStage.addActor(label1);
+        addPlayerList();
+        
 //        10.122.178.55
-        networkClient = NetworkUtils.initNetworkObjects(true, null, 42069, gameAdapter);
+        networkClient = NetworkUtils.initNetworkObjects(true, null, 42069, gameAdapter, this);
 //        Gdx.app.log("pjb3 - ConnectionScreen", "Created the Host network object");
         connectionStage.addActor(launchGameButton);
+        
+        
 
     }
 

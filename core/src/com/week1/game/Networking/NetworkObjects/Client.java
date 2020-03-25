@@ -76,8 +76,8 @@ public class Client {
 //                    udpSocket.receive(packet);
 //                    String messages = new String(packet.getData()).trim();
                     String messages = this.in.readUTF();
-                    
-                    
+
+
                     Gdx.app.debug(TAG, "About to try parsing message: " + messages);
                     // try parsing as a control message first
                     ClientControlMessage controlMsg = MessageFormatter.parseClientControlMessage(messages);
@@ -108,9 +108,9 @@ public class Client {
         return this.playerId;
     }
     
-    public void sendGoToGame() {
+    public void sendGoToGame(long mapSeed) {
         // the client doesn't know its player id until later, so just use -1
-        this.sendStringMessage(MessageFormatter.packageMessage(new RequestGoToGameMessage(-1)));
+        this.sendStringMessage(MessageFormatter.packageMessage(new RequestGoToGameMessage(mapSeed, -1)));
     }
 
     public void sendLoadout(List<List<BlockSpec>> details) {
