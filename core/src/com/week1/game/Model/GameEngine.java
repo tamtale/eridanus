@@ -25,7 +25,7 @@ public class GameEngine implements GameRenderable {
 
     private GameState gameState;
     private int communicationTurn = 0;
-    private IEngineAdapter adapter;
+    public IEngineAdapter adapter;
     private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
     private InfoUtil util;
     private boolean sentWinLoss = false, sentGameOver = false;

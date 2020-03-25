@@ -1,5 +1,7 @@
 package com.week1.game.Networking.Messages.Game;
 
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
 import com.week1.game.Networking.Messages.MessageType;
@@ -22,6 +24,11 @@ public class InitMessage extends GameMessage {
     public boolean process(GameEngine engine, GameState inputState, InfoUtil util){
         
         inputState.initializeGame(mapSeed, this.numPlayers);
+        
+        // Zoom out the camera and center it on the player's base
+        Camera camera = engine.adapter.getRenderConfig().getCam();
+        camera.translate(new Vector3(camera.direction).scl(-100));
+        
         // The InitMessage message is the last initialization message sent by the host, so start the engine.
         engine.start();
         return true;

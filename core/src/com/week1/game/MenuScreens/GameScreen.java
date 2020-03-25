@@ -70,7 +70,12 @@ public class GameScreen implements Screen {
 			    renderer.setCenter(center);
 			}
 
-			@Override
+            @Override
+            public RenderConfig getRenderConfig() {
+                return renderer.getRenderConfig();
+            }
+
+            @Override
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
