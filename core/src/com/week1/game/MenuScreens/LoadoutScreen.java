@@ -10,26 +10,20 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
+import com.week1.game.Model.TowerLite;
 import com.week1.game.Networking.NetworkObjects.Client;
-import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
 import com.week1.game.TowerBuilder.TowerPresets;
 import com.week1.game.TowerBuilder.TowerUtils;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -119,9 +113,9 @@ public class LoadoutScreen implements Screen {
                 loadoutSelector.setText("Loadout confirmed.");
                 loadoutSelector.setTouchable(Touchable.disabled);
                 sendLoadout(Arrays.asList(
-                        tower1.getSelected().getLayout(),
-                        tower2.getSelected().getLayout(),
-                        tower3.getSelected().getLayout()));
+                        tower1.getSelected().getTowerLite(),
+                        tower2.getSelected().getTowerLite(),
+                        tower3.getSelected().getTowerLite()));
                 tower1.setDisabled(false);
                 tower1.setTouchable(Touchable.disabled);
                 tower2.setDisabled(false);
@@ -175,7 +169,7 @@ public class LoadoutScreen implements Screen {
             startButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    Gdx.app.log("pjb3 LoadoutScreen", "About to send start message.");
+                    Gdx.app.debug("pjb3 LoadoutScreen", "About to send start message.");
 
                     long enteredSeed = parseMapSeed(mapSeedField.getText());
                     Gdx.app.log("lji1 LoadoutScreen", "Using seed: " + enteredSeed);
@@ -247,10 +241,10 @@ public class LoadoutScreen implements Screen {
     public void createNewGame() {
         GameScreen futureGame = new GameScreen(networkClient);
         networkClient.getScreenManager().setGameScreen(futureGame);
-        Gdx.app.log("pjb3 - LoutoutScreen", "the GameScreen is being created NOW. It has been added to the client");
+        Gdx.app.debug("pjb3 - LoutoutScreen", "the GameScreen is being created NOW. It has been added to the client");
     }
 
-    public void sendLoadout(List<List<BlockSpec>> details) {
+    public void sendLoadout(List<TowerLite> details) {
         if (!sentTowers) {
 
 

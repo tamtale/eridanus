@@ -32,6 +32,7 @@ public class GameButtonsStage {
     private Button previouslySelected;
     private boolean showAttack;
     private boolean showSpawn;
+    private boolean firstTimeRender = true;
 
     private static TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
             new Skin(Gdx.files.internal("uiskin.json")).getDrawable("default-round"),
@@ -64,15 +65,15 @@ public class GameButtonsStage {
     }
 
     private void setWidgets() {
-        unitButton   = new TextButton("Spawn Units",   new Skin(Gdx.files.internal("uiskin.json")));
+        unitButton   = new TextButton("Spawn Unit\nCost: " + adapter.getUnitCost(),   new Skin(Gdx.files.internal("uiskin.json")));
         unitButton.setStyle(pressedStyle);
         previouslySelected = unitButton;
 
-        tower1Button = new TextButton("Spawn Tower 1", new Skin(Gdx.files.internal("uiskin.json")));
+        tower1Button = new TextButton("TEMP 1", new Skin(Gdx.files.internal("uiskin.json")));
         tower1Button.setStyle(normalStyle);
-        tower2Button = new TextButton("Spawn Tower 2", new Skin(Gdx.files.internal("uiskin.json")));
+        tower2Button = new TextButton("TEMP 2", new Skin(Gdx.files.internal("uiskin.json")));
         tower2Button.setStyle(normalStyle);
-        tower3Button = new TextButton("Spawn Tower 3", new Skin(Gdx.files.internal("uiskin.json")));
+        tower3Button = new TextButton("TEMP 3", new Skin(Gdx.files.internal("uiskin.json")));
         tower3Button.setStyle(normalStyle);
 
         manaLabel = new Label(String.format("Mana: %d", 0),new Skin(Gdx.files.internal("uiskin.json")));
@@ -188,7 +189,7 @@ public class GameButtonsStage {
         restartGame.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("pjb3 - RestartButton", "We are restarting the game now");
+                Gdx.app.debug("pjb3 - RestartButton", "We are restarting the game now");
                 adapter.restartGame();
 
             }
@@ -198,6 +199,12 @@ public class GameButtonsStage {
     public void renderUI(int mana) {
         stage.draw();
         manaLabel.setText(String.format("Mana: %d", mana));
+        if (firstTimeRender) {
+            firstTimeRender = false;
+            tower1Button.setText(adapter.getTowerName(0) + "\nCost: " + adapter.getTowerCost(0));
+            tower2Button.setText(adapter.getTowerName(1) + "\nCost: " + adapter.getTowerCost(1));
+            tower3Button.setText(adapter.getTowerName(2) + "\nCost: " + adapter.getTowerCost(2));
+        }
     }
 
     /**

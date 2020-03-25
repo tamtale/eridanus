@@ -16,7 +16,7 @@ public class GoToGameMessage extends ClientControlMessage {
 
     @Override
     public void updateClient(Client c) {
-        Gdx.app.log("pjb3 - GoToGameMessage", "running....");
+        Gdx.app.debug("pjb3 - GoToGameMessage", "running....");
         c.getScreenManager().setScreen(c.getScreenManager().getGameScreen());
     }
 }
