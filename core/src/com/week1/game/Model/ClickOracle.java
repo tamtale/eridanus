@@ -125,16 +125,19 @@ public class ClickOracle extends InputAdapter {
         setPassiveClickable(adapter.selectClickable(screenX, screenY, touchPos));
 
         // If the mouse is on the edge of the screen, translate the camera.
-        if (screenX < SCREEN_THRESHOLD) {
-            panLeft.execute();
-        } else if (screenX > Gdx.graphics.getWidth() - SCREEN_THRESHOLD) {
-            panRight.execute();
-        } else if (screenY < SCREEN_THRESHOLD) {
-            panUp.execute();
-        } else if (screenY > Gdx.graphics.getHeight() - SCREEN_THRESHOLD) {
-            panDown.execute();
-        } else {
-            panStop.execute();
+        // TODO use a flag to check a setting.
+        if (false) {
+            if (screenX < SCREEN_THRESHOLD) {
+                panLeft.execute();
+            } else if (screenX > Gdx.graphics.getWidth() - SCREEN_THRESHOLD) {
+                panRight.execute();
+            } else if (screenY < SCREEN_THRESHOLD) {
+                panUp.execute();
+            } else if (screenY > Gdx.graphics.getHeight() - SCREEN_THRESHOLD) {
+                panDown.execute();
+            } else {
+                panStop.execute();
+            }
         }
         return true;
     }
