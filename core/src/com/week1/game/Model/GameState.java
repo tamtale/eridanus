@@ -158,9 +158,9 @@ public class GameState implements GameRenderable {
 
     public void addBuilding(Tower t, int playerID) {
         List<BlockSpec> blockSpecs = t.getLayout();
-        for (int k = 0; k < blockSpecs.size(); k++) {
+        for(int k = 0; k < blockSpecs.size(); k++) {
             BlockSpec bs = blockSpecs.get(k);
-            world.setBlock(
+            this.world.setBlock(
                     (int)(t.x + bs.getX()),
                     (int)(t.y + bs.getZ()),
                     (int)(t.z + bs.getY()),
