@@ -40,9 +40,9 @@ public class TowerMaterials {
     addBlockType("gold2.png", "novacore", BlockType.NOVACORE, 15, 40,40);
 
     //Guns
-    addBlockType("water2.png", "water", BlockType.WATER, 15,40, 35);
-    addBlockType("fire2.png", "fire", BlockType.FIRE, 15, 40, 35);
-    addBlockType("earth3.png", "earth", BlockType.EARTH, 15,40, 35);
+    addBlockType("water2.png", "water", BlockType.WATER, 15,40, 100);
+    addBlockType("fire2.png", "fire", BlockType.FIRE, 15, 40, 100);
+    addBlockType("earth3.png", "earth", BlockType.EARTH, 15,40, 100);
 
 
     //Easter egg

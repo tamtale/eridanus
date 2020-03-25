@@ -19,9 +19,9 @@ public class TowerDetails {
 
 
     //these stats are based off the raw blocks
-    private int rawHeight = 0;
-    private int rawHp = 0;
-    private int rawAtk = 0;
+    private double rawHeight = 0;
+    private double rawHp = 0;
+    private double rawAtk = 0;
     private double price = 0;
 
     //These stats are based off raw stats and multipliers
@@ -155,7 +155,7 @@ public class TowerDetails {
             //Generate the tower stats
             rawHp += TowerMaterials.blockHp.get(code);
             rawAtk += TowerMaterials.blockAtk.get(code);
-            rawHeight = Integer.max(rawHeight, y + 1);
+            rawHeight = Math.max(rawHeight, y + 1);
             price += TowerMaterials.blockPrice.get(code);
 
 
@@ -170,10 +170,19 @@ public class TowerDetails {
 
     private void calcFinalStats() {
         atk = rawAtk * 0.05;
-        range = rawHeight * 3;
+        range = rawHeight * 2;
+
+        //Multipliers --- Fine tuning the stats
 
         //penalties up to basesize of 5
-        hp = rawHp * Math.min(1, baseSize/5);
+        hp = rawHp * Math.min(1, baseSize/5.0);
+
+//        atk is inversely prop to range
+        if (rawHeight != 0) {
+//            Note: this if statement is required because the height of the ground in the tower editor is 0
+            atk = atk * Math.min(3, 3.0/rawHeight);
+        }
+
 
     }
 
@@ -215,7 +224,7 @@ public class TowerDetails {
         //populate the fields
         this.rawAtk += TowerMaterials.blockAtk.get(code);
         this.rawHp += TowerMaterials.blockHp.get(code);
-        rawHeight = Integer.max(rawHeight, y + 1);
+        rawHeight = Math.max(rawHeight, y + 1);
 //        range = rawHeight * 3;
         this.price += TowerMaterials.blockPrice.get(code);
 
