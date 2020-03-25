@@ -2,6 +2,7 @@ package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.MenuScreens.ScreenManager;
+import com.week1.game.Model.TowerLite;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.Control.ClientControl.ClientControlMessage;
 import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToGameMessage;
@@ -10,7 +11,6 @@ import com.week1.game.Networking.Messages.Control.HostControl.RequestRestartMess
 import com.week1.game.Networking.Messages.Control.HostControl.SubmitLoadoutMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
-import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -54,7 +54,7 @@ public class Client {
     }
     
     public void sendStringMessage(String msg) {
-        Gdx.app.debug(TAG, "About to send message: " + msg + " to: " + hostAddress + ":" + this.hostPort);
+        Gdx.app.log(TAG, "About to send message: " + msg + " to: " + hostAddress + ":" + this.hostPort);
         try {
             this.out.writeUTF(msg);
             Gdx.app.debug(TAG, "Sent message");
@@ -78,7 +78,7 @@ public class Client {
                     String messages = this.in.readUTF();
                     
                     
-                    Gdx.app.debug(TAG, "About to try parsing message: " + messages);
+                    Gdx.app.log(TAG, "About to try parsing message: " + messages);
                     // try parsing as a control message first
                     ClientControlMessage controlMsg = MessageFormatter.parseClientControlMessage(messages);
                     if (controlMsg != null) {
@@ -113,7 +113,7 @@ public class Client {
         this.sendStringMessage(MessageFormatter.packageMessage(new RequestGoToGameMessage(mapSeed, -1)));
     }
 
-    public void sendLoadout(List<List<BlockSpec>> details) {
+    public void sendLoadout(List<TowerLite> details) {
         // This is sent in the LoadoutScreen.
         sendStringMessage(MessageFormatter.packageMessage(new SubmitLoadoutMessage(playerId, details)));
     }

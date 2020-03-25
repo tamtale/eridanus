@@ -44,6 +44,11 @@ public class GameEngine implements GameRenderable {
                     Tower myBase = gameState.getPlayerBase(this.enginePlayerId);
                     position.set(myBase.getX(), myBase.getY(), 0);
                     adapter.setDefaultLocation(position);
+                    adapter.zoom(-20); // 20 is arbitrary, but feels reasonable for initial camera zoom
+
+                    // Give the system the center of the map for camera rotation.
+                    int[] dimensions = getGameState().getWorld().getWorldDimensions();
+                    adapter.setCenter(new Vector3(dimensions[0] / 2f, dimensions[1] / 2f, dimensions[2] / 2f));
                 });
         Gdx.app.log("wab2- GameEngine", "gameState built");
         this.util = util;
@@ -96,6 +101,7 @@ public class GameEngine implements GameRenderable {
         gameState.updateMana(1);
         gameState.dealDamage(1);
         gameState.moveUnits(THRESHOLD);
+        gameState.doTowerSpecialAbilities(communicationTurn);
 
         // Check the win/loss/restart conditions
         if (!sentWinLoss) {
@@ -154,17 +160,25 @@ public class GameEngine implements GameRenderable {
      */
     public int getGameStateHash() {
         GameState.PackagedGameState wrapped = gameState.packState(communicationTurn);
-//        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
+//        Gdx.app.debug("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
         return wrapped.getHash();
     }
 
     public String getGameStateString() {
         GameState.PackagedGameState wrapped = gameState.packState(communicationTurn);
-//        Gdx.app.log("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
+//        Gdx.app.debug("pjb3 - GameEngine", " The entire game state is : \n" + wrapped.getGameString());
         return wrapped.getGameString();
     }
 
     public int getTurn() {
         return communicationTurn;
+    }
+
+    public String getTowerName(int playerId, int slot) {
+        return gameState.getTowerDetails(playerId, slot).getName();
+    }
+
+    public int getTowerCost(int playerId, int slot) {
+        return gameState.getTowerDetails(playerId, slot).getCost();
     }
 }

@@ -158,7 +158,7 @@ public class ConnectionScreen implements Screen {
         networkClient = NetworkUtils.initNetworkObjects(false, ip, 42069, gameAdapter, this);
         if (networkClient == null) {
             // Something was wrong in the input
-            Gdx.app.log("pjb3 - ConnectionScreen", "Ruh roh. Something is wrong, with the IP probably");
+            Gdx.app.debug("pjb3 - ConnectionScreen", "Ruh roh. Something is wrong, with the IP probably");
         } else {
             hostGameButton.remove();
             joinGameButton.remove();
@@ -184,7 +184,7 @@ public class ConnectionScreen implements Screen {
         
 //        10.122.178.55
         networkClient = NetworkUtils.initNetworkObjects(true, null, 42069, gameAdapter, this);
-//        Gdx.app.log("pjb3 - ConnectionScreen", "Created the Host network object");
+//        Gdx.app.debug("pjb3 - ConnectionScreen", "Created the Host network object");
         connectionStage.addActor(launchGameButton);
         
         
@@ -207,7 +207,7 @@ public class ConnectionScreen implements Screen {
 
     private void progressToLoadouts() {
         if (!hosting) {
-            Gdx.app.log("pjb3 - ConnectionScreen", "No. You must be host to move the game onward. How did you even click this");
+            Gdx.app.debug("pjb3 - ConnectionScreen", "No. You must be host to move the game onward. How did you even click this");
             return;
         }
         networkClient.sendGoToLoadout(); // Send the request for everyone to move to the loadout screen.

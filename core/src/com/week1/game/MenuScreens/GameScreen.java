@@ -66,6 +66,16 @@ public class GameScreen implements Screen {
 			}
 
 			@Override
+			public void setCenter(Vector3 center) {
+			    renderer.setCenter(center);
+			}
+
+			@Override
+			public void zoom(float amount) {
+				renderer.zoom(amount);
+			}
+
+            @Override
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
@@ -89,19 +99,24 @@ public class GameScreen implements Screen {
 				return engine.getGameState().getPlayerStats(playerId).getMana();
 			}
 
-			@Override
-			public String getHostAddr() {
-				return networkClient.getHostAddr();
-			}
+            @Override
+            public String getTowerName(int slotNum) {
+                return engine.getTowerName(networkClient.getPlayerId(), slotNum);
+            }
 
-			@Override
+            @Override
+            public int getTowerCost(int slotNum) {
+                return engine.getTowerCost(networkClient.getPlayerId(), slotNum);
+            }
+
+            @Override
 			public int getPlayerId() {
 				return networkClient.getPlayerId();
 			}
 
 			@Override
-			public String getClientAddr() {
-				return null;
+			public int getUnitCost() {
+				return (int)StatsConfig.tempMinion1Cost;
 			}
 
 			@Override
@@ -121,6 +136,11 @@ public class GameScreen implements Screen {
 					@Override
 					public void setTranslationDirection(Direction direction) {
 						renderer.setPanning(direction);
+					}
+
+					@Override
+					public void setRotationDirection(RotationDirection direction) {
+						renderer.setDeltaRotation(direction);
 					}
 
 					public Camera getCamera() {

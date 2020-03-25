@@ -49,8 +49,9 @@ public class TowerBuilderScreen implements Screen {
     @Override
     public void render(float delta) {
         //Delegate render to the camera (3d cam) and the stage (buttons and widgets)
-        towerStage.render();
+        towerStage.renderBackgroundImg();
         towerCam.render();
+        towerStage.render();
         towerStage.renderDialogs();
 
     }

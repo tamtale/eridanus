@@ -17,7 +17,11 @@ public interface IRendererAdapter {
 
     void restartGame();
 
-    String getHostAddr();
     int getPlayerId();
-    String getClientAddr();
+
+    String getTowerName(int slotNum);
+
+    int getTowerCost(int slotNum);
+
+    int getUnitCost();
 }
