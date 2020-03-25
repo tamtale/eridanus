@@ -16,5 +16,4 @@ public enum BlockType {
     HIGHLIGHT,
     GROUND_HIGHLIGHT,
 
-    SPAWNER
 }

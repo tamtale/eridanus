@@ -132,7 +132,7 @@ public class TowerDetails {
         this.name = name;
 
         // TODO: remove
-        if(layout.get(0).getBlockCode() == BlockType.SPACEGOLD) {
+        if(layout.get(0).getBlockCode() == BlockType.NOVACORE) {
             System.out.println("Init base!");
         }
         
