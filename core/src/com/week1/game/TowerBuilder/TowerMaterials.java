@@ -25,7 +25,6 @@ public class TowerMaterials {
 
     //Just for sanity -- so we can see what codes correspond to what blocks
     public static final Map<String, BlockType> materialCodes = new HashMap<>();
-    public static final Map<String, Material> materialNames = new HashMap<>();
     public static final Map<String, BlockType> blocknamekey = new HashMap<>();
 
     public static Map<BlockType, Integer> blockHp = new HashMap<>();
@@ -35,46 +34,46 @@ public class TowerMaterials {
 
     static  {
 
-        //Materials
-        addBlockType("space_obsidian2.png", "obsidian", BlockType.OBSIDIAN, 50,5,10);
-        addBlockType("moonstone3.png", "moonstone", BlockType.MOONSTONE, 25, 15,20);
-        addBlockType("gold2.png", "space gold", BlockType.SPACEGOLD, 15, 40,40);
+    //Materials
+    addBlockType("space_obsidian2.png", "etherite", BlockType.ETHERITE, 50,5,10);
+    addBlockType("moonstone3.png", "kuiperium", BlockType.KUIPERIUM, 25, 15,20);
+    addBlockType("gold2.png", "novacore", BlockType.NOVACORE, 15, 40,40);
 
-        //Guns
-        addBlockType("water2.png", "water", BlockType.WATER, 15,40, 35);
-        addBlockType("fire2.png", "fire", BlockType.FIRE, 15, 40, 35);
-        addBlockType("earth3.png", "earth", BlockType.EARTH, 15,40, 35);
+    //Guns
+    addBlockType("water2.png", "water", BlockType.WATER, 15,40, 100);
+    addBlockType("fire2.png", "fire", BlockType.FIRE, 15, 40, 100);
+    addBlockType("earth3.png", "earth", BlockType.EARTH, 15,40, 100);
 
-        // Spawners
-         addBlockType("water_wip.png", "spawner", BlockType.SPAWNER, 5,0, 500);
+    // Spawners
+     addBlockType("water_wip.png", "spawner", BlockType.SPAWNER, 5,0, 500);
+      
+    //Easter egg
+    addBlockType("cat_boi.png", "easter egg", BlockType.EASTEREGG, 10, 10,0);
 
-        //Easter egg
-        addBlockType("cat_boi.png", "easter egg", BlockType.EASTEREGG, 10, 10,0);
+    //Highlighted block type
+    Material mat = new Material();
+    mat.set(new ColorAttribute(ColorAttribute.Diffuse, Color.WHITE));
+    mat.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.8f));
 
-        //Highlighted block type
-        Material mat = new Material();
-        mat.set(new ColorAttribute(ColorAttribute.Diffuse, Color.WHITE));
-        mat.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.8f));
-
-        Model highlighted = modelBuilder.createBox(BLOCKLENGTH, BLOCKLENGTH ,BLOCKLENGTH,
-                mat,
-                VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
-        modelMap.put(BlockType.HIGHLIGHT, highlighted);
+    Model highlighted = modelBuilder.createBox(BLOCKLENGTH, BLOCKLENGTH ,BLOCKLENGTH,
+            mat,
+            VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
+    modelMap.put(BlockType.HIGHLIGHT, highlighted);
 
 
-        //Ground in Tower editor block type
-        Material mat2 = new Material(TextureAttribute.createDiffuse(new Texture("ground_highlight.png")));
-        mat2.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.5f));
+    //Ground in Tower editor block type
+    Material mat2 = new Material(TextureAttribute.createDiffuse(new Texture("ground_highlight.png")));
+    mat2.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.5f));
 
-        Model highlighted2 = modelBuilder.createBox(BLOCKLENGTH, BLOCKLENGTH ,BLOCKLENGTH,
-                mat2,
-                VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
-        modelMap.put(BlockType.GROUND_HIGHLIGHT, highlighted2);
+    Model highlighted2 = modelBuilder.createBox(BLOCKLENGTH, BLOCKLENGTH ,BLOCKLENGTH,
+            mat2,
+            VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
+    modelMap.put(BlockType.GROUND_HIGHLIGHT, highlighted2);
 
-        //Hacky solution to be able to render the tower of highlighted blocks in the tower editor
-        blockHp.put(BlockType.GROUND_HIGHLIGHT, 0);
-        blockAtk.put(BlockType.GROUND_HIGHLIGHT, 0);
-        blockPrice.put(BlockType.GROUND_HIGHLIGHT, 0);
+    //Hacky solution to be able to render the tower of highlighted blocks in the tower editor
+    blockHp.put(BlockType.GROUND_HIGHLIGHT, 0);
+    blockAtk.put(BlockType.GROUND_HIGHLIGHT, 0);
+    blockPrice.put(BlockType.GROUND_HIGHLIGHT, 0);
 
     }
 
@@ -87,7 +86,6 @@ public class TowerMaterials {
                 VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal));
 
         if (code != BlockType.EASTEREGG) {
-            materialNames.put(blockname, mat);
             materialCodes.put(blockname, code);
         }
 

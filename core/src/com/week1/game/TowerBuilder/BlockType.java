@@ -1,9 +1,9 @@
 package com.week1.game.TowerBuilder;
 
 public enum BlockType {
-    OBSIDIAN,
-    MOONSTONE,
-    SPACEGOLD,
+    ETHERITE,
+    KUIPERIUM,
+    NOVACORE,
     
     WATER,
     FIRE,
@@ -14,5 +14,6 @@ public enum BlockType {
     EASTEREGG,
 
     HIGHLIGHT,
-    GROUND_HIGHLIGHT
+    GROUND_HIGHLIGHT,
+
 }
