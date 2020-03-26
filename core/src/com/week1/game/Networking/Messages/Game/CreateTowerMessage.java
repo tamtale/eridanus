@@ -2,14 +2,13 @@ package com.week1.game.Networking.Messages.Game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
-import com.week1.game.Model.Damage;
+import com.week1.game.InfoUtil;
+import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
-import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.World.Block;
 import com.week1.game.Networking.Messages.MessageType;
-import com.week1.game.InfoUtil;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
 
@@ -34,13 +33,8 @@ public class CreateTowerMessage extends GameMessage {
         Gdx.app.debug("CreateTowerMessage", "Processing CreateTowerMessage!");
 
         TowerDetails towerDetails = inputState.getTowerDetails(this.playerID, this.towerType);
-        double towerCost, towerHealth, towerDmg, towerRange;
+        double towerCost;
         towerCost = towerDetails.getPrice();
-        towerHealth = towerDetails.getHp();
-        towerDmg = towerDetails.getAtk();
-        towerRange = towerDetails.getRange();
-
-
 
         // Does the player have enough mana
         if (towerCost > inputState.getPlayerStats(playerID).getMana()) {

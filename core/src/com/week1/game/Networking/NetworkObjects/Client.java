@@ -2,6 +2,7 @@ package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.MenuScreens.ScreenManager;
+import com.week1.game.Model.TowerLite;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.Control.ClientControl.ClientControlMessage;
 import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToGameMessage;
@@ -10,7 +11,6 @@ import com.week1.game.Networking.Messages.Control.HostControl.RequestRestartMess
 import com.week1.game.Networking.Messages.Control.HostControl.SubmitLoadoutMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
-import com.week1.game.TowerBuilder.BlockSpec;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -103,7 +103,7 @@ public class Client {
         this.sendStringMessage(MessageFormatter.packageMessage(new RequestGoToGameMessage(mapSeed, -1)));
     }
 
-    public void sendLoadout(List<List<BlockSpec>> details) {
+    public void sendLoadout(List<TowerLite> details) {
         // This is sent in the LoadoutScreen.
         sendStringMessage(MessageFormatter.packageMessage(new SubmitLoadoutMessage(playerId, details)));
     }

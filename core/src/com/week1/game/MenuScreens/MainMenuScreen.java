@@ -2,6 +2,7 @@ package com.week1.game.MenuScreens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -24,6 +25,7 @@ public class MainMenuScreen implements Screen {
 
     //Widgets
     TextButton playButton, buildTowersButton;
+    Texture tex;
 
     public MainMenuScreen(GameController game) {
         this.game = game;
@@ -43,8 +45,19 @@ public class MainMenuScreen implements Screen {
     }
 
     private void configureWidgets() {
-        //Set the background image
-        stage.addActor(new Image(new TextureRegionDrawable(new Texture("nova_menu.png"))));
+
+        Pixmap backroundPix = new Pixmap(Gdx.files.internal("menu2.png"));
+        Pixmap backgroundPixScaled = new Pixmap((int)GameController.VIRTUAL_WIDTH, (int)GameController.VIRTUAL_HEIGHT, backroundPix.getFormat());
+        backgroundPixScaled.drawPixmap(backroundPix,
+                0, 0, backroundPix.getWidth(), backroundPix.getHeight(),
+                0, 0, backgroundPixScaled.getWidth(), backgroundPixScaled.getHeight()
+        );
+        tex = new Texture(backgroundPixScaled);
+        backroundPix.dispose();
+        backgroundPixScaled.dispose();
+
+        TextureRegionDrawable reg = new TextureRegionDrawable(tex);
+        stage.addActor(new Image(reg));
 
         buildTowersButton.setSize(200,64);
         buildTowersButton.getLabel().setFontScale(1.5f);

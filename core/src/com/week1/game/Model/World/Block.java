@@ -1,17 +1,12 @@
 package com.week1.game.Model.World;
 
-import com.badlogic.gdx.ai.pfa.Connection;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Initializer;
 import com.week1.game.TowerBuilder.BlockType;
 
@@ -22,6 +17,7 @@ public interface Block {
     float getCost();
     Optional<ModelInstance> modelInstance(float x, float y, float z);
     boolean canSupportTower();
+    boolean allowMinionToSpawnOn();
 
     abstract class TerrainBlock implements Block {
         Model model;
@@ -39,6 +35,11 @@ public interface Block {
         public boolean canSupportTower() {
             return true;
         }
+        
+        @Override
+        public boolean allowMinionToSpawnOn() {
+            return true;
+        }
 
         @Override
         public float getCost() {
@@ -54,6 +55,11 @@ public interface Block {
             @Override
             public boolean canSupportTower() {
                 // Air shouldn't be able to hold up a tower
+                return false;
+            }
+
+            @Override
+            public boolean allowMinionToSpawnOn() {
                 return false;
             }
         };
@@ -123,6 +129,11 @@ public interface Block {
         public boolean canSupportTower() {
             return false;
         }
+        
+        @Override
+        public boolean allowMinionToSpawnOn() {
+            return false;
+        }
 
         @Override
         public float getCost() {
@@ -138,11 +149,12 @@ public interface Block {
 
         public static Map<BlockType, TowerBlock> towerBlockMap = new HashMap<BlockType, TowerBlock>() {{
             put(BlockType.WATER, new TowerBlock(Initializer.waterBlock));
-            put(BlockType.MOONSTONE, new TowerBlock(Initializer.moonStone));
-            put(BlockType.OBSIDIAN, new TowerBlock(Initializer.spaceObsidian));
-            put(BlockType.SPACEGOLD, new TowerBlock(Initializer.spaceGold));
+            put(BlockType.KUIPERIUM, new TowerBlock(Initializer.moonStone));
+            put(BlockType.ETHERITE, new TowerBlock(Initializer.spaceObsidian));
+            put(BlockType.NOVACORE, new TowerBlock(Initializer.spaceGold));
             put(BlockType.EARTH, new TowerBlock(Initializer.earthBlock));
             put(BlockType.FIRE, new TowerBlock(Initializer.fireBlock));
+            put(BlockType.SPAWNER, new TowerBlock(Initializer.spawner));
             put(BlockType.EASTEREGG, new TowerBlock(Initializer.easterEgg));
         }};
     }

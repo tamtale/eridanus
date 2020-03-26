@@ -25,7 +25,6 @@ public class TowerMaterials {
 
     //Just for sanity -- so we can see what codes correspond to what blocks
     public static final Map<String, BlockType> materialCodes = new HashMap<>();
-    public static final Map<String, Material> materialNames = new HashMap<>();
     public static final Map<String, BlockType> blocknamekey = new HashMap<>();
 
     public static Map<BlockType, Integer> blockHp = new HashMap<>();
@@ -36,16 +35,18 @@ public class TowerMaterials {
     static  {
 
     //Materials
-    addBlockType("space_obsidian2.png", "obsidian", BlockType.OBSIDIAN, 50,5,10);
-    addBlockType("moonstone3.png", "moonstone", BlockType.MOONSTONE, 25, 15,20);
-    addBlockType("gold2.png", "space gold", BlockType.SPACEGOLD, 15, 40,40);
+    addBlockType("space_obsidian2.png", "etherite", BlockType.ETHERITE, 50,5,10);
+    addBlockType("moonstone3.png", "kuiperium", BlockType.KUIPERIUM, 25, 15,20);
+    addBlockType("gold2.png", "novacore", BlockType.NOVACORE, 15, 40,40);
 
     //Guns
-    addBlockType("water2.png", "water", BlockType.WATER, 15,40, 35);
-    addBlockType("fire2.png", "fire", BlockType.FIRE, 15, 40, 35);
-    addBlockType("earth3.png", "earth", BlockType.EARTH, 15,40, 35);
+    addBlockType("water2.png", "water", BlockType.WATER, 15,40, 100);
+    addBlockType("fire2.png", "fire", BlockType.FIRE, 15, 40, 100);
+    addBlockType("earth3.png", "earth", BlockType.EARTH, 15,40, 100);
 
-
+    // Spawners
+     addBlockType("water_wip.png", "spawner", BlockType.SPAWNER, 5,0, 500);
+      
     //Easter egg
     addBlockType("cat_boi.png", "easter egg", BlockType.EASTEREGG, 10, 10,0);
 
@@ -85,7 +86,6 @@ public class TowerMaterials {
                 VertexAttributes.Usage.Position |VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal));
 
         if (code != BlockType.EASTEREGG) {
-            materialNames.put(blockname, mat);
             materialCodes.put(blockname, code);
         }
 
