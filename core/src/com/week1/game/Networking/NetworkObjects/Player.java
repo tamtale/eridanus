@@ -1,7 +1,6 @@
 package com.week1.game.Networking.NetworkObjects;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.*;
 import java.net.InetAddress;
 
 public class Player {
@@ -12,15 +11,16 @@ public class Player {
 
     // Only used by TCP
     public DataInputStream in;
-    public DataOutputStream out;
+//    public DataOutputStream out;
+    public BufferedWriter out;
     
-    public Player(int playerId, InetAddress address, int port, DataInputStream in, DataOutputStream out) {
+    public Player(int playerId, InetAddress address, int port, DataInputStream in, OutputStream out) {
         this.playerId = playerId;
         this.address = address;
         this.port = port;
         this.checkedIn = false;
         this.in = in;
-        this.out = out;
+        this.out = new BufferedWriter(new OutputStreamWriter(out));
     }
     
     public Player(int playerId, InetAddress address, int port) {

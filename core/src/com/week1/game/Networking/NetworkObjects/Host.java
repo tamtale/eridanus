@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.week1.game.Networking.Messages.MessageFormatter.parseHostControlMessage;
 
+
 /**
  * This is the Host that receives and broadcasts messages to all of the clients.
  */
@@ -67,7 +68,7 @@ public class Host {
                             socket.getInetAddress(),
                             socket.getPort(),
                             new DataInputStream(socket.getInputStream()),
-                            new DataOutputStream(socket.getOutputStream())
+                            socket.getOutputStream()
                     );
                     registry.put(socket.getInetAddress(), player);
 
@@ -143,14 +144,19 @@ public class Host {
     
     public void broadcastToRegisteredPlayers(String msg) {
         registry.values().forEach((player) -> {
-            Gdx.app.debug(TAG, "Sending message: " + msg + " to player: " + player.address);
+            System.out.println("Sending message: " + msg + " to player: " + player.address);
             sendMessage(msg, player);
         });
     }
 
     public void sendMessage(String msg, Player player) {
         try {
-            player.out.writeUTF(msg);
+            System.out.println("sending msg from host: " + msg);
+//            player.out.writeUTF( msg + "\n");
+            player.out.write(msg + "\n");
+//            player.out.newLine(); // TODO: may be os specific
+            player.out.flush();
+            System.out.println("Sent");
         } catch (IOException e) {
             e.printStackTrace();
         }

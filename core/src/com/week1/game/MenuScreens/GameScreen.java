@@ -70,6 +70,7 @@ public class GameScreen implements Screen {
 
 			@Override
 			public void sendMessage(AMessage msg) {
+				System.out.println("A");
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
 		}, networkClient.getPlayerId(), new ConcurrentLinkedQueue<>(), util);
@@ -157,6 +158,7 @@ public class GameScreen implements Screen {
 
 					@Override
 					public void sendMessage(AMessage msg) {
+						System.out.println("B");
 						networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 					}
 					@Override

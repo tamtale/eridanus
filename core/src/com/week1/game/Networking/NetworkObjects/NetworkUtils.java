@@ -13,6 +13,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Enumeration;
 
 public class NetworkUtils {
+//    public static final String MESSAGE_DELINEATOR = "XXX";
     private static final String TAG = "NetworkUtils - lji1";
     private static String addr;
     public static String getLocalHostAddr() {

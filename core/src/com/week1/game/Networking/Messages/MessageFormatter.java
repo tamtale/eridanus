@@ -80,6 +80,10 @@ public class MessageFormatter {
     }
 
     public static ClientControlMessage parseClientControlMessage(String jsonString) {
+        
+        System.out.println("About to parse as ClientControlMessage: " + jsonString);
+        System.out.println("close");
+        
         AMessage parsedMsg = g.fromJson(jsonString, PrototypeMessage.class);
         if (parsedMsg != null) {
             if (parsedMsg.messageTypeID == MessageType.PLAYERID) {
@@ -109,6 +113,7 @@ public class MessageFormatter {
      */
     public static String packageMessage(Object msg) {
         String jsonString = g.toJson(msg);
+        System.out.println("Packaged: " + jsonString);
         return jsonString;
     }
     
