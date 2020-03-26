@@ -66,7 +66,7 @@ public class Host {
                             this.runningPlayerId++,
                             socket.getInetAddress(),
                             socket.getPort(),
-                            new DataInputStream(socket.getInputStream()),
+                            socket.getInputStream(),
                             socket.getOutputStream()
                     );
                     registry.put(socket.getInetAddress(), player);
