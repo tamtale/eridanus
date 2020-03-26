@@ -26,6 +26,7 @@ public class TowerBuilderStage {
     private StatsWidget sw;
     private TextButton startGame;
     private SelectBox<TowerDetails> displaySelection;
+    private Label viewTower;
 
     //Build mode buttons
     private TextButton buildModeBtn;
@@ -35,6 +36,7 @@ public class TowerBuilderStage {
     private SelectBox<String> materialSelection;
     private Dialog dialog;
     Texture tex;
+    private Label blockType;
 
     //make skins
     private static TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
@@ -129,11 +131,13 @@ public class TowerBuilderStage {
         materialSelection.setItems(materials);
 
         buildModeBtn = new TextButton("Build Mode", normalStyle);
+        viewTower = new Label("View Tower: ", new Skin(Gdx.files.internal("uiskin.json")));
 
         //Build mode buttons
         addBlockBtn = new TextButton("Add block", normalStyle);
         removeBlockBtn = new TextButton("Remove Block", normalStyle);
         saveTowerBtn = new TextButton("Save Tower", normalStyle);
+        blockType = new Label("Block Type: ", new Skin(Gdx.files.internal("uiskin.json")));
 
         TextField twrName = new TextField("", new Skin(Gdx.files.internal("uiskin.json")));
         dialog = new Dialog("Name your tower", new Skin(Gdx.files.internal("uiskin.json")));
@@ -194,6 +198,10 @@ public class TowerBuilderStage {
         displaySelection.setPosition(0, 0);
         stage.addActor(displaySelection);
 
+        viewTower.setSize(128, 48);
+        viewTower.setPosition(0, 48);
+        stage.addActor(viewTower);
+
 
         //Build Mode buttons
         buildModeBtn.setSize(128, 48);
@@ -210,6 +218,11 @@ public class TowerBuilderStage {
         stage.addActor(materialSelection);
         materialSelection.setVisible(false);
 
+        blockType.setSize(128, 48);
+        blockType.setPosition(512, 48);
+        stage.addActor(blockType);
+        blockType.setVisible(false);
+
         removeBlockBtn.setSize(128, 48);
         removeBlockBtn.setPosition(256, 0);
         stage.addActor(removeBlockBtn);
@@ -219,6 +232,7 @@ public class TowerBuilderStage {
         saveTowerBtn.setPosition(640, 0);
         stage.addActor(saveTowerBtn);
         saveTowerBtn.setVisible(false);
+
 
         //Start Game button
         startGame.setSize(128, 48);
@@ -394,6 +408,7 @@ public class TowerBuilderStage {
         materialSelection.setVisible(true);
         removeBlockBtn.setVisible(true);
         saveTowerBtn.setVisible(true);
+        blockType.setVisible(true);
 
         //hide display select box
         displaySelection.setDisabled(true);
@@ -414,6 +429,7 @@ public class TowerBuilderStage {
         materialSelection.setVisible(false);
         removeBlockBtn.setVisible(false);
         saveTowerBtn.setVisible(false);
+        blockType.setVisible(false);
 
         //unhighlight blocks
         screen.stopHighlighting();
