@@ -109,7 +109,6 @@ public class TowerDetails {
             populateFields();
 
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
             e.printStackTrace();
         }
     }
@@ -117,30 +116,14 @@ public class TowerDetails {
     public TowerDetails(List<BlockSpec> layout, String name) {
         this.layout = layout;
         this.name = name;
-
-        // TODO: remove
-        if(layout.get(0).getBlockCode() == BlockType.SPACEGOLD) {
-            System.out.println("Init base!");
-        }
         
         //generate model and stats
         populateFields();
     }
 
     
-    /*
-        Overloaded constructor to allow us to bypass automatic stat generation, if necessary for testing
-     */
-//    public TowerDetails(TowerFootprint fp, double health, double price, double range, double damage) {
-//        this.footprint = fp;
-//        this.hp = health;
-//        this.price = price;
-//        this.range = range;
-//        this.atk = damage;
-//    }
 
     private void populateFields() {
-        int base_blocks = 0;
 
         this.footprint = new TowerFootprint();
 
@@ -310,9 +293,6 @@ public class TowerDetails {
     }
 
     protected boolean removeBlock(int x, int y, int z) {
-//        int x = bs.getX();
-//        int y = bs.getY();
-//        int z = bs.getZ();
         BlockType code = null;
 
         int modelIdx = -1;
@@ -320,7 +300,6 @@ public class TowerDetails {
         boolean shrinkFootprint = true;
         int newHt = 0;
 
-        System.out.println("removal");
         for (int i = 0; i < layout.size(); i++) {
             if (code == null) {
                 BlockSpec b = layout.get(i);

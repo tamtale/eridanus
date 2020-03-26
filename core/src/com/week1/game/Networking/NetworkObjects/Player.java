@@ -9,24 +9,15 @@ public class Player {
     public int port;
     public boolean checkedIn;
 
-    // Only used by TCP
-    public DataInputStream in;
-//    public DataOutputStream out;
+    public BufferedReader in;
     public BufferedWriter out;
     
-    public Player(int playerId, InetAddress address, int port, DataInputStream in, OutputStream out) {
+    public Player(int playerId, InetAddress address, int port, InputStream in, OutputStream out) {
         this.playerId = playerId;
         this.address = address;
         this.port = port;
         this.checkedIn = false;
-        this.in = in;
+        this.in = new BufferedReader(new InputStreamReader(in));
         this.out = new BufferedWriter(new OutputStreamWriter(out));
-    }
-    
-    public Player(int playerId, InetAddress address, int port) {
-        this.playerId = playerId;
-        this.address = address;
-        this.port = port;
-        this.checkedIn = false;
     }
 }

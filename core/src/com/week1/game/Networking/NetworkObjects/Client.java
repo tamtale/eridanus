@@ -15,7 +15,6 @@ import com.week1.game.TowerBuilder.BlockSpec;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -29,9 +28,8 @@ public class Client {
     private InetAddress hostAddress;
     private int hostPort;
     
-//    private DataInputStream in;
-    BufferedReader in;
-    private DataOutputStream out;
+    private BufferedReader in;
+    private BufferedWriter out;
     
     private INetworkClientToEngineAdapter adapter;
     
@@ -44,8 +42,7 @@ public class Client {
         this.screenManager = screenManager;
         this.tcpSocket = new Socket(hostAddress, hostPort);
         this.in = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
-//        this.in = new DataInputStream(tcpSocket.getInputStream());
-        this.out = new DataOutputStream(tcpSocket.getOutputStream());
+        this.out = new BufferedWriter(new OutputStreamWriter(tcpSocket.getOutputStream()));
         Gdx.app.log(TAG, "Created socket for client instance on port: " + tcpSocket.getLocalPort());
         
         awaitUpdates();
@@ -56,9 +53,10 @@ public class Client {
     }
     
     public void sendStringMessage(String msg) {
-        System.out.println("About to send message: " + msg + " to: " + hostAddress + ":" + this.hostPort);
+        Gdx.app.log(TAG, "About to send message: " + msg + " to: " + hostAddress + ":" + this.hostPort);
         try {
-            this.out.writeUTF(msg);
+            this.out.write(msg + "\n");
+            this.out.flush();
             Gdx.app.debug(TAG, "Sent message");
         } catch (IOException e) {
             Gdx.app.error(TAG, "Failed to send message: " + msg);
@@ -67,36 +65,10 @@ public class Client {
     }
     
     public void awaitUpdates() {
-//        char[] cbuf = new char[5];
-//        try {
-//            this.in.read(cbuf, 0, 1);
-//            System.out.println("Read first char: " + Arrays.toString(cbuf));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         new Thread(() -> {
             while (true) {
-//                byte[] buf = new byte[TcpHost.DANGEROUS_HARDCODED_MESSAGE_SIZE]; // TODO: size this according to message length
-//                DatagramPacket packet = new DatagramPacket(buf, buf.length);
-
                 try {
-                    // blocks until a packet is received
-//                    udpSocket.receive(packet);
-//                    String messages = new String(packet.getData()).trim();
-//                    String messages = this.in.readUTF();
-                    System.out.println("About to try reading a line");
-                    String dirtyMessages = this.in.readLine();
-                    System.out.println("Got: " + dirtyMessages);
-                    String messages = dirtyMessages.substring(dirtyMessages.indexOf("{"));
-                    
-                    
-                    
-                    
-                    
-//                    String[] splitMessages = messages.split(MESSAGE_DELINEATOR);
-//                    System.out.println("splitMessages: " + Arrays.toString(splitMessages));
-                    
-                    System.out.println("About to try parsing message: " + messages);
+                    String messages = this.in.readLine();
                     // try parsing as a control message first
                     ClientControlMessage controlMsg = MessageFormatter.parseClientControlMessage(messages);
                     if (controlMsg != null) {
@@ -128,23 +100,19 @@ public class Client {
     
     public void sendGoToGame(long mapSeed) {
         // the client doesn't know its player id until later, so just use -1
-        System.out.println("Sending GoToGame");
         this.sendStringMessage(MessageFormatter.packageMessage(new RequestGoToGameMessage(mapSeed, -1)));
     }
 
     public void sendLoadout(List<List<BlockSpec>> details) {
         // This is sent in the LoadoutScreen.
-        System.out.println("D");
         sendStringMessage(MessageFormatter.packageMessage(new SubmitLoadoutMessage(playerId, details)));
     }
 
     public void sendGoToLoadout() {
-        System.out.println("E");
         sendStringMessage(MessageFormatter.packageMessage(new RequestGoToLoadoutMessage(-1)));
     }
 
     public void sendRestartRequest() {
-        System.out.println("F");
         sendStringMessage(MessageFormatter.packageMessage(new RequestRestartMessage(playerId)));
     }
     /**

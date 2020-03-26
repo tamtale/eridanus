@@ -81,8 +81,7 @@ public class MessageFormatter {
 
     public static ClientControlMessage parseClientControlMessage(String jsonString) {
         
-        System.out.println("About to parse as ClientControlMessage: " + jsonString);
-        System.out.println("close");
+        Gdx.app.log(TAG, "About to parse as ClientControlMessage: " + jsonString);
         
         AMessage parsedMsg = g.fromJson(jsonString, PrototypeMessage.class);
         if (parsedMsg != null) {
@@ -113,7 +112,6 @@ public class MessageFormatter {
      */
     public static String packageMessage(Object msg) {
         String jsonString = g.toJson(msg);
-        System.out.println("Packaged: " + jsonString);
         return jsonString;
     }
     

@@ -139,7 +139,6 @@ public class ConnectionScreen implements Screen {
     }
 
     private void addPlayerList() {
-        System.out.println("Added player list");
         // Display the joined players
         joinedPlayersLabel = new Label("Joined Players: ", labelStyle);
         joinedPlayersLabel.setFontScale(TITLESCALE);
@@ -149,7 +148,6 @@ public class ConnectionScreen implements Screen {
                 GameController.VIRTUAL_HEIGHT / 2 - 160);
         joinedPlayersLabel.setAlignment(Align.center);
         connectionStage.addActor(joinedPlayersLabel);
-        System.out.println("done adding");
     }
     
     private void joinGame(String ip) {

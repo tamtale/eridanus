@@ -33,7 +33,6 @@ public class Host {
     private int port;
     public ServerSocket serverSocket;
     private int nextPlayerId = 0;
-    public static final int DANGEROUS_HARDCODED_MESSAGE_SIZE = 4096;
 
     public Map<Integer, List<List<BlockSpec>>> towerDetails = new HashMap<>(); // first index is implicitly the player id
     public Map<InetAddress, Player> registry = new HashMap<>();
@@ -88,7 +87,7 @@ public class Host {
                         while (true) {
                             try {
                                 Gdx.app.debug(TAG, "Host is listening for next client message from: "  + player.address);
-                                msg = player.in.readUTF();
+                                msg = player.in.readLine();
                                 processMessage(msg, player.address, player.port);
 
 
@@ -128,8 +127,6 @@ public class Host {
 
 
     private void processMessage(String msg, InetAddress addr, int port) {
-//        String msg = new String(packet.getData()).trim();
-        
 
         HostControlMessage ctrlMsg = parseHostControlMessage(msg);
         if (ctrlMsg != null) {
@@ -144,19 +141,15 @@ public class Host {
     
     public void broadcastToRegisteredPlayers(String msg) {
         registry.values().forEach((player) -> {
-            System.out.println("Sending message: " + msg + " to player: " + player.address);
+            Gdx.app.log(TAG, "Sending message: " + msg + " to player: " + player.address);
             sendMessage(msg, player);
         });
     }
 
     public void sendMessage(String msg, Player player) {
         try {
-            System.out.println("sending msg from host: " + msg);
-//            player.out.writeUTF( msg + "\n");
             player.out.write(msg + "\n");
-//            player.out.newLine(); // TODO: may be os specific
             player.out.flush();
-            System.out.println("Sent");
         } catch (IOException e) {
             e.printStackTrace();
         }
