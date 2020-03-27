@@ -170,7 +170,6 @@ public class LoadoutScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     Gdx.app.debug("pjb3 LoadoutScreen", "About to send start message.");
-
                     long enteredSeed = parseMapSeed(mapSeedField.getText());
                     Gdx.app.log("lji1 LoadoutScreen", "Using seed: " + enteredSeed);
                     networkClient.sendGoToGame(enteredSeed);
