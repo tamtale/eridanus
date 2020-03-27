@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.week1.game.Networking.Messages.MessageFormatter.parseHostControlMessage;
 
+
 /**
  * This is the Host that receives and broadcasts messages to all of the clients.
  */
@@ -32,7 +33,6 @@ public class Host {
     private int port;
     public ServerSocket serverSocket;
     private int nextPlayerId = 0;
-    public static final int DANGEROUS_HARDCODED_MESSAGE_SIZE = 4096;
 
     public Map<Integer, List<TowerLite>> towerDetails = new HashMap<>(); // first index is implicitly the player id
     public Map<InetAddress, Player> registry = new HashMap<>();
@@ -66,8 +66,8 @@ public class Host {
                             this.runningPlayerId++,
                             socket.getInetAddress(),
                             socket.getPort(),
-                            new DataInputStream(socket.getInputStream()),
-                            new DataOutputStream(socket.getOutputStream())
+                            socket.getInputStream(),
+                            socket.getOutputStream()
                     );
                     registry.put(socket.getInetAddress(), player);
 
@@ -87,7 +87,7 @@ public class Host {
                         while (true) {
                             try {
                                 Gdx.app.debug(TAG, "Host is listening for next client message from: "  + player.address);
-                                msg = player.in.readUTF();
+                                msg = player.in.readLine();
                                 processMessage(msg, player.address, player.port);
 
 
@@ -127,8 +127,6 @@ public class Host {
 
 
     private void processMessage(String msg, InetAddress addr, int port) {
-//        String msg = new String(packet.getData()).trim();
-        
 
         HostControlMessage ctrlMsg = parseHostControlMessage(msg);
         if (ctrlMsg != null) {
@@ -143,14 +141,15 @@ public class Host {
     
     public void broadcastToRegisteredPlayers(String msg) {
         registry.values().forEach((player) -> {
-            Gdx.app.debug(TAG, "Sending message: " + msg + " to player: " + player.address);
+            Gdx.app.log(TAG, "Sending message: " + msg + " to player: " + player.address);
             sendMessage(msg, player);
         });
     }
 
     public void sendMessage(String msg, Player player) {
         try {
-            player.out.writeUTF(msg);
+            player.out.write(msg + "\n");
+            player.out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
