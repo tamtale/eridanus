@@ -5,27 +5,38 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.TowerFootprint;
+import com.week1.game.Model.TowerLite;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class TowerDetails {
-    private double hp = 0;
-    private double atk = 0;
-    private int height = 0;
-    private double range = 0;
-    private int rawHp = 0;
-    private int rawAtk = 0;
-    private int armour = 1;
-    private double price = 0;
     private Array<ModelInstance> model = new Array<>();
     private List<BlockSpec> layout;
     private TowerFootprint footprint;
     private Vector3 averageLocationOfHighestBlock = new Vector3();
-    private String name = "";
+
+    //these stats are based off the raw blocks
+    private double rawHeight = 0;
+    private double rawHp = 0;
+    private double rawAtk = 0;
+    private double price = 0;
+
+    //These stats are based off raw stats and multipliers
+    private double hp = 0;
+    private double atk = 0;
+    private double range = 0;
+    private int armour = 1;
+
+    //For penalizing small bases
+    private int baseSize = 0;
+    private String name = "init";
     private float BLOCKLENGTH = TowerMaterials.BLOCKLENGTH;
+    
+    // Maps the spawner block type to the count of that spawner block in the tower
+    // -> the tower will spawn a number of minions of each type proportional to
+    //    the number of the corresponding spawner blocks in the tower
+    private Map<Integer, Integer> spawnerBlockCounts = new HashMap<>();
 
     public List<BlockSpec> getLayout() {
         return layout;
@@ -53,6 +64,10 @@ public class TowerDetails {
     
     public Vector3 getHighestBlock() {
         return averageLocationOfHighestBlock;
+    }
+    
+    public Map<Integer, Integer> getSpawnerCounts() {
+        return spawnerBlockCounts;
     }
 
     private List<BlockSpec> parseLayoutString(String layout) {
@@ -84,7 +99,6 @@ public class TowerDetails {
             blocks.add(new BlockSpec(BlockType.values()[code], x, y, z));
         }
 
-
         return blocks;
     }
 
@@ -103,10 +117,9 @@ public class TowerDetails {
             myReader.close();
 
             String twrName = filename.substring(13, filename.length() - 11);
-            System.out.println(twrName);
             layout = blocks;
             name = twrName;
-            populateFields();
+            calcRawStats();
 
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
@@ -117,31 +130,12 @@ public class TowerDetails {
     public TowerDetails(List<BlockSpec> layout, String name) {
         this.layout = layout;
         this.name = name;
-
-        // TODO: remove
-        if(layout.get(0).getBlockCode() == BlockType.SPACEGOLD) {
-            System.out.println("Init base!");
-        }
         
         //generate model and stats
-        populateFields();
+        calcRawStats();
     }
 
-    
-    /*
-        Overloaded constructor to allow us to bypass automatic stat generation, if necessary for testing
-     */
-//    public TowerDetails(TowerFootprint fp, double health, double price, double range, double damage) {
-//        this.footprint = fp;
-//        this.hp = health;
-//        this.price = price;
-//        this.range = range;
-//        this.atk = damage;
-//    }
-
-    private void populateFields() {
-        int base_blocks = 0;
-
+    private void calcRawStats() {
         this.footprint = new TowerFootprint();
 
         int maxHeight = Integer.MIN_VALUE;
@@ -162,8 +156,14 @@ public class TowerDetails {
             //Generate the tower stats
             rawHp += TowerMaterials.blockHp.get(code);
             rawAtk += TowerMaterials.blockAtk.get(code);
-            height = Integer.max(height, y + 1);
+            rawHeight = Math.max(rawHeight, y + 1);
             price += TowerMaterials.blockPrice.get(code);
+
+
+            //Getting the base size
+            if (y == 0) {
+                baseSize += 1;
+            }
             
             
             if (block.getY() > maxHeight) {
@@ -175,15 +175,38 @@ public class TowerDetails {
                 numBlocksAtMaxHeight++;
             }
             
+            if (code == BlockType.SPAWNER) {
+                // TODO: When there are multiple minion types, different spawner blocks will increase different counts
+                if (spawnerBlockCounts.get(0) == null) {
+                    spawnerBlockCounts.put(0, 1);
+                } else {
+                    spawnerBlockCounts.put(0, spawnerBlockCounts.get(0) + 1);
+                }
+            }
+            
         }
         
         // Divide to find the average location of the highest blocks (this is where to put the health bar)
         averageLocationOfHighestBlock.scl(1f / ((float)numBlocksAtMaxHeight));
 
-        //We aren't calculating armour multipliers, etc
+        calcFinalStats();
+    }
+
+    private void calcFinalStats() {
         atk = rawAtk * 0.05;
-        hp = rawHp * armour;
-        range = height * 3;
+        range = rawHeight * 2;
+
+        //Multipliers --- Fine tuning the stats
+
+        //penalties up to basesize of 5
+        hp = rawHp * Math.min(1, baseSize/5.0);
+
+//        atk is inversely prop to range
+        if (rawHeight != 0) {
+//            Note: this if statement is required because the height of the ground in the tower editor is 0
+            atk = atk * Math.min(3, 3.0/rawHeight);
+        }
+
 
     }
 
@@ -218,12 +241,18 @@ public class TowerDetails {
         this.model.add(blockInstance);
         this.footprint.setFootPrint(x + 2, z + 2, true);
 
+        if (y == 0) {
+            baseSize += 1;
+        }
+
         //populate the fields
-        this.atk += TowerMaterials.blockAtk.get(code);
-        this.hp += TowerMaterials.blockHp.get(code);
-        height = Integer.max(height, y + 1);
-        range = height * 3;
+        this.rawAtk += TowerMaterials.blockAtk.get(code);
+        this.rawHp += TowerMaterials.blockHp.get(code);
+        rawHeight = Math.max(rawHeight, y + 1);
+//        range = rawHeight * 3;
         this.price += TowerMaterials.blockPrice.get(code);
+
+        calcFinalStats();
 
     }
 
@@ -255,7 +284,6 @@ public class TowerDetails {
             q.remove(0);
             seen.add(cur);
 
-            System.out.println(seen);
             List<BlockSpec> nbrs = getNbrs(cur, updatedBlocks);
             for (int i = 0; i < nbrs.size(); i++) {
                 if (!seen.contains(nbrs.get(i)) & !q.contains(nbrs.get(i))) {
@@ -266,9 +294,7 @@ public class TowerDetails {
         }
 
         if (seen.size() != updatedBlocks.size()) {
-            Gdx.app.log("expected " + updatedBlocks.size() + " blocks but only saw " + seen.size() + " blocks", "skv2");
-            System.out.println(updatedBlocks);
-            System.out.println(seen);
+            Gdx.app.log("Unable to remove: TowerDetails expected " + updatedBlocks.size() + " blocks but only saw " + seen.size() + " blocks", "skv2");
             return false;
         }
 
@@ -310,9 +336,6 @@ public class TowerDetails {
     }
 
     protected boolean removeBlock(int x, int y, int z) {
-//        int x = bs.getX();
-//        int y = bs.getY();
-//        int z = bs.getZ();
         BlockType code = null;
 
         int modelIdx = -1;
@@ -320,7 +343,6 @@ public class TowerDetails {
         boolean shrinkFootprint = true;
         int newHt = 0;
 
-        System.out.println("removal");
         for (int i = 0; i < layout.size(); i++) {
             if (code == null) {
                 BlockSpec b = layout.get(i);
@@ -357,19 +379,19 @@ public class TowerDetails {
 
 
         //update the fields
-        this.atk -= TowerMaterials.blockAtk.get(code);
-        this.hp -= TowerMaterials.blockHp.get(code);
+        this.rawAtk -= TowerMaterials.blockAtk.get(code);
+        this.rawHp -= TowerMaterials.blockHp.get(code);
         this.price -= TowerMaterials.blockPrice.get(code);
 
         //updating range and footprint
         if (shrinkFootprint) {
+            baseSize -= 1;
             this.footprint.setFootPrint(x + 2, z + 2, false);
         }
 
-        height = newHt;
-        range = newHt * 3;
+        rawHeight = newHt;
 
-
+        calcFinalStats();
         return true;
 
     }
@@ -401,5 +423,17 @@ public class TowerDetails {
             e.printStackTrace();
         }
 
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getCost() {
+        return (int)price;
+    }
+
+    public TowerLite getTowerLite() {
+        return new TowerLite(name, layout);
     }
 }

@@ -48,7 +48,7 @@ public class TowerBuilderCamera {
 
         if (towerScreen.isBuildMode()) {
             this.WIPTower = TowerPresets.getBuildCore();
-            calcInvisiBlox();
+            calcNewInvisiBlox();
         } else {
             this.currTowerDetails = newTower;
         }
@@ -146,16 +146,7 @@ public class TowerBuilderCamera {
     //Tower Editor methods
 
     private void calcInvisiBlox() {
-
-        towerBlocks.clear();
         invisiBlocks.clear();
-
-
-        for (int i = 0; i < WIPTower.getLayout().size(); i++) {
-            BlockSpec b = WIPTower.getLayout().get(i);
-            Vector3 curpos = new Vector3(b.getX(), b.getY(), b.getZ());
-            towerBlocks.add(curpos);
-        }
 
         for (int j = 0; j < towerBlocks.size(); j++) {
             Vector3 p = towerBlocks.get(j);
@@ -178,6 +169,21 @@ public class TowerBuilderCamera {
             }
         }
 
+
+    }
+
+    private void calcNewInvisiBlox() {
+
+        towerBlocks.clear();
+
+
+        for (int i = 0; i < WIPTower.getLayout().size(); i++) {
+            BlockSpec b = WIPTower.getLayout().get(i);
+            Vector3 curpos = new Vector3(b.getX(), b.getY(), b.getZ());
+            towerBlocks.add(curpos);
+        }
+
+        calcInvisiBlox();
     }
 
     private int selectBlockfromArray(int screenX, int screenY, List<Vector3> blocks) {
@@ -188,6 +194,7 @@ public class TowerBuilderCamera {
 
         for (int i = 0; i < blocks.size(); i++) {
             Vector3 curblock = blocks.get(i);
+
 
             Vector3 position = new Vector3(curblock.x * BLOCKLENGTH, curblock.y * BLOCKLENGTH, curblock.z * BLOCKLENGTH);
             Vector3 dimensions = new Vector3(5, 5, 5);
@@ -284,48 +291,14 @@ public class TowerBuilderCamera {
 
     }
 
-    private boolean isNbr(Vector3 pos1, Vector3 pos2) {
-        if (pos1.x == pos2.x & pos1.y == pos2.y) {
-            return Math.abs(pos1.z - pos2.z) == 1;
-        } else if (pos1.y == pos2.y & pos1.z == pos2.z) {
-            return Math.abs(pos1.x - pos2.x) == 1;
-        } else if (pos1.x == pos2.x & pos1.z == pos2.z) {
-            return Math.abs(pos1.y - pos2.y) == 1;
-        }
-        return false;
-    }
 
 
     private void updateInvisibloxOnDel(Vector3 selectedPos) {
+        //easier and not that much slower just to recalc
+
         towerBlocks.remove(selectedPos);
-        invisiBlocks.add(selectedPos);
 
-        List<Vector3> nbrs = new ArrayList<>();
-        for (int i = 0; i < invisiBlocks.size(); i++) {
-            Vector3 invisiPos = invisiBlocks.get(i);
-            if (isNbr(selectedPos, invisiPos)) {
-                nbrs.add(invisiPos);
-            }
-        }
-
-        List<Integer> nbrRemovals = new ArrayList<>();
-        for (int i = 0; i < nbrs.size(); i++) {
-            for (int j = 0; j < invisiBlocks.size(); j++) {
-                Vector3 invisiPos = invisiBlocks.get(j);
-                if (isNbr(nbrs.get(i), invisiPos)) {
-                    nbrRemovals.add(i);
-                    break;
-                }
-            }
-        }
-
-        for (int j = 0; j < nbrRemovals.size(); j++) {
-            nbrs.remove(nbrRemovals.get(j));
-        }
-
-        for (int i = 0; i < nbrs.size(); i++) {
-            invisiBlocks.remove(nbrs.get(i));
-        }
+        calcInvisiBlox();
 
     }
 
