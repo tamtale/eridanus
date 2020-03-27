@@ -67,7 +67,16 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
         };
 
         do {
-            this.current = (WarrenIndexedAStarPathFinder.NodeRecord)this.openList.pop();
+            if (this.openList == null){
+                Gdx.app.error("AStar - wab2", "openList is null");
+                return false;
+            }
+            NodeRecord<N> next = this.openList.pop();
+            if (next == null) {
+                Gdx.app.error("AStar - wab2", "Next is null");
+                return false;
+            }
+            this.current = next;
             this.current.category = 2;
             if (this.current.node.toString().equals(endNode.toString())) {
                 return true;
