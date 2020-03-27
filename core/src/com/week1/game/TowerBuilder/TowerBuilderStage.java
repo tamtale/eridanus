@@ -26,7 +26,7 @@ public class TowerBuilderStage {
     private StatsWidget sw;
     private TextButton startGame;
     private SelectBox<TowerDetails> displaySelection;
-    private Label viewTower;
+    private Label viewTowerLbl;
 
     //Build mode buttons
     private TextButton buildModeBtn;
@@ -36,7 +36,10 @@ public class TowerBuilderStage {
     private SelectBox<String> materialSelection;
     private Dialog dialog;
     Texture tex;
-    private Label blockType;
+    private Label blockTypeLbl;
+
+    private int COMPONENTWIDTH = 148;
+    private int COMPONENTHEIGHT = 48;
 
     //make skins
     private static TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
@@ -130,14 +133,14 @@ public class TowerBuilderStage {
 
         materialSelection.setItems(materials);
 
-        buildModeBtn = new TextButton("Build Mode", normalStyle);
-        viewTower = new Label("View Tower: ", new Skin(Gdx.files.internal("uiskin.json")));
+        buildModeBtn = new TextButton("Switch to Build Mode", normalStyle);
+        viewTowerLbl = new Label("View Tower: ", new Skin(Gdx.files.internal("uiskin.json")));
 
         //Build mode buttons
         addBlockBtn = new TextButton("Add block", normalStyle);
         removeBlockBtn = new TextButton("Remove Block", normalStyle);
         saveTowerBtn = new TextButton("Save Tower", normalStyle);
-        blockType = new Label("Block Type: ", new Skin(Gdx.files.internal("uiskin.json")));
+        blockTypeLbl = new Label("Block Type: ", new Skin(Gdx.files.internal("uiskin.json")));
 
         TextField twrName = new TextField("", new Skin(Gdx.files.internal("uiskin.json")));
         dialog = new Dialog("Name your tower", new Skin(Gdx.files.internal("uiskin.json")));
@@ -194,48 +197,48 @@ public class TowerBuilderStage {
         stage.addActor(sw);
 
         //Select present and display
-        displaySelection.setSize(128, 48);
-        displaySelection.setPosition(0, 0);
+        displaySelection.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
+        displaySelection.setPosition(100, 0);
         stage.addActor(displaySelection);
 
-        viewTower.setSize(128, 48);
-        viewTower.setPosition(0, 48);
-        stage.addActor(viewTower);
+        viewTowerLbl.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
+        viewTowerLbl.setPosition(0, 0);
+        stage.addActor(viewTowerLbl);
 
 
         //Build Mode buttons
-        buildModeBtn.setSize(128, 48);
-        buildModeBtn.setPosition(128, 0);
+        buildModeBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
+        buildModeBtn.setPosition(100 + COMPONENTWIDTH, 0);
         stage.addActor(buildModeBtn);
 
-        addBlockBtn.setSize(128, 48);
-        addBlockBtn.setPosition(384, 0);
+        addBlockBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
+        addBlockBtn.setPosition(0, COMPONENTHEIGHT);
         stage.addActor(addBlockBtn);
         addBlockBtn.setVisible(false);
 
-        materialSelection.setSize(128, 48);
-        materialSelection.setPosition(512, 0);
+        blockTypeLbl.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
+        blockTypeLbl.setPosition(COMPONENTWIDTH, COMPONENTHEIGHT);
+        stage.addActor(blockTypeLbl);
+        blockTypeLbl.setVisible(false);
+
+        materialSelection.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
+        materialSelection.setPosition(COMPONENTWIDTH + 100, COMPONENTHEIGHT);
         stage.addActor(materialSelection);
         materialSelection.setVisible(false);
 
-        blockType.setSize(128, 48);
-        blockType.setPosition(512, 48);
-        stage.addActor(blockType);
-        blockType.setVisible(false);
-
-        removeBlockBtn.setSize(128, 48);
-        removeBlockBtn.setPosition(256, 0);
+        removeBlockBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
+        removeBlockBtn.setPosition(COMPONENTWIDTH * 2 + 100, COMPONENTHEIGHT);
         stage.addActor(removeBlockBtn);
         removeBlockBtn.setVisible(false);
 
-        saveTowerBtn.setSize(128, 48);
-        saveTowerBtn.setPosition(640, 0);
+        saveTowerBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
+        saveTowerBtn.setPosition(COMPONENTWIDTH * 3 + 100, COMPONENTHEIGHT);
         stage.addActor(saveTowerBtn);
         saveTowerBtn.setVisible(false);
 
 
         //Start Game button
-        startGame.setSize(128, 48);
+        startGame.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
         startGame.setPosition(64, GameController.VIRTUAL_HEIGHT - 200);
         stage.addActor(startGame);
 
@@ -403,12 +406,14 @@ public class TowerBuilderStage {
     }
 
     private void activateBuildMode() {
+        buildModeBtn.setText("Switch to View Mode");
+
         //display build mode actors
         addBlockBtn.setVisible(true);
         materialSelection.setVisible(true);
         removeBlockBtn.setVisible(true);
         saveTowerBtn.setVisible(true);
-        blockType.setVisible(true);
+        blockTypeLbl.setVisible(true);
 
         //hide display select box
         displaySelection.setDisabled(true);
@@ -421,6 +426,8 @@ public class TowerBuilderStage {
     }
 
     private void deactivateBuildMode() {
+        buildModeBtn.setText("Switch to Build Mode");
+
         deactivateAdd();
         deactivateRemove();
 
@@ -429,7 +436,7 @@ public class TowerBuilderStage {
         materialSelection.setVisible(false);
         removeBlockBtn.setVisible(false);
         saveTowerBtn.setVisible(false);
-        blockType.setVisible(false);
+        blockTypeLbl.setVisible(false);
 
         //unhighlight blocks
         screen.stopHighlighting();
