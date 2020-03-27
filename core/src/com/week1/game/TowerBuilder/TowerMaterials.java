@@ -45,33 +45,9 @@ public class TowerMaterials {
     addBlockType("earth3.png", "earth", BlockType.EARTH, 15,40, 100);
 
     // Spawners
-//     addBlockType("water_wip.png", "spawner", BlockType.SPAWNER, 5,0, 500);
+     addBlockType("spawner2.png", "spawner", BlockType.SPAWNER, 5,0, 500);
 
-    int attr = VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates;
-    Material door = new Material(TextureAttribute.createDiffuse(new Texture("door_simple.png")));
-    Material door_flipped = new Material(TextureAttribute.createDiffuse(new Texture("door_flipped.png")));
-    Material other = new Material(TextureAttribute.createDiffuse(new Texture("rest_of_door.png")));
 
-    modelBuilder.begin();
-    modelBuilder.part("front", GL20.GL_TRIANGLES, attr, door)
-            .rect(-2.5f,-2.5f,-2.5f, -2.5f,2.5f,-2.5f,  2.5f,2.5f,-2.5f, 2.5f,-2.5f,-2.5f, 0,0,-1);
-    modelBuilder.part("back", GL20.GL_TRIANGLES, attr, door_flipped)
-            .rect(-2.5f,2.5f,2.5f, -2.5f,-2.5f,2.5f,  2.5f,-2.5f,2.5f, 2.5f,2.5f,2.5f, 0,0,1);
-    modelBuilder.part("bottom", GL20.GL_TRIANGLES, attr, other)
-            .rect(-2.5f,-2.5f,2.5f, -2.5f,-2.5f,-2.5f,  2.5f,-2.5f,-2.5f, 2.5f,-2.5f,2.5f, 0,-1,0);
-    modelBuilder.part("top", GL20.GL_TRIANGLES, attr, other)
-            .rect(-2.5f,2.5f,-2.5f, -2.5f,2.5f,2.5f,  2.5f,2.5f,2.5f, 2.5f,2.5f,-2.5f, 0,1,0);
-    modelBuilder.part("left", GL20.GL_TRIANGLES, attr, door)
-            .rect(-2.5f,-2.5f,2.5f, -2.5f,2.5f,2.5f,  -2.5f,2.5f,-2.5f, -2.5f,-2.5f,-2.5f, -1,0,0);
-    modelBuilder.part("right", GL20.GL_TRIANGLES, attr, door)
-            .rect(2.5f,-2.5f,-2.5f, 2.5f,2.5f,-2.5f,  2.5f,2.5f,2.5f, 2.5f,-2.5f,2.5f, 1,0,0);
-    Model spawnerModel = modelBuilder.end();
-    modelMap.put(BlockType.SPAWNER, spawnerModel);
-    blockHp.put(BlockType.SPAWNER, 5);
-    blockAtk.put(BlockType.SPAWNER, 0);
-    blockPrice.put(BlockType.SPAWNER, 500);
-    materialCodes.put("spawner", BlockType.SPAWNER);
-      
     //Easter egg
     addBlockType("cat_boi.png", "easter egg", BlockType.EASTEREGG, 10, 10,0);
 
