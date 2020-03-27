@@ -8,8 +8,6 @@ import com.week1.game.Networking.Messages.Control.HostControl.HostControlMessage
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.Update;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -39,6 +37,7 @@ public class Host {
 
     public int runningPlayerId = 0;
     public boolean gameStarted = false;
+    private boolean loopStarted = false;
     
     private ConcurrentLinkedQueue<String> incomingMessages = new ConcurrentLinkedQueue<>();
     
@@ -104,8 +103,13 @@ public class Host {
         });
         joiningPlayersThead.start(); 
     }
-    
+
     public void runUpdateLoop() {
+
+        if (loopStarted) {
+            return;
+        }
+        loopStarted = true;
         // spawn a new thread to broadcast updates to the registered clients
         Gdx.app.log(TAG, "Host is about to begin running update loop.");
         new Thread(() -> {
@@ -117,9 +121,13 @@ public class Host {
 
                 Gdx.app.debug(TAG, "Host is about to broadcast update message to registered clients.");
                 broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(outgoingMessages)));
-                
+
                 // Take a break before the next update
-                try { Thread.sleep(UPDATE_INTERVAL); } catch (InterruptedException e) {e.printStackTrace();}
+                try {
+                    Thread.sleep(UPDATE_INTERVAL);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
             }
         }).start();

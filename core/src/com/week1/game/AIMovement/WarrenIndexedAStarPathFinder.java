@@ -148,6 +148,9 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
 
             Connection<N> connection = (Connection)connections.get(i);
             N node = connection.getToNode();
+            if (this.current == null){
+                return false;
+            }
             float nodeCost = this.current.costSoFar + connection.getCost();
             WarrenIndexedAStarPathFinder.NodeRecord<N> nodeRecord = this.getNodeRecord(node);
             if (nodeRecord == null) {
