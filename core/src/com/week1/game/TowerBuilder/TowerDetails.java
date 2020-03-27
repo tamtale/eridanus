@@ -203,7 +203,7 @@ public class TowerDetails {
 //        atk is inversely prop to range
         if (rawHeight > 4) {
 //            Note: this if statement is required because the height of the ground in the tower editor is 0
-            atk = atk * ( 4.0/(rawHeight));
+            atk = atk  - rawHeight * 3;
         }
 
 
