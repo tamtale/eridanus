@@ -39,7 +39,7 @@ public class TowerBuilderStage {
     Texture tex;
     private Label blockTypeLbl;
 
-    private int COMPONENTWIDTH = 148;
+    private int COMPONENTWIDTH = 133;
     private int COMPONENTHEIGHT = 48;
 
     private Label.LabelStyle panelstyle;
@@ -150,7 +150,7 @@ public class TowerBuilderStage {
 
         materialSelection.setItems(materials);
 
-        buildModeBtn = new TextButton("Switch to Build Mode", normalStyle);
+        buildModeBtn = new TextButton("Switch to\nBuild Mode", normalStyle);
         viewTowerLbl = new Label("View Tower: ", panelstyle);
 
         //Build mode buttons
@@ -215,10 +215,10 @@ public class TowerBuilderStage {
 
         //Select present and display
         displaySelection.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
-        displaySelection.setPosition(100, 0);
+        displaySelection.setPosition(COMPONENTWIDTH, 0);
         stage.addActor(displaySelection);
 
-        viewTowerLbl.setSize(100, COMPONENTHEIGHT);
+        viewTowerLbl.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
         viewTowerLbl.setPosition(0, 0);
         viewTowerLbl.setAlignment(Align.center);
         stage.addActor(viewTowerLbl);
@@ -226,22 +226,22 @@ public class TowerBuilderStage {
 
         //Build Mode buttons
         buildModeBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
-        buildModeBtn.setPosition(100 + COMPONENTWIDTH, 0);
+        buildModeBtn.setPosition(2 * COMPONENTWIDTH, 0);
         stage.addActor(buildModeBtn);
 
         addBlockBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
-        addBlockBtn.setPosition(COMPONENTWIDTH * 2 + 100, 0);
+        addBlockBtn.setPosition(COMPONENTWIDTH * 3, 0);
         stage.addActor(addBlockBtn);
         addBlockBtn.setVisible(false);
 
-        blockTypeLbl.setSize(100, COMPONENTHEIGHT);
-        blockTypeLbl.setPosition(COMPONENTWIDTH * 3 + 100, 0);
+        blockTypeLbl.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
+        blockTypeLbl.setPosition(COMPONENTWIDTH * 4, 0);
         blockTypeLbl.setAlignment(Align.center);
         stage.addActor(blockTypeLbl);
         blockTypeLbl.setVisible(false);
 
         materialSelection.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
-        materialSelection.setPosition(COMPONENTWIDTH * 3 + 200, 0);
+        materialSelection.setPosition(COMPONENTWIDTH * 5, 0);
         stage.addActor(materialSelection);
         materialSelection.setVisible(false);
 
@@ -425,7 +425,7 @@ public class TowerBuilderStage {
     }
 
     private void activateBuildMode() {
-        buildModeBtn.setText("Switch to View Mode");
+        buildModeBtn.setText("Switch to\nView Mode");
         viewTowerLbl.setStyle(inactive_panelstyle);
 
         //display build mode actors
@@ -446,7 +446,7 @@ public class TowerBuilderStage {
     }
 
     private void deactivateBuildMode() {
-        buildModeBtn.setText("Switch to Build Mode");
+        buildModeBtn.setText("Switch to\nBuild Mode");
         viewTowerLbl.setStyle(panelstyle);
 
         deactivateAdd();
