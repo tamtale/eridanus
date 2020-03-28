@@ -5,9 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.week1.game.MenuScreens.MainMenuScreen;
-import com.week1.game.Settings.DefaultSettings;
-import com.week1.game.Settings.FileSettings;
-import com.week1.game.Settings.ISettings;
+import com.week1.game.Settings.Settings;
 import org.apache.commons.cli.*;
 
 public class GameController implements ApplicationListener {
@@ -16,8 +14,8 @@ public class GameController implements ApplicationListener {
     public static final float VIRTUAL_WIDTH = 800;
     public static final float VIRTUAL_HEIGHT = 800;
     private int logLevel = Gdx.app.LOG_INFO;
-    private static ISettings settings = new DefaultSettings();
-    public static ISettings getSettings() {
+    private static Settings settings;
+    public static Settings getSettings() {
         return settings;
     }
 
@@ -34,11 +32,10 @@ public class GameController implements ApplicationListener {
         }
 
         String configPath = commandLine.getOptionValue("config");
-        if (configPath != null) {
-            FileSettings.fromFile(configPath).ifPresent(settings -> {
-                this.settings = settings;
-            });
-        }
+        if (configPath == null) configPath = "default.json";
+        Settings.fromFile(configPath).ifPresent(settings -> {
+            this.settings = settings;
+        });
 
     }
 
