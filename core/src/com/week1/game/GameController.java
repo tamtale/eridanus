@@ -51,7 +51,7 @@ public class GameController implements ApplicationListener {
     public void setScreen(Screen screen) {
         if (this.currScreen != null) {
             this.currScreen.hide();
-            // this.currScreen.dispose();
+            this.currScreen.dispose();
         }
 
         this.currScreen = screen;

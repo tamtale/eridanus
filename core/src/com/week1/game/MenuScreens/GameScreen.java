@@ -206,7 +206,7 @@ public class GameScreen implements Screen {
 			multiplexer.addProcessor(new GameCameraController(renderer.getCamera(), renderer.getRenderConfig()));
 			Gdx.input.setInputProcessor(multiplexer);
 
-			// gameStage.dispose();
+			gameStage.dispose();
 			pressedStartbtn = true;
 		}
 		float time = Gdx.graphics.getDeltaTime();
