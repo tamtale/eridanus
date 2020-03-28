@@ -32,7 +32,7 @@ public class GameController implements ApplicationListener {
         }
 
         String configPath = commandLine.getOptionValue("config");
-        if (configPath == null) configPath = "default.json";
+        if (configPath == null) configPath = "config/default.json";
         Settings.fromFile(configPath).ifPresent(settings -> {
             this.settings = settings;
         });
