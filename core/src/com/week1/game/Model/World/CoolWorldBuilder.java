@@ -23,11 +23,14 @@ public class CoolWorldBuilder implements IWorldBuilder {
     }};
     
     private static Vector3[] crystalLocs = new Vector3[] { // Set the z coordinates to -1 (will be set during placement)
+            new Vector3(12, 45, -1),
+            new Vector3(45, 12, -1),
+            new Vector3(78, 45, -1),
+            new Vector3(45, 78, -1),
+            new Vector3(40, 40, -1),
+            new Vector3(40, 50, -1),
             new Vector3(50, 50, -1),
-            new Vector3(45, 45, -1),
-            new Vector3(30, 45, -1),
-            new Vector3(35, 55, -1),
-            new Vector3(45, 65, -1)
+            new Vector3(50, 40, -1)
     };
     
     @Override
