@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.week1.game.Model.Initializer;
 import com.week1.game.TowerBuilder.BlockType;
@@ -86,6 +87,20 @@ public interface Block {
         };
         
         public static TerrainBlock CRYSTAL = new TerrainBlock(Color.BLACK, 1f) {
+            {
+                String crystalName = "crystals/blueCrystal.g3db";
+                Initializer.assetManager.load(crystalName, Model.class);
+                Initializer.assetManager.finishLoading();
+                this.model = Initializer.assetManager.get(crystalName, Model.class);
+                
+                // Adjust the model to fit nicely into the blocky world
+                for (Node node : this.model.nodes) {
+                    node.scale.set(0.25f,0.25f,0.25f);                   
+                    node.translation.set(0f, 0f, -0.5f);
+                }
+                this.model.calculateTransforms();
+            }
+            
             @Override
             public Optional<ModelInstance> modelInstance(float x, float y, float z) {
                 ModelInstance instance = new ModelInstance(model);

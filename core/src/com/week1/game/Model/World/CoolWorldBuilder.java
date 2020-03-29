@@ -215,6 +215,7 @@ public class CoolWorldBuilder implements IWorldBuilder {
                     blocks[(int)desiredLoc.x][(int)desiredLoc.y][z] = Block.TerrainBlock.CRYSTAL;
                     crystalLocs[crystalNum].z = z; // record the z coordinate of the crystal (previously unknown)
                     placedCrystals++;
+                    System.out.println("Placing crystal at: " + z);
                     break;
                 }
             }
