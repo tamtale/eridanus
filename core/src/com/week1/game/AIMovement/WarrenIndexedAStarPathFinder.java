@@ -185,7 +185,8 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
 
             nodeRecord.costSoFar = nodeCost;
             nodeRecord.connection = connection;
-            this.addToOpenList(nodeRecord, nodeCost + nodeHeuristic);
+            if (!this.addToOpenList(nodeRecord, nodeCost + nodeHeuristic))
+                return false;
         }
         return true;
     }
@@ -208,14 +209,20 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
         outPath.reverse();
     }
 
-    protected void addToOpenList(WarrenIndexedAStarPathFinder.NodeRecord<N> nodeRecord, float estimatedTotalCost) {
+    protected boolean addToOpenList(WarrenIndexedAStarPathFinder.NodeRecord<N> nodeRecord, float estimatedTotalCost) {
+        if (nodeRecord == null){
+            return false;
+        }
+        if (openList == null){
+            return false;
+        }
         this.openList.add(nodeRecord, estimatedTotalCost);
         nodeRecord.category = 1;
         if (this.metrics != null) {
             ++this.metrics.openListAdditions;
             this.metrics.openListPeak = Math.max(this.metrics.openListPeak, this.openList.size);
         }
-
+        return true;
     }
 
     protected WarrenIndexedAStarPathFinder.NodeRecord<N> getNodeRecord(N node) {

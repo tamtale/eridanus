@@ -16,6 +16,7 @@ import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Renderer.TextureUtils;
+import com.week1.game.Settings.Settings;
 
 public class ClickOracle extends InputAdapter {
 
@@ -29,6 +30,7 @@ public class ClickOracle extends InputAdapter {
     private Array<Unit> multiSelected = new Array<>();
 
     private RenderConfig renderConfig;
+    private Settings settings;
 
     private Vector3 selectionLocationStart = new Vector3();
     private Vector3 selectionLocationEnd = new Vector3();
@@ -64,9 +66,10 @@ public class ClickOracle extends InputAdapter {
 
     private SpawnInfo.SpawnType spawnType;
 
-    public ClickOracle(IClickOracleAdapter adapter, RenderConfig renderConfig) {
+    public ClickOracle(IClickOracleAdapter adapter, RenderConfig renderConfig, Settings settings) {
         this.adapter = adapter;
         this.renderConfig = renderConfig;
+        this.settings = settings;
     }
 
     @Override
@@ -125,8 +128,7 @@ public class ClickOracle extends InputAdapter {
         setPassiveClickable(adapter.selectClickable(screenX, screenY, touchPos));
 
         // If the mouse is on the edge of the screen, translate the camera.
-        // TODO use a flag to check a setting.
-        if (false) {
+        if (settings.getEdgePan()) {
             if (screenX < SCREEN_THRESHOLD) {
                 panLeft.execute();
             } else if (screenX > Gdx.graphics.getWidth() - SCREEN_THRESHOLD) {
