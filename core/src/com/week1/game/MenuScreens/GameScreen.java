@@ -196,7 +196,6 @@ public class GameScreen implements Screen {
 		for (int i = 0; i < infoList.size(); i++) {
 			colorMap.put(i, infoList.get(i).getColor());
 		}
-		System.out.println(colorMap);
 		Unit.setColorMapping(colorMap);
 	}
 
