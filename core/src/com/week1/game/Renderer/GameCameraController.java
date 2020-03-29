@@ -195,13 +195,15 @@ public class GameCameraController extends GestureDetector {
 
 	@Override
 	public boolean touchDragged (int screenX, int screenY, int pointer) {
-		boolean result = super.touchDragged(screenX, screenY, pointer);
-		if (result || this.button < 0) return result;
-		final float deltaX = (screenX - startX) / Gdx.graphics.getWidth();
-		final float deltaY = (startY - screenY) / Gdx.graphics.getHeight();
-		startX = screenX;
-		startY = screenY;
-		return process(deltaX, deltaY, button);
+//		boolean result = super.touchDragged(screenX, screenY, pointer);
+//		if (result || this.button < 0) return result;
+//		final float deltaX = (screenX - startX) / Gdx.graphics.getWidth();
+//		final float deltaY = (startY - screenY) / Gdx.graphics.getHeight();
+//		startX = screenX;
+//		startY = screenY;
+//		return process(deltaX, deltaY, button);
+		// TODO: This stuff causes the screen to pan on rightclick, which was undesired. Don't know if it's needed for anything else
+		return true;
 	}
 
 	@Override
