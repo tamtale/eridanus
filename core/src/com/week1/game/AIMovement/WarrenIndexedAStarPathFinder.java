@@ -17,10 +17,12 @@ import com.badlogic.gdx.utils.BinaryHeap;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.BinaryHeap.Node;
 
+import java.util.Arrays;
+
 public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
     IndexedGraph<N> graph;
     WarrenIndexedAStarPathFinder.NodeRecord<N>[] nodeRecords;
-    BinaryHeap<WarrenIndexedAStarPathFinder.NodeRecord<N>> openList;
+    WarrenBinaryHeap<WarrenIndexedAStarPathFinder.NodeRecord<N>> openList;
     WarrenIndexedAStarPathFinder.NodeRecord<N> current;
     public WarrenIndexedAStarPathFinder.Metrics metrics;
     private int searchId;
@@ -29,17 +31,22 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
     private static final int CLOSED = 2;
 
     public WarrenIndexedAStarPathFinder(IndexedGraph<N> graph) {
-        this(graph, false);
+        this(graph, true);
     }
 
     public WarrenIndexedAStarPathFinder(IndexedGraph<N> graph, boolean calculateMetrics) {
         this.graph = graph;
-        this.nodeRecords = (WarrenIndexedAStarPathFinder.NodeRecord[])(new WarrenIndexedAStarPathFinder.NodeRecord[graph.getNodeCount()]);
-        this.openList = new BinaryHeap();
+        this.nodeRecords = (WarrenIndexedAStarPathFinder.NodeRecord[])(new WarrenIndexedAStarPathFinder.NodeRecord[2 * graph.getNodeCount()]);
+        this.openList = new WarrenBinaryHeap(16, false);
         if (calculateMetrics) {
             this.metrics = new WarrenIndexedAStarPathFinder.Metrics();
         }
 
+    }
+
+    public void reset(){
+        Arrays.fill(nodeRecords, null);
+        this.openList = new WarrenBinaryHeap<>();
     }
 
     public boolean searchConnectionPath(N startNode, N endNode, Heuristic<N> heuristic, GraphPath<Connection<N>> outPath) {
@@ -71,11 +78,13 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
                 Gdx.app.error("AStar - wab2", "openList is null");
                 return false;
             }
-            NodeRecord<N> next = this.openList.pop();
+            NodeRecord<N> next = this.openList.peek();
             if (next == null) {
                 Gdx.app.error("AStar - wab2", "Next is null");
+                this.openList.pop();
                 return false;
             }
+            this.openList.pop();
             this.current = next;
             this.current.category = 2;
             if (this.current.node.toString().equals(endNode.toString())) {
@@ -176,8 +185,9 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
                 if (nodeRecord.costSoFar <= nodeCost) {
                     continue;
                 }
-
-                this.openList.remove(nodeRecord);
+                if (this.openList.contains(nodeRecord, true)) {
+                    this.openList.remove(nodeRecord);
+                }
                 nodeHeuristic = nodeRecord.getEstimatedTotalCost() - nodeRecord.costSoFar;
             } else {
                 nodeHeuristic = heuristic.estimate(node, endNode);
@@ -211,14 +221,19 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
 
     protected boolean addToOpenList(WarrenIndexedAStarPathFinder.NodeRecord<N> nodeRecord, float estimatedTotalCost) {
         if (nodeRecord == null){
+            Gdx.app.error("AStar - wab2", "node record Null ");
             return false;
         }
         if (openList == null){
+            Gdx.app.error("AStar - wab2", "openList null");
             return false;
         }
+//        System.out.println(openList);
+
         this.openList.add(nodeRecord, estimatedTotalCost);
         nodeRecord.category = 1;
         if (this.metrics != null) {
+
             ++this.metrics.openListAdditions;
             this.metrics.openListPeak = Math.max(this.metrics.openListPeak, this.openList.size);
         }
@@ -228,6 +243,7 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
     protected WarrenIndexedAStarPathFinder.NodeRecord<N> getNodeRecord(N node) {
         int index = this.graph.getIndex(node);
         if (index >= nodeRecords.length) {
+            Gdx.app.error("AStar - wab2", "index larger than nodeLength");
             return null;
         }
         WarrenIndexedAStarPathFinder.NodeRecord<N> nr = this.nodeRecords[index];
@@ -261,7 +277,7 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
         }
     }
 
-    static class NodeRecord<N> extends Node {
+    static class NodeRecord<N> extends WarrenBinaryHeap.Node {
         N node;
         Connection<N> connection;
         float costSoFar;
