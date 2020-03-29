@@ -248,6 +248,7 @@ public class ConnectionScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        connectionStage.act();
         connectionStage.draw();
     }
 
