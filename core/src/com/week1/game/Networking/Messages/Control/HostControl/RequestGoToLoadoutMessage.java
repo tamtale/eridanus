@@ -22,7 +22,7 @@ public class RequestGoToLoadoutMessage extends HostControlMessage {
     @Override
     public void updateHost(Host h, InetAddress addr, int port) {
         for (Player player : h.registry.values()) {
-            h.sendMessage(MessageFormatter.packageMessage(new GoToLoadoutMessage(-1)), player);
+            h.sendMessage(MessageFormatter.packageMessage(new GoToLoadoutMessage(-1, h.getPlayerInfoList())), player);
         }
     }
 }

@@ -2,13 +2,11 @@ package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.MenuScreens.ScreenManager;
+import com.week1.game.Model.PlayerInfo;
 import com.week1.game.Model.TowerLite;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.Control.ClientControl.ClientControlMessage;
-import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToGameMessage;
-import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToLoadoutMessage;
-import com.week1.game.Networking.Messages.Control.HostControl.RequestRestartMessage;
-import com.week1.game.Networking.Messages.Control.HostControl.SubmitLoadoutMessage;
+import com.week1.game.Networking.Messages.Control.HostControl.*;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 
@@ -34,6 +32,7 @@ public class Client {
     private INetworkClientToEngineAdapter adapter;
     
     private int playerId = -1;
+    private List<PlayerInfo> infoList; // info of all the players in the game.
     private ScreenManager screenManager;
     
     public Client(String hostIpAddr, int hostPort, ScreenManager screenManager) throws IOException {
@@ -128,4 +127,15 @@ public class Client {
         return screenManager;
     }
 
+    public void sendPlayerInfo(PlayerInfo info) {
+        sendStringMessage(MessageFormatter.packageMessage(new SubmitPlayerInfo(info)));
+    }
+
+    public List<PlayerInfo> getInfoList() {
+        return infoList;
+    }
+
+    public void setInfoList(List<PlayerInfo> infoList) {
+        this.infoList = infoList;
+    }
 }
