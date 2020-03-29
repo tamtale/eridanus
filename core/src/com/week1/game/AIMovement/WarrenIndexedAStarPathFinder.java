@@ -21,6 +21,7 @@ import java.util.Arrays;
 
 public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
     IndexedGraph<N> graph;
+
     WarrenIndexedAStarPathFinder.NodeRecord<N>[] nodeRecords;
     WarrenBinaryHeap<WarrenIndexedAStarPathFinder.NodeRecord<N>> openList;
     WarrenIndexedAStarPathFinder.NodeRecord<N> current;
