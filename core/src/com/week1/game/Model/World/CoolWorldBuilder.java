@@ -2,6 +2,7 @@ package com.week1.game.Model.World;
 
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Pair;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -32,6 +33,10 @@ public class CoolWorldBuilder implements IWorldBuilder {
             new Vector3(50, 50, -1),
             new Vector3(50, 40, -1)
     };
+    
+    private static List<Pair<Vector2, Vector2>> crystalSpawnAreas = new ArrayList<Pair<Vector2, Vector2>>() {{
+        this.add(new Pair<>(new Vector2(30,30), new Vector2(60, 60)));
+    }};
     
     @Override
     public Block[][][] terrain() {
@@ -215,7 +220,6 @@ public class CoolWorldBuilder implements IWorldBuilder {
                     blocks[(int)desiredLoc.x][(int)desiredLoc.y][z] = Block.TerrainBlock.CRYSTAL;
                     crystalLocs[crystalNum].z = z; // record the z coordinate of the crystal (previously unknown)
                     placedCrystals++;
-                    System.out.println("Placing crystal at: " + z);
                     break;
                 }
             }
@@ -248,6 +252,16 @@ public class CoolWorldBuilder implements IWorldBuilder {
     @Override
     public Vector3[] crystalLocations() {
         return crystalLocs;
+    }
+    
+    @Override
+    public Vector2 getNextCrystalSpawn() {
+        Pair<Vector2, Vector2> spawnArea = crystalSpawnAreas.get(random.nextInt(crystalSpawnAreas.size()));
+        
+        int x = random.nextInt((int)(spawnArea.value.x - spawnArea.key.x)) + (int)spawnArea.key.x;
+        int y = random.nextInt((int)(spawnArea.value.y - spawnArea.key.y)) + (int)spawnArea.key.y;
+        
+        return new Vector2(x, y);
     }
 
     @Override

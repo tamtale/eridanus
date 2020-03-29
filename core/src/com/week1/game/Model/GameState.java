@@ -307,7 +307,7 @@ public class GameState implements GameRenderable {
             List<BlockSpec> blockSpecs = t.getLayout();
             for(int k = 0; k < blockSpecs.size(); k++) {
                 BlockSpec bs = blockSpecs.get(k);
-                getGameState().world.setBlock(
+                world.setBlock(
                         (int)(t.x + bs.getX()),
                         (int)(t.y + bs.getZ()),
                         (int)(t.z + bs.getY()),
@@ -339,7 +339,7 @@ public class GameState implements GameRenderable {
             // Replace the crystal with air
             Vector3 pos = new Vector3();
             crystal.getPos(pos);
-            getGameState().world.setBlock(
+            world.setBlock(
                     (int)pos.x,
                     (int)pos.y,
                     (int)pos.z,
@@ -349,6 +349,19 @@ public class GameState implements GameRenderable {
             // Remove it from the GameState
             crystals.removeValue(crystal, true);
             damageables.removeValue(crystal, true);
+            
+            // The crystal respawns somewhere else!
+            Vector2 nextSpawn = worldBuilder.getNextCrystalSpawn();
+            if (nextSpawn != null) {
+                for (int z = 0; z < world.getWorldDimensions()[2]; z++) {
+                    // Place the crystal in the first available airblock
+                    if (world.getBlock((int)nextSpawn.x, (int)nextSpawn.y, z) == Block.TerrainBlock.AIR) {
+                        System.out.println("New crystal at: " + nextSpawn.x + nextSpawn.y + z);
+                        addCrystal(new Crystal(nextSpawn.x, nextSpawn.y, z));
+                        break;
+                    }
+                }
+            }
             return null;
         }
     };

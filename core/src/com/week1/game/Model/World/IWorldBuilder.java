@@ -1,6 +1,10 @@
 package com.week1.game.Model.World;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.week1.game.Pair;
+
+import java.util.List;
 
 public interface IWorldBuilder {
     /**
@@ -17,6 +21,13 @@ public interface IWorldBuilder {
      * Locations of crystals on the map.
      */
     Vector3[] crystalLocations();
+
+    /**
+     * Gives the x and y coords of the next crystal spawn (z must be computed from the GameWorld)
+     */
+    default Vector2 getNextCrystalSpawn() {
+        return null;
+    }
 
     void addSeed(long mapSeed);
 }

@@ -82,7 +82,7 @@ public class Crystal extends Damageable {
 
 
     private static final float maxHealth = 2000;
-    private float currentHealth = 2000;
+    private float currentHealth = 100;
     
     @Override
     public float getCurrentHealth() {
@@ -104,10 +104,5 @@ public class Crystal extends Damageable {
             return false;
         }
     }
-//    @Override
-//    public void drawHealthBar(RenderConfig config) {
-//        // Don't draw a health bar
-//        System.out.println("Drawing crystal healthbar");
-//    }
 }
 
