@@ -66,7 +66,7 @@ public class Tower extends Building implements Damaging {
     public double getHp() { return hp; }
 
     @Override
-    public boolean takeDamage(double dmg, Damage.type damageType) {
+    public boolean takeDamage(Damaging attacker, double dmg, Damage.type damageType) {
         this.hp -= dmg;
         if (this.hp <= 0) {
             return true;

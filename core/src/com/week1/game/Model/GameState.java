@@ -25,6 +25,7 @@ import static com.week1.game.Model.StatsConfig.*;
 
 public class GameState implements GameRenderable {
     private final Unit2StateAdapter u2s;
+    private final CrystalToStateAdapter c2s;
     private GameGraph graph;
 
     private Array<Clickable> clickables = new Array<>();
@@ -63,6 +64,12 @@ public class GameState implements GameRenderable {
                 return world.getHeight(i, j);
             }
         };
+        this.c2s = new CrystalToStateAdapter() {
+            @Override
+            public void rewardPlayer(int playerId, double amt) {
+                rewardPlayerById(playerId, amt);
+            }
+        };
         this.postInit = postInit;
     }
 
@@ -87,7 +94,7 @@ public class GameState implements GameRenderable {
             world.getHeightMap();
             graph = world.buildGraph();
             for (Vector3 loc: worldBuilder.crystalLocations()) {
-                crystals.add(new Crystal(loc.x, loc.y));
+                addCrystal(new Crystal(loc.x, loc.y, loc.z));
             }
             graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
             
@@ -133,6 +140,12 @@ public class GameState implements GameRenderable {
         for (PlayerStat player : playerStats) {
             player.regenMana(amount);
         }
+    }
+    
+    public void addCrystal(Crystal c) {
+        crystals.add(c);
+        damageables.add(c);
+        c.setCrystalToStateAdapter(c2s);
     }
 
     public void addUnit(Unit u){
@@ -248,7 +261,7 @@ public class GameState implements GameRenderable {
                         !victim.isDead() && // the victim is not already dead
                         attacker.getPlayerId() != victim.getPlayerId()) {
 
-                    if (victim.takeDamage(attacker.getDamage() * delta)) {
+                    if (victim.takeDamage(attacker, attacker.getDamage() * delta)) {
                         deadEntities.add(new Pair<>(attacker, victim));
                     }
                     // the attacker can only damage one opponent per attack cycle
@@ -264,10 +277,14 @@ public class GameState implements GameRenderable {
             Damageable deadEntity = deadPair.value;
 
             // Reward mana.
-            playerStats.get(attackingPlayerId).giveMana(deadEntity.getReward());
+            rewardPlayerById(attackingPlayerId, deadEntity.getReward());
             // Do other bookkeeping related to death.
             deadEntity.accept(deathVisitor);
         }
+    }
+    
+    public void rewardPlayerById(int playerId, double amount) {
+        playerStats.get(playerId).giveMana(amount);
     }
 
     public void doTowerSpecialAbilities(int communicationTurn) {
@@ -287,7 +304,6 @@ public class GameState implements GameRenderable {
         @Override
         public Void acceptTower(Tower t) {
             // Remove the tower from the map
-            System.out.println("Tower has died.");
             List<BlockSpec> blockSpecs = t.getLayout();
             for(int k = 0; k < blockSpecs.size(); k++) {
                 BlockSpec bs = blockSpecs.get(k);
@@ -320,7 +336,19 @@ public class GameState implements GameRenderable {
 
         @Override
         public Void acceptCrystal(Crystal crystal) {
-            // crystals don't die :^)
+            // Replace the crystal with air
+            Vector3 pos = new Vector3();
+            crystal.getPos(pos);
+            getGameState().world.setBlock(
+                    (int)pos.x,
+                    (int)pos.y,
+                    (int)pos.z,
+                    Block.TerrainBlock.AIR
+            );
+            
+            // Remove it from the GameState
+            crystals.removeValue(crystal, true);
+            damageables.removeValue(crystal, true);
             return null;
         }
     };

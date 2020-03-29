@@ -6,7 +6,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
+import com.week1.game.Model.CrystalToStateAdapter;
 import com.week1.game.Model.Damage;
+import com.week1.game.Model.GameState;
 import com.week1.game.Renderer.RenderConfig;
 
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
@@ -21,9 +23,14 @@ public class Crystal extends Damageable {
     private static Texture selectedSkin = makeTexture(SIZE, SIZE, Color.CYAN);
     private Vector3 position = new Vector3();
     
+    private CrystalToStateAdapter adapter;
 
-    public Crystal(float x, float y) {
-        position.set(x, y, 0);
+    public Crystal(float x, float y, float z) {
+        position.set(x, y, z);
+    }
+    
+    public void setCrystalToStateAdapter(CrystalToStateAdapter adapter) {
+        this.adapter = adapter;
     }
 
     public void draw(Batch batch) {
@@ -32,7 +39,7 @@ public class Crystal extends Damageable {
 
     @Override
     public float getReward() {
-        return 1;
+        return 100;
     }
 
     @Override
@@ -44,10 +51,6 @@ public class Crystal extends Damageable {
         return selectedSkin;
     }
 
-    @Override
-    public boolean takeDamage(double dmg, Damage.type damageType) {
-        return true;
-    }
 
     @Override
     public float getX() {
@@ -62,7 +65,7 @@ public class Crystal extends Damageable {
 
 
     public boolean isDead() {
-        return false;
+        return this.currentHealth <= 0;
     }
 
     @Override
@@ -72,24 +75,39 @@ public class Crystal extends Damageable {
 
     @Override
     public void getPos(Vector3 pos) {
+        System.out.println("Crystal position: " + position);
         pos.set(position);
 
     }
 
 
+    private static final float maxHealth = 2000;
+    private float currentHealth = 2000;
+    
     @Override
     public float getCurrentHealth() {
-        // TODO
-        return 0;
+        return currentHealth;
     }
     @Override
     public float getMaxHealth() {
-        // TODO
-        return 100;
+        return maxHealth;
     }
+
+
     @Override
-    public void drawHealthBar(RenderConfig config) {
-        // Don't draw a health bar
+    public boolean takeDamage(Damaging attacker, double dmg, Damage.type damageType) {
+        this.currentHealth -= dmg;
+        adapter.rewardPlayer(attacker.getPlayerId(), dmg);
+        if (this.currentHealth <= 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
+//    @Override
+//    public void drawHealthBar(RenderConfig config) {
+//        // Don't draw a health bar
+//        System.out.println("Drawing crystal healthbar");
+//    }
 }
 

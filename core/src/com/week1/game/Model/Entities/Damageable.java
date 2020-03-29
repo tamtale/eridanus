@@ -29,15 +29,15 @@ public abstract class Damageable {
     }
 
     /* This is a short-hand version for taking normal damage as default */
-    public boolean takeDamage(double dmg) {
-        return takeDamage(dmg, Damage.type.BASIC);
+    public boolean takeDamage(Damaging attacker, double dmg) {
+        return takeDamage(attacker, dmg, Damage.type.BASIC);
     }
 
     /*
      * This function must be implemented. It returns false if the entity was not destroyed
      * and returns true if the entity was destroyed
      */
-    public abstract boolean takeDamage(double dmg, Damage.type damageType);
+    public abstract boolean takeDamage(Damaging attacker, double dmg, Damage.type damageType);
 
     public abstract boolean isDead();
     public abstract int getPlayerId();
