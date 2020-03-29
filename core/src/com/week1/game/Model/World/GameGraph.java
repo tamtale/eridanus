@@ -13,7 +13,7 @@ public class GameGraph implements IndexedGraph<Vector2> {
 
     private int nodeCount;
     private GameHeuristic heuristic = new GameHeuristic();
-    private PathFinder<Vector2> pathFinder;
+    private WarrenIndexedAStarPathFinder<Vector2> pathFinder;
     Array<Vector2> Vector2s = new Array<>();
     Border[][][][] borders;
     private Array<Connection<Vector2>>[][] edges;
@@ -85,7 +85,7 @@ public class GameGraph implements IndexedGraph<Vector2> {
         return pathFinder;
     }
 
-    public void setPathFinder(PathFinder<Vector2> pathFinder) {
+    public void setPathFinder(WarrenIndexedAStarPathFinder<Vector2> pathFinder) {
         this.pathFinder = pathFinder;
     }
 
@@ -117,5 +117,9 @@ public class GameGraph implements IndexedGraph<Vector2> {
         if (i >= 0 && i <= 2 && j >= 0 && j <= 2){
             borders[fromX][fromY][i][j] = null;
         }
+    }
+
+    public void aStarReset() {
+        this.pathFinder.reset();
     }
 }
