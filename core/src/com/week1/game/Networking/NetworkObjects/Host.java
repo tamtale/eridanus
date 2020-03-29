@@ -1,21 +1,20 @@
 package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.Gdx;
+import com.week1.game.Model.PlayerInfo;
 import com.week1.game.Model.TowerLite;
 import com.week1.game.Networking.Messages.Control.ClientControl.JoinedPlayersMessage;
 import com.week1.game.Networking.Messages.Control.ClientControl.PlayerIdMessage;
 import com.week1.game.Networking.Messages.Control.HostControl.HostControlMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.Update;
+import com.week1.game.Pair;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.week1.game.Networking.Messages.MessageFormatter.parseHostControlMessage;
@@ -32,6 +31,7 @@ public class Host {
     public ServerSocket serverSocket;
     private int nextPlayerId = 0;
 
+    List<String> joinedPlayers = Collections.synchronizedList(new ArrayList<>());
     public Map<Integer, List<TowerLite>> towerDetails = new HashMap<>(); // first index is implicitly the player id
     public Map<InetAddress, Player> registry = new HashMap<>();
 
@@ -73,12 +73,6 @@ public class Host {
                     // Tell them their playerID
                     String playerIdMessage = MessageFormatter.packageMessage(new PlayerIdMessage(player.playerId));
                     sendMessage(playerIdMessage, player);
-                    
-                    // Tell everyone that someone has joined the game
-                    List<String> joinedPlayers = new ArrayList<>();
-                    registry.forEach((addr, plyr) -> joinedPlayers.add(plyr.playerId + ": " + addr.getHostAddress()));
-                    java.util.Collections.sort(joinedPlayers);
-                    broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new JoinedPlayersMessage(-1, joinedPlayers)));
 
                     // spawn a thread to listen on this socket
                     new Thread(() -> {
@@ -165,5 +159,26 @@ public class Host {
 
     public int getNextPlayerId() {
         return nextPlayerId;
+    }
+
+    public void setPlayerInfo(InetAddress address, PlayerInfo info) {
+        this.registry.get(address).setPlayerInfo(info);
+        int id = this.registry.get(address).playerId;
+        // Tell everyone that someone has joined the game
+
+        joinedPlayers.clear();
+        registry.forEach((addr, plyr) -> joinedPlayers.add(plyr.playerId + ": " + plyr.getName()));
+        java.util.Collections.sort(joinedPlayers);
+        Gdx.app.debug("pjb3", "broadcasting" + joinedPlayers);
+        broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new JoinedPlayersMessage(-1, joinedPlayers)));
+    }
+
+    public List<PlayerInfo> getPlayerInfoList() {
+        List<Pair<Integer, PlayerInfo>> nameList = new ArrayList<>();
+        List<PlayerInfo> infoList = new ArrayList<>();
+        registry.forEach((addr, plyr) -> nameList.add(new Pair<>(plyr.playerId, plyr.getInfo())));
+        nameList.sort(Comparator.comparingInt(pair -> pair.key));
+        nameList.forEach( pair -> infoList.add(pair.value));
+        return infoList;
     }
 }

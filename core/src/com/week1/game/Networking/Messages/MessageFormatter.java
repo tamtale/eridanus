@@ -25,7 +25,7 @@ public class MessageFormatter {
         update.messages.forEach((msg) -> {
             GameMessage parsedMsg = parseMessage(msg);
             if (parsedMsg == null) {
-                // Gdx.app.error(TAG, "The following message had an unrecognized MessageType: " + msg);
+                 Gdx.app.error(TAG, "The following message had an unrecognized MessageType: " + msg);
             } else {
                 msgList.add(parsedMsg);
             }
@@ -72,6 +72,8 @@ public class MessageFormatter {
                 return g.fromJson(jsonString, RequestRestartMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.SUBMITLOADOUT) {
                 return g.fromJson(jsonString, SubmitLoadoutMessage.class);
+            } else if (parsedMsg.messageTypeID == MessageType.SUBMITPLAYERINFO) {
+                return g.fromJson(jsonString, SubmitPlayerInfo.class);
             }
         }
 

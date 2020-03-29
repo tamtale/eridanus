@@ -21,6 +21,7 @@ public enum MessageType {
     
     // Host Control Messages
     SUBMITLOADOUT,
+    SUBMITPLAYERINFO,
     REQUESTGOTOGAME,
     REQUESTGOTOLOADOUT,
     REQUESTRESTART,
