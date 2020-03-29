@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -23,7 +24,9 @@ import com.week1.game.Renderer.IRendererAdapter;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Renderer.Renderer;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -47,6 +50,8 @@ public class GameScreen implements Screen {
 		util = new InfoUtil(true);
 		// Finish setting up the client.
 		this.networkClient = givenNetworkClient;
+
+		setColorMapping(givenNetworkClient.getInfoList());
 
 		engine = new GameEngine(new IEngineAdapter() {
 			@Override
@@ -184,6 +189,15 @@ public class GameScreen implements Screen {
 		
 		renderer.create();
 
+	}
+
+	public static void setColorMapping(List<PlayerInfo> infoList) {
+		Map<Integer, Color> colorMap = new HashMap<>();
+		for (int i = 0; i < infoList.size(); i++) {
+			colorMap.put(i, infoList.get(i).getColor());
+		}
+		System.out.println(colorMap);
+		Unit.setColorMapping(colorMap);
 	}
 
 	@Override

@@ -188,10 +188,8 @@ public class LoadoutScreen implements Screen {
             }
         });
 
-        createNewGame(); // MAKE the game but dont start it yet.
+        createNewGame(); // MAKE the game but don't start it yet.
         Gdx.input.setInputProcessor(loadoutStage);
- 
- 
     }
     private long parseMapSeed(String mapSeed) {
         try {
