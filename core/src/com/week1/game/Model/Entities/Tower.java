@@ -242,8 +242,7 @@ public class Tower extends Building implements Damaging {
                     final float finalMoveX = moveX;
                     final float finalMoveY = moveY;
                     Gdx.app.postRunnable(() -> {
-                        Unit unit = new Unit(finalMinionX, finalMinionY, finalMinionZ, tempMinion1Health, playerID);
-                        state.addUnit(unit);
+                        Unit unit = state.addUnit(finalMinionX, finalMinionY, finalMinionZ, (float) tempMinion1Health, playerID);
                         state.moveMinion(finalMoveX,finalMoveY, unit);
                     });
                 }

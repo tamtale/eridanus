@@ -9,7 +9,12 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
+import com.week1.game.Model.Components.PathComponent;
+import com.week1.game.Model.Components.PositionComponent;
+import com.week1.game.Model.Components.VelocityComponent;
 import com.week1.game.Model.Entities.*;
+import com.week1.game.Model.Systems.MovementSystem;
+import com.week1.game.Model.Systems.PathfindingSystem;
 import com.week1.game.Model.World.Block;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
@@ -21,6 +26,7 @@ import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
 import java.util.List;
 
+import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
 import static com.week1.game.Model.StatsConfig.*;
 
 public class GameState implements GameRenderable {
@@ -35,8 +41,11 @@ public class GameState implements GameRenderable {
     private IntMap<PlayerBase> playerBases = new IntMap<>();
     private Array<PlayerStat> playerStats = new Array<>();
     private Array<Damageable> damageables = new Array<>();
+    private Array<Damaging> damagings = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
+    private MovementSystem movementSystem = new MovementSystem();
+    private PathfindingSystem pathfindingSystem;
     
     private TowerLoadouts towerLoadouts;
     /*
@@ -63,7 +72,15 @@ public class GameState implements GameRenderable {
                 return world.getHeight(i, j);
             }
         };
+        this.pathfindingSystem = new PathfindingSystem(u2s);
         this.postInit = postInit;
+    }
+    public void synchronousUpdateState(int communicationTurn) {
+        updateMana(1);
+        // moveUnits(THRESHOLD);
+        pathfindingSystem.update(THRESHOLD);
+        movementSystem.update(THRESHOLD);
+        doTowerSpecialAbilities(communicationTurn);
     }
 
     public PlayerBase getPlayerBase(int playerId) {
@@ -135,18 +152,27 @@ public class GameState implements GameRenderable {
         }
     }
 
-    public void addUnit(Unit u){
+    public Unit addUnit(float x, float y, float z, float tempHealth, int playerID){
+        PositionComponent pos = new PositionComponent(x, y, z);
+        VelocityComponent vel = new VelocityComponent((float) Unit.speed, x, y, z);
+        PathComponent pathComponent = new PathComponent();
+        Unit u = new Unit(pos, vel, pathComponent, tempHealth, playerID);
         u.ID = minionCount;
         units.add(u);
         u.setUnit2StateAdapter(u2s);
+        movementSystem.add(pos, vel);
+        pathfindingSystem.add(pos, vel, pathComponent);
         clickables.add(u);
         damageables.add(u);
+        damagings.add(u);
         minionCount += 1;
+        return u;
     }
 
     public void addTower(Tower t, int playerID) {
         towers.add(t);
         damageables.add(t);
+        damagings.add(t);
         addBuilding(t, playerID);
     }
 
@@ -158,7 +184,7 @@ public class GameState implements GameRenderable {
 
     public void addBuilding(Tower t, int playerID) {
         List<BlockSpec> blockSpecs = t.getLayout();
-        for(int k = 0; k < blockSpecs.size(); k++) {
+        for (int k = 0; k < blockSpecs.size(); k++) {
             BlockSpec bs = blockSpecs.get(k);
             this.world.setBlock(
                     (int)(t.x + bs.getX()),
@@ -220,55 +246,6 @@ public class GameState implements GameRenderable {
     }
 
     private Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
-    private Array<Damaging> everythingDamaging = new Array<>();
-    private Array<Damageable> everythingDamageable = new Array<>();
-    public void dealDamage(float delta) {
-
-        everythingDamaging.clear();
-        everythingDamaging.addAll(units);
-        everythingDamaging.addAll(towers);
-
-        everythingDamageable.clear();
-        everythingDamageable.addAll(units);
-        everythingDamageable.addAll(towers);
-        playerBases.values().forEach(everythingDamageable::add);
-        everythingDamageable.addAll();
-        everythingDamageable.addAll(crystals);
-
-        deadEntities.clear();
-        // Loop through all entities (units and towers) that can attack
-        for (int attackerIdx = 0; attackerIdx < everythingDamaging.size; attackerIdx++) {
-            Damaging attacker = everythingDamaging.get(attackerIdx);
-
-            // Loop though all entities that can be damaged (units, towers, and bases)
-            for (int victimIdx = 0; victimIdx < everythingDamageable.size; victimIdx++) {
-                Damageable victim = everythingDamageable.get(victimIdx);
-
-                if (attacker.hasTargetInRange(victim) && // victim is within range
-                        !victim.isDead() && // the victim is not already dead
-                        attacker.getPlayerId() != victim.getPlayerId()) {
-
-                    if (victim.takeDamage(attacker.getDamage() * delta)) {
-                        deadEntities.add(new Pair<>(attacker, victim));
-                    }
-                    // the attacker can only damage one opponent per attack cycle
-                    break;
-                }
-            }
-        }
-
-        // get rid of all the dead entities and gives rewards
-        for (int deadIndex = 0; deadIndex < deadEntities.size; deadIndex++) {
-            Pair<Damaging, Damageable> deadPair = deadEntities.get(deadIndex);
-            int attackingPlayerId = deadPair.key.getPlayerId();
-            Damageable deadEntity = deadPair.value;
-
-            // Reward mana.
-            playerStats.get(attackingPlayerId).giveMana(deadEntity.getReward());
-            // Do other bookkeeping related to death.
-            deadEntity.accept(deathVisitor);
-        }
-    }
 
     public void doTowerSpecialAbilities(int communicationTurn) {
         for (int i = 0; i < towers.size; i++) {
@@ -277,53 +254,7 @@ public class GameState implements GameRenderable {
             t.doSpecialEffect(communicationTurn, this);
             
         }
-        
     }
-    
-    /**
-     * Visitor handling when a damageable is killed.
-     */
-    private Damageable.DamageableVisitor<Void> deathVisitor = new Damageable.DamageableVisitor<Void>() {
-        @Override
-        public Void acceptTower(Tower t) {
-            // Remove the tower from the map
-            System.out.println("Tower has died.");
-            List<BlockSpec> blockSpecs = t.getLayout();
-            for(int k = 0; k < blockSpecs.size(); k++) {
-                BlockSpec bs = blockSpecs.get(k);
-                getGameState().world.setBlock(
-                        (int)(t.x + bs.getX()),
-                        (int)(t.y + bs.getZ()),
-                        (int)(t.z + bs.getY()),
-                        Block.TerrainBlock.AIR);
-            }
-            
-            // Remove the tower from the game state
-            towers.removeValue(t, true);
-            damageables.removeValue(t, true);
-            return null;
-        }
-
-        @Override
-        public Void acceptUnit(Unit unit) {
-            units.removeValue(unit, true);
-            damageables.removeValue(unit, true);
-            clickables.removeValue(unit, true);
-            return null;
-        }
-
-        @Override
-        public Void acceptBase(PlayerBase base) {
-            playerBases.remove(base.getPlayerId());
-            return null;
-        }
-
-        @Override
-        public Void acceptCrystal(Crystal crystal) {
-            // crystals don't die :^)
-            return null;
-        }
-    };
 
     public boolean findNearbyStructure(float x, float y, float z, int playerId) {
         // Check if it is near the home base

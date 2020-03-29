@@ -51,9 +51,8 @@ public class CreateMinionMessage extends GameMessage {
         inputState.getPlayerStats(playerID).useMana(tempMinion1Cost);
 
         Gdx.app.postRunnable(() -> {
-            Unit unit = new Unit(x, y, z, tempMinion1Health, playerID);
             util.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
-            inputState.addUnit(unit);
+            inputState.addUnit(x, y, z, (float) tempMinion1Health, playerID);
         });
         return true;
     }

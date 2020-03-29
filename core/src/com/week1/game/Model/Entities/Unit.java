@@ -11,6 +11,9 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
+import com.week1.game.Model.Components.PathComponent;
+import com.week1.game.Model.Components.PositionComponent;
+import com.week1.game.Model.Components.VelocityComponent;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
 import com.week1.game.Model.Unit2StateAdapter;
@@ -25,20 +28,17 @@ import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 
 public class Unit extends Damageable implements Damaging, GameRenderable, Clickable {
+    private PositionComponent positionComponent;
+    private VelocityComponent velocityComponent;
+    private PathComponent pathComponent;
     private final int playerID;
-    public OutputPath path;
-    private Vector3 curNode;
-    private Vector3 lastNode;
     private float distance;
     private float distanceTraveled;
     Unit2StateAdapter unit2StateAdapter;
-    private Vector3 goal = new Vector3();
-    private boolean close;
     private boolean selected;
     private float blockSpeed;
     private int turn = 0;
     private double hp;
-    private Vector3 vel;
     private double maxHp;
     public int ID;
     public static double speed = 4;
@@ -46,9 +46,8 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     private static ModelBuilder BUILDER = new ModelBuilder();
     private Model model;
     private ModelInstance modelInstance;
-    private Vector3 position = new Vector3();
     private Vector3 displayPosition = new Vector3();
-    
+
     /*
      * Material to apply to a selected unit.
      */
@@ -70,16 +69,23 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
 
 
 
-    public Unit(float x, float y, float z, double hp, int playerID) {
-        this.position.set(x, y, z);
-        this.displayPosition.set(x, y, z);
+    public Unit(
+        PositionComponent positionComponent,
+        VelocityComponent velocityComponent,
+        PathComponent pathComponent,
+        double hp, int playerID
+    ) {
+        this.positionComponent = positionComponent;
+        this.velocityComponent = velocityComponent;
+        this.pathComponent = pathComponent;
+        this.displayPosition.set(positionComponent.position);
         this.playerID = playerID;
         this.hp = hp;
         this.maxHp = hp;
-        this.vel = new Vector3(0, 0, 0);
+        this.velocityComponent.velocity = new Vector3(0, 0, 0);
         this.model = modelMap.get(playerID);
         this.modelInstance = new ModelInstance(model);
-        modelInstance.transform.setTranslation(x, y, z);
+        modelInstance.transform.setTranslation(positionComponent.position);
         this.originalMaterial = model.materials.get(0);
     }
 
@@ -95,20 +101,10 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
         };
     }
 
-    public void draw(Batch batch, float delta, boolean showAttackRadius) {
-        if (delta == 0) {
-            // Sync the state of units by not projecting anything
-            displayPosition.set(position);
-        } else {
-            moveRender(delta);
-        }
-    }
-
     @Override
     public float getReward() {
         return 0;
     }
-
 
     @Override
     public <T> T accept(DamageableVisitor<T> visitor) {
@@ -116,17 +112,17 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     }
 
     public void step(float delta) {
-        if (path != null) {
-            if (path.getPath().size > 0) {
+        if (pathComponent.path != null) {
+            if (pathComponent.path.getPath().size > 0) {
                 if (distanceTraveled > distance) {
                     turn = 0;
-                    float dx = path.get(0).x - position.x;
-                    float dy = path.get(0).y - position.y;
-                    int height = unit2StateAdapter.getHeight((int) position.x, (int) position.y);
-                    int nxtHeight = unit2StateAdapter.getHeight((int) path.get(0).x, (int) path.get(0).y);
-                    this.blockSpeed = 1f/unit2StateAdapter.getBlock((int) position.x, (int) position.y,
+                    float dx = pathComponent.path.get(0).x - positionComponent.position.x;
+                    float dy = pathComponent.path.get(0).y - positionComponent.position.y;
+                    int height = unit2StateAdapter.getHeight((int) positionComponent.position.x, (int) positionComponent.position.y);
+                    int nxtHeight = unit2StateAdapter.getHeight((int) pathComponent.path.get(0).x, (int) pathComponent.path.get(0).y);
+                    this.blockSpeed = 1f/unit2StateAdapter.getBlock((int) positionComponent.position.x, (int) positionComponent.position.y,
                             height).getCost(); //TODO: 3D
-                    position.z = nxtHeight + 1;
+                    positionComponent.position.z = nxtHeight + 1;
                     this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
                     double angle = Math.atan(dy / dx);
                     if (dx < 0) {
@@ -134,33 +130,34 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
                     } else if (dy < 0) {
                         angle += 2 * Math.PI;
                     }
-                    vel.x = blockSpeed * (float) speed * (float) Math.cos(angle);
-                    vel.y = blockSpeed * (float) speed * (float) Math.sin(angle);
-                    path.removeIndex(0);
+                    velocityComponent.velocity.x = blockSpeed * (float) speed * (float) Math.cos(angle);
+                    velocityComponent.velocity.y = blockSpeed * (float) speed * (float) Math.sin(angle);
+                    pathComponent.path.removeIndex(0);
                     this.distanceTraveled = 0;
                 }
                 move(delta);
                 turn++;
             }
-            if (path.getPath().size <= 0) {
-                path = null;
-                vel.x = 0;
-                vel.y = 0;
+            if (pathComponent.path.getPath().size <= 0) {
+                pathComponent.path = null;
+                velocityComponent.velocity.x = 0;
+                velocityComponent.velocity.y = 0;
             }
         }
-        displayPosition.set(position); // Sync the unit's display to the next 'real' location
+        displayPosition.set(positionComponent.position); // Sync the unit's display to the next 'real' location
     }
 
     private void move(float delta) {
-        Gdx.app.debug("move", "moving:" + position);
-        position.set(position.x + (vel.x * delta), position.y + (vel.y * delta), position.z);
-        modelInstance.transform.setToTranslation(position);
-        this.distanceTraveled += Math.sqrt(Math.pow(vel.x * delta, 2) + Math.pow(vel.y * delta, 2));
+        Gdx.app.debug("move", "moving:" + positionComponent.position);
+        positionComponent.position.set(positionComponent.position.x + (velocityComponent.velocity.x * delta), positionComponent.position.y + (
+            velocityComponent.velocity.y * delta), positionComponent.position.z);
+        modelInstance.transform.setToTranslation(positionComponent.position);
+        this.distanceTraveled += Math.sqrt(Math.pow(velocityComponent.velocity.x * delta, 2) + Math.pow(velocityComponent.velocity.y * delta, 2));
     }
 
     private void moveRender(float delta) {
-        displayPosition.x = displayPosition.x + (vel.x * delta);
-        displayPosition.y = displayPosition.y + (vel.y * delta);
+        displayPosition.x = displayPosition.x + (velocityComponent.velocity.x * delta);
+        displayPosition.y = displayPosition.y + (velocityComponent.velocity.y * delta);
         modelInstance.transform.setToTranslation(displayPosition);
     }
 
@@ -176,15 +173,15 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     }
 
     public float getX() {
-        return position.x;
+        return positionComponent.position.x;
     }
 
     public float getY() {
-        return position.y;
+        return positionComponent.position.y;
     }
 
     public float getZ() {
-        return position.z;
+        return positionComponent.position.z;
     }
 
 
@@ -194,7 +191,7 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
 
     @Override
     public boolean hasTargetInRange(Damageable victim) {
-        return Math.sqrt(Math.pow(position.x - victim.getX(), 2) + Math.pow(position.y - victim.getY(), 2)) < tempMinionRange;
+        return Math.sqrt(Math.pow(positionComponent.position.x - victim.getX(), 2) + Math.pow(positionComponent.position.y - victim.getY(), 2)) < tempMinionRange;
     }
     
     @Override
@@ -207,7 +204,7 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
 
     @Override
     public void getPos(Vector3 pos) {
-        pos.set(position);
+        pos.set(positionComponent.position);
     }
 
     @Override
@@ -226,40 +223,39 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     }
 
     public OutputPath getPath(){
-        return path;
+        return pathComponent.path;
     }
 
     public float getVelocityX(){
-        return vel.x;
+        return velocityComponent.velocity.x;
     }
 
     public float getVelocityY(){
-        return vel.y;
+        return velocityComponent.velocity.y;
     }
 
     public void setPath(OutputPath path) {
-        this.path = path;
+        this.pathComponent.path = path;
         if (path.getPath().size >= 2) {
             path.removeIndex(0);
-            float dx = path.get(0).x - this.position.x;
-            float dy = path.get(0).y - this.position.y;
+            float dx = path.get(0).x - this.positionComponent.position.x;
+            float dy = path.get(0).y - this.positionComponent.position.y;
             double angle = Math.atan(dy / dx);
             if (dx < 0) {
                 angle += Math.PI;
             } else if (dy < 0) {
                 angle += 2 * Math.PI;
             }
-            this.lastNode = new Vector3(this.position.x, this.position.y, 0);
             this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
-            vel.x = (float) speed * (float) Math.cos(angle);
-            vel.y = (float) speed * (float) Math.sin(angle);
+            velocityComponent.velocity.x = (float) speed * (float) Math.cos(angle);
+            velocityComponent.velocity.y = (float) speed * (float) Math.sin(angle);
             this.distanceTraveled = 0;
             path.removeIndex(0);
         }
     }
 
     public void setGoal(Vector3 goal) {
-        this.goal.set(goal);
+        this.pathComponent.goal.set(goal);
     }
 
     public void setUnit2StateAdapter(Unit2StateAdapter unit2StateAdapter) {
@@ -272,11 +268,11 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
                 "playerID=" + playerID +
                 ", turn=" + turn +
                 ", hp=" + hp +
-                ", vel=" + vel +
+                ", vel=" + velocityComponent.velocity +
                 ", maxHp=" + maxHp +
                 ", ID=" + ID +
-                ", x=" + position.x +
-                ", y=" + position.y +
+                ", x=" + positionComponent.position.x +
+                ", y=" + positionComponent.position.y +
                 '}';
     }
 

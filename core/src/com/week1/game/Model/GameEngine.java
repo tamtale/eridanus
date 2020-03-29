@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Array;
 import com.week1.game.InfoUtil;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.Tower;
+import com.week1.game.Model.Systems.MovementSystem;
 import com.week1.game.Model.World.CoolWorldBuilder;
 import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
@@ -98,11 +99,7 @@ public class GameEngine implements GameRenderable {
     }
 
     public void synchronousUpdateState() {
-        gameState.updateMana(1);
-        gameState.dealDamage(1);
-        gameState.moveUnits(THRESHOLD);
-        gameState.doTowerSpecialAbilities(communicationTurn);
-
+        gameState.synchronousUpdateState(communicationTurn);
         // Check the win/loss/restart conditions
         if (!sentWinLoss) {
             if (!gameState.isPlayerAlive(enginePlayerId)) {
