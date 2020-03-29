@@ -9,6 +9,10 @@ import com.badlogic.gdx.math.Vector3;
 public class SmallWorldBuilder implements IWorldBuilder {
 
     public static SmallWorldBuilder ONLY = new SmallWorldBuilder();
+    
+    private static Vector3[] crystalLocs = new Vector3[] {
+            new Vector3(10, 5, 1)
+    };
 
     @Override
     public Block[][][] terrain() {
@@ -22,6 +26,12 @@ public class SmallWorldBuilder implements IWorldBuilder {
             }
         }
         makePlateau(blocks, 0, 5, 0, 5);
+        
+        // Add crystals
+        for (int i = 0; i < crystalLocs.length; i++) {
+            blocks[(int)crystalLocs[i].x][(int)crystalLocs[i].y][(int)crystalLocs[i].z] = Block.TerrainBlock.CRYSTAL;
+        }
+        
         return blocks;
     }
 
@@ -43,7 +53,7 @@ public class SmallWorldBuilder implements IWorldBuilder {
 
     @Override
     public Vector3[] crystalLocations() {
-        return new Vector3[0];
+        return crystalLocs;
     }
 
     @Override

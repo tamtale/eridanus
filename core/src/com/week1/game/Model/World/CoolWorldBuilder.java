@@ -22,6 +22,14 @@ public class CoolWorldBuilder implements IWorldBuilder {
         this.add(new Pair<>(new Material(ColorAttribute.createDiffuse(new Color(0x660000))), new Material(ColorAttribute.createDiffuse(Color.LIME))));
     }};
     
+    private static Vector3[] crystalLocs = new Vector3[] { // Set the z coordinates to -1 (will be set during placement)
+            new Vector3(50, 50, -1),
+            new Vector3(45, 45, -1),
+            new Vector3(30, 45, -1),
+            new Vector3(35, 55, -1),
+            new Vector3(45, 65, -1)
+    };
+    
     @Override
     public Block[][][] terrain() {
         // empty block
@@ -67,6 +75,8 @@ public class CoolWorldBuilder implements IWorldBuilder {
 
             }
         }
+        
+        placeCrystals();
         return blocks;
     }
 
@@ -183,13 +193,42 @@ public class CoolWorldBuilder implements IWorldBuilder {
         return new Pair<>(m, n);
     }
 
-
     private void makePlateau(Block[][][] blocks, int startX, int endX, int startY, int endY) {
         for (int i = startX; i <= endX; i++) {
             for (int j = startY; j <= endY; j++) {
                 blocks[i][j][1] = Block.TerrainBlock.FIREBRICK;
             }
         }
+    }
+    
+    private void placeCrystals() {
+        int placedCrystals = 0;
+        for (int crystalNum = 0; crystalNum < crystalLocs.length; crystalNum++) {
+            Vector3 desiredLoc = crystalLocs[crystalNum];
+            for (int z = 0; z < blocks[(int)desiredLoc.x][(int)desiredLoc.y].length - 10; z++) {
+                
+                // Place the crystal in the first available airblock
+                if (blocks[(int)desiredLoc.x][(int)desiredLoc.y][z] == Block.TerrainBlock.AIR) {
+                    blocks[(int)desiredLoc.x][(int)desiredLoc.y][z] = Block.TerrainBlock.CRYSTAL;
+                    crystalLocs[crystalNum].z = z; // record the z coordinate of the crystal (previously unknown)
+                    placedCrystals++;
+                    break;
+                }
+            }
+        }
+
+        // Only keep the crystals that were successfully placed
+        if (placedCrystals < crystalLocs.length) {
+            Vector3[] tempPlacedCrystals = new Vector3[placedCrystals];
+            int i = 0;
+            for (int j = 0; j < crystalLocs.length; j++) {
+                if (crystalLocs[j].z != -1) {
+                    tempPlacedCrystals[i++] = crystalLocs[j];
+                }
+            }
+            crystalLocs = tempPlacedCrystals;
+        }
+        
     }
 
     @Override
@@ -204,7 +243,7 @@ public class CoolWorldBuilder implements IWorldBuilder {
 
     @Override
     public Vector3[] crystalLocations() {
-        return new Vector3[0];
+        return crystalLocs;
     }
 
     @Override

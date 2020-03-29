@@ -42,6 +42,13 @@ public interface Block {
         }
 
         @Override
+        public Optional<ModelInstance> modelInstance(float x, float y, float z) {
+            ModelInstance instance = new ModelInstance(model);
+            instance.transform.setToTranslation(x, y, z);
+            return Optional.of(instance);
+        }
+
+        @Override
         public float getCost() {
             return cost;
         }
@@ -63,53 +70,36 @@ public interface Block {
                 return false;
             }
         };
-        public static TerrainBlock STONE = new TerrainBlock(Color.GRAY, 1) {
+        public static TerrainBlock STONE = new TerrainBlock(Color.GRAY, 1) {};
+        public static TerrainBlock DIRT = new TerrainBlock(Color.BROWN, 1.5f) {};
 
-            @Override
-            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
-                ModelInstance instance = new ModelInstance(model);
-                instance.transform.translate(x, y, z);
-                return Optional.of(instance);
-            }
-        };
-        public static TerrainBlock DIRT = new TerrainBlock(Color.BROWN, 1.5f) {
-            @Override
-            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
-                ModelInstance instance = new ModelInstance(model);
-                instance.transform.setToTranslation(x, y, z);
-                return Optional.of(instance);
-            }
-        };
+        public static TerrainBlock FIREBRICK = new TerrainBlock(Color.FIREBRICK, 1.5f) {};
 
-        public static TerrainBlock FIREBRICK = new TerrainBlock(Color.FIREBRICK, 1.5f) {
-            @Override
-            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
-                ModelInstance instance = new ModelInstance(model);
-                instance.transform.setToTranslation(x, y, z);
-                return Optional.of(instance);
-            }
-        };
-
-        public static TerrainBlock ZAMBALA = new TerrainBlock(Color.CORAL, 1f) {
-            @Override
-            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
-                ModelInstance instance = new ModelInstance(model);
-                instance.transform.setToTranslation(x, y, z);
-                return Optional.of(instance);
-            }
-        };
+        public static TerrainBlock ZAMBALA = new TerrainBlock(Color.CORAL, 1f) {};
         
 
         public static TerrainBlock WATER = new TerrainBlock(Color.CYAN, 5f) {
             @Override
+            public boolean canSupportTower() {
+                return false;
+            }
+        };
+        
+        public static TerrainBlock CRYSTAL = new TerrainBlock(Color.BLACK, 1f) {
+            @Override
             public Optional<ModelInstance> modelInstance(float x, float y, float z) {
                 ModelInstance instance = new ModelInstance(model);
                 instance.transform.setToTranslation(x, y, z);
                 return Optional.of(instance);
             }
-
+           
             @Override
             public boolean canSupportTower() {
+                return false;
+            }
+
+            @Override
+            public boolean allowMinionToSpawnOn() {
                 return false;
             }
         };

@@ -7,6 +7,7 @@ import com.week1.game.InfoUtil;
 import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.World.CoolWorldBuilder;
+import com.week1.game.Model.World.SmallWorldBuilder;
 import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.Game.TaggedMessage;
@@ -39,6 +40,7 @@ public class GameEngine implements GameRenderable {
         this.replayQueue = replayQueue;
         gameState = new GameState(
                 CoolWorldBuilder.ONLY,
+//                SmallWorldBuilder.ONLY,
                 () -> {
                     Vector3 position = new Vector3();
                     Tower myBase = gameState.getPlayerBase(this.enginePlayerId);
