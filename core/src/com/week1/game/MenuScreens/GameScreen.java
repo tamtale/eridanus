@@ -180,7 +180,7 @@ public class GameScreen implements Screen {
 					public int getPlayerId() {
 						return networkClient.getPlayerId();
 					}
-				}, renderer.getRenderConfig());
+				}, renderer.getRenderConfig(), GameController.getSettings());
 		
 		renderer.create();
 

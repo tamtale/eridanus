@@ -33,6 +33,13 @@ public class DesktopLauncher {
 					.hasArg().argName("i|e|d")
 					. desc("set the logging level to (i)nfo, (e)rror, (d)ebug")
 					.build()
+			)
+			.addOption(
+				Option.builder("c")
+					.longOpt("config")
+					.hasArg().argName("file")
+					.desc("use the config file specified")
+					.build()
 			);
 	}
 
