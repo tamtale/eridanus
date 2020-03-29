@@ -233,7 +233,6 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
         this.openList.add(nodeRecord, estimatedTotalCost);
         nodeRecord.category = 1;
         if (this.metrics != null) {
-
             ++this.metrics.openListAdditions;
             this.metrics.openListPeak = Math.max(this.metrics.openListPeak, this.openList.size);
         }

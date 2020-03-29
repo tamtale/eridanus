@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.week1.game.MenuScreens.MainMenuScreen;
+import com.week1.game.Settings.Settings;
 import org.apache.commons.cli.*;
 
 public class GameController implements ApplicationListener {
@@ -12,11 +13,13 @@ public class GameController implements ApplicationListener {
     Screen currScreen;
     public static final float VIRTUAL_WIDTH = 800;
     public static final float VIRTUAL_HEIGHT = 800;
-    private CommandLine commandLine;
     private int logLevel = Gdx.app.LOG_INFO;
+    private static Settings settings;
+    public static Settings getSettings() {
+        return settings;
+    }
 
     public GameController(CommandLine commandLine) {
-        this.commandLine = commandLine;
         // Set the logging level (by default, it'll be info).
         String logArg = commandLine.getOptionValue("log", "i");
         switch (logArg) {
@@ -27,6 +30,13 @@ public class GameController implements ApplicationListener {
                 logLevel = Gdx.app.LOG_DEBUG;
                 break;
         }
+
+        String configPath = commandLine.getOptionValue("config");
+        if (configPath == null) configPath = "config/default.json";
+        Settings.fromFile(configPath).ifPresent(settings -> {
+            this.settings = settings;
+        });
+
     }
 
     @Override
