@@ -214,6 +214,9 @@ public class WarrenIndexedAStarPathFinder<N> implements PathFinder<N> {
     protected void generateNodePath(N startNode, GraphPath<N> outPath) {
         while(this.current.connection != null) {
             outPath.add(this.current.node);
+            if (this.nodeRecords[this.graph.getIndex(this.current.connection.getFromNode())] == null) {
+                return;
+            }
             this.current = this.nodeRecords[this.graph.getIndex(this.current.connection.getFromNode())];
         }
         outPath.add(startNode);
