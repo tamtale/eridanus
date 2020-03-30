@@ -75,7 +75,13 @@ public class GameGraph implements IndexedGraph<Vector2> {
 
     public OutputPath search(Vector2 startNode, Vector2 endNode) {
         OutputPath path = new OutputPath();
-        if (pathFinder.searchNodePath(startNode, endNode, heuristic, path)) {
+        boolean success = false;
+        try {
+            success = pathFinder.searchNodePath(startNode, endNode, heuristic, path);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        if (success){
             return path;
         }
         return null;
