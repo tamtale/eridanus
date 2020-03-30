@@ -135,15 +135,15 @@ public class ConnectionScreen implements Screen {
 
         colorSelectBox = new SelectBox<Pair.ColorPair>(uiskin);
         colorSelectBox.setItems(new Pair.ColorPair("Red", Color.RED),
-                new Pair.ColorPair("Orange", Color.ORANGE),
-                new Pair.ColorPair("Yellow", Color.YELLOW),
-                new Pair.ColorPair("Lime Green", Color.LIME),
-                new Pair.ColorPair("Forest Green", Color.FOREST),
+                new Pair.ColorPair("Green", Color.FOREST),
                 new Pair.ColorPair("Cyan", Color.CYAN),
                 new Pair.ColorPair("Blue", Color.BLUE),
                 new Pair.ColorPair("Purple", Color.PURPLE),
                 new Pair.ColorPair("Magenta", Color.MAGENTA),
-                new Pair.ColorPair("Pink", Color.PINK));
+                new Pair.ColorPair("Black", Color.BLACK),
+                new Pair.ColorPair("Brown", Color.BROWN),
+                new Pair.ColorPair("White", Color.WHITE),
+                new Pair.ColorPair("Dark Gray", Color.DARK_GRAY));
         colorSelectBox.setSize(350,64);
         colorSelectBox.setPosition(GameController.VIRTUAL_WIDTH/2 - 20 - colorSelectBox.getWidth(),GameController.VIRTUAL_HEIGHT  *2 / 3);
         connectionStage.addActor(colorSelectBox);
