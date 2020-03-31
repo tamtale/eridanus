@@ -87,6 +87,11 @@ public class Tower extends Building implements Damaging {
     }
 
     @Override
+    float getZ() {
+        return this.z;
+    }
+
+    @Override
     public float getCurrentHealth() {
         return (float) hp;
     }

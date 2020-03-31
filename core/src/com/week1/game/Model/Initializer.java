@@ -15,6 +15,11 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.week1.game.Model.Entities.Crystal;
+
+import java.awt.*;
+
+import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
 public class Initializer {
 

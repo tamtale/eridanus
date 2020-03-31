@@ -57,6 +57,7 @@ public abstract class Damageable {
 
     abstract float getX();
     abstract float getY();
+    abstract float getZ();
 
     abstract float getCurrentHealth();
     abstract float getMaxHealth();

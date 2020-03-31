@@ -1,5 +1,6 @@
 package com.week1.game.Model.World;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 /**
@@ -50,9 +51,9 @@ public class Basic4WorldBuilder implements IWorldBuilder {
         };
     }
     @Override
-    public Vector3[] crystalLocations() {
-        return new Vector3[] {
-                new Vector3(100, 100, 0),
+    public Vector2[] crystalLocations() {
+        return new Vector2[] {
+                new Vector2(100, 100),
         };
     }
 

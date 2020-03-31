@@ -18,9 +18,7 @@ import static com.week1.game.Renderer.TextureUtils.makeTexture;
  */
 public class Crystal extends Damageable {
 
-    public  static int SIZE = 1;
 
-    private static Texture selectedSkin = makeTexture(SIZE, SIZE, Color.CYAN);
     private Vector3 position = new Vector3();
     
     private CrystalToStateAdapter adapter;
@@ -33,10 +31,6 @@ public class Crystal extends Damageable {
         this.adapter = adapter;
     }
 
-    public void draw(Batch batch) {
-        batch.draw(selectedSkin, position.x - (SIZE / 2f), position.y - (SIZE / 2f), SIZE, SIZE);
-    }
-
     @Override
     public float getReward() {
         return 100;
@@ -46,11 +40,6 @@ public class Crystal extends Damageable {
     public <T> T accept(DamageableVisitor<T> visitor) {
         return visitor.acceptCrystal(this);
     }
-
-    public Texture getSelectedSkin(){
-        return selectedSkin;
-    }
-
 
     @Override
     public float getX() {
@@ -62,6 +51,8 @@ public class Crystal extends Damageable {
         return position.y;
     }
 
+    @Override
+    public float getZ() { return position.z; }
 
 
     public boolean isDead() {
@@ -75,7 +66,6 @@ public class Crystal extends Damageable {
 
     @Override
     public void getPos(Vector3 pos) {
-        System.out.println("Crystal position: " + position);
         pos.set(position);
 
     }

@@ -20,14 +20,14 @@ public interface IWorldBuilder {
     /**
      * Locations of crystals on the map.
      */
-    Vector3[] crystalLocations();
+    Vector2[] crystalLocations();
 
-    /**
-     * Gives the x and y coords of the next crystal spawn (z must be computed from the GameWorld)
-     */
-    default Vector2 getNextCrystalSpawn() {
-        return null;
-    }
+//    /**
+//     * Gives the x and y coords of the next crystal spawn (z must be computed from the GameWorld)
+//     */
+//    default Vector2 getNextCrystalSpawn() {
+//        return null;
+//    }
 
     void addSeed(long mapSeed);
 }

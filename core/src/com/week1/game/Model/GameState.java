@@ -93,9 +93,6 @@ public class GameState implements GameRenderable {
             world = new GameWorld(worldBuilder);
             world.getHeightMap();
             graph = world.buildGraph();
-            for (Vector3 loc: worldBuilder.crystalLocations()) {
-                addCrystal(new Crystal(loc.x, loc.y, loc.z));
-            }
             graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
             
             // notify the GameState that it can proceed with initialization
@@ -124,8 +121,32 @@ public class GameState implements GameRenderable {
             addBase(newBase, i);
         }
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
+        
+        // Create the crystals
+        placeCrystals();
+        
         fullyInitialized = true;
         postInit.run();
+    }
+    
+    private void placeCrystals() {
+        Vector2[] crystalLocs = worldBuilder.crystalLocations();
+
+        for (int crystalNum = 0; crystalNum < crystalLocs.length; crystalNum++) {
+            Vector2 desiredLoc = crystalLocs[crystalNum];
+            // Start at z = 1, since crystals shouldn't be spawned on the base layer of the map
+            for (int z = 1; z < world.getWorldDimensions()[2]; z++) {
+                // Place the crystal in the first available airblock
+                if ((world.getBlock((int)desiredLoc.x, (int)desiredLoc.y, z) == Block.TerrainBlock.AIR) &&
+                        (world.getBlock((int)desiredLoc.x, (int)(desiredLoc.y), z - 1).canSupportTower())){
+                    Crystal c = new Crystal(desiredLoc.x, desiredLoc.y, z);
+                    addCrystal(c);
+                    break;
+                }
+            }
+        }
+        
+        // If there are no suitable blocks, then maybe the crystal doesn't get placed
     }
 
     public PlayerStat getPlayerStats(int playerNum) {
@@ -146,6 +167,7 @@ public class GameState implements GameRenderable {
         crystals.add(c);
         damageables.add(c);
         c.setCrystalToStateAdapter(c2s);
+        world.setBlock((int)c.getX(), (int)c.getY(), (int)c.getZ(), Block.TerrainBlock.CRYSTAL);
     }
 
     public void addUnit(Unit u){
@@ -350,18 +372,18 @@ public class GameState implements GameRenderable {
             crystals.removeValue(crystal, true);
             damageables.removeValue(crystal, true);
             
-            // The crystal respawns somewhere else!
-            Vector2 nextSpawn = worldBuilder.getNextCrystalSpawn();
-            if (nextSpawn != null) {
-                for (int z = 0; z < world.getWorldDimensions()[2]; z++) {
-                    // Place the crystal in the first available airblock
-                    if (world.getBlock((int)nextSpawn.x, (int)nextSpawn.y, z) == Block.TerrainBlock.AIR) {
-                        System.out.println("New crystal at: " + nextSpawn.x + nextSpawn.y + z);
-                        addCrystal(new Crystal(nextSpawn.x, nextSpawn.y, z));
-                        break;
-                    }
-                }
-            }
+            // TODO: The crystal respawns somewhere else!
+//            Vector2 nextSpawn = worldBuilder.getNextCrystalSpawn();
+//            if (nextSpawn != null) {
+//                for (int z = 0; z < world.getWorldDimensions()[2]; z++) {
+//                    // Place the crystal in the first available airblock
+//                    if (world.getBlock((int)nextSpawn.x, (int)nextSpawn.y, z) == Block.TerrainBlock.AIR) {
+//                        System.out.println("New crystal at: " + nextSpawn.x + nextSpawn.y + z);
+//                        addCrystal(new Crystal(nextSpawn.x, nextSpawn.y, z));
+//                        break;
+//                    }
+//                }
+//            }
             return null;
         }
     };
