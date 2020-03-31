@@ -1,11 +1,11 @@
 package com.week1.game.Model.Entities;
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
@@ -13,20 +13,16 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
+import com.week1.game.Model.Unit2StateAdapter;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Util3D;
-import com.week1.game.Model.Unit2StateAdapter;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
-import static java.lang.Math.abs;
-import static com.week1.game.Renderer.TextureUtils.makeTexture;
-import static java.lang.Math.abs;
-import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
 public class Unit extends Damageable implements Damaging, GameRenderable, Clickable {
     private final int playerID;
@@ -68,23 +64,10 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
 
     private Material originalMaterial;
 
-    private final static Map<Integer, Color> colorMap = new HashMap<Integer, Color>() {
-        {
-            put(0, Color.BLUE);
-            put(1, Color.RED);
-            put(2, Color.WHITE);
-            put(3, Color.PURPLE);
-            put(4, Color.PINK);
-        }
-    };
+    private static Map<Integer, Color> colorMap;
+    private static Map<Integer, Model> modelMap;
 
-    private final static Map<Integer, Model> modelMap = new HashMap<Integer, Model>() {
-        {
-            colorMap.keySet().forEach(i ->
-                    put(i, Util3D.ONLY.createBox(1, 1, 1, colorMap.get(i)))
-            );
-        }
-    };
+
 
 
     public Unit(float x, float y, float z, double hp, int playerID) {
@@ -98,6 +81,18 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
         this.modelInstance = new ModelInstance(model);
         modelInstance.transform.setTranslation(x, y, z);
         this.originalMaterial = model.materials.get(0);
+    }
+
+    public static void setColorMapping(Map<Integer, Color> colorMapping) {
+        colorMap = colorMapping;
+
+        modelMap = new HashMap<Integer, Model>() {
+            {
+                colorMap.keySet().forEach(i ->
+                        put(i, Util3D.ONLY.createBox(1, 1, 1, colorMap.get(i)))
+                );
+            }
+        };
     }
 
     public void draw(Batch batch, float delta, boolean showAttackRadius) {

@@ -1,5 +1,8 @@
 package com.week1.game.Networking.NetworkObjects;
 
+import com.badlogic.gdx.graphics.Color;
+import com.week1.game.Model.PlayerInfo;
+
 import java.io.*;
 import java.net.InetAddress;
 
@@ -8,6 +11,7 @@ public class Player {
     public InetAddress address;
     public int port;
     public boolean checkedIn;
+    private PlayerInfo info = new PlayerInfo("defaultName", Color.GRAY);
 
     public BufferedReader in;
     public BufferedWriter out;
@@ -19,5 +23,17 @@ public class Player {
         this.checkedIn = false;
         this.in = new BufferedReader(new InputStreamReader(in));
         this.out = new BufferedWriter(new OutputStreamWriter(out));
+    }
+
+    public void setPlayerInfo(PlayerInfo info) {
+        this.info = info;
+    }
+
+    public String getName() {
+        return info.getPlayerName();
+    }
+
+    public PlayerInfo getInfo() {
+        return this.info;
     }
 }
