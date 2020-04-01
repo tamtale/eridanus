@@ -104,6 +104,7 @@ public class GameEngine implements GameRenderable {
         gameState.dealDamage(1);
         gameState.moveUnits(THRESHOLD);
         gameState.doTowerSpecialAbilities(communicationTurn);
+        gameState.crystalRespawn();
 
         // Check the win/loss/restart conditions
         if (!sentWinLoss) {

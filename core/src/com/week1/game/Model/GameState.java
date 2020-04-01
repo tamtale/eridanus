@@ -24,6 +24,9 @@ import java.util.List;
 import static com.week1.game.Model.StatsConfig.*;
 
 public class GameState implements GameRenderable {
+    private final static int CRYSTAL_RESPAWN_INTERVAL = 200;
+    private final static int SECONDARY_CRYSTAL_RESPAWN_INTERVAL = 10;
+    
     private final Unit2StateAdapter u2s;
     private final CrystalToStateAdapter c2s;
     private GameGraph graph;
@@ -31,13 +34,15 @@ public class GameState implements GameRenderable {
     private Array<Clickable> clickables = new Array<>();
     private int minionCount;
     private Array<Unit> units = new Array<>();
-    private Array<Crystal> crystals = new Array<>();
     private Array<Tower> towers = new Array<>();
     private IntMap<PlayerBase> playerBases = new IntMap<>();
     private Array<PlayerStat> playerStats = new Array<>();
     private Array<Damageable> damageables = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
+    
+    private Array<Crystal> crystals = new Array<>();
+    private Array<Pair<Integer, Crystal>> crystalsWaitingToRespawn = new Array<>();
     
     private TowerLoadouts towerLoadouts;
     /*
@@ -253,6 +258,34 @@ public class GameState implements GameRenderable {
     public void moveMinion(float x, float y, Unit u) {
         updateGoal(u, new Vector3(x, y, 0));
     }
+    
+    public void crystalRespawn() {
+        Array<Pair<Integer, Crystal>> remainingWaitingCrystals = new Array<>();
+        for (int i = 0; i < crystalsWaitingToRespawn.size; i++) {
+            Pair<Integer, Crystal> waitingCrystal = crystalsWaitingToRespawn.get(i);
+            
+            if (--waitingCrystal.key == 0) { // Decrement turns to wait, are we there yet?
+                // crystal is done waiting to respawn
+                
+                //make sure that there aren't any towers in the way
+                int tempX = (int)waitingCrystal.value.getX();
+                int tempY = (int)waitingCrystal.value.getY();
+                int tempZ = (int)waitingCrystal.value.getZ();
+                if (world.getBlock(tempX, tempY, tempZ) != Block.TerrainBlock.AIR) {
+                    // There's a tower in the way, so let the crystal wait a while longer
+                    waitingCrystal.key = SECONDARY_CRYSTAL_RESPAWN_INTERVAL;
+                    remainingWaitingCrystals.add(waitingCrystal);
+                    
+                } else {
+                    // It's safe to add the crystal
+                    addCrystal(waitingCrystal.value);
+                }
+            } else {
+                // not there yet, keep waiting
+                remainingWaitingCrystals.add(waitingCrystal);
+            }
+        }
+    }
 
     private Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
     private Array<Damaging> everythingDamaging = new Array<>();
@@ -312,11 +345,8 @@ public class GameState implements GameRenderable {
     public void doTowerSpecialAbilities(int communicationTurn) {
         for (int i = 0; i < towers.size; i++) {
             Tower t = towers.get(i);
-            
             t.doSpecialEffect(communicationTurn, this);
-            
         }
-        
     }
     
     /**
@@ -372,18 +402,9 @@ public class GameState implements GameRenderable {
             crystals.removeValue(crystal, true);
             damageables.removeValue(crystal, true);
             
-            // TODO: The crystal respawns somewhere else!
-//            Vector2 nextSpawn = worldBuilder.getNextCrystalSpawn();
-//            if (nextSpawn != null) {
-//                for (int z = 0; z < world.getWorldDimensions()[2]; z++) {
-//                    // Place the crystal in the first available airblock
-//                    if (world.getBlock((int)nextSpawn.x, (int)nextSpawn.y, z) == Block.TerrainBlock.AIR) {
-//                        System.out.println("New crystal at: " + nextSpawn.x + nextSpawn.y + z);
-//                        addCrystal(new Crystal(nextSpawn.x, nextSpawn.y, z));
-//                        break;
-//                    }
-//                }
-//            }
+            // The crystal will respawn in the same location later
+            crystalsWaitingToRespawn.add(new Pair<>(CRYSTAL_RESPAWN_INTERVAL, new Crystal(crystal.getX(), crystal.getY(), crystal.getZ())));
+            
             return null;
         }
     };
