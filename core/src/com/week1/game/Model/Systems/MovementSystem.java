@@ -19,6 +19,7 @@ public class MovementSystem implements ISystem {
             position.y += velocity.y * delta;
             position.z += velocity.z * delta;
             velocityComponent.distTraveled += Math.sqrt(Math.pow(velocity.x * delta, 2) + Math.pow(velocity.y * delta, 2));
+            // TODO add back in moving up a block
         }
     }
 

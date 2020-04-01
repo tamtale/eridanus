@@ -58,6 +58,7 @@ public class PathfindingSystem implements ISystem {
         velocityComponent.velocity.y = blockSpeed * (float) velocityComponent.baseSpeed * (float) Math.sin(angle);
         pathComponent.path.removeIndex(0);
         velocityComponent.distTraveled = 0;
+        // TODO look over/redo the arrival detection mechanism
 
 
     }
