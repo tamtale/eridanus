@@ -2,8 +2,12 @@ package com.week1.game.Model.Systems;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.Components.VelocityComponent;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MovementSystem implements ISystem {
 

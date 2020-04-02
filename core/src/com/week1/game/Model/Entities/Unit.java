@@ -1,7 +1,6 @@
 package com.week1.game.Model.Entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -13,6 +12,7 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.week1.game.Model.Components.PathComponent;
 import com.week1.game.Model.Components.PositionComponent;
+import com.week1.game.Model.Components.RenderComponent;
 import com.week1.game.Model.Components.VelocityComponent;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
@@ -27,10 +27,11 @@ import java.util.Map;
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 
-public class Unit extends Damageable implements Damaging, GameRenderable, Clickable {
+public class Unit extends Damageable implements Damaging, Clickable {
     private PositionComponent positionComponent;
     private VelocityComponent velocityComponent;
     private PathComponent pathComponent;
+    private RenderComponent renderComponent;
     private final int playerID;
     private float distance;
     private float distanceTraveled;
@@ -45,7 +46,6 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     // 3D STUFF
     private static ModelBuilder BUILDER = new ModelBuilder();
     private Model model;
-    private ModelInstance modelInstance;
     private Vector3 displayPosition = new Vector3();
 
     /*
@@ -64,28 +64,25 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     private Material originalMaterial;
 
     private static Map<Integer, Color> colorMap;
-    private static Map<Integer, Model> modelMap;
-
-
-
+    public static Map<Integer, Model> modelMap;
 
     public Unit(
         PositionComponent positionComponent,
         VelocityComponent velocityComponent,
         PathComponent pathComponent,
+        RenderComponent renderComponent,
         double hp, int playerID
     ) {
         this.positionComponent = positionComponent;
         this.velocityComponent = velocityComponent;
         this.pathComponent = pathComponent;
+        this.renderComponent = renderComponent;
         this.displayPosition.set(positionComponent.position);
         this.playerID = playerID;
         this.hp = hp;
         this.maxHp = hp;
         this.velocityComponent.velocity = new Vector3(0, 0, 0);
         this.model = modelMap.get(playerID);
-        this.modelInstance = new ModelInstance(model);
-        modelInstance.transform.setTranslation(positionComponent.position);
         this.originalMaterial = model.materials.get(0);
     }
 
@@ -151,14 +148,14 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
         Gdx.app.debug("move", "moving:" + positionComponent.position);
         positionComponent.position.set(positionComponent.position.x + (velocityComponent.velocity.x * delta), positionComponent.position.y + (
             velocityComponent.velocity.y * delta), positionComponent.position.z);
-        modelInstance.transform.setToTranslation(positionComponent.position);
+        renderComponent.modelInstance.transform.setToTranslation(positionComponent.position);
         this.distanceTraveled += Math.sqrt(Math.pow(velocityComponent.velocity.x * delta, 2) + Math.pow(velocityComponent.velocity.y * delta, 2));
     }
 
     private void moveRender(float delta) {
         displayPosition.x = displayPosition.x + (velocityComponent.velocity.x * delta);
         displayPosition.y = displayPosition.y + (velocityComponent.velocity.y * delta);
-        modelInstance.transform.setToTranslation(displayPosition);
+        renderComponent.modelInstance.transform.setToTranslation(displayPosition);
     }
 
     @Override
@@ -222,18 +219,6 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
         return (float) this.maxHp;
     }
 
-    public OutputPath getPath(){
-        return pathComponent.path;
-    }
-
-    public float getVelocityX(){
-        return velocityComponent.velocity.x;
-    }
-
-    public float getVelocityY(){
-        return velocityComponent.velocity.y;
-    }
-
     public void setPath(OutputPath path) {
         this.pathComponent.path = path;
         if (path.getPath().size >= 2) {
@@ -282,13 +267,13 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     private static BoundingBox box = new BoundingBox();
     @Override
     public boolean intersects(Ray ray, Vector3 intersection) {
-        modelInstance.calculateBoundingBox(box);
-        box.mul(modelInstance.transform);
+        renderComponent.modelInstance.calculateBoundingBox(box);
+        box.mul(renderComponent.modelInstance.transform);
         return Intersector.intersectRayBounds(ray, box, intersection);
     }
 
     public void setMaterial(Material newMat, boolean changeToMat) {
-        Material mat = modelInstance.materials.get(0);
+        Material mat = renderComponent.modelInstance.materials.get(0);
         mat.clear();
         if (changeToMat) {
             mat.set(newMat);
@@ -314,12 +299,4 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
         return clickableVisitor.acceptUnit(this);
     }
 
-    @Override
-    public void render(RenderConfig config) {
-        float delta = config.getDelta();
-        if (delta != 0) {
-            moveRender(delta);
-        }
-        config.getModelBatch().render(modelInstance, config.getEnv());
-    }
 }
