@@ -122,7 +122,6 @@ public class TowerDetails {
             calcRawStats();
 
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
             e.printStackTrace();
         }
     }
@@ -193,7 +192,7 @@ public class TowerDetails {
     }
 
     private void calcFinalStats() {
-        atk = rawAtk * 0.05;
+        atk = rawAtk * 0.2;
         range = rawHeight * 2;
 
         //Multipliers --- Fine tuning the stats
@@ -202,9 +201,9 @@ public class TowerDetails {
         hp = rawHp * Math.min(1, baseSize/5.0);
 
 //        atk is inversely prop to range
-        if (rawHeight != 0) {
+        if (rawHeight > 4) {
 //            Note: this if statement is required because the height of the ground in the tower editor is 0
-            atk = atk * Math.min(3, 3.0/rawHeight);
+            atk = atk  - rawHeight * 3;
         }
 
 

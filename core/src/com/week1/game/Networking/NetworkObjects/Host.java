@@ -1,26 +1,24 @@
 package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.Gdx;
+import com.week1.game.Model.PlayerInfo;
 import com.week1.game.Model.TowerLite;
 import com.week1.game.Networking.Messages.Control.ClientControl.JoinedPlayersMessage;
 import com.week1.game.Networking.Messages.Control.ClientControl.PlayerIdMessage;
 import com.week1.game.Networking.Messages.Control.HostControl.HostControlMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.Update;
+import com.week1.game.Pair;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.week1.game.Networking.Messages.MessageFormatter.parseHostControlMessage;
+
 
 /**
  * This is the Host that receives and broadcasts messages to all of the clients.
@@ -32,13 +30,14 @@ public class Host {
     private int port;
     public ServerSocket serverSocket;
     private int nextPlayerId = 0;
-    public static final int DANGEROUS_HARDCODED_MESSAGE_SIZE = 4096;
 
+    List<String> joinedPlayers = Collections.synchronizedList(new ArrayList<>());
     public Map<Integer, List<TowerLite>> towerDetails = new HashMap<>(); // first index is implicitly the player id
     public Map<InetAddress, Player> registry = new HashMap<>();
 
     public int runningPlayerId = 0;
     public boolean gameStarted = false;
+    private boolean loopStarted = false;
     
     private ConcurrentLinkedQueue<String> incomingMessages = new ConcurrentLinkedQueue<>();
     
@@ -66,20 +65,14 @@ public class Host {
                             this.runningPlayerId++,
                             socket.getInetAddress(),
                             socket.getPort(),
-                            new DataInputStream(socket.getInputStream()),
-                            new DataOutputStream(socket.getOutputStream())
+                            socket.getInputStream(),
+                            socket.getOutputStream()
                     );
                     registry.put(socket.getInetAddress(), player);
 
                     // Tell them their playerID
                     String playerIdMessage = MessageFormatter.packageMessage(new PlayerIdMessage(player.playerId));
                     sendMessage(playerIdMessage, player);
-                    
-                    // Tell everyone that someone has joined the game
-                    List<String> joinedPlayers = new ArrayList<>();
-                    registry.forEach((addr, plyr) -> joinedPlayers.add(plyr.playerId + ": " + addr.getHostAddress()));
-                    java.util.Collections.sort(joinedPlayers);
-                    broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new JoinedPlayersMessage(-1, joinedPlayers)));
 
                     // spawn a thread to listen on this socket
                     new Thread(() -> {
@@ -87,7 +80,7 @@ public class Host {
                         while (true) {
                             try {
                                 Gdx.app.debug(TAG, "Host is listening for next client message from: "  + player.address);
-                                msg = player.in.readUTF();
+                                msg = player.in.readLine();
                                 processMessage(msg, player.address, player.port);
 
 
@@ -104,8 +97,13 @@ public class Host {
         });
         joiningPlayersThead.start(); 
     }
-    
+
     public void runUpdateLoop() {
+
+        if (loopStarted) {
+            return;
+        }
+        loopStarted = true;
         // spawn a new thread to broadcast updates to the registered clients
         Gdx.app.log(TAG, "Host is about to begin running update loop.");
         new Thread(() -> {
@@ -117,9 +115,13 @@ public class Host {
 
                 Gdx.app.debug(TAG, "Host is about to broadcast update message to registered clients.");
                 broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(outgoingMessages)));
-                
+
                 // Take a break before the next update
-                try { Thread.sleep(UPDATE_INTERVAL); } catch (InterruptedException e) {e.printStackTrace();}
+                try {
+                    Thread.sleep(UPDATE_INTERVAL);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
             }
         }).start();
@@ -127,8 +129,6 @@ public class Host {
 
 
     private void processMessage(String msg, InetAddress addr, int port) {
-//        String msg = new String(packet.getData()).trim();
-        
 
         HostControlMessage ctrlMsg = parseHostControlMessage(msg);
         if (ctrlMsg != null) {
@@ -143,14 +143,15 @@ public class Host {
     
     public void broadcastToRegisteredPlayers(String msg) {
         registry.values().forEach((player) -> {
-            Gdx.app.debug(TAG, "Sending message: " + msg + " to player: " + player.address);
+            Gdx.app.log(TAG, "Sending message: " + msg + " to player: " + player.address);
             sendMessage(msg, player);
         });
     }
 
     public void sendMessage(String msg, Player player) {
         try {
-            player.out.writeUTF(msg);
+            player.out.write(msg + "\n");
+            player.out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -158,5 +159,26 @@ public class Host {
 
     public int getNextPlayerId() {
         return nextPlayerId;
+    }
+
+    public void setPlayerInfo(InetAddress address, PlayerInfo info) {
+        this.registry.get(address).setPlayerInfo(info);
+        int id = this.registry.get(address).playerId;
+        // Tell everyone that someone has joined the game
+
+        joinedPlayers.clear();
+        registry.forEach((addr, plyr) -> joinedPlayers.add(plyr.playerId + ": " + plyr.getName()));
+        java.util.Collections.sort(joinedPlayers);
+        Gdx.app.debug("pjb3", "broadcasting" + joinedPlayers);
+        broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new JoinedPlayersMessage(-1, joinedPlayers)));
+    }
+
+    public List<PlayerInfo> getPlayerInfoList() {
+        List<Pair<Integer, PlayerInfo>> nameList = new ArrayList<>();
+        List<PlayerInfo> infoList = new ArrayList<>();
+        registry.forEach((addr, plyr) -> nameList.add(new Pair<>(plyr.playerId, plyr.getInfo())));
+        nameList.sort(Comparator.comparingInt(pair -> pair.key));
+        nameList.forEach( pair -> infoList.add(pair.value));
+        return infoList;
     }
 }

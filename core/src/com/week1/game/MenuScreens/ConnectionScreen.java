@@ -15,8 +15,10 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
 import com.week1.game.GameControllerSetScreenAdapter;
+import com.week1.game.Model.PlayerInfo;
 import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Networking.NetworkObjects.NetworkUtils;
+import com.week1.game.Pair;
 
 /**
  * This is the Screen where people chose to host or to join someone who is already hosting.
@@ -27,7 +29,10 @@ public class ConnectionScreen implements Screen {
     private Client networkClient;
     private GameControllerSetScreenAdapter gameAdapter;
     private boolean hosting;
+
     TextButton hostGameButton, joinGameButton, launchGameButton;
+    SelectBox<Pair.ColorPair> colorSelectBox;
+    TextField nameField;
     Label waitJoinMsg;
     TextField ipField;
     Label.LabelStyle labelStyle;
@@ -81,7 +86,7 @@ public class ConnectionScreen implements Screen {
         joinGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                joinGame(ipField.getText());
+                joinGame(ipField.getText(), new PlayerInfo(nameField.getText(), colorSelectBox.getSelected().value));
             }
         });
 
@@ -126,7 +131,29 @@ public class ConnectionScreen implements Screen {
         label1.setPosition(GameController.VIRTUAL_WIDTH / 2 - 80,GameController.VIRTUAL_HEIGHT * 3 / 4 );
         label1.setAlignment(Align.center);
         connectionStage.addActor(label1);
-        
+
+
+        colorSelectBox = new SelectBox<Pair.ColorPair>(uiskin);
+        colorSelectBox.setItems(new Pair.ColorPair("Red", Color.RED),
+                new Pair.ColorPair("Green", Color.FOREST),
+                new Pair.ColorPair("Cyan", Color.CYAN),
+                new Pair.ColorPair("Blue", Color.BLUE),
+                new Pair.ColorPair("Purple", Color.PURPLE),
+                new Pair.ColorPair("Magenta", Color.MAGENTA),
+                new Pair.ColorPair("Black", Color.BLACK),
+                new Pair.ColorPair("Brown", Color.BROWN),
+                new Pair.ColorPair("White", Color.WHITE),
+                new Pair.ColorPair("Dark Gray", Color.DARK_GRAY));
+        colorSelectBox.setSize(350,64);
+        colorSelectBox.setPosition(GameController.VIRTUAL_WIDTH/2 - 20 - colorSelectBox.getWidth(),GameController.VIRTUAL_HEIGHT  *2 / 3);
+        connectionStage.addActor(colorSelectBox);
+
+
+        nameField = new TextField("Enter Your Name", textFieldStyle);
+        nameField.setSize(joinGameButton.getWidth(),64);
+        nameField.setPosition(GameController.VIRTUAL_WIDTH / 2 + 20 ,GameController.VIRTUAL_HEIGHT  *2 / 3);
+        connectionStage.addActor(nameField);
+
 
         Gdx.input.setInputProcessor(connectionStage);
     }
@@ -139,7 +166,6 @@ public class ConnectionScreen implements Screen {
     }
 
     private void addPlayerList() {
-        System.out.println("Added player list");
         // Display the joined players
         joinedPlayersLabel = new Label("Joined Players: ", labelStyle);
         joinedPlayersLabel.setFontScale(TITLESCALE);
@@ -149,13 +175,12 @@ public class ConnectionScreen implements Screen {
                 GameController.VIRTUAL_HEIGHT / 2 - 160);
         joinedPlayersLabel.setAlignment(Align.center);
         connectionStage.addActor(joinedPlayersLabel);
-        System.out.println("done adding");
     }
     
-    private void joinGame(String ip) {
+    private void joinGame(String ip, PlayerInfo info) {
         switchToWater();
         addPlayerList();
-        networkClient = NetworkUtils.initNetworkObjects(false, ip, 42069, gameAdapter, this);
+        networkClient = NetworkUtils.initNetworkObjects(false, ip, 42069, gameAdapter, this, info);
         if (networkClient == null) {
             // Something was wrong in the input
             Gdx.app.debug("pjb3 - ConnectionScreen", "Ruh roh. Something is wrong, with the IP probably");
@@ -173,8 +198,10 @@ public class ConnectionScreen implements Screen {
         hostGameButton.remove();
         joinGameButton.remove();
         ipField.remove();
+        String name = nameField.getText();
+        nameField.remove();
         
-        Label label1 = new Label("Your Ip is " + NetworkUtils.getLocalHostAddr(), labelStyle);
+        Label label1 = new Label(name + ", your IP is " + NetworkUtils.getLocalHostAddr(), labelStyle);
         label1.setFontScale(TEXTSCALE);
         label1.setSize(200, 64);
         label1.setPosition(GameController.VIRTUAL_WIDTH/2 - label1.getWidth()/2, GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight() + 64 );
@@ -183,7 +210,8 @@ public class ConnectionScreen implements Screen {
         addPlayerList();
         
 //        10.122.178.55
-        networkClient = NetworkUtils.initNetworkObjects(true, null, 42069, gameAdapter, this);
+        networkClient = NetworkUtils.initNetworkObjects(true, null, 42069,
+                gameAdapter, this, new PlayerInfo(nameField.getText(), colorSelectBox.getSelected().value));
 //        Gdx.app.debug("pjb3 - ConnectionScreen", "Created the Host network object");
         connectionStage.addActor(launchGameButton);
         
@@ -220,6 +248,7 @@ public class ConnectionScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        connectionStage.act();
         connectionStage.draw();
     }
 

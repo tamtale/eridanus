@@ -25,7 +25,7 @@ public class MessageFormatter {
         update.messages.forEach((msg) -> {
             GameMessage parsedMsg = parseMessage(msg);
             if (parsedMsg == null) {
-                // Gdx.app.error(TAG, "The following message had an unrecognized MessageType: " + msg);
+                 Gdx.app.error(TAG, "The following message had an unrecognized MessageType: " + msg);
             } else {
                 msgList.add(parsedMsg);
             }
@@ -35,8 +35,9 @@ public class MessageFormatter {
 
     public static GameMessage parseMessage(String msg) {
         AMessage prototypeMessage = g.fromJson(msg, PrototypeMessage.class);
-
-        if (prototypeMessage.messageTypeID == MessageType.TEST) {
+        if (msg == null) {
+            return null;
+        } else  if (prototypeMessage.messageTypeID == MessageType.TEST) {
             return g.fromJson(msg, TestMessage.class);
         } else if (prototypeMessage.messageTypeID == MessageType.CREATEMINION){
             return g.fromJson(msg, CreateMinionMessage.class);
@@ -71,6 +72,8 @@ public class MessageFormatter {
                 return g.fromJson(jsonString, RequestRestartMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.SUBMITLOADOUT) {
                 return g.fromJson(jsonString, SubmitLoadoutMessage.class);
+            } else if (parsedMsg.messageTypeID == MessageType.SUBMITPLAYERINFO) {
+                return g.fromJson(jsonString, SubmitPlayerInfo.class);
             }
         }
 
@@ -79,6 +82,9 @@ public class MessageFormatter {
     }
 
     public static ClientControlMessage parseClientControlMessage(String jsonString) {
+        
+        Gdx.app.log(TAG, "About to parse as ClientControlMessage: " + jsonString);
+        
         AMessage parsedMsg = g.fromJson(jsonString, PrototypeMessage.class);
         if (parsedMsg != null) {
             if (parsedMsg.messageTypeID == MessageType.PLAYERID) {

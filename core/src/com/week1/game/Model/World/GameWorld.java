@@ -47,7 +47,7 @@ public class GameWorld implements GameRenderable {
                 graph.addVector2(new Vector2(i, j));
             }
         }
-        Gdx.app.log("Game World - wab2", "Block array built");
+        Gdx.app.debug("Game World - wab2", "Block array built");
         // Set up the chunk bounding boxes
         chunkSide = (int)Math.pow(blocks.length * blocks[0].length * blocks[0][0].length, 1d/4d);
         chunkHeight = 5;
@@ -151,6 +151,7 @@ public class GameWorld implements GameRenderable {
 
     private void updateGraph(int i, int j, Block block) {
         getHeightMap();
+        graph.aStarReset();
         int k = heightMap[i][j];
         for (int m = i - 1; m <= i + 1; m++) {
             for (int n = j - 1; n <= j + 1; n++) {

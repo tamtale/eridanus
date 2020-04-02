@@ -170,7 +170,6 @@ public class LoadoutScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     Gdx.app.debug("pjb3 LoadoutScreen", "About to send start message.");
-
                     long enteredSeed = parseMapSeed(mapSeedField.getText());
                     Gdx.app.log("lji1 LoadoutScreen", "Using seed: " + enteredSeed);
                     networkClient.sendGoToGame(enteredSeed);
@@ -189,10 +188,8 @@ public class LoadoutScreen implements Screen {
             }
         });
 
-        createNewGame(); // MAKE the game but dont start it yet.
+        createNewGame(); // MAKE the game but don't start it yet.
         Gdx.input.setInputProcessor(loadoutStage);
- 
- 
     }
     private long parseMapSeed(String mapSeed) {
         try {

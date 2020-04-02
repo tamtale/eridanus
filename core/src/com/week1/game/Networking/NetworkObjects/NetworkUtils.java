@@ -4,9 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.week1.game.GameControllerSetScreenAdapter;
 import com.week1.game.MenuScreens.ConnectionScreen;
 import com.week1.game.MenuScreens.ScreenManager;
-import com.week1.game.TowerBuilder.BlockSpec;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Option;
+import com.week1.game.Model.PlayerInfo;
 
 import java.net.*;
 import java.nio.channels.SocketChannel;
@@ -72,7 +70,7 @@ public class NetworkUtils {
      * act as a client. (Even when hosting, the instance also behaves as a client.)
      * @return The client object
      */
-    public static Client initNetworkObjects(boolean isHost, String hostIP, Integer port, GameControllerSetScreenAdapter gameAdapter, ConnectionScreen connectionScreen) {
+    public static Client initNetworkObjects(boolean isHost, String hostIP, Integer port, GameControllerSetScreenAdapter gameAdapter, ConnectionScreen connectionScreen, PlayerInfo info) {
         final String TAG = "initNetworkObjects - lji1";
         Gdx.app.log(TAG, "Local host address: " + getLocalHostAddr());
 
@@ -91,6 +89,7 @@ public class NetworkUtils {
                 // Now make the client stuff
                 ScreenManager sm = new ScreenManager(gameAdapter, true, connectionScreen);
                 c = new Client(localIpAddr, h.getPort(), sm);
+                c.sendPlayerInfo(info);
 
             } else {
                 Gdx.app.log(TAG, "Client option chosen.");
@@ -99,6 +98,7 @@ public class NetworkUtils {
                 try {
                     ScreenManager sm = new ScreenManager(gameAdapter, false, connectionScreen);
                     c = new Client(hostIP, port, sm);
+                    c.sendPlayerInfo(info);
                 }
                 catch (Exception e) {
                     throw new IndexOutOfBoundsException("Expected arguments in format: client <ip address> <portnumber> <start (optional)>");

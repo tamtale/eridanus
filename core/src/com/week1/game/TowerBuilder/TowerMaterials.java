@@ -45,8 +45,9 @@ public class TowerMaterials {
     addBlockType("earth3.png", "earth", BlockType.EARTH, 15,40, 100);
 
     // Spawners
-     addBlockType("water_wip.png", "spawner", BlockType.SPAWNER, 5,0, 500);
-      
+     addBlockType("spawner2.png", "spawner", BlockType.SPAWNER, 5,0, 500);
+
+
     //Easter egg
     addBlockType("cat_boi.png", "easter egg", BlockType.EASTEREGG, 10, 10,0);
 

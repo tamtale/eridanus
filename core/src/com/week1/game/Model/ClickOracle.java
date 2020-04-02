@@ -16,6 +16,7 @@ import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Renderer.TextureUtils;
+import com.week1.game.Settings.Settings;
 
 public class ClickOracle extends InputAdapter {
 
@@ -29,6 +30,7 @@ public class ClickOracle extends InputAdapter {
     private Array<Unit> multiSelected = new Array<>();
 
     private RenderConfig renderConfig;
+    private Settings settings;
 
     private Vector3 selectionLocationStart = new Vector3();
     private Vector3 selectionLocationEnd = new Vector3();
@@ -64,9 +66,10 @@ public class ClickOracle extends InputAdapter {
 
     private SpawnInfo.SpawnType spawnType;
 
-    public ClickOracle(IClickOracleAdapter adapter, RenderConfig renderConfig) {
+    public ClickOracle(IClickOracleAdapter adapter, RenderConfig renderConfig, Settings settings) {
         this.adapter = adapter;
         this.renderConfig = renderConfig;
+        this.settings = settings;
     }
 
     @Override
@@ -125,7 +128,7 @@ public class ClickOracle extends InputAdapter {
         setPassiveClickable(adapter.selectClickable(screenX, screenY, touchPos));
 
         // If the mouse is on the edge of the screen, translate the camera.
-        if (false) { // TODO use a flag whether or not to use screen panning.
+        if (settings.getEdgePan()) {
             if (screenX < SCREEN_THRESHOLD) {
                 edgePanning = true;
                 panLeft.execute();
@@ -206,20 +209,10 @@ public class ClickOracle extends InputAdapter {
                     }
                     @Override
                     public Void acceptBlockLocation(Vector3 vector) {
-                        // if the player left clicks on a block, spawn something on that block
-                        Gdx.app.log("ClickOracle", "Accepting block location.");
-                        if (spawnType == SpawnInfo.SpawnType.UNIT) {
-                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn unit");
-                            adapter.sendMessage(new CreateMinionMessage(vector.x, vector.y, vector.z + 1, 69, adapter.getPlayerId(), currentGameHash));
-                        } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
-                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 1 via state");
-                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 0, adapter.getPlayerId(), currentGameHash));
-                        } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
-                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 2 via state");
-                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 1, adapter.getPlayerId(), currentGameHash));
-                        } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
-                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 3 via state");
-                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 2, adapter.getPlayerId(), currentGameHash));
+                        // the player left clicked on a location - move all selected minions to this location
+                        if (multiSelected.notEmpty()) {
+                            Gdx.app.debug("luke probably", "About to send move message with these minions: " + multiSelected);
+                            adapter.sendMessage(new MoveMinionMessage(vector.x, vector.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
                         }
                         return null;
                     }
@@ -244,10 +237,20 @@ public class ClickOracle extends InputAdapter {
 
                     @Override
                     public Void acceptBlockLocation(Vector3 vector) {
-                        // the player right clicked on a location - move all selected minions to this location
-                        if (multiSelected.notEmpty()) {
-                            Gdx.app.debug("luke probably", "About to send move message with these minions: " + multiSelected);
-                            adapter.sendMessage(new MoveMinionMessage(vector.x, vector.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+                        // if the player right clicks on a block, spawn something on that block
+                        Gdx.app.log("ClickOracle", "Accepting block location.");
+                        if (spawnType == SpawnInfo.SpawnType.UNIT) {
+                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn unit");
+                            adapter.sendMessage(new CreateMinionMessage(vector.x, vector.y, vector.z + 1, 69, adapter.getPlayerId(), currentGameHash));
+                        } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
+                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 1 via state");
+                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 0, adapter.getPlayerId(), currentGameHash));
+                        } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
+                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 2 via state");
+                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 1, adapter.getPlayerId(), currentGameHash));
+                        } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
+                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 3 via state");
+                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 2, adapter.getPlayerId(), currentGameHash));
                         }
                         return null;
                     }

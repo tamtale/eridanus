@@ -2,22 +2,19 @@ package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.MenuScreens.ScreenManager;
+import com.week1.game.Model.PlayerInfo;
 import com.week1.game.Model.TowerLite;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.Control.ClientControl.ClientControlMessage;
-import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToGameMessage;
-import com.week1.game.Networking.Messages.Control.HostControl.RequestGoToLoadoutMessage;
-import com.week1.game.Networking.Messages.Control.HostControl.RequestRestartMessage;
-import com.week1.game.Networking.Messages.Control.HostControl.SubmitLoadoutMessage;
+import com.week1.game.Networking.Messages.Control.HostControl.*;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
+
 
 /**
  * This is a player of the game. There is also a Client on the computer that has the host.
@@ -29,12 +26,13 @@ public class Client {
     private InetAddress hostAddress;
     private int hostPort;
     
-    private DataInputStream in;
-    private DataOutputStream out;
+    private BufferedReader in;
+    private BufferedWriter out;
     
     private INetworkClientToEngineAdapter adapter;
     
     private int playerId = -1;
+    private List<PlayerInfo> infoList; // info of all the players in the game.
     private ScreenManager screenManager;
     
     public Client(String hostIpAddr, int hostPort, ScreenManager screenManager) throws IOException {
@@ -42,8 +40,8 @@ public class Client {
         this.hostPort = hostPort;
         this.screenManager = screenManager;
         this.tcpSocket = new Socket(hostAddress, hostPort);
-        this.in = new DataInputStream(tcpSocket.getInputStream());
-        this.out = new DataOutputStream(tcpSocket.getOutputStream());
+        this.in = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
+        this.out = new BufferedWriter(new OutputStreamWriter(tcpSocket.getOutputStream()));
         Gdx.app.log(TAG, "Created socket for client instance on port: " + tcpSocket.getLocalPort());
         
         awaitUpdates();
@@ -56,7 +54,8 @@ public class Client {
     public void sendStringMessage(String msg) {
         Gdx.app.debug(TAG, "About to send message: " + msg + " to: " + hostAddress + ":" + this.hostPort);
         try {
-            this.out.writeUTF(msg);
+            this.out.write(msg + "\n");
+            this.out.flush();
             Gdx.app.debug(TAG, "Sent message");
         } catch (IOException e) {
             Gdx.app.error(TAG, "Failed to send message: " + msg);
@@ -65,20 +64,10 @@ public class Client {
     }
     
     public void awaitUpdates() {
-        
         new Thread(() -> {
             while (true) {
-//                byte[] buf = new byte[TcpHost.DANGEROUS_HARDCODED_MESSAGE_SIZE]; // TODO: size this according to message length
-//                DatagramPacket packet = new DatagramPacket(buf, buf.length);
-
                 try {
-                    // blocks until a packet is received
-//                    udpSocket.receive(packet);
-//                    String messages = new String(packet.getData()).trim();
-                    String messages = this.in.readUTF();
-
-
-                    Gdx.app.debug(TAG, "About to try parsing message: " + messages);
+                    String messages = this.in.readLine();
                     // try parsing as a control message first
                     ClientControlMessage controlMsg = MessageFormatter.parseClientControlMessage(messages);
                     if (controlMsg != null) {
@@ -138,4 +127,15 @@ public class Client {
         return screenManager;
     }
 
+    public void sendPlayerInfo(PlayerInfo info) {
+        sendStringMessage(MessageFormatter.packageMessage(new SubmitPlayerInfo(info)));
+    }
+
+    public List<PlayerInfo> getInfoList() {
+        return infoList;
+    }
+
+    public void setInfoList(List<PlayerInfo> infoList) {
+        this.infoList = infoList;
+    }
 }
