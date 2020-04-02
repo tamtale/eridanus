@@ -9,6 +9,10 @@ import com.week1.game.Model.Components.VelocityComponent;
 import java.util.HashMap;
 import java.util.Map;
 
+/*
+ * System responsible for updating entities' positions on the map
+ * according to their velocity.
+ */
 public class MovementSystem implements ISystem {
 
     private Array<MoveNode> moveNodes = new Array<>();

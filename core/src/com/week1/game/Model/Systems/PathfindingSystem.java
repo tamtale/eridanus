@@ -7,6 +7,9 @@ import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.Components.VelocityComponent;
 import com.week1.game.Model.Unit2StateAdapter;
 
+/*
+ * System responsible for maintaining entities' paths toward some goal.
+ */
 public class PathfindingSystem implements ISystem {
 
     private Array<PathfindingNode> nodes = new Array<>();

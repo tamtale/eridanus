@@ -1,8 +1,5 @@
 package com.week1.game.Model.Systems;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Components.PositionComponent;
@@ -10,6 +7,11 @@ import com.week1.game.Model.Components.RenderComponent;
 import com.week1.game.Model.Components.VelocityComponent;
 import com.week1.game.Renderer.RenderConfig;
 
+/*
+ * System responsible for rendering game world entities (not the world itself).
+ * Performs positional extrapolation based on the time since the last game state update
+ * and the current time.
+ */
 public class RenderSystem implements ISystem {
 
     IntMap<RenderNode> nodes = new IntMap<>();
