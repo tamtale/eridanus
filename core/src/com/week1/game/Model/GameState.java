@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
+import com.week1.game.AIMovement.AStar;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Components.PathComponent;
 import com.week1.game.Model.Components.PositionComponent;
@@ -106,7 +107,7 @@ public class GameState implements GameRenderable {
             for (Vector3 loc: worldBuilder.crystalLocations()) {
                 crystals.add(new Crystal(loc.x, loc.y));
             }
-            graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
+            graph.setPathFinder(new AStar<>(graph));
             
             // notify the GameState that it can proceed with initialization
             mapReady[0] = true; // 'the array trick'

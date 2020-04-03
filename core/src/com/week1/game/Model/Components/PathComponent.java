@@ -6,4 +6,5 @@ import com.week1.game.Model.OutputPath;
 public class PathComponent implements IComponent {
     public Vector3 goal = new Vector3();
     public OutputPath path;
+    public float distToNext;
 }

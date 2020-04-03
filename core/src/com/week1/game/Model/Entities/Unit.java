@@ -246,10 +246,10 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
             } else if (dy < 0) {
                 angle += 2 * Math.PI;
             }
-            this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
+            pathComponent.distToNext = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
             velocityComponent.velocity.x = (float) speed * (float) Math.cos(angle);
             velocityComponent.velocity.y = (float) speed * (float) Math.sin(angle);
-            this.distanceTraveled = 0;
+            velocityComponent.distTraveled = 0;
             path.removeIndex(0);
         }
     }

@@ -135,7 +135,7 @@ public class GameWorld implements GameRenderable {
 
     private void updateGraph(int i, int j, Block block) {
         getHeightMap();
-        graph.aStarReset();
+//        graph.aStarReset();
         int k = heightMap[i][j];
         for (int m = i - 1; m <= i + 1; m++) {
             for (int n = j - 1; n <= j + 1; n++) {
