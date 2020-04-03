@@ -66,7 +66,6 @@ public class AStar<N> implements PathFinder<N> {
                 RouteNode<N> nextNode = allNodes.getOrDefault(connection.getToNode(), new RouteNode<N>(connection.getToNode()));
                 allNodes.put(connection.getToNode(), nextNode);
                 double newScore = next.costSoFar + heuristic.estimate(next.node, connection.getToNode());
-//                System.out.println("Open List " + openList);
                 if (newScore < nextNode.costSoFar){
                     nextNode.previous = next.node;
                     nextNode.costSoFar = newScore;
@@ -74,18 +73,6 @@ public class AStar<N> implements PathFinder<N> {
                     openList.add(nextNode);
                 }
             }
-//            graph.getConnections(next.node).forEach(connection -> {
-//                RouteNode<N> nextNode = allNodes.getOrDefault(connection.getToNode(), new RouteNode<N>(connection.getToNode()));
-//                allNodes.put(connection.getToNode(), nextNode);
-//                double newScore = next.costSoFar + heuristic.estimate(next.node, connection.getToNode());
-////                System.out.println("Open List " + openList);
-//                if (newScore < nextNode.costSoFar){
-//                    nextNode.previous = next.node;
-//                    nextNode.costSoFar = newScore;
-//                    nextNode.estimatedScore = (newScore + heuristic.estimate(connection.getToNode(), endNode));
-//                    openList.add(nextNode);
-//                }
-//            });
         } while(this.openList.size() > 0);
         return false;
     }
@@ -119,39 +106,9 @@ public class AStar<N> implements PathFinder<N> {
         return true;
     }
 
-//    protected boolean visitChildren(N endNode, Heuristic<N> heuristic) {
-//        Array<Connection<N>> connections = this.graph.getConnections(this.current.node);
-//        if (connections == null){
-//            Gdx.app.error("wab2 - connections", "Connections are null meaning someones out of bounds");
-//            return false;
-//        }
-//        for(int i = 0; i < connections.size; ++i) {
-//
-//            Connection<N> connection = (Connection)connections.get(i);
-//            N node = connection.getToNode();
-//            if (this.current == null){
-//                return false;
-//            }
-//            float nodeCost = this.current.costSoFar + connection.getCost();
-//            NodeRecord<N> nodeRecord = new NodeRecord<>();
-//            nodeRecord.node = node;
-//            float nodeHeuristic = heuristic.estimate(node, endNode);
-//
-//            nodeRecord.costSoFar = nodeCost;
-//            nodeRecord.connection = connection;
-//            if (!this.addToOpenList(nodeRecord, nodeCost + nodeHeuristic))
-//                return false;
-//        }
-//        return true;
-//    }
+
 
     protected void generateConnectionPath(N startNode, GraphPath<Connection<N>> outPath) {
-//        while(this.current.node != startNode) {
-////            outPath.add(this.current.connection);
-////            this.current = this.nodeRecords[this.graph.getIndex(this.current.connection.getFromNode())];
-//        }
-//
-//        outPath.reverse();
     }
 
     protected void generateNodePath(N startNode, GraphPath<N> outPath) {
@@ -166,17 +123,6 @@ public class AStar<N> implements PathFinder<N> {
         outPath.add(startNode);
         outPath.reverse();
     }
-
-//    protected boolean addToOpenList(NodeRecord<N> nodeRecord, float estimatedTotalCost) {
-//
-//        this.openList.add(nodeRecord, estimatedTotalCost);
-//        nodeRecord.category = 1;
-//        if (this.metrics != null) {
-//            ++this.metrics.openListAdditions;
-//            this.metrics.openListPeak = Math.max(this.metrics.openListPeak, this.openList.size);
-//        }
-//        return true;
-//    }
 
 
 
