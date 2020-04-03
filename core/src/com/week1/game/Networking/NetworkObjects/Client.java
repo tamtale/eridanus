@@ -52,7 +52,7 @@ public class Client {
     }
     
     public void sendStringMessage(String msg) {
-        Gdx.app.log(TAG, "About to send message: " + msg + " to: " + hostAddress + ":" + this.hostPort);
+        Gdx.app.debug(TAG, "About to send message: " + msg + " to: " + hostAddress + ":" + this.hostPort);
         try {
             this.out.write(msg + "\n");
             this.out.flush();
