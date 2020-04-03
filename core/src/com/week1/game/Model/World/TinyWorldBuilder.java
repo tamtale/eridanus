@@ -1,5 +1,6 @@
 package com.week1.game.Model.World;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 /**
@@ -32,8 +33,8 @@ public class TinyWorldBuilder implements IWorldBuilder {
     }
 
     @Override
-    public Vector3[] crystalLocations() {
-        return new Vector3[0];
+    public Vector2[] crystalLocations() {
+        return new Vector2[0];
     }
 
     @Override
