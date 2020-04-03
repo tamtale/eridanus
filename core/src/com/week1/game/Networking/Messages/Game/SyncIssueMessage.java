@@ -34,7 +34,7 @@ public class SyncIssueMessage extends GameMessage {
 
     @Override
     public boolean process(GameEngine engine, GameState gameState, InfoUtil util) {
-        Gdx.app.debug("pjb3 - SyncIssueMessage", "SYNCHRONIZATION ISSUE. CHECK STATE");
+        Gdx.app.log("pjb3 - SyncIssueMessage", "SYNCHRONIZATION ISSUE. CHECK STATE");
         util.log("pjb3 - SyncIssueMessage", "SYNCHRONIZATION ISSUE. CHECK STATE");
         util.log("pjb3 - SyncIssueMessage", gameState.packState(engine.getTurn()).getGameString());
 
