@@ -26,10 +26,6 @@ public class CoolWorldBuilder implements IWorldBuilder {
     private static final int NUM_CRYSTALS = 10;
     private static Vector2[] crystalLocs = new Vector2[NUM_CRYSTALS];
     
-//    private static List<Pair<Vector2, Vector2>> crystalSpawnAreas = new ArrayList<Pair<Vector2, Vector2>>() {{
-//        this.add(new Pair<>(new Vector2(30,30), new Vector2(60, 60)));
-//    }};
-    
     @Override
     public Block[][][] terrain() {
         // empty block
@@ -221,16 +217,6 @@ public class CoolWorldBuilder implements IWorldBuilder {
         return crystalLocs;
     }
     
-//    @Override
-//    public Vector2 getNextCrystalSpawn() {
-//        Pair<Vector2, Vector2> spawnArea = crystalSpawnAreas.get(random.nextInt(crystalSpawnAreas.size()));
-//        
-//        int x = random.nextInt((int)(spawnArea.value.x - spawnArea.key.x)) + (int)spawnArea.key.x;
-//        int y = random.nextInt((int)(spawnArea.value.y - spawnArea.key.y)) + (int)spawnArea.key.y;
-//        
-//        return new Vector2(x, y);
-//    }
-
     @Override
     public void addSeed(long mapSeed) {
         this.seed = mapSeed;
