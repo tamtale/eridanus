@@ -1,6 +1,10 @@
 package com.week1.game.Model.World;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.week1.game.Pair;
+
+import java.util.List;
 
 public interface IWorldBuilder {
     /**
@@ -16,7 +20,7 @@ public interface IWorldBuilder {
     /**
      * Locations of crystals on the map.
      */
-    Vector3[] crystalLocations();
+    Vector2[] crystalLocations();
 
     void addSeed(long mapSeed);
 }

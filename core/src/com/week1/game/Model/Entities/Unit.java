@@ -165,11 +165,10 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     }
 
     @Override
-    public boolean takeDamage(double dmg, Damage.type damageType) {
+    public boolean takeDamage(Damaging attacker, double dmg, Damage.type damageType) {
         this.hp -= dmg;
         if (this.hp <= 0) {
             return true;
-            // TODO again, might need to do more than returning true.
         } else {
             return false;
         }

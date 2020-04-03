@@ -5,6 +5,7 @@ import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Entities.Unit;
+import com.week1.game.Model.World.Block;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.InfoUtil;
 
@@ -44,6 +45,11 @@ public class CreateMinionMessage extends GameMessage {
         
         if (!inputState.getWorld().getBlock((int)x, (int)y, (int)z - 1).allowMinionToSpawnOn()) {
             util.log("lji1 - CreateMinionMessage", "Not allowed to spawn minion on tower.");
+            return false;
+        }
+        
+        if (!(inputState.getWorld().getBlock((int)x, (int)y, (int)z) == Block.TerrainBlock.AIR)) {
+            util.log("lji1 - CreateMinionMessage", "Not allowed to spawn minion in another block");
             return false;
         }
 
