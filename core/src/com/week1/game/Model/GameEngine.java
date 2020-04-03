@@ -33,6 +33,7 @@ public class GameEngine implements GameRenderable {
     private Queue<TaggedMessage> replayQueue;
     private boolean isStarted = false;
     BufferedWriter writer;
+    private EntityManager entityManager = new EntityManager();
 
     public GameEngine(IEngineAdapter adapter, int playerId, Queue<TaggedMessage> replayQueue, InfoUtil util) {
         this.adapter = adapter;
@@ -40,6 +41,7 @@ public class GameEngine implements GameRenderable {
         this.replayQueue = replayQueue;
         gameState = new GameState(
                 CoolWorldBuilder.ONLY,
+                entityManager,
                 () -> {
                     Vector3 position = new Vector3();
                     Tower myBase = gameState.getPlayerBase(this.enginePlayerId);

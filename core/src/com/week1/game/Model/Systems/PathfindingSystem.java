@@ -2,27 +2,35 @@ package com.week1.game.Model.Systems;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Components.PathComponent;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.Components.VelocityComponent;
 import com.week1.game.Model.Unit2StateAdapter;
 
+/*
+ * System responsible for maintaining entities' paths toward some goal.
+ */
 public class PathfindingSystem implements ISystem {
 
-    private Array<PathfindingNode> nodes = new Array<>();
+    private IntMap<PathfindingNode> nodeMap = new IntMap<>(); // Entity IDs are keys to their nodes.
     private Unit2StateAdapter stateAdapter;
 
     public PathfindingSystem(Unit2StateAdapter stateAdapter) {
         this.stateAdapter = stateAdapter;
     }
 
-    public void add(PositionComponent positionComponent, VelocityComponent velocityComponent, PathComponent pathComponent) {
-        nodes.add(new PathfindingNode(positionComponent, velocityComponent, pathComponent));
+    public void addNode(int id, PositionComponent positionComponent, VelocityComponent velocityComponent, PathComponent pathComponent) {
+        nodeMap.put(id, new PathfindingNode(positionComponent, velocityComponent, pathComponent));
+    }
+
+    public boolean removeNode(int id) {
+        return nodeMap.remove(id) != null;
     }
 
     @Override
     public void update(float delta) {
-        for (PathfindingNode node: nodes) {
+        for (PathfindingNode node: nodeMap.values()) {
             updateNode(delta, node);
         }
     }

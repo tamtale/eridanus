@@ -1,7 +1,6 @@
 package com.week1.game.Model.Entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -11,9 +10,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
-import com.week1.game.Model.Components.PathComponent;
-import com.week1.game.Model.Components.PositionComponent;
-import com.week1.game.Model.Components.VelocityComponent;
+import com.week1.game.Model.Components.*;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
 import com.week1.game.Model.Unit2StateAdapter;
@@ -27,25 +24,25 @@ import java.util.Map;
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 
-public class Unit extends Damageable implements Damaging, GameRenderable, Clickable {
+public class Unit extends Damageable implements Damaging, Clickable {
     private PositionComponent positionComponent;
     private VelocityComponent velocityComponent;
     private PathComponent pathComponent;
-    private final int playerID;
+    private RenderComponent renderComponent;
+    private OwnedComponent ownedComponent;
+    private TargetingComponent targetingComponent;
+
     private float distance;
     private float distanceTraveled;
     Unit2StateAdapter unit2StateAdapter;
     private boolean selected;
-    private float blockSpeed;
     private int turn = 0;
     private double hp;
     private double maxHp;
     public int ID;
     public static double speed = 4;
     // 3D STUFF
-    private static ModelBuilder BUILDER = new ModelBuilder();
     private Model model;
-    private ModelInstance modelInstance;
     private Vector3 displayPosition = new Vector3();
 
     /*
@@ -64,28 +61,26 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     private Material originalMaterial;
 
     private static Map<Integer, Color> colorMap;
-    private static Map<Integer, Model> modelMap;
-
-
-
+    public static Map<Integer, Model> modelMap;
 
     public Unit(
         PositionComponent positionComponent,
         VelocityComponent velocityComponent,
         PathComponent pathComponent,
-        double hp, int playerID
+        RenderComponent renderComponent,
+        OwnedComponent ownedComponent,
+        TargetingComponent targetingComponent,
+        double hp
     ) {
         this.positionComponent = positionComponent;
         this.velocityComponent = velocityComponent;
         this.pathComponent = pathComponent;
-        this.displayPosition.set(positionComponent.position);
-        this.playerID = playerID;
+        this.renderComponent = renderComponent;
+        this.ownedComponent = ownedComponent;
         this.hp = hp;
         this.maxHp = hp;
         this.velocityComponent.velocity = new Vector3(0, 0, 0);
-        this.model = modelMap.get(playerID);
-        this.modelInstance = new ModelInstance(model);
-        modelInstance.transform.setTranslation(positionComponent.position);
+        this.model = modelMap.get(ownedComponent.playerID);
         this.originalMaterial = model.materials.get(0);
     }
 
@@ -120,8 +115,7 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
                     float dy = pathComponent.path.get(0).y - positionComponent.position.y;
                     int height = unit2StateAdapter.getHeight((int) positionComponent.position.x, (int) positionComponent.position.y);
                     int nxtHeight = unit2StateAdapter.getHeight((int) pathComponent.path.get(0).x, (int) pathComponent.path.get(0).y);
-                    this.blockSpeed = 1f/unit2StateAdapter.getBlock((int) positionComponent.position.x, (int) positionComponent.position.y,
-                            height).getCost(); //TODO: 3D
+                    final float blockSpeed = 1f / unit2StateAdapter .getBlock( (int) positionComponent.position.x, (int) positionComponent.position.y, height) .getCost(); //TODO: 3D
                     positionComponent.position.z = nxtHeight + 1;
                     this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
                     double angle = Math.atan(dy / dx);
@@ -144,21 +138,15 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
                 velocityComponent.velocity.y = 0;
             }
         }
-        displayPosition.set(positionComponent.position); // Sync the unit's display to the next 'real' location
+        // displayPosition.set(positionComponent.position); // Sync the unit's display to the next 'real' location
     }
 
     private void move(float delta) {
         Gdx.app.debug("move", "moving:" + positionComponent.position);
         positionComponent.position.set(positionComponent.position.x + (velocityComponent.velocity.x * delta), positionComponent.position.y + (
             velocityComponent.velocity.y * delta), positionComponent.position.z);
-        modelInstance.transform.setToTranslation(positionComponent.position);
+        renderComponent.modelInstance.transform.setToTranslation(positionComponent.position);
         this.distanceTraveled += Math.sqrt(Math.pow(velocityComponent.velocity.x * delta, 2) + Math.pow(velocityComponent.velocity.y * delta, 2));
-    }
-
-    private void moveRender(float delta) {
-        displayPosition.x = displayPosition.x + (velocityComponent.velocity.x * delta);
-        displayPosition.y = displayPosition.y + (velocityComponent.velocity.y * delta);
-        modelInstance.transform.setToTranslation(displayPosition);
     }
 
     @Override
@@ -200,7 +188,7 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     }
 
     @Override
-    public int getPlayerId(){return playerID;}
+    public int getPlayerId() {return ownedComponent.playerID;}
 
     @Override
     public void getPos(Vector3 pos) {
@@ -220,18 +208,6 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     @Override
     public float getMaxHealth() {
         return (float) this.maxHp;
-    }
-
-    public OutputPath getPath(){
-        return pathComponent.path;
-    }
-
-    public float getVelocityX(){
-        return velocityComponent.velocity.x;
-    }
-
-    public float getVelocityY(){
-        return velocityComponent.velocity.y;
     }
 
     public void setPath(OutputPath path) {
@@ -265,7 +241,7 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     @Override
     public String toString() {
         return "Unit{" +
-                "playerID=" + playerID +
+                " playerID=" + ownedComponent.playerID +
                 ", turn=" + turn +
                 ", hp=" + hp +
                 ", vel=" + velocityComponent.velocity +
@@ -282,13 +258,13 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     private static BoundingBox box = new BoundingBox();
     @Override
     public boolean intersects(Ray ray, Vector3 intersection) {
-        modelInstance.calculateBoundingBox(box);
-        box.mul(modelInstance.transform);
+        renderComponent.modelInstance.calculateBoundingBox(box);
+        box.mul(renderComponent.modelInstance.transform);
         return Intersector.intersectRayBounds(ray, box, intersection);
     }
 
     public void setMaterial(Material newMat, boolean changeToMat) {
-        Material mat = modelInstance.materials.get(0);
+        Material mat = renderComponent.modelInstance.materials.get(0);
         mat.clear();
         if (changeToMat) {
             mat.set(newMat);
@@ -314,12 +290,4 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
         return clickableVisitor.acceptUnit(this);
     }
 
-    @Override
-    public void render(RenderConfig config) {
-        float delta = config.getDelta();
-        if (delta != 0) {
-            moveRender(delta);
-        }
-        config.getModelBatch().render(modelInstance, config.getEnv());
-    }
 }
