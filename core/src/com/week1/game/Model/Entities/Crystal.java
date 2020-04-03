@@ -71,8 +71,8 @@ public class Crystal extends Damageable {
     }
 
 
-    private static final float maxHealth = 2000;
-    private float currentHealth = 2000;
+    private static final float maxHealth = 1000;
+    private float currentHealth = 1000;
     
     @Override
     public float getCurrentHealth() {

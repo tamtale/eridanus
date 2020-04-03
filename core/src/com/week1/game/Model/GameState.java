@@ -24,7 +24,7 @@ import java.util.List;
 import static com.week1.game.Model.StatsConfig.*;
 
 public class GameState implements GameRenderable {
-    private final static int CRYSTAL_RESPAWN_INTERVAL = 200;
+    private final static int CRYSTAL_RESPAWN_INTERVAL = 400;
     private final static int SECONDARY_CRYSTAL_RESPAWN_INTERVAL = 10;
     
     private final Unit2StateAdapter u2s;
