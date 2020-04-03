@@ -14,8 +14,8 @@ import com.week1.game.Renderer.RenderConfig;
  */
 public class RenderSystem implements ISystem {
 
-    IntMap<RenderNode> nodes = new IntMap<>();
-    private float updateDelta = 0; // time from the last logical update
+    IntMap<RenderNode> nodes = new IntMap<>(); // Entity IDs are keys to their nodes.
+    private float updateDelta = 0; // Time from the last logical update.
     private Vector3 interpolated = new Vector3();
 
     public void render(RenderConfig config) {
@@ -32,11 +32,11 @@ public class RenderSystem implements ISystem {
         config.getModelBatch().end();
     }
 
-    public void add(int id, RenderComponent renderComponent, PositionComponent positionComponent, VelocityComponent velocityComponent) {
+    public void addNode(int id, RenderComponent renderComponent, PositionComponent positionComponent, VelocityComponent velocityComponent) {
         nodes.put(id, new RenderNode(renderComponent, positionComponent, velocityComponent));
     }
 
-    public boolean remove(int id) {
+    public boolean removeNode(int id) {
         return nodes.remove(id) != null;
     }
 

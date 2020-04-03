@@ -10,10 +10,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
-import com.week1.game.Model.Components.PathComponent;
-import com.week1.game.Model.Components.PositionComponent;
-import com.week1.game.Model.Components.RenderComponent;
-import com.week1.game.Model.Components.VelocityComponent;
+import com.week1.game.Model.Components.*;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
 import com.week1.game.Model.Unit2StateAdapter;
@@ -32,19 +29,19 @@ public class Unit extends Damageable implements Damaging, Clickable {
     private VelocityComponent velocityComponent;
     private PathComponent pathComponent;
     private RenderComponent renderComponent;
-    private final int playerID;
+    private OwnedComponent ownedComponent;
+    private TargetingComponent targetingComponent;
+
     private float distance;
     private float distanceTraveled;
     Unit2StateAdapter unit2StateAdapter;
     private boolean selected;
-    private float blockSpeed;
     private int turn = 0;
     private double hp;
     private double maxHp;
     public int ID;
     public static double speed = 4;
     // 3D STUFF
-    private static ModelBuilder BUILDER = new ModelBuilder();
     private Model model;
     private Vector3 displayPosition = new Vector3();
 
@@ -71,18 +68,19 @@ public class Unit extends Damageable implements Damaging, Clickable {
         VelocityComponent velocityComponent,
         PathComponent pathComponent,
         RenderComponent renderComponent,
-        double hp, int playerID
+        OwnedComponent ownedComponent,
+        TargetingComponent targetingComponent,
+        double hp
     ) {
         this.positionComponent = positionComponent;
         this.velocityComponent = velocityComponent;
         this.pathComponent = pathComponent;
         this.renderComponent = renderComponent;
-        this.displayPosition.set(positionComponent.position);
-        this.playerID = playerID;
+        this.ownedComponent = ownedComponent;
         this.hp = hp;
         this.maxHp = hp;
         this.velocityComponent.velocity = new Vector3(0, 0, 0);
-        this.model = modelMap.get(playerID);
+        this.model = modelMap.get(ownedComponent.playerID);
         this.originalMaterial = model.materials.get(0);
     }
 
@@ -117,8 +115,7 @@ public class Unit extends Damageable implements Damaging, Clickable {
                     float dy = pathComponent.path.get(0).y - positionComponent.position.y;
                     int height = unit2StateAdapter.getHeight((int) positionComponent.position.x, (int) positionComponent.position.y);
                     int nxtHeight = unit2StateAdapter.getHeight((int) pathComponent.path.get(0).x, (int) pathComponent.path.get(0).y);
-                    this.blockSpeed = 1f/unit2StateAdapter.getBlock((int) positionComponent.position.x, (int) positionComponent.position.y,
-                            height).getCost(); //TODO: 3D
+                    final float blockSpeed = 1f / unit2StateAdapter .getBlock( (int) positionComponent.position.x, (int) positionComponent.position.y, height) .getCost(); //TODO: 3D
                     positionComponent.position.z = nxtHeight + 1;
                     this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
                     double angle = Math.atan(dy / dx);
@@ -141,7 +138,7 @@ public class Unit extends Damageable implements Damaging, Clickable {
                 velocityComponent.velocity.y = 0;
             }
         }
-        displayPosition.set(positionComponent.position); // Sync the unit's display to the next 'real' location
+        // displayPosition.set(positionComponent.position); // Sync the unit's display to the next 'real' location
     }
 
     private void move(float delta) {
@@ -150,12 +147,6 @@ public class Unit extends Damageable implements Damaging, Clickable {
             velocityComponent.velocity.y * delta), positionComponent.position.z);
         renderComponent.modelInstance.transform.setToTranslation(positionComponent.position);
         this.distanceTraveled += Math.sqrt(Math.pow(velocityComponent.velocity.x * delta, 2) + Math.pow(velocityComponent.velocity.y * delta, 2));
-    }
-
-    private void moveRender(float delta) {
-        displayPosition.x = displayPosition.x + (velocityComponent.velocity.x * delta);
-        displayPosition.y = displayPosition.y + (velocityComponent.velocity.y * delta);
-        renderComponent.modelInstance.transform.setToTranslation(displayPosition);
     }
 
     @Override
@@ -197,7 +188,7 @@ public class Unit extends Damageable implements Damaging, Clickable {
     }
 
     @Override
-    public int getPlayerId(){return playerID;}
+    public int getPlayerId() {return ownedComponent.playerID;}
 
     @Override
     public void getPos(Vector3 pos) {
@@ -250,7 +241,7 @@ public class Unit extends Damageable implements Damaging, Clickable {
     @Override
     public String toString() {
         return "Unit{" +
-                "playerID=" + playerID +
+                " playerID=" + ownedComponent.playerID +
                 ", turn=" + turn +
                 ", hp=" + hp +
                 ", vel=" + velocityComponent.velocity +

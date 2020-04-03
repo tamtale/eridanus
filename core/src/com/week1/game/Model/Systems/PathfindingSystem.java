@@ -2,6 +2,7 @@ package com.week1.game.Model.Systems;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Components.PathComponent;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.Components.VelocityComponent;
@@ -12,20 +13,24 @@ import com.week1.game.Model.Unit2StateAdapter;
  */
 public class PathfindingSystem implements ISystem {
 
-    private Array<PathfindingNode> nodes = new Array<>();
+    private IntMap<PathfindingNode> nodeMap = new IntMap<>(); // Entity IDs are keys to their nodes.
     private Unit2StateAdapter stateAdapter;
 
     public PathfindingSystem(Unit2StateAdapter stateAdapter) {
         this.stateAdapter = stateAdapter;
     }
 
-    public void add(PositionComponent positionComponent, VelocityComponent velocityComponent, PathComponent pathComponent) {
-        nodes.add(new PathfindingNode(positionComponent, velocityComponent, pathComponent));
+    public void addNode(int id, PositionComponent positionComponent, VelocityComponent velocityComponent, PathComponent pathComponent) {
+        nodeMap.put(id, new PathfindingNode(positionComponent, velocityComponent, pathComponent));
+    }
+
+    public boolean removeNode(int id) {
+        return nodeMap.remove(id) != null;
     }
 
     @Override
     public void update(float delta) {
-        for (PathfindingNode node: nodes) {
+        for (PathfindingNode node: nodeMap.values()) {
             updateNode(delta, node);
         }
     }
@@ -57,8 +62,8 @@ public class PathfindingSystem implements ISystem {
         } else if (vecToPath.y < 0) {
             angle += 2 * Math.PI;
         }
-        velocityComponent.velocity.x = blockSpeed * (float) velocityComponent.baseSpeed * (float) Math.cos(angle);
-        velocityComponent.velocity.y = blockSpeed * (float) velocityComponent.baseSpeed * (float) Math.sin(angle);
+        velocityComponent.velocity.x = blockSpeed * velocityComponent.baseSpeed * (float) Math.cos(angle);
+        velocityComponent.velocity.y = blockSpeed * velocityComponent.baseSpeed * (float) Math.sin(angle);
         pathComponent.path.removeIndex(0);
         velocityComponent.distTraveled = 0;
         // TODO look over/redo the arrival detection mechanism

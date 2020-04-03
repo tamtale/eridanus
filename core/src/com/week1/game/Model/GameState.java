@@ -10,10 +10,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
-import com.week1.game.Model.Components.PathComponent;
-import com.week1.game.Model.Components.PositionComponent;
-import com.week1.game.Model.Components.RenderComponent;
-import com.week1.game.Model.Components.VelocityComponent;
+import com.week1.game.Model.Components.*;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.Systems.MovementSystem;
 import com.week1.game.Model.Systems.PathfindingSystem;
@@ -35,7 +32,6 @@ import static com.week1.game.Model.StatsConfig.*;
 public class GameState implements GameRenderable {
     private final Unit2StateAdapter u2s;
     private GameGraph graph;
-
     private Array<Clickable> clickables = new Array<>();
     private int minionCount;
     private Array<Unit> units = new Array<>();
@@ -43,14 +39,12 @@ public class GameState implements GameRenderable {
     private Array<Tower> towers = new Array<>();
     private IntMap<PlayerBase> playerBases = new IntMap<>();
     private Array<PlayerStat> playerStats = new Array<>();
-    private Array<Damageable> damageables = new Array<>();
-    private Array<Damaging> damagings = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
     private MovementSystem movementSystem = new MovementSystem();
     private PathfindingSystem pathfindingSystem;
     private RenderSystem renderSystem = new RenderSystem();
-    
+
     private TowerLoadouts towerLoadouts;
     /*
      * Runnable to execute immediately after the game state has been initialized.
@@ -161,30 +155,27 @@ public class GameState implements GameRenderable {
         VelocityComponent velocityComponent = new VelocityComponent((float) Unit.speed, x, y, z);
         PathComponent pathComponent = new PathComponent();
         RenderComponent renderComponent = new RenderComponent(new ModelInstance(Unit.modelMap.get(playerID)));
-        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, tempHealth, playerID);
+        OwnedComponent ownedComponent = new OwnedComponent(playerID);
+        TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true);
+        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, tempHealth);
         u.ID = minionCount;
         units.add(u);
         u.setUnit2StateAdapter(u2s);
-        movementSystem.add(positionComponent, velocityComponent);
-        pathfindingSystem.add(positionComponent, velocityComponent, pathComponent);
-        renderSystem.add(u.ID, renderComponent, positionComponent, velocityComponent);
+        movementSystem.addNode(u.ID, positionComponent, velocityComponent);
+        pathfindingSystem.addNode(u.ID, positionComponent, velocityComponent, pathComponent);
+        renderSystem.addNode(u.ID, renderComponent, positionComponent, velocityComponent);
         clickables.add(u);
-        damageables.add(u);
-        damagings.add(u);
         minionCount += 1;
         return u;
     }
 
     public void addTower(Tower t, int playerID) {
         towers.add(t);
-        damageables.add(t);
-        damagings.add(t);
         addBuilding(t, playerID);
     }
 
     public void addBase(PlayerBase pb, int playerID) {
         playerBases.put(playerID, pb);
-        damageables.add(pb);
         addBuilding(pb, playerID);
     }
 
@@ -359,12 +350,7 @@ public class GameState implements GameRenderable {
 //        modelBatch.end();
         renderSystem.render(config);
 
-        // Render overlay stuff
-        batch2D.begin();
-        for (int i = 0; i < damageables.size; i++) {
-            damageables.get(i).drawHealthBar(config);
-        }
-        batch2D.end();
+        // TODO Render overlay stuff
     }
 
 

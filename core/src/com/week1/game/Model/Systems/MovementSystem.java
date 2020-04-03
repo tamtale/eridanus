@@ -15,11 +15,11 @@ import java.util.Map;
  */
 public class MovementSystem implements ISystem {
 
-    private Array<MoveNode> moveNodes = new Array<>();
+    private IntMap<MoveNode> nodeMap = new IntMap<>(); // Entity IDs are keys into their nodes.
 
     @Override
     public void update(float delta) {
-        for (MoveNode node: moveNodes) {
+        for (MoveNode node: nodeMap.values()) {
             VelocityComponent velocityComponent = node.velocityComponent;
             Vector3 velocity = velocityComponent.velocity;
             Vector3 position = node.positionComponent.position;
@@ -31,12 +31,12 @@ public class MovementSystem implements ISystem {
         }
     }
 
-    public void add(PositionComponent position, VelocityComponent velocity) {
-        moveNodes.add(new MoveNode(position, velocity));
+    public void addNode(int id, PositionComponent position, VelocityComponent velocity) {
+        nodeMap.put(id, new MoveNode(position, velocity));
     }
 
-    public void remove(MoveNode node) {
-        moveNodes.removeValue(node, true);
+    public boolean removeNode(int id) {
+        return nodeMap.remove(id) != null;
     }
 
     static class MoveNode {

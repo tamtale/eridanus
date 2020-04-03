@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class VelocityComponent extends AComponent {
     public float baseSpeed;
-    public float distTraveled = 0; // current distance traveled with the same velocity.
+    public float distTraveled = 0; // Current distance traveled with the same velocity.
     public Vector3 velocity;
     public VelocityComponent(float baseSpeed, float x, float y, float z) {
         this.baseSpeed = baseSpeed;
