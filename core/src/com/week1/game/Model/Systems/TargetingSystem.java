@@ -15,13 +15,13 @@ public class TargetingSystem implements ISystem {
     private IntMap<TargetingNode> nodes = new IntMap<>();
 
     /*
-     * Service to find a suitable target given a TargetingNode.
+     * Service to find a suitable target given a target component and position.
      * Will return a pair consisting of entity ID and position.
      * If no suitable target found, the key is -1.
      */
-    private IService<TargetingNode, Pair<Integer, PositionComponent>> findNearbyService;
+    private IService<Pair<TargetingComponent, PositionComponent>, Pair<Integer, PositionComponent>> findNearbyService;
 
-    public TargetingSystem(IService<TargetingNode, Pair<Integer, PositionComponent>> findNearbyService) {
+    public TargetingSystem(IService<Pair<TargetingComponent, PositionComponent>, Pair<Integer, PositionComponent>> findNearbyService) {
         this.findNearbyService = findNearbyService;
     }
 
@@ -34,10 +34,11 @@ public class TargetingSystem implements ISystem {
 
     private void updateNode(TargetingNode node) {
         TargetingComponent targetingComponent = node.targetingComponent;
+        PositionComponent positionComponent = node.positionComponent;
         // Check if the current target is still in range.
         if (node.positionComponent.position.dst(node.targetPositionComponent.position) < targetingComponent.range) return;
         if (!targetingComponent.switchTargets) return;
-        Pair<Integer, PositionComponent> nearby = findNearbyService.query(node);
+        Pair<Integer, PositionComponent> nearby = findNearbyService.query(new Pair<>(targetingComponent, positionComponent));
         targetingComponent.targetID = nearby.key;
         if (nearby.key != -1) {
             node.targetPositionComponent = nearby.value;

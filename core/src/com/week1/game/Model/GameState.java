@@ -12,9 +12,7 @@ import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Components.*;
 import com.week1.game.Model.Entities.*;
-import com.week1.game.Model.Systems.MovementSystem;
-import com.week1.game.Model.Systems.PathfindingSystem;
-import com.week1.game.Model.Systems.RenderSystem;
+import com.week1.game.Model.Systems.*;
 import com.week1.game.Model.World.Block;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
@@ -44,6 +42,7 @@ public class GameState implements GameRenderable {
     private MovementSystem movementSystem = new MovementSystem();
     private PathfindingSystem pathfindingSystem;
     private RenderSystem renderSystem = new RenderSystem();
+    private TargetingSystem targetingSystem;
 
     private TowerLoadouts towerLoadouts;
     /*
@@ -70,6 +69,19 @@ public class GameState implements GameRenderable {
                 return world.getHeight(i, j);
             }
         };
+        this.targetingSystem = new TargetingSystem(new IService<Pair<TargetingComponent, PositionComponent>, Pair<Integer, PositionComponent>>() {
+            Vector3 dist = new Vector3();
+            Vector3 minDist = new Vector3();
+            Pair<Integer, PositionComponent> result = new Pair<>(-1, null);
+            @Override
+            public Pair<Integer, PositionComponent> query(Pair<TargetingComponent, PositionComponent> key) {
+                // Look for a suitable target (units, towers).
+                for (Unit unit: units) {
+                    // TODO bigly
+                }
+                return null;
+            }
+        });
         this.pathfindingSystem = new PathfindingSystem(u2s);
         this.postInit = postInit;
     }
