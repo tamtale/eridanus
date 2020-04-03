@@ -6,6 +6,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.week1.game.GameController;
 
+import java.io.File;
+
 public class TowerBuilderScreen implements Screen {
 
     private GameController game;
@@ -153,4 +155,13 @@ public class TowerBuilderScreen implements Screen {
         towerStage.showDialog(msg);
     }
 
+    public void deleteTower(TowerDetails twr) {
+        //delete the current tower
+        //display preset 1
+        towerCam.setCurrTowerDetails(TowerPresets.presets.get(0));
+        File deletedTower = new File(".\\customTowers\\" + twr.getName());
+        deletedTower.delete();
+
+        towerStage.removeTowerFromSelection(twr);
+    }
 }

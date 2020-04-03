@@ -226,6 +226,8 @@ public class TowerBuilderCamera {
         int result = selectInvisiblock(screenX, screenY);
 
         if (result > -1) {
+
+
             WIPTower.addBlock(new BlockSpec(TowerMaterials.materialCodes.get(materialSelection),
                     (int) invisiBlocks.get(result).x, (int) invisiBlocks.get(result).y, (int) invisiBlocks.get(result).z));
             towerScreen.updateTowerStats();
@@ -305,6 +307,11 @@ public class TowerBuilderCamera {
     public void highlightBlock(int screenX, int screenY) {
         int result = selectInvisiblock(screenX, screenY);
         if (result != -1) {
+            Vector3 resultVec = invisiBlocks.get(result);
+            if (resultVec.x == -1 & resultVec.y == 0 & resultVec.z == 0) {
+                System.out.println("Screen coords: " + screenX + ", " + screenY);
+            }
+
             ModelInstance newbloc = new ModelInstance(TowerMaterials.modelMap.get(BlockType.HIGHLIGHT));
             newbloc.transform.setToTranslation(invisiBlocks.get(result).x * BLOCKLENGTH,
                     invisiBlocks.get(result).y * BLOCKLENGTH, invisiBlocks.get(result).z * BLOCKLENGTH);

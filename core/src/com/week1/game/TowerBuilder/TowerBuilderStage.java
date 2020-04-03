@@ -28,6 +28,9 @@ public class TowerBuilderStage {
     private TextButton startGame;
     private SelectBox<TowerDetails> displaySelection;
     private Label viewTowerLbl;
+    private TextButton deleteTowerBtn;
+    private Dialog deleteTwrDialog;
+    private Dialog deletePresetErrDialog;
 
     //Build mode buttons
     private TextButton buildModeBtn;
@@ -35,7 +38,7 @@ public class TowerBuilderStage {
     private TextButton addBlockBtn;
     private TextButton removeBlockBtn;
     private SelectBox<String> materialSelection;
-    private Dialog dialog;
+    private Dialog enterNameDialog;
     Texture tex;
     private Label blockTypeLbl;
 
@@ -152,6 +155,45 @@ public class TowerBuilderStage {
 
         buildModeBtn = new TextButton("Switch to\nBuild Mode", normalStyle);
         viewTowerLbl = new Label("View Tower: ", panelstyle);
+        deleteTowerBtn = new TextButton("Delete Tower", normalStyle);
+
+        //Dialog for deleting towers and the buttons on the
+        TextButton yesBtn = new TextButton("Yes", normalStyle);
+        TextButton noBtn = new TextButton("No", normalStyle);
+        yesBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                screen.deleteTower(displaySelection.getSelected());
+                deleteTwrDialog.hide();
+            }
+        });
+
+        noBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                deleteTwrDialog.hide();
+            }
+        });
+        yesBtn.setWidth(150);
+        noBtn.setWidth(150);
+        deleteTwrDialog = new Dialog("Delete Tower", new Skin(Gdx.files.internal("uiskin.json")));
+        deleteTwrDialog.text("Are you sure you want to delete " + displaySelection.getSelected().getName()+ "?");
+        deleteTwrDialog.getContentTable().row();
+        deleteTwrDialog.getContentTable().add(yesBtn);
+        deleteTwrDialog.getContentTable().add(noBtn);
+
+        //dialog for deleting preset error
+        TextButton okBtn = new TextButton("OK", normalStyle);
+        okBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                deletePresetErrDialog.hide();
+            }
+        });
+        deletePresetErrDialog = new Dialog("Preset Delete Error", new Skin(Gdx.files.internal("uiskin.json")));
+        deletePresetErrDialog.text("You can't delete a preset tower.");
+        deletePresetErrDialog.getContentTable().row();
+        deletePresetErrDialog.getContentTable().add(okBtn);
 
         //Build mode buttons
         addBlockBtn = new TextButton("Add block", normalStyle);
@@ -159,31 +201,31 @@ public class TowerBuilderStage {
         saveTowerBtn = new TextButton("Save Tower", normalStyle);
         blockTypeLbl = new Label("Block Type: ", panelstyle);
 
-        TextField twrName = new TextField("", new Skin(Gdx.files.internal("uiskin.json")));
-        dialog = new Dialog("Name your tower", new Skin(Gdx.files.internal("uiskin.json")));
-        dialog.text("Enter a name for your tower below: ");
-        dialog.getContentTable().row();
-        dialog.getContentTable().add(twrName);
-        dialog.getContentTable().row();
-        TextButton enterName = new TextButton("Enter", new Skin(Gdx.files.internal("uiskin.json")));
+        TextField twrNameField = new TextField("", new Skin(Gdx.files.internal("uiskin.json")));
+        enterNameDialog = new Dialog("Name your tower", new Skin(Gdx.files.internal("uiskin.json")));
+        enterNameDialog.text("Enter a name for your tower below: ");
+        enterNameDialog.getContentTable().row();
+        enterNameDialog.getContentTable().add(twrNameField);
+        enterNameDialog.getContentTable().row();
+        TextButton enterNameBtn = new TextButton("Enter", new Skin(Gdx.files.internal("uiskin.json")));
         TextButton cancelBtn = new TextButton("Cancel", new Skin(Gdx.files.internal("uiskin.json")));
 
-        enterName.addListener(new ClickListener() {
+        enterNameBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println(twrName.getText());
-                screen.saveTower(twrName.getText());
-                dialog.hide();
-                twrName.setText("");
+                System.out.println(twrNameField.getText());
+                screen.saveTower(twrNameField.getText());
+                enterNameDialog.hide();
+                twrNameField.setText("");
             }});
         cancelBtn.addListener(new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            twrName.setText("");
-            dialog.hide();
+            twrNameField.setText("");
+            enterNameDialog.hide();
         }});
-        dialog.getContentTable().add(enterName);
-        dialog.getContentTable().add(cancelBtn);
+        enterNameDialog.getContentTable().add(enterNameBtn);
+        enterNameDialog.getContentTable().add(cancelBtn);
 
 
 
@@ -228,6 +270,10 @@ public class TowerBuilderStage {
         buildModeBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
         buildModeBtn.setPosition(2 * COMPONENTWIDTH, 0);
         stage.addActor(buildModeBtn);
+
+        deleteTowerBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
+        deleteTowerBtn.setPosition(3 * COMPONENTWIDTH, 0);
+        stage.addActor(deleteTowerBtn);
 
         addBlockBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
         addBlockBtn.setPosition(COMPONENTWIDTH * 3, 0);
@@ -294,6 +340,18 @@ public class TowerBuilderStage {
            }
         });
 
+        deleteTowerBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (TowerPresets.presets.contains(displaySelection.getSelected())) {
+                    deletePresetErrDialog.show(dialogStage);
+                } else {
+                    //display an 'are you sure?' popup.
+                    deleteTwrDialog.show(dialogStage);
+                }
+            }
+        });
+
         addBlockBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -320,7 +378,7 @@ public class TowerBuilderStage {
         saveTowerBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                dialog.show(dialogStage);
+                enterNameDialog.show(dialogStage);
             }
         });
 
@@ -427,6 +485,8 @@ public class TowerBuilderStage {
     private void activateBuildMode() {
         buildModeBtn.setText("Switch to\nView Mode");
         viewTowerLbl.setStyle(inactive_panelstyle);
+        deleteTowerBtn.setVisible(false);
+        deleteTowerBtn.setDisabled(true);
 
         //display build mode actors
         addBlockBtn.setVisible(true);
@@ -448,6 +508,8 @@ public class TowerBuilderStage {
     private void deactivateBuildMode() {
         buildModeBtn.setText("Switch to\nBuild Mode");
         viewTowerLbl.setStyle(panelstyle);
+        deleteTowerBtn.setVisible(true);
+        deleteTowerBtn.setDisabled(false);
 
         deactivateAdd();
         deactivateRemove();
@@ -467,6 +529,13 @@ public class TowerBuilderStage {
         displaySelection.setStyle(normalSelectBox);
     }
 
+    public void removeTowerFromSelection(TowerDetails twr) {
+        Array<TowerDetails> towers = displaySelection.getItems();
+        towers.removeValue(twr, true);
+        displaySelection.setItems(towers);
+
+        displaySelection.setSelectedIndex(0);
+    }
 }
 
 
