@@ -3,9 +3,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -14,8 +12,6 @@ import com.week1.game.Model.Components.*;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
 import com.week1.game.Model.Unit2StateAdapter;
-import com.week1.game.Renderer.GameRenderable;
-import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Util3D;
 
 import java.util.HashMap;
@@ -24,21 +20,21 @@ import java.util.Map;
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 
-public class Unit extends Damageable implements Damaging, Clickable {
+public class Unit implements Damaging, Clickable {
     private PositionComponent positionComponent;
     private VelocityComponent velocityComponent;
     private PathComponent pathComponent;
     private RenderComponent renderComponent;
     private OwnedComponent ownedComponent;
     private TargetingComponent targetingComponent;
+    private DamagingComponent damagingComponent;
+    private HealthComponent healthComponent;
 
     private float distance;
     private float distanceTraveled;
     Unit2StateAdapter unit2StateAdapter;
     private boolean selected;
     private int turn = 0;
-    private double hp;
-    private double maxHp;
     public int ID;
     public static double speed = 4;
     // 3D STUFF
@@ -70,16 +66,15 @@ public class Unit extends Damageable implements Damaging, Clickable {
         RenderComponent renderComponent,
         OwnedComponent ownedComponent,
         TargetingComponent targetingComponent,
-        double hp
+        HealthComponent healthComponent
     ) {
         this.positionComponent = positionComponent;
         this.velocityComponent = velocityComponent;
         this.pathComponent = pathComponent;
         this.renderComponent = renderComponent;
         this.ownedComponent = ownedComponent;
-        this.hp = hp;
-        this.maxHp = hp;
-        this.velocityComponent.velocity = new Vector3(0, 0, 0);
+        this.targetingComponent = targetingComponent;
+        this.healthComponent = healthComponent;
         this.model = modelMap.get(ownedComponent.playerID);
         this.originalMaterial = model.materials.get(0);
     }
@@ -94,16 +89,6 @@ public class Unit extends Damageable implements Damaging, Clickable {
                 );
             }
         };
-    }
-
-    @Override
-    public float getReward() {
-        return 0;
-    }
-
-    @Override
-    public <T> T accept(DamageableVisitor<T> visitor) {
-        return visitor.acceptUnit(this);
     }
 
     public void step(float delta) {
@@ -149,17 +134,6 @@ public class Unit extends Damageable implements Damaging, Clickable {
         this.distanceTraveled += Math.sqrt(Math.pow(velocityComponent.velocity.x * delta, 2) + Math.pow(velocityComponent.velocity.y * delta, 2));
     }
 
-    @Override
-    public boolean takeDamage(double dmg, Damage.type damageType) {
-        this.hp -= dmg;
-        if (this.hp <= 0) {
-            return true;
-            // TODO again, might need to do more than returning true.
-        } else {
-            return false;
-        }
-    }
-
     public float getX() {
         return positionComponent.position.x;
     }
@@ -172,9 +146,13 @@ public class Unit extends Damageable implements Damaging, Clickable {
         return positionComponent.position.z;
     }
 
+    public PositionComponent getPositionComponent() {
+        return positionComponent;
+    }
+
 
     public boolean isDead() {
-        return this.hp <= 0;
+        return this.healthComponent.curHealth <= 0;
     }
 
     @Override
@@ -189,26 +167,6 @@ public class Unit extends Damageable implements Damaging, Clickable {
 
     @Override
     public int getPlayerId() {return ownedComponent.playerID;}
-
-    @Override
-    public void getPos(Vector3 pos) {
-        pos.set(positionComponent.position);
-    }
-
-    @Override
-    public void getDisplayPos(Vector3 pos) {
-        pos.set(displayPosition);
-    }
-
-    @Override
-    public float getCurrentHealth() {
-        return (float) this.hp;
-    }
-
-    @Override
-    public float getMaxHealth() {
-        return (float) this.maxHp;
-    }
 
     public void setPath(OutputPath path) {
         this.pathComponent.path = path;
@@ -243,9 +201,9 @@ public class Unit extends Damageable implements Damaging, Clickable {
         return "Unit{" +
                 " playerID=" + ownedComponent.playerID +
                 ", turn=" + turn +
-                ", hp=" + hp +
+                ", hp=" + healthComponent.curHealth +
                 ", vel=" + velocityComponent.velocity +
-                ", maxHp=" + maxHp +
+                ", maxHp=" + healthComponent.maxHealth +
                 ", ID=" + ID +
                 ", x=" + positionComponent.position.x +
                 ", y=" + positionComponent.position.y +

@@ -22,6 +22,8 @@ import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
+import com.week1.game.Tuple3;
+
 import java.util.List;
 
 import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
@@ -31,7 +33,6 @@ public class GameState implements GameRenderable {
     private final Unit2StateAdapter u2s;
     private GameGraph graph;
     private Array<Clickable> clickables = new Array<>();
-    private int minionCount;
     private Array<Unit> units = new Array<>();
     private Array<Crystal> crystals = new Array<>();
     private Array<Tower> towers = new Array<>();
@@ -43,6 +44,7 @@ public class GameState implements GameRenderable {
     private PathfindingSystem pathfindingSystem;
     private RenderSystem renderSystem = new RenderSystem();
     private TargetingSystem targetingSystem;
+    private EntityManager entityManager = new EntityManager();
 
     private TowerLoadouts towerLoadouts;
     /*
@@ -50,10 +52,6 @@ public class GameState implements GameRenderable {
      */
     private Runnable postInit;
     private boolean fullyInitialized = false;
-
-    private GameState getGameState() {
-        return this;
-    }
 
     public GameState(IWorldBuilder worldBuilder, EntityManager entityManager, Runnable postInit){
         // TODO tower types in memory after exchange
@@ -69,26 +67,65 @@ public class GameState implements GameRenderable {
                 return world.getHeight(i, j);
             }
         };
-        this.targetingSystem = new TargetingSystem(new IService<Pair<TargetingComponent, PositionComponent>, Pair<Integer, PositionComponent>>() {
-            Vector3 dist = new Vector3();
-            Vector3 minDist = new Vector3();
-            Pair<Integer, PositionComponent> result = new Pair<>(-1, null);
-            @Override
-            public Pair<Integer, PositionComponent> query(Pair<TargetingComponent, PositionComponent> key) {
-                // Look for a suitable target (units, towers).
-                for (Unit unit: units) {
-                    // TODO bigly
-                }
-                return null;
-            }
-        });
         this.pathfindingSystem = new PathfindingSystem(u2s);
+        initTargetingSystem();
         this.postInit = postInit;
     }
+
+    /*
+     * Targeting system uses a service that (currently) needs intimate access to the gamestate,
+     * so we'll do the initialization here.
+     */
+    private void initTargetingSystem() {
+        this.targetingSystem = new TargetingSystem(new IService<Tuple3<OwnedComponent, TargetingComponent, PositionComponent>, Pair<Integer, PositionComponent>>() {
+            Vector3 otherPosition = new Vector3();
+            float minDist = Float.POSITIVE_INFINITY;
+            Pair<Integer, PositionComponent> result = new Pair<>(-1, null);
+            @Override
+            public Pair<Integer, PositionComponent> query(Tuple3<OwnedComponent, TargetingComponent, PositionComponent> key) {
+                result.key = -1;
+                result.value = null;
+                OwnedComponent ownedComponent = key._1;
+                TargetingComponent targetingComponent = key._2;
+                PositionComponent positionComponent = key._3;
+
+                PositionComponent otherPositionComponent;
+                minDist = targetingComponent.range; // Any target must be within range.
+                float dist;
+                // Check all the units for the closest suitable target.
+                for (Unit unit: units) {
+                    // Check if unit owner follows owner rule.
+                    int unitOwner = unit.getPlayerId();
+                    switch (targetingComponent.strategy) {
+                        case ENEMY:
+                            if (unitOwner == ownedComponent.playerID) continue;
+                            break;
+                        case TEAM:
+                            if (unitOwner != ownedComponent.playerID) continue;
+                            break;
+                        case ALL:
+                            break;
+                    }
+                    // Check position of unit.
+                    otherPositionComponent = unit.getPositionComponent();
+                    if (otherPositionComponent == positionComponent) continue; // TODO should be a better way of making sure there's no self targeting
+                    dist = positionComponent.position.dst(otherPositionComponent.position);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        result.key = unit.ID;
+                        result.value = unit.getPositionComponent();
+                    }
+                }
+                return result;
+            }
+        });
+    }
+
     public void synchronousUpdateState(int communicationTurn) {
         updateMana(1);
         pathfindingSystem.update(THRESHOLD);
         movementSystem.update(THRESHOLD);
+        targetingSystem.update(THRESHOLD);
         renderSystem.update(THRESHOLD);
         doTowerSpecialAbilities(communicationTurn);
     }
@@ -164,20 +201,21 @@ public class GameState implements GameRenderable {
 
     public Unit addUnit(float x, float y, float z, float tempHealth, int playerID){
         PositionComponent positionComponent = new PositionComponent(x, y, z);
-        VelocityComponent velocityComponent = new VelocityComponent((float) Unit.speed, x, y, z);
+        VelocityComponent velocityComponent = new VelocityComponent((float) Unit.speed, 0, 0, 0);
         PathComponent pathComponent = new PathComponent();
         RenderComponent renderComponent = new RenderComponent(new ModelInstance(Unit.modelMap.get(playerID)));
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
-        TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true);
-        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, tempHealth);
-        u.ID = minionCount;
+        TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true, TargetingComponent.TargetingStrategy.ENEMY);
+        HealthComponent healthComponent = new HealthComponent(tempHealth, tempHealth);
+        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, healthComponent);
+        u.ID = entityManager.newID();
         units.add(u);
         u.setUnit2StateAdapter(u2s);
         movementSystem.addNode(u.ID, positionComponent, velocityComponent);
         pathfindingSystem.addNode(u.ID, positionComponent, velocityComponent, pathComponent);
         renderSystem.addNode(u.ID, renderComponent, positionComponent, velocityComponent);
+        targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
         clickables.add(u);
-        minionCount += 1;
         return u;
     }
 
@@ -338,12 +376,6 @@ public class GameState implements GameRenderable {
         return buildings;
     }
 
-    public void moveUnits(float movementAmount) {
-        for (int i = 0; i < units.size; i++) {
-            units.get(i).step(movementAmount);
-        }
-    }
-
     public PackagedGameState packState(int turn) {
         return new PackagedGameState(turn, units, towers, playerBases, playerStats);
     }
@@ -354,12 +386,6 @@ public class GameState implements GameRenderable {
         ModelBatch modelBatch = config.getModelBatch();
         Batch batch2D = config.getBatch();
 
-//        // Render Units
-//        modelBatch.begin(config.getCam());
-//        for (int i = 0; i < units.size; i++) {
-//            units.get(i).render(config);
-//        }
-//        modelBatch.end();
         renderSystem.render(config);
 
         // TODO Render overlay stuff

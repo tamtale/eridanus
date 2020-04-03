@@ -1,10 +1,13 @@
 package com.week1.game.Model.Systems;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntMap;
+import com.week1.game.Model.Components.OwnedComponent;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.Components.TargetingComponent;
 import com.week1.game.Pair;
+import com.week1.game.Tuple3;
 
 /*
  * System responsible for updating targets.
@@ -19,11 +22,13 @@ public class TargetingSystem implements ISystem {
      * Will return a pair consisting of entity ID and position.
      * If no suitable target found, the key is -1.
      */
-    private IService<Pair<TargetingComponent, PositionComponent>, Pair<Integer, PositionComponent>> findNearbyService;
+    private IService<Tuple3<OwnedComponent, TargetingComponent, PositionComponent>, Pair<Integer, PositionComponent>> findNearbyService;
 
-    public TargetingSystem(IService<Pair<TargetingComponent, PositionComponent>, Pair<Integer, PositionComponent>> findNearbyService) {
+    public TargetingSystem(IService<Tuple3<OwnedComponent, TargetingComponent, PositionComponent>, Pair<Integer, PositionComponent>> findNearbyService) {
         this.findNearbyService = findNearbyService;
     }
+
+    private Tuple3<OwnedComponent, TargetingComponent, PositionComponent> serviceQuery = new Tuple3<>(null, null, null);
 
     @Override
     public void update(float delta) {
@@ -34,19 +39,27 @@ public class TargetingSystem implements ISystem {
 
     private void updateNode(TargetingNode node) {
         TargetingComponent targetingComponent = node.targetingComponent;
+        PositionComponent targetPositionComponent = node.targetPositionComponent;
         PositionComponent positionComponent = node.positionComponent;
+        OwnedComponent ownedComponent = node.ownedComponent;
         // Check if the current target is still in range.
-        if (node.positionComponent.position.dst(node.targetPositionComponent.position) < targetingComponent.range) return;
+        if ((targetingComponent.targetID != -1)
+            && (positionComponent.position.dst(targetPositionComponent.position) < targetingComponent.range)) return;
+
         if (!targetingComponent.switchTargets) return;
-        Pair<Integer, PositionComponent> nearby = findNearbyService.query(new Pair<>(targetingComponent, positionComponent));
+
+        serviceQuery.set(ownedComponent, targetingComponent, positionComponent);
+        Pair<Integer, PositionComponent> nearby = findNearbyService.query(serviceQuery);
         targetingComponent.targetID = nearby.key;
-        if (nearby.key != -1) {
+        if (targetingComponent.targetID!= -1) {
             node.targetPositionComponent = nearby.value;
+        } else {
+            node.targetPositionComponent = null;
         }
     }
 
-    public void addNode(int id, PositionComponent positionComponent, TargetingComponent targetingComponent) {
-        nodes.put(id, new TargetingNode(positionComponent, targetingComponent));
+    public void addNode(int id, OwnedComponent ownedComponent, TargetingComponent targetingComponent, PositionComponent positionComponent) {
+        nodes.put(id, new TargetingNode(ownedComponent, targetingComponent, positionComponent, null));
     }
 
     public boolean removeNode(int id) {
@@ -54,12 +67,19 @@ public class TargetingSystem implements ISystem {
     }
 
     static class TargetingNode {
+        public OwnedComponent ownedComponent;
         public TargetingComponent targetingComponent;
         public PositionComponent positionComponent;
         public PositionComponent targetPositionComponent;
-        public TargetingNode(PositionComponent positionComponent, TargetingComponent targetingComponent) {
-            this.positionComponent = positionComponent;
+
+        public TargetingNode(OwnedComponent ownedComponent,
+                             TargetingComponent targetingComponent,
+                             PositionComponent positionComponent,
+                             PositionComponent targetPositionComponent) {
+            this.ownedComponent = ownedComponent;
             this.targetingComponent = targetingComponent;
+            this.positionComponent = positionComponent;
+            this.targetPositionComponent = targetPositionComponent;
         }
     }
 }

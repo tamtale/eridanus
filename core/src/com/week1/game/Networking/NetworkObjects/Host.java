@@ -143,7 +143,7 @@ public class Host {
     
     public void broadcastToRegisteredPlayers(String msg) {
         registry.values().forEach((player) -> {
-            Gdx.app.log(TAG, "Sending message: " + msg + " to player: " + player.address);
+            Gdx.app.debug(TAG, "Sending message: " + msg + " to player: " + player.address);
             sendMessage(msg, player);
         });
     }
