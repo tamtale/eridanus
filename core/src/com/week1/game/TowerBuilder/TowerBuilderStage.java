@@ -184,7 +184,7 @@ public class TowerBuilderStage {
         yesBtn.setWidth(150);
         noBtn.setWidth(150);
         deleteTwrDialog = new Dialog("Delete Tower", new Skin(Gdx.files.internal("uiskin.json")));
-        deleteTwrDialog.text("Are you sure you want to delete " + displaySelection.getSelected().getName()+ "?");
+        deleteTwrDialog.text("Are you sure you want to delete this tower?");
         deleteTwrDialog.getContentTable().row();
         deleteTwrDialog.getContentTable().add(yesBtn);
         deleteTwrDialog.getContentTable().add(noBtn);
@@ -354,8 +354,8 @@ public class TowerBuilderStage {
                 if (TowerPresets.presets.contains(displaySelection.getSelected())) {
                     deletePresetErrDialog.show(dialogStage);
                 } else {
-                    //display an 'are you sure?' popup.
                     deleteTwrDialog.show(dialogStage);
+
                 }
             }
         });
@@ -572,8 +572,6 @@ public class TowerBuilderStage {
         Array<TowerDetails> towers = displaySelection.getItems();
         towers.removeValue(twr, true);
         displaySelection.setItems(towers);
-
-        displaySelection.setSelectedIndex(0);
     }
 
     public void addTowerAndView(TowerDetails editedTower) {

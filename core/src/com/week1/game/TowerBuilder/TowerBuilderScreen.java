@@ -159,8 +159,11 @@ public class TowerBuilderScreen implements Screen {
         //delete the current tower
         //display preset 1
         towerCam.setCurrTowerDetails(TowerPresets.presets.get(0));
-        File deletedTower = new File(".\\customTowers\\" + twr.getName());
-        deletedTower.delete();
+        String path = ".\\customTowers\\" + twr.getName() +"_layout.txt";
+        File deletedTower = new File(path);
+        System.out.println(path);
+        boolean success = deletedTower.delete();
+        System.out.println(success);
 
         towerStage.removeTowerFromSelection(twr);
     }
