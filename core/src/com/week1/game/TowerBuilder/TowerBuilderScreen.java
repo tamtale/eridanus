@@ -139,8 +139,8 @@ public class TowerBuilderScreen implements Screen {
         towerCam.stopHighlighting();
     }
 
-    public void displayBuildCore() {
-        towerCam.setCurrTowerDetails(TowerPresets.getBuildCore());
+    public void setBuildModeTower(boolean useBuildCore) {
+        towerCam.setWIPTower(useBuildCore);
     }
 
 
@@ -163,5 +163,20 @@ public class TowerBuilderScreen implements Screen {
         deletedTower.delete();
 
         towerStage.removeTowerFromSelection(twr);
+    }
+
+    public void saveEdits() {
+        //remove the old tower from the select box
+        towerStage.removeTowerFromSelection(towerCam.getCurrTowerDetails());
+
+        //write the changes
+        towerCam.getWIPTower().saveTower();
+
+        //View the new tower in the came and the stage and add to select box
+        towerCam.setCurrTowerDetails(towerCam.getWIPTower());
+        towerStage.addTowerAndView(towerCam.getCurrTowerDetails());
+
+
+
     }
 }

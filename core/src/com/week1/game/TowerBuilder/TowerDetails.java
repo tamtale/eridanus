@@ -38,6 +38,10 @@ public class TowerDetails {
     //    the number of the corresponding spawner blocks in the tower
     private Map<Integer, Integer> spawnerBlockCounts = new HashMap<>();
 
+    public static TowerDetails copy(TowerDetails tower) {
+        return new TowerDetails(tower.layout, tower.name);
+    }
+
     public List<BlockSpec> getLayout() {
         return layout;
     }

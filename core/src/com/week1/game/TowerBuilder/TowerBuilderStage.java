@@ -34,12 +34,14 @@ public class TowerBuilderStage {
     private Dialog deleteTwrDialog;
     private Dialog deletePresetErrDialog;
     private TextButton editTwrBtn;
+    private Dialog editPresetErrDialog;
     private TextButton newTwrBtn;
 
 
     //Build mode buttons
     private TextButton exitBuildBtn;
     private TextButton saveTowerBtn;
+    private boolean isEditing = false;
     private TextButton addBlockBtn;
     private TextButton removeBlockBtn;
     private SelectBox<String> materialSelection;
@@ -53,19 +55,18 @@ public class TowerBuilderStage {
     private Label.LabelStyle panelstyle;
     private Label.LabelStyle inactive_panelstyle;
 
-    //make skins
-    private static TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
+    //Button styles
+    private static TextButton.TextButtonStyle normalBtnStyle = new TextButton.TextButtonStyle(
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("8e7186")),
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("8e7186")),
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("8e7186")), new BitmapFont());
 
-
-    //old color - 574053
-    private static TextButton.TextButtonStyle pressedStyle = new TextButton.TextButtonStyle(
+    private static TextButton.TextButtonStyle pressedBtnStyle = new TextButton.TextButtonStyle(
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("3e363c")),
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("3e363c")),
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("3e363c")), new BitmapFont());
 
+    //Label background Style
     private static ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle(new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-rect", Color.valueOf("9e8196")),
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-scroll", Color.valueOf("8e7186")),
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-large", Color.valueOf("8e7186")),
@@ -145,14 +146,27 @@ public class TowerBuilderStage {
 
         materialSelection.setItems(materials);
 
-        newTwrBtn = new TextButton("Build New Towers", normalStyle);
+        newTwrBtn = new TextButton("Build New Towers", normalBtnStyle);
         viewTowerLbl = new Label("View Tower: ", panelstyle);
-        deleteTowerBtn = new TextButton("Delete Tower", normalStyle);
-        editTwrBtn = new TextButton("Edit Tower", normalStyle);
+        deleteTowerBtn = new TextButton("Delete Tower", normalBtnStyle);
+        editTwrBtn = new TextButton("Edit Tower", normalBtnStyle);
+
+        //Dialog for editing towers
+        TextButton editErrOkBtn = new TextButton("OK", normalBtnStyle);
+        editErrOkBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                editPresetErrDialog.hide();
+            }
+        });
+        editPresetErrDialog = new Dialog("Edit Preset Error", new Skin(Gdx.files.internal("uiskin.json")));
+        editPresetErrDialog.text("You cannot edit a preset tower");
+        editPresetErrDialog.getContentTable().row();
+        editPresetErrDialog.getContentTable().add(editErrOkBtn);
 
         //Dialog for deleting towers and the buttons on the
-        TextButton yesBtn = new TextButton("Yes", normalStyle);
-        TextButton noBtn = new TextButton("No", normalStyle);
+        TextButton yesBtn = new TextButton("Yes", normalBtnStyle);
+        TextButton noBtn = new TextButton("No", normalBtnStyle);
         yesBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -176,7 +190,7 @@ public class TowerBuilderStage {
         deleteTwrDialog.getContentTable().add(noBtn);
 
         //dialog for deleting preset error
-        TextButton okBtn = new TextButton("OK", normalStyle);
+        TextButton okBtn = new TextButton("OK", normalBtnStyle);
         okBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -189,10 +203,10 @@ public class TowerBuilderStage {
         deletePresetErrDialog.getContentTable().add(okBtn);
 
         //Build mode buttons
-        exitBuildBtn = new TextButton("Exit Build Mode", normalStyle);
-        addBlockBtn = new TextButton("Add block", normalStyle);
-        removeBlockBtn = new TextButton("Remove Block", normalStyle);
-        saveTowerBtn = new TextButton("Save Tower", normalStyle);
+        exitBuildBtn = new TextButton("Exit Build Mode", normalBtnStyle);
+        addBlockBtn = new TextButton("Add block", normalBtnStyle);
+        removeBlockBtn = new TextButton("Remove Block", normalBtnStyle);
+        saveTowerBtn = new TextButton("Save", normalBtnStyle);
         blockTypeLbl = new Label("Block Type: ", panelstyle);
 
         TextField twrNameField = new TextField("", new Skin(Gdx.files.internal("uiskin.json")));
@@ -225,7 +239,7 @@ public class TowerBuilderStage {
 
 
         startGame = new TextButton("Main Menu", new Skin(Gdx.files.internal("uiskin.json")));
-        startGame.setStyle(normalStyle);
+        startGame.setStyle(normalBtnStyle);
     }
 
     private void configureWidgets() {
@@ -328,10 +342,9 @@ public class TowerBuilderStage {
            @Override
            public void clicked(InputEvent event, float x, float y) {
                isBuildMode = true;
-               screen.displayBuildCore();
+               screen.setBuildModeTower(true);
                sw.setLblTxt(screen.getTowerStats());
                activateBuildMode();
-
            }
         });
 
@@ -347,14 +360,20 @@ public class TowerBuilderStage {
             }
         });
 
-//        editTwrBtn.addListener(new ClickListener() {
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                isBuildMode = true;
-//                activateBuildMode();
-//
-//            }
-//        });
+        editTwrBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (TowerPresets.presets.contains(displaySelection.getSelected())) {
+                    editPresetErrDialog.show(dialogStage);
+                } else {
+                    isBuildMode = true;
+                    isEditing = true;
+                    screen.setBuildModeTower(false);
+                    activateBuildMode();
+                }
+
+            }
+        });
 
         exitBuildBtn.addListener(new ClickListener() {
             @Override
@@ -394,7 +413,12 @@ public class TowerBuilderStage {
         saveTowerBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                enterNameDialog.show(dialogStage);
+                if (isEditing) {
+                    //delete the tower details in the select box and replace with the new one
+                    screen.saveEdits();
+                } else {
+                    enterNameDialog.show(dialogStage);
+                }
             }
         });
 
@@ -466,7 +490,7 @@ public class TowerBuilderStage {
 
         //press button and stop highlighting previous mode block
         screen.stopHighlighting();
-        addBlockBtn.setStyle(pressedStyle);
+        addBlockBtn.setStyle(pressedBtnStyle);
         addBlockBtn.setChecked(true);
 
     }
@@ -476,7 +500,7 @@ public class TowerBuilderStage {
 
         //uncheck the button
         addBlockBtn.setChecked(false);
-        addBlockBtn.setStyle(normalStyle);
+        addBlockBtn.setStyle(normalBtnStyle);
     }
 
     private void activateRemove() {
@@ -488,13 +512,13 @@ public class TowerBuilderStage {
 
         //press button and stop highlighting previous mode block
         screen.stopHighlighting();
-        removeBlockBtn.setStyle(pressedStyle);
+        removeBlockBtn.setStyle(pressedBtnStyle);
         removeBlockBtn.setChecked(true);
     }
 
     private void deactivateRemove() {
         isDelMode = false;
-        removeBlockBtn.setStyle(normalStyle);
+        removeBlockBtn.setStyle(normalBtnStyle);
         removeBlockBtn.setChecked(false);
     }
 
@@ -511,8 +535,8 @@ public class TowerBuilderStage {
         addBlockBtn.setVisible(true);
         materialSelection.setVisible(true);
         removeBlockBtn.setVisible(true);
-        saveTowerBtn.setVisible(true);
         blockTypeLbl.setVisible(true);
+        saveTowerBtn.setVisible(true);
 
         //uncheck all buttons
         addBlockBtn.setChecked(false);
@@ -550,6 +574,15 @@ public class TowerBuilderStage {
         displaySelection.setItems(towers);
 
         displaySelection.setSelectedIndex(0);
+    }
+
+    public void addTowerAndView(TowerDetails editedTower) {
+        Array<TowerDetails> selectionTowers = displaySelection.getItems();
+        selectionTowers.add(editedTower);
+        displaySelection.setItems(selectionTowers);
+
+        displaySelection.setSelected(editedTower);
+        sw.setLblTxt(screen.getTowerStats());
     }
 }
 
