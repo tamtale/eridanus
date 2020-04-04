@@ -39,7 +39,11 @@ public class TowerDetails {
     private Map<Integer, Integer> spawnerBlockCounts = new HashMap<>();
 
     public static TowerDetails copy(TowerDetails tower) {
-        return new TowerDetails(tower.layout, tower.name);
+        List<BlockSpec> layoutCopy = new ArrayList<>();
+        for (int i = 0; i < tower.layout.size(); i++) {
+            layoutCopy.add(tower.layout.get(i));
+        }
+        return new TowerDetails(layoutCopy, tower.name);
     }
 
     public List<BlockSpec> getLayout() {

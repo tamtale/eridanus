@@ -51,7 +51,6 @@ public class TowerBuilderCamera {
             //a copy of the current tower
             this.WIPTower = TowerDetails.copy(currTowerDetails);
         }
-
         calcNewInvisiBlox();
     }
 
