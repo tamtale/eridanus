@@ -26,14 +26,19 @@ public class TowerBuilderStage {
     public Stage backgroundImgStage;
     private StatsWidget sw;
     private TextButton startGame;
+
+    //View mode buttons
     private SelectBox<TowerDetails> displaySelection;
     private Label viewTowerLbl;
     private TextButton deleteTowerBtn;
     private Dialog deleteTwrDialog;
     private Dialog deletePresetErrDialog;
+    private TextButton editTwrBtn;
+    private TextButton newTwrBtn;
+
 
     //Build mode buttons
-    private TextButton buildModeBtn;
+    private TextButton exitBuildBtn;
     private TextButton saveTowerBtn;
     private TextButton addBlockBtn;
     private TextButton removeBlockBtn;
@@ -72,19 +77,6 @@ public class TowerBuilderStage {
     private static SelectBox.SelectBoxStyle normalSelectBox = new SelectBox.SelectBoxStyle(new BitmapFont(),
             Color.WHITE, new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-select", Color.valueOf("9e8196")),
             scrollStyle, listStyle);
-
-    private static ScrollPane.ScrollPaneStyle disabledScrollStyle = new ScrollPane.ScrollPaneStyle(new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-rect", Color.valueOf("3e363c")),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-scroll", Color.valueOf("8e7186")),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-large", Color.valueOf("8e7186")),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-scroll", Color.valueOf("8e7186")),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-large", Color.valueOf("8e7186")));
-
-    private static  List.ListStyle disabledListStyle = new List.ListStyle(new BitmapFont(), Color.DARK_GRAY, Color.DARK_GRAY, new Skin(Gdx.files.internal("uiskin.json")).newDrawable("selection"));
-
-
-    private static SelectBox.SelectBoxStyle disabledSelectBox = new SelectBox.SelectBoxStyle(new BitmapFont(),
-            Color.DARK_GRAY, new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-select", Color.valueOf("3e363c")),
-            disabledScrollStyle, disabledListStyle);
 
 
     public boolean isBuildMode = false;
@@ -153,9 +145,10 @@ public class TowerBuilderStage {
 
         materialSelection.setItems(materials);
 
-        buildModeBtn = new TextButton("Switch to\nBuild Mode", normalStyle);
+        newTwrBtn = new TextButton("Build New Towers", normalStyle);
         viewTowerLbl = new Label("View Tower: ", panelstyle);
         deleteTowerBtn = new TextButton("Delete Tower", normalStyle);
+        editTwrBtn = new TextButton("Edit Tower", normalStyle);
 
         //Dialog for deleting towers and the buttons on the
         TextButton yesBtn = new TextButton("Yes", normalStyle);
@@ -196,6 +189,7 @@ public class TowerBuilderStage {
         deletePresetErrDialog.getContentTable().add(okBtn);
 
         //Build mode buttons
+        exitBuildBtn = new TextButton("Exit Build Mode", normalStyle);
         addBlockBtn = new TextButton("Add block", normalStyle);
         removeBlockBtn = new TextButton("Remove Block", normalStyle);
         saveTowerBtn = new TextButton("Save Tower", normalStyle);
@@ -267,37 +261,47 @@ public class TowerBuilderStage {
 
 
         //Build Mode buttons
-        buildModeBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
-        buildModeBtn.setPosition(2 * COMPONENTWIDTH, 0);
-        stage.addActor(buildModeBtn);
-
         deleteTowerBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
         deleteTowerBtn.setPosition(3 * COMPONENTWIDTH, 0);
         stage.addActor(deleteTowerBtn);
 
+        editTwrBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
+        editTwrBtn.setPosition(2 * COMPONENTWIDTH, 0);
+        stage.addActor(editTwrBtn);
+
+        newTwrBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
+        newTwrBtn.setPosition(4 * COMPONENTWIDTH, 0);
+        stage.addActor(newTwrBtn);
+
+        //Build Mode buttons -
+        exitBuildBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
+        exitBuildBtn.setPosition(0,0);
+        stage.addActor(exitBuildBtn);
+        exitBuildBtn.setVisible(false);
+
         addBlockBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
-        addBlockBtn.setPosition(COMPONENTWIDTH * 3, 0);
+        addBlockBtn.setPosition(COMPONENTWIDTH , 0);
         stage.addActor(addBlockBtn);
         addBlockBtn.setVisible(false);
 
         blockTypeLbl.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
-        blockTypeLbl.setPosition(COMPONENTWIDTH * 4, 0);
+        blockTypeLbl.setPosition(COMPONENTWIDTH * 2, 0);
         blockTypeLbl.setAlignment(Align.center);
         stage.addActor(blockTypeLbl);
         blockTypeLbl.setVisible(false);
 
         materialSelection.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
-        materialSelection.setPosition(COMPONENTWIDTH * 5, 0);
+        materialSelection.setPosition(COMPONENTWIDTH * 3, 0);
         stage.addActor(materialSelection);
         materialSelection.setVisible(false);
 
         removeBlockBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
-        removeBlockBtn.setPosition(GameController.VIRTUAL_WIDTH - COMPONENTWIDTH * 2, COMPONENTHEIGHT);
+        removeBlockBtn.setPosition(COMPONENTWIDTH * 4, 0);
         stage.addActor(removeBlockBtn);
         removeBlockBtn.setVisible(false);
 
         saveTowerBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
-        saveTowerBtn.setPosition(GameController.VIRTUAL_WIDTH - COMPONENTWIDTH, COMPONENTHEIGHT);
+        saveTowerBtn.setPosition(COMPONENTWIDTH * 5, 0);
         stage.addActor(saveTowerBtn);
         saveTowerBtn.setVisible(false);
 
@@ -320,22 +324,13 @@ public class TowerBuilderStage {
         });
 
 
-        buildModeBtn.addListener(new ClickListener() {
+        newTwrBtn.addListener(new ClickListener() {
            @Override
            public void clicked(InputEvent event, float x, float y) {
-               isBuildMode = !isBuildMode;
-               if (buildModeBtn.isChecked()) {
-                   screen.displayBuildCore();
-                   sw.setLblTxt(screen.getTowerStats());
-                   buildModeBtn.setStyle(pressedStyle);
-                   activateBuildMode();
-               } else {
-                   screen.setCamTower(displaySelection.getSelected());
-                   sw.setLblTxt(screen.getTowerStats());
-
-                   buildModeBtn.setStyle(normalStyle);
-                   deactivateBuildMode();
-               }
+               isBuildMode = true;
+               screen.displayBuildCore();
+               sw.setLblTxt(screen.getTowerStats());
+               activateBuildMode();
 
            }
         });
@@ -349,6 +344,27 @@ public class TowerBuilderStage {
                     //display an 'are you sure?' popup.
                     deleteTwrDialog.show(dialogStage);
                 }
+            }
+        });
+
+//        editTwrBtn.addListener(new ClickListener() {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                isBuildMode = true;
+//                activateBuildMode();
+//
+//            }
+//        });
+
+        exitBuildBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                isBuildMode = false;
+
+                //TODO - this should look at the new tower (if a new tower was saved)
+                screen.setCamTower(displaySelection.getSelected());
+                sw.setLblTxt(screen.getTowerStats());
+                deactivateBuildMode();
             }
         });
 
@@ -483,21 +499,20 @@ public class TowerBuilderStage {
     }
 
     private void activateBuildMode() {
-        buildModeBtn.setText("Switch to\nView Mode");
-        viewTowerLbl.setStyle(inactive_panelstyle);
+        //de-activate and hide view mode things
+        viewTowerLbl.setVisible(false);
+        displaySelection.setVisible(false);
+        newTwrBtn.setVisible(false);
         deleteTowerBtn.setVisible(false);
-        deleteTowerBtn.setDisabled(true);
+        editTwrBtn.setVisible(false);
 
         //display build mode actors
+        exitBuildBtn.setVisible(true);
         addBlockBtn.setVisible(true);
         materialSelection.setVisible(true);
         removeBlockBtn.setVisible(true);
         saveTowerBtn.setVisible(true);
         blockTypeLbl.setVisible(true);
-
-        //hide display select box
-        displaySelection.setDisabled(true);
-        displaySelection.setStyle(disabledSelectBox);
 
         //uncheck all buttons
         addBlockBtn.setChecked(false);
@@ -506,15 +521,18 @@ public class TowerBuilderStage {
     }
 
     private void deactivateBuildMode() {
-        buildModeBtn.setText("Switch to\nBuild Mode");
-        viewTowerLbl.setStyle(panelstyle);
+        //Re-activate view mode buttons
+        newTwrBtn.setVisible(true);
+        viewTowerLbl.setVisible(true);
+        displaySelection.setVisible(true);
         deleteTowerBtn.setVisible(true);
-        deleteTowerBtn.setDisabled(false);
+        editTwrBtn.setVisible(true);
 
         deactivateAdd();
         deactivateRemove();
 
         //hide actors
+        exitBuildBtn.setVisible(false);
         addBlockBtn.setVisible(false);
         materialSelection.setVisible(false);
         removeBlockBtn.setVisible(false);
@@ -524,9 +542,6 @@ public class TowerBuilderStage {
         //unhighlight blocks
         screen.stopHighlighting();
 
-        //re-enable display
-        displaySelection.setDisabled(false);
-        displaySelection.setStyle(normalSelectBox);
     }
 
     public void removeTowerFromSelection(TowerDetails twr) {
