@@ -31,12 +31,13 @@ public class MovementSystem implements ISystem {
         }
     }
 
-    public void addNode(int id, PositionComponent position, VelocityComponent velocity) {
-        nodeMap.put(id, new MoveNode(position, velocity));
+    @Override
+    public void remove(int entID) {
+        nodeMap.remove(entID);
     }
 
-    public boolean removeNode(int id) {
-        return nodeMap.remove(id) != null;
+    public void addNode(int id, PositionComponent position, VelocityComponent velocity) {
+        nodeMap.put(id, new MoveNode(position, velocity));
     }
 
     static class MoveNode {

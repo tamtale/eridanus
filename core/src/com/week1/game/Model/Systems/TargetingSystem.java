@@ -6,16 +6,20 @@ import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Components.OwnedComponent;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.Components.TargetingComponent;
+import com.week1.game.Model.Events.DamageEvent;
 import com.week1.game.Pair;
 import com.week1.game.Tuple3;
 
+import java.util.ArrayList;
+
 /*
- * System responsible for updating targets.
+ * System responsible for updating targets and dispatching events.
  * On update, will refresh targets for any entity whose target is out of range.
  */
-public class TargetingSystem implements ISystem {
+public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
 
     private IntMap<TargetingNode> nodes = new IntMap<>();
+    private ArrayList<Subscriber<DamageEvent>> damageEventSubscribers = new ArrayList<>();
 
     /*
      * Service to find a suitable target given a target component and position.
@@ -32,9 +36,15 @@ public class TargetingSystem implements ISystem {
 
     @Override
     public void update(float delta) {
-        for (TargetingNode node: nodes.values()) {
-            updateNode(node);
+        for (IntMap.Entry<TargetingNode> entry: nodes.entries()) {
+            updateNode(entry.value);
+            generateDamage(entry.key, entry.value);
         }
+    }
+
+    @Override
+    public void remove(int entID) {
+        nodes.remove(entID);
     }
 
     private void updateNode(TargetingNode node) {
@@ -56,14 +66,23 @@ public class TargetingSystem implements ISystem {
         } else {
             node.targetPositionComponent = null;
         }
+
+    }
+    private void generateDamage(int id, TargetingNode node) {
+        if (node.targetingComponent.targetID == -1) return;
+        DamageEvent damageEvent = new DamageEvent(id, node.targetingComponent.targetID);
+        for (Subscriber<DamageEvent> subscriber: damageEventSubscribers) {
+            subscriber.process(damageEvent);
+        }
     }
 
     public void addNode(int id, OwnedComponent ownedComponent, TargetingComponent targetingComponent, PositionComponent positionComponent) {
         nodes.put(id, new TargetingNode(ownedComponent, targetingComponent, positionComponent, null));
     }
 
-    public boolean removeNode(int id) {
-        return (nodes.remove(id) != null);
+    @Override
+    public void addSubscriber(Subscriber<DamageEvent> subscriber) {
+        damageEventSubscribers.add(subscriber);
     }
 
     static class TargetingNode {

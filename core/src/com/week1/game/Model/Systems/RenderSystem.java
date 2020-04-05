@@ -36,13 +36,14 @@ public class RenderSystem implements ISystem {
         nodes.put(id, new RenderNode(renderComponent, positionComponent, velocityComponent));
     }
 
-    public boolean removeNode(int id) {
-        return nodes.remove(id) != null;
-    }
-
     @Override
     public void update(float delta) {
         updateDelta = 0;
+    }
+
+    @Override
+    public void remove(int entID) {
+        nodes.remove(entID);
     }
 
     static class RenderNode {

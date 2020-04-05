@@ -6,4 +6,6 @@ package com.week1.game.Model.Systems;
  */
 public interface ISystem {
     void update(float delta);
+    /* Remove any internal nodes related to the given entID.*/
+    void remove(int entID);
 }

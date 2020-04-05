@@ -66,7 +66,8 @@ public class Unit implements Damaging, Clickable {
         RenderComponent renderComponent,
         OwnedComponent ownedComponent,
         TargetingComponent targetingComponent,
-        HealthComponent healthComponent
+        HealthComponent healthComponent,
+        DamagingComponent damagingComponent
     ) {
         this.positionComponent = positionComponent;
         this.velocityComponent = velocityComponent;
@@ -75,6 +76,7 @@ public class Unit implements Damaging, Clickable {
         this.ownedComponent = ownedComponent;
         this.targetingComponent = targetingComponent;
         this.healthComponent = healthComponent;
+        this.damagingComponent = damagingComponent;
         this.model = modelMap.get(ownedComponent.playerID);
         this.originalMaterial = model.materials.get(0);
     }
@@ -91,49 +93,6 @@ public class Unit implements Damaging, Clickable {
         };
     }
 
-    public void step(float delta) {
-        if (pathComponent.path != null) {
-            if (pathComponent.path.getPath().size > 0) {
-                if (distanceTraveled > distance) {
-                    turn = 0;
-                    float dx = pathComponent.path.get(0).x - positionComponent.position.x;
-                    float dy = pathComponent.path.get(0).y - positionComponent.position.y;
-                    int height = unit2StateAdapter.getHeight((int) positionComponent.position.x, (int) positionComponent.position.y);
-                    int nxtHeight = unit2StateAdapter.getHeight((int) pathComponent.path.get(0).x, (int) pathComponent.path.get(0).y);
-                    final float blockSpeed = 1f / unit2StateAdapter .getBlock( (int) positionComponent.position.x, (int) positionComponent.position.y, height) .getCost(); //TODO: 3D
-                    positionComponent.position.z = nxtHeight + 1;
-                    this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
-                    double angle = Math.atan(dy / dx);
-                    if (dx < 0) {
-                        angle += Math.PI;
-                    } else if (dy < 0) {
-                        angle += 2 * Math.PI;
-                    }
-                    velocityComponent.velocity.x = blockSpeed * (float) speed * (float) Math.cos(angle);
-                    velocityComponent.velocity.y = blockSpeed * (float) speed * (float) Math.sin(angle);
-                    pathComponent.path.removeIndex(0);
-                    this.distanceTraveled = 0;
-                }
-                move(delta);
-                turn++;
-            }
-            if (pathComponent.path.getPath().size <= 0) {
-                pathComponent.path = null;
-                velocityComponent.velocity.x = 0;
-                velocityComponent.velocity.y = 0;
-            }
-        }
-        // displayPosition.set(positionComponent.position); // Sync the unit's display to the next 'real' location
-    }
-
-    private void move(float delta) {
-        Gdx.app.debug("move", "moving:" + positionComponent.position);
-        positionComponent.position.set(positionComponent.position.x + (velocityComponent.velocity.x * delta), positionComponent.position.y + (
-            velocityComponent.velocity.y * delta), positionComponent.position.z);
-        renderComponent.modelInstance.transform.setToTranslation(positionComponent.position);
-        this.distanceTraveled += Math.sqrt(Math.pow(velocityComponent.velocity.x * delta, 2) + Math.pow(velocityComponent.velocity.y * delta, 2));
-    }
-
     public float getX() {
         return positionComponent.position.x;
     }
@@ -148,11 +107,6 @@ public class Unit implements Damaging, Clickable {
 
     public PositionComponent getPositionComponent() {
         return positionComponent;
-    }
-
-
-    public boolean isDead() {
-        return this.healthComponent.curHealth <= 0;
     }
 
     @Override

@@ -44,6 +44,8 @@ public class GameState implements GameRenderable {
     private PathfindingSystem pathfindingSystem;
     private RenderSystem renderSystem = new RenderSystem();
     private TargetingSystem targetingSystem;
+    private DeathSystem deathSystem;
+    private DamageSystem damageSystem = new DamageSystem();
     private EntityManager entityManager = new EntityManager();
 
     private TowerLoadouts towerLoadouts;
@@ -69,6 +71,9 @@ public class GameState implements GameRenderable {
         };
         this.pathfindingSystem = new PathfindingSystem(u2s);
         initTargetingSystem();
+        initDeathSystem();
+        targetingSystem.addSubscriber(damageSystem);
+        damageSystem.addSubscriber(deathSystem);
         this.postInit = postInit;
     }
 
@@ -121,12 +126,24 @@ public class GameState implements GameRenderable {
         });
     }
 
+    private void initDeathSystem() {
+        this.deathSystem = new DeathSystem(new IService<Integer, Void>() {
+            @Override
+            public Void query(Integer key) {
+                removeUnit(key);
+                return null;
+            }
+        });
+    }
+
     public void synchronousUpdateState(int communicationTurn) {
         updateMana(1);
         pathfindingSystem.update(THRESHOLD);
         movementSystem.update(THRESHOLD);
         targetingSystem.update(THRESHOLD);
         renderSystem.update(THRESHOLD);
+        damageSystem.update(THRESHOLD);
+        deathSystem.update(THRESHOLD);
         doTowerSpecialAbilities(communicationTurn);
     }
 
@@ -207,7 +224,8 @@ public class GameState implements GameRenderable {
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true, TargetingComponent.TargetingStrategy.ENEMY);
         HealthComponent healthComponent = new HealthComponent(tempHealth, tempHealth);
-        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, healthComponent);
+        DamagingComponent damagingComponent = new DamagingComponent((float) tempDamage);
+        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, healthComponent, damagingComponent);
         u.ID = entityManager.newID();
         units.add(u);
         u.setUnit2StateAdapter(u2s);
@@ -215,8 +233,19 @@ public class GameState implements GameRenderable {
         pathfindingSystem.addNode(u.ID, positionComponent, velocityComponent, pathComponent);
         renderSystem.addNode(u.ID, renderComponent, positionComponent, velocityComponent);
         targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
+        damageSystem.addHealth(u.ID, healthComponent);
+        damageSystem.addDamage(u.ID, damagingComponent);
         clickables.add(u);
         return u;
+    }
+
+    public void removeUnit(int id) {
+        movementSystem.remove(id);
+        pathfindingSystem.remove(id);
+        renderSystem.remove(id);
+        damageSystem.remove(id);
+        targetingSystem.remove(id);
+        renderSystem.remove(id);
     }
 
     public void addTower(Tower t, int playerID) {

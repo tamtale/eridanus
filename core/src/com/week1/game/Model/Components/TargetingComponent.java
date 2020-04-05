@@ -1,5 +1,8 @@
 package com.week1.game.Model.Components;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 /*
  * Component for an entity currently targeting another.
  */

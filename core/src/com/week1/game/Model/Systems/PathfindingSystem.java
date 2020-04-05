@@ -1,7 +1,6 @@
 package com.week1.game.Model.Systems;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Components.PathComponent;
 import com.week1.game.Model.Components.PositionComponent;
@@ -24,15 +23,16 @@ public class PathfindingSystem implements ISystem {
         nodeMap.put(id, new PathfindingNode(positionComponent, velocityComponent, pathComponent));
     }
 
-    public boolean removeNode(int id) {
-        return nodeMap.remove(id) != null;
-    }
-
     @Override
     public void update(float delta) {
         for (PathfindingNode node: nodeMap.values()) {
             updateNode(delta, node);
         }
+    }
+
+    @Override
+    public void remove(int entID) {
+        nodeMap.remove(entID);
     }
 
     private Vector2 vecToPath = new Vector2();
