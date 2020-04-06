@@ -30,16 +30,12 @@ public class Unit implements Damaging, Clickable {
     private DamagingComponent damagingComponent;
     private HealthComponent healthComponent;
 
-    private float distance;
-    private float distanceTraveled;
-    Unit2StateAdapter unit2StateAdapter;
     private boolean selected;
     private int turn = 0;
     public int ID;
     public static double speed = 4;
     // 3D STUFF
     private Model model;
-    private Vector3 displayPosition = new Vector3();
 
     /*
      * Material to apply to a selected unit.
@@ -134,20 +130,14 @@ public class Unit implements Damaging, Clickable {
             } else if (dy < 0) {
                 angle += 2 * Math.PI;
             }
-            this.distance = (float) Math.sqrt(Math.pow(dx, 2f) + Math.pow(dy, 2f));
             velocityComponent.velocity.x = (float) speed * (float) Math.cos(angle);
             velocityComponent.velocity.y = (float) speed * (float) Math.sin(angle);
-            this.distanceTraveled = 0;
             path.removeIndex(0);
         }
     }
 
     public void setGoal(Vector3 goal) {
         this.pathComponent.goal.set(goal);
-    }
-
-    public void setUnit2StateAdapter(Unit2StateAdapter unit2StateAdapter) {
-        this.unit2StateAdapter = unit2StateAdapter;
     }
 
     @Override

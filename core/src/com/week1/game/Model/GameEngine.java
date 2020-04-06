@@ -34,7 +34,6 @@ public class GameEngine implements GameRenderable {
     private Queue<TaggedMessage> replayQueue;
     private boolean isStarted = false;
     BufferedWriter writer;
-    private EntityManager entityManager = new EntityManager();
 
     public GameEngine(IEngineAdapter adapter, int playerId, Queue<TaggedMessage> replayQueue, InfoUtil util) {
         this.adapter = adapter;
@@ -42,7 +41,6 @@ public class GameEngine implements GameRenderable {
         this.replayQueue = replayQueue;
         gameState = new GameState(
                 SmallWorldBuilder.ONLY,
-                entityManager,
                 () -> {
                     Vector3 position = new Vector3();
                     Tower myBase = gameState.getPlayerBase(this.enginePlayerId);
@@ -148,10 +146,6 @@ public class GameEngine implements GameRenderable {
             return true;
         }
         return gameState.isPlayerAlive(enginePlayerId);
-    }
-
-    public Array<Building> getBuildings() {
-        return gameState.getBuildings();
     }
 
     /**

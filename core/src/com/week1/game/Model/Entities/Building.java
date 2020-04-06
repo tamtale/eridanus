@@ -6,8 +6,7 @@ import com.badlogic.gdx.utils.Array;
 
 import java.util.Map;
 
-public abstract class Building extends Damageable{
-
+public abstract class Building extends Damageable {
     public abstract boolean overlap(float x, float y);
     public abstract Vector3 closestPoint(float x, float y);
     public abstract void putRemovedEdges(Vector3 fromNode, Array<Connection<Vector3>> connections);

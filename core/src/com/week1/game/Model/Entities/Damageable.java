@@ -16,7 +16,6 @@ public abstract class Damageable {
     public interface DamageableVisitor<T> {
         T acceptTower(Tower tower);
         T acceptUnit(Unit u);
-        T acceptBase(PlayerBase base);
         T acceptCrystal(Crystal crystal);
     }
 

@@ -36,7 +36,7 @@ public class GameState implements GameRenderable {
     private Array<Unit> units = new Array<>();
     private Array<Crystal> crystals = new Array<>();
     private Array<Tower> towers = new Array<>();
-    private IntMap<PlayerBase> playerBases = new IntMap<>();
+    private IntMap<Tower> playerBases = new IntMap<>();
     private Array<PlayerStat> playerStats = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
@@ -55,7 +55,7 @@ public class GameState implements GameRenderable {
     private Runnable postInit;
     private boolean fullyInitialized = false;
 
-    public GameState(IWorldBuilder worldBuilder, EntityManager entityManager, Runnable postInit){
+    public GameState(IWorldBuilder worldBuilder, Runnable postInit){
         // TODO tower types in memory after exchange
         this.worldBuilder = worldBuilder;
         this.u2s = new Unit2StateAdapter() {
@@ -121,6 +121,29 @@ public class GameState implements GameRenderable {
                         result.value = unit.getPositionComponent();
                     }
                 }
+
+                for (Tower tower: towers) {
+                    int towerOwner = tower.getPlayerId();
+                    switch (targetingComponent.strategy) {
+                        case ENEMY:
+                            if (towerOwner == ownedComponent.playerID) continue;
+                            break;
+                        case TEAM:
+                            if (towerOwner != ownedComponent.playerID) continue;
+                            break;
+                        case ALL:
+                            break;
+                    }
+                    // Check position of unit.
+                    otherPositionComponent = tower.getPositionComponent();
+                    if (otherPositionComponent == positionComponent) continue; // TODO should be a better way of making sure there's no self targeting
+                    dist = positionComponent.position.dst(otherPositionComponent.position);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        result.key = tower.ID;
+                        result.value = tower.getPositionComponent();
+                    }
+                }
                 return result;
             }
         });
@@ -130,7 +153,7 @@ public class GameState implements GameRenderable {
         this.deathSystem = new DeathSystem(new IService<Integer, Void>() {
             @Override
             public Void query(Integer key) {
-                removeUnit(key);
+                removeEntity(key);
                 return null;
             }
         });
@@ -147,7 +170,7 @@ public class GameState implements GameRenderable {
         doTowerSpecialAbilities(communicationTurn);
     }
 
-    public PlayerBase getPlayerBase(int playerId) {
+    public Tower getPlayerBase(int playerId) {
         return playerBases.get(playerId);
     }
 
@@ -193,7 +216,7 @@ public class GameState implements GameRenderable {
             playerStats.add(new PlayerStat());
 
             // Create and add a base for each player
-            PlayerBase newBase = new PlayerBase((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z,
+            Tower newBase = addTower((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z,
                     towerLoadouts.getTowerDetails(i,-1), i, -1);
             addBase(newBase, i);
         }
@@ -228,7 +251,6 @@ public class GameState implements GameRenderable {
         Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, healthComponent, damagingComponent);
         u.ID = entityManager.newID();
         units.add(u);
-        u.setUnit2StateAdapter(u2s);
         movementSystem.addNode(u.ID, positionComponent, velocityComponent);
         pathfindingSystem.addNode(u.ID, positionComponent, velocityComponent, pathComponent);
         renderSystem.addNode(u.ID, renderComponent, positionComponent, velocityComponent);
@@ -239,22 +261,52 @@ public class GameState implements GameRenderable {
         return u;
     }
 
-    public void removeUnit(int id) {
+    /*
+     * Remove all references to this entity (purge all systems and game state).
+     */
+    public void removeEntity(int id) {
         movementSystem.remove(id);
         pathfindingSystem.remove(id);
         renderSystem.remove(id);
         damageSystem.remove(id);
         targetingSystem.remove(id);
         renderSystem.remove(id);
-        units.select(u -> u.ID == id).forEach(u -> units.removeValue(u, true));
+        units.select(u -> u.ID == id).forEach(unit -> units.removeValue(unit, true));
+        towers.select(t -> t.ID == id).forEach(tower -> {
+            List<BlockSpec> blockSpecs = tower.getLayout();
+            for(int k = 0; k < blockSpecs.size(); k++) {
+                BlockSpec bs = blockSpecs.get(k);
+                world.setBlock(
+                    (int)(tower.getX() + bs.getX()),
+                    (int)(tower.getY() + bs.getZ()),
+                    (int)(tower.getZ() + bs.getY()),
+                    Block.TerrainBlock.AIR);
+            }
+            towers.removeValue(tower, true);
+            if (playerBases.containsValue(tower, true)) {
+                playerBases.remove(tower.getPlayerID());
+            }
+        });
+
     }
 
-    public void addTower(Tower t, int playerID) {
-        towers.add(t);
-        addBuilding(t, playerID);
+    public Tower addTower(int x, int y, int z, TowerDetails towerDetails, int playerID, int towerType) {
+        PositionComponent positionComponent = new PositionComponent((float) x, (float) y, (float) z);
+        HealthComponent healthComponent = new HealthComponent((float) towerDetails.getHp(), (float) towerDetails.getHp());
+        DamagingComponent damagingComponent = new DamagingComponent((float) towerDetails.getAtk());
+        TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
+            TargetingComponent.TargetingStrategy.ENEMY);
+        OwnedComponent ownedComponent = new OwnedComponent(playerID);
+        Tower tower = new Tower(positionComponent, healthComponent, damagingComponent, targetingComponent, ownedComponent, towerDetails, towerType, entityManager.newID());
+        targetingSystem.addNode(tower.ID, ownedComponent, targetingComponent, positionComponent);
+        damageSystem.addHealth(tower.ID, healthComponent);
+        damageSystem.addDamage(tower.ID, damagingComponent);
+        towers.add(tower);
+        addBuilding(tower, playerID);
+        return tower;
     }
 
-    public void addBase(PlayerBase pb, int playerID) {
+    public void addBase(Tower pb, int playerID) {
         playerBases.put(playerID, pb);
         addBuilding(pb, playerID);
     }
@@ -264,9 +316,9 @@ public class GameState implements GameRenderable {
         for (int k = 0; k < blockSpecs.size(); k++) {
             BlockSpec bs = blockSpecs.get(k);
             this.world.setBlock(
-                    (int)(t.x + bs.getX()),
-                    (int)(t.y + bs.getZ()),
-                    (int)(t.z + bs.getY()),
+                    (int)(t.getX() + bs.getX()),
+                    (int)(t.getY() + bs.getZ()),
+                    (int)(t.getZ() + bs.getY()),
                     Block.TowerBlock.towerBlockMap.get(bs.getBlockCode()));
         }
     }
@@ -334,21 +386,11 @@ public class GameState implements GameRenderable {
     }
 
     public boolean findNearbyStructure(float x, float y, float z, int playerId) {
-        // Check if it is near the home base
-        PlayerBase base = playerBases.get(playerId);
-        if (base != null) {
-            if (Math.sqrt(
-                Math.pow(x - base.x, 2) +
-                    Math.pow(y - base.y, 2) +
-                    Math.pow(z - base.z, 2)) < placementRange){
-                return true;
-            }
-        }
 
         // Check if it is near any of your towers
         for (Tower t : towers) {
             if (t.getPlayerId() == playerId) {
-                if (Math.sqrt(Math.pow(x - t.x, 2) + Math.pow(y - t.y, 2) + Math.pow(z - t.z, 2)) < placementRange){
+                if (Math.sqrt(Math.pow(x - t.getX(), 2) + Math.pow(y - t.getY(), 2) + Math.pow(z - t.getZ(), 2)) < placementRange){
                     return true;
                 }
             }
@@ -432,7 +474,7 @@ public class GameState implements GameRenderable {
         int encodedhash;
         private String gameString;
 
-        public PackagedGameState (int turn, Array<Unit> units, Array<Tower> towers, IntMap<PlayerBase> bases, Array<PlayerStat> stats) {
+        public PackagedGameState (int turn, Array<Unit> units, Array<Tower> towers, IntMap<Tower> bases, Array<PlayerStat> stats) {
             gameString = "Turn " + turn;
             Unit u;
             for (int i = 0; i < units.size; i++) {
