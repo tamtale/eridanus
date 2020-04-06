@@ -1,5 +1,6 @@
 package com.week1.game.Model;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -14,10 +15,16 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.week1.game.Model.Entities.Crystal;
+
+import java.awt.*;
+
+import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
 public class Initializer {
 
     private static ModelBuilder BUILDER = new ModelBuilder();
+    public static AssetManager assetManager = new AssetManager();
     
     public static Model waterBlock;
     public static Model earthBlock;
