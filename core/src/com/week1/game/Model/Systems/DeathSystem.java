@@ -1,13 +1,16 @@
 package com.week1.game.Model.Systems;
 
+import com.badlogic.gdx.Gdx;
+import com.week1.game.Model.Events.DamageEvent;
+
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class DeathSystem implements ISystem, Subscriber<DeathSystem.DeathEvent> {
+public class DeathSystem implements ISystem, Subscriber<DamageEvent> {
 
     /* Service to remove an entity from the GameState, given its ID.*/
     IService<Integer, Void> deleteService;
-    Queue<DeathEvent> deathEvents = new ConcurrentLinkedQueue<>();
+    Queue<DamageEvent> deaths = new ConcurrentLinkedQueue<>();
 
     public DeathSystem(IService<Integer, Void> deleteService) {
         this.deleteService = deleteService;
@@ -15,10 +18,11 @@ public class DeathSystem implements ISystem, Subscriber<DeathSystem.DeathEvent> 
 
     @Override
     public void update(float delta) {
-        for (DeathEvent deathEvent: deathEvents) {
-            deleteService.query(deathEvent.victimID);
+        for (DamageEvent event: deaths) {
+            Gdx.app.log("DeathSystem", "deleting " + event.victimID);
+            deleteService.query(event.victimID);
         }
-        deathEvents.clear();
+        deaths.clear();
     }
 
     @Override
@@ -26,16 +30,8 @@ public class DeathSystem implements ISystem, Subscriber<DeathSystem.DeathEvent> 
     }
 
     @Override
-    public void process(DeathEvent deathEvent) {
+    public void process(DamageEvent damageEvent) {
+        deaths.add(damageEvent);
     }
 
-    public static class DeathEvent {
-        int victimID; // The entity ID of the dead.
-        int causeID; // The entity who caused the death.
-
-        public DeathEvent(int victimID, int causeID) {
-            this.victimID = victimID;
-            this.causeID = causeID;
-        }
-    }
 }

@@ -1,7 +1,6 @@
 package com.week1.game.Model.Systems;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Components.OwnedComponent;
 import com.week1.game.Model.Components.PositionComponent;
@@ -45,6 +44,13 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
     @Override
     public void remove(int entID) {
         nodes.remove(entID);
+        // fix any targeting nodes.
+        for (TargetingNode node: nodes.values()) {
+            if (node.targetingComponent.targetID == entID) {
+                Gdx.app.log("TargetingSystem", "resetting target node on " + entID);
+                node.targetingComponent.targetID = -1;
+            }
+        }
     }
 
     private void updateNode(TargetingNode node) {
@@ -70,6 +76,7 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
     }
     private void generateDamage(int id, TargetingNode node) {
         if (node.targetingComponent.targetID == -1) return;
+        Gdx.app.log("TargetingSystem", "creating damageevent by " + id + " against " + node.targetingComponent.targetID);
         DamageEvent damageEvent = new DamageEvent(id, node.targetingComponent.targetID);
         for (Subscriber<DamageEvent> subscriber: damageEventSubscribers) {
             subscriber.process(damageEvent);

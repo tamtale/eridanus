@@ -246,6 +246,7 @@ public class GameState implements GameRenderable {
         damageSystem.remove(id);
         targetingSystem.remove(id);
         renderSystem.remove(id);
+        units.select(u -> u.ID == id).forEach(u -> units.removeValue(u, true));
     }
 
     public void addTower(Tower t, int playerID) {
