@@ -1,23 +1,15 @@
 package com.week1.game.Model.Entities;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.utils.Ray;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
 import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.week1.game.Model.Damage;
 import com.week1.game.Renderer.RenderConfig;
 
-import static com.week1.game.Model.Entities.HealthBar.*;
+import static com.week1.game.Model.Entities.HealthBar.healthBarHigh;
 
 public abstract class Damageable {
 

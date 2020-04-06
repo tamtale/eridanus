@@ -99,7 +99,9 @@ public class GameState implements GameRenderable {
             world.getHeightMap();
             graph = world.buildGraph();
             graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
-            
+
+            PlayerBase.makeFonts();
+
             // notify the GameState that it can proceed with initialization
             mapReady[0] = true; // 'the array trick'
         });
@@ -510,6 +512,11 @@ public class GameState implements GameRenderable {
         for (int i = 0; i < damageables.size; i++) {
             damageables.get(i).drawHealthBar(config);
         }
+
+        for (int i = 0; i < playerBases.size; i++) {
+            getPlayerBase(i).drawBaseName(config);
+        }
+
         batch2D.end();
     }
 
