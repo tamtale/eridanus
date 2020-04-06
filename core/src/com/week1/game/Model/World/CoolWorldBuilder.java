@@ -2,6 +2,7 @@ package com.week1.game.Model.World;
 
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Pair;
 import com.badlogic.gdx.graphics.g3d.Material;
@@ -22,11 +23,19 @@ public class CoolWorldBuilder implements IWorldBuilder {
         this.add(new Pair<>(new Material(ColorAttribute.createDiffuse(new Color(0x660000))), new Material(ColorAttribute.createDiffuse(Color.LIME))));
     }};
     
+    private static final int NUM_CRYSTALS = 10;
+    private static Vector2[] crystalLocs = new Vector2[NUM_CRYSTALS];
+    
     @Override
     public Block[][][] terrain() {
         // empty block
         blocks = new Block[90][90][15];
         this.random = new Random(seed);
+        
+        // Set the crystal locations
+        for (int i = 0; i < NUM_CRYSTALS; i++) {
+            crystalLocs[i] = new Vector2(random.nextInt(blocks.length), random.nextInt(blocks[0].length));
+        }
         
         Pair<Material, Material> materials = blockColors.get(random.nextInt(blockColors.size()));
         Block.TerrainBlock.FIREBRICK.model.materials.get(0).clear();
@@ -67,6 +76,7 @@ public class CoolWorldBuilder implements IWorldBuilder {
 
             }
         }
+        
         return blocks;
     }
 
@@ -183,7 +193,6 @@ public class CoolWorldBuilder implements IWorldBuilder {
         return new Pair<>(m, n);
     }
 
-
     private void makePlateau(Block[][][] blocks, int startX, int endX, int startY, int endY) {
         for (int i = startX; i <= endX; i++) {
             for (int j = startY; j <= endY; j++) {
@@ -191,6 +200,7 @@ public class CoolWorldBuilder implements IWorldBuilder {
             }
         }
     }
+    
 
     @Override
     public Vector3[] startLocations() {
@@ -203,10 +213,10 @@ public class CoolWorldBuilder implements IWorldBuilder {
     }
 
     @Override
-    public Vector3[] crystalLocations() {
-        return new Vector3[0];
+    public Vector2[] crystalLocations() {
+        return crystalLocs;
     }
-
+    
     @Override
     public void addSeed(long mapSeed) {
         this.seed = mapSeed;

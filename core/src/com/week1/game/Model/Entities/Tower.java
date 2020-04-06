@@ -65,7 +65,7 @@ public class Tower extends Building implements Damaging {
     }
 
     @Override
-    public boolean takeDamage(double dmg, Damage.type damageType) {
+    public boolean takeDamage(Damaging attacker, double dmg, Damage.type damageType) {
         this.healthComponent.curHealth -= dmg;
         if (this.healthComponent.curHealth <= 0) {
             return true;
@@ -85,18 +85,19 @@ public class Tower extends Building implements Damaging {
         return this.positionComponent.position.y;
     }
 
+    @Override
     public float getZ() {
         return this.positionComponent.position.z;
     }
 
     @Override
     public float getCurrentHealth() {
-        return (float) healthComponent.curHealth;
+        return healthComponent.curHealth;
     }
 
     @Override
     public float getMaxHealth() {
-        return (float) healthComponent.maxHealth;
+        return healthComponent.maxHealth;
     }
 
     @Override

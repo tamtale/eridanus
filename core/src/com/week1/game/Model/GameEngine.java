@@ -2,13 +2,9 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 import com.week1.game.InfoUtil;
-import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.Tower;
-import com.week1.game.Model.Systems.MovementSystem;
 import com.week1.game.Model.World.CoolWorldBuilder;
-import com.week1.game.Model.World.SmallWorldBuilder;
 import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.Game.TaggedMessage;
@@ -40,7 +36,8 @@ public class GameEngine implements GameRenderable {
         this.enginePlayerId = playerId;
         this.replayQueue = replayQueue;
         gameState = new GameState(
-                SmallWorldBuilder.ONLY,
+                CoolWorldBuilder.ONLY,
+//                SmallWorldBuilder.ONLY,
                 () -> {
                     Vector3 position = new Vector3();
                     Tower myBase = gameState.getPlayerBase(this.enginePlayerId);

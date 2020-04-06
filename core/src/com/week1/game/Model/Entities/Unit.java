@@ -1,5 +1,4 @@
 package com.week1.game.Model.Entities;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -9,9 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.week1.game.Model.Components.*;
-import com.week1.game.Model.Damage;
 import com.week1.game.Model.OutputPath;
-import com.week1.game.Model.Unit2StateAdapter;
 import com.week1.game.Util3D;
 
 import java.util.HashMap;

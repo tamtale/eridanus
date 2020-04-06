@@ -1,5 +1,6 @@
 package com.week1.game.Model.World;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 /**
@@ -9,6 +10,10 @@ import com.badlogic.gdx.math.Vector3;
 public class SmallWorldBuilder implements IWorldBuilder {
 
     public static SmallWorldBuilder ONLY = new SmallWorldBuilder();
+    
+    private static Vector2[] crystalLocs = new Vector2[] {
+            new Vector2(10, 5)
+    };
 
     @Override
     public Block[][][] terrain() {
@@ -22,6 +27,7 @@ public class SmallWorldBuilder implements IWorldBuilder {
             }
         }
         makePlateau(blocks, 0, 5, 0, 5);
+        
         return blocks;
     }
 
@@ -42,8 +48,8 @@ public class SmallWorldBuilder implements IWorldBuilder {
     }
 
     @Override
-    public Vector3[] crystalLocations() {
-        return new Vector3[0];
+    public Vector2[] crystalLocations() {
+        return crystalLocs;
     }
 
     @Override
