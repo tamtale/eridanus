@@ -9,6 +9,10 @@ import com.week1.game.Networking.NetworkObjects.Player;
 
 import java.net.InetAddress;
 
+/**
+ * This is sent to the host by players who have regret for their tower choices and want to set themselves back to not ready
+ * so that the game cannot start and they can choose different towers
+ */
 public class RetractLoadoutMessage extends HostControlMessage {
 
     private final static MessageType MESSAGE_TYPE = MessageType.RETRACTLOADOUT;
@@ -22,7 +26,7 @@ public class RetractLoadoutMessage extends HostControlMessage {
             Gdx.app.log("pjb3 - potential error", "Edge case: someone tried to retract their loadout after the game started by host");
             return;
         }
-        Gdx.app.log("pjb3", "retracting loadout!!");
+        Gdx.app.debug("pjb3", "retracting loadout!!");
 
         // remove their towers
         h.towerDetails.remove(playerID);

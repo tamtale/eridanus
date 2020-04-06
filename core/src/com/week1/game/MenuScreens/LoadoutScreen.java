@@ -217,11 +217,8 @@ public class LoadoutScreen implements Screen {
         loadoutSelector.setText("Press to confirm loadout.");
         loadoutSelector.setTouchable(Touchable.enabled);
         retractLoadout();
-//        tower1.setDisabled(false);
         tower1.setTouchable(Touchable.enabled);
-//        tower2.setDisabled();
         tower2.setTouchable(Touchable.enabled);
-//        tower3.setDisabled(true);
         tower3.setTouchable(Touchable.enabled);
         }
     };
