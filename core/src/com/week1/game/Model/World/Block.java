@@ -14,6 +14,9 @@ import com.week1.game.TowerBuilder.BlockType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import static com.week1.game.Model.Initializer.crystalName;
+
 public interface Block {
     float getCost();
     Optional<ModelInstance> modelInstance(float x, float y, float z);
@@ -88,9 +91,6 @@ public interface Block {
         
         public static TerrainBlock CRYSTAL = new TerrainBlock(Color.BLACK, 1f) {
             {
-                String crystalName = "crystals/blueCrystal.g3db";
-                Initializer.assetManager.load(crystalName, Model.class);
-                Initializer.assetManager.finishLoading();
                 this.model = Initializer.assetManager.get(crystalName, Model.class);
                 
                 // Adjust the model to fit nicely into the blocky world

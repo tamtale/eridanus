@@ -6,12 +6,16 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.model.Node;
+import com.badlogic.gdx.graphics.g3d.model.NodeAnimation;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.week1.game.Model.Damage;
+import com.week1.game.Model.Initializer;
 import com.week1.game.Model.OutputPath;
 import com.week1.game.Model.Unit2StateAdapter;
 import com.week1.game.Renderer.GameRenderable;
@@ -21,6 +25,8 @@ import com.week1.game.Util3D;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.week1.game.Model.Initializer.blobName;
+import static com.week1.game.Model.Initializer.crystalName;
 import static com.week1.game.Model.StatsConfig.tempDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 
@@ -48,7 +54,9 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     private ModelInstance modelInstance;
     private Vector3 position = new Vector3();
     private Vector3 displayPosition = new Vector3();
-    
+
+    private AnimationController animationController;
+
     /*
      * Material to apply to a selected unit.
      */
@@ -81,15 +89,31 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
         this.modelInstance = new ModelInstance(model);
         modelInstance.transform.setTranslation(x, y, z);
         this.originalMaterial = model.materials.get(0);
+        
+//        animationController = new AnimationController(this.modelInstance);
+//        System.out.println("animation id: " + this.modelInstance.animations.get(0).id);
+////        System.out.println("\n\n\nanimations: " + this.modelInstance.animations);
+//        animationController.setAnimation("Gumdrop|GumdropAction", -1);
     }
 
+    
     public static void setColorMapping(Map<Integer, Color> colorMapping) {
         colorMap = colorMapping;
 
         modelMap = new HashMap<Integer, Model>() {
             {
+                Model model = Initializer.assetManager.get(blobName, Model.class);
+//                for (Node node : model.nodes) {
+//                    node.scale.set(10f,10f,10f);
+////                    node.rotation.setEulerAngles(0,0,90);
+//                }
+//                model.calculateTransforms();
+
+//                Model m2 = model.
+
                 colorMap.keySet().forEach(i ->
-                        put(i, Util3D.ONLY.createBox(1, 1, 1, colorMap.get(i)))
+//                        put(i, Util3D.ONLY.createBox(1, 1, 1, colorMap.get(i)))
+                        put(i, model)
                 );
             }
         };
@@ -323,6 +347,7 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
         if (delta != 0) {
             moveRender(delta);
         }
+//        animationController.update(delta);
         config.getModelBatch().render(modelInstance, config.getEnv());
     }
 }

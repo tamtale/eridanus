@@ -34,7 +34,11 @@ public class Initializer {
     public static Model spaceGold;
     public static Model easterEgg;
     public static Model spawner;
-    
+
+
+    public static final String crystalName = "crystals/blueCrystal.g3db";
+    public static final String blobName = "gumdroptexture.png/gumdrop.g3db";
+
     public static void init() {
         waterBlock = fileBasedModel("water2.png");
         earthBlock = fileBasedModel("earth3.png");
@@ -44,8 +48,13 @@ public class Initializer {
         spaceGold = fileBasedModel("gold2.png");
         easterEgg = fileBasedModel("cat_boi.png");
         spawner = fileBasedModel("spawner2.png");
+
+
+        Initializer.assetManager.load(crystalName, Model.class);
+        Initializer.assetManager.load(blobName, Model.class);
+        Initializer.assetManager.finishLoading();
     }
-    
+
     private static Model fileBasedModel(String fileName) {
         return BUILDER.createBox(1f, 1f, 1f,
                 new Material(TextureAttribute.createDiffuse(new Texture(fileName))), 
