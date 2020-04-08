@@ -211,7 +211,7 @@ public class ConnectionScreen implements Screen {
         
 //        10.122.178.55
         networkClient = NetworkUtils.initNetworkObjects(true, null, 42069,
-                gameAdapter, this, new PlayerInfo(nameField.getText(), colorSelectBox.getSelected().value));
+                gameAdapter, this, new PlayerInfo(name, colorSelectBox.getSelected().value));
 //        Gdx.app.debug("pjb3 - ConnectionScreen", "Created the Host network object");
         connectionStage.addActor(launchGameButton);
         
