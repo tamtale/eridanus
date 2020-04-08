@@ -156,8 +156,8 @@ public class GameWorld implements GameRenderable {
             for (int n = j - 1; n <= j + 1; n++) {
                 if ((m != i || n != j) && (m >= 0 && m < heightMap.length && n >= 0 && n < heightMap[0].length)) {
                     graph.removeConnection(m, n, i, j);
-                    graph.removeConnection(i, j, m, n);
-                    if (Math.abs(heightMap[m][n] - k) <= 1){
+                    //graph.removeConnection(i, j, m, n);
+                    if (heightMap[m][n] + 1 >= k){
                         graph.setConnection(new Vector2(m, n), new Vector2(i, j), block.getCost());
                         graph.setConnection(new Vector2(i, j), new Vector2(m, n), blocks[m][n][heightMap[m][n]].getCost());
                     }
@@ -173,41 +173,87 @@ public class GameWorld implements GameRenderable {
             for (int j = 0; j < blocks[0].length; j++) {
 //                for (int k = 0; k < blocks[0][0].length; k++) {
                     Vector2 coords = new Vector2(i, j);
-                    if (i > 0 && Math.abs(heightMap[i][j] - heightMap[i - 1][j]) <= 1) {
-                        graph.setConnection(coords, new Vector2(i - 1, j), blocks[i][j][heightMap[i][j]].getCost());
-                    }
-                    if(i < blocks.length - 1) {
-                        if (Math.abs(heightMap[i][j] - heightMap[i + 1][j]) <= 1) {
-                            graph.setConnection(coords, new Vector2(i + 1, j), blocks[i][j][heightMap[i][j]].getCost());
+                    if (i > 0 && (heightMap[i][j] + 1 >= heightMap[i - 1][j])) {
+                        float cost = blocks[i][j][heightMap[i][j]].getCost();
+                        if (heightMap[i][j] < heightMap[i - 1][j]){
+                            cost *= 2;
+                        } if (heightMap[i][j] > heightMap[i - 1][j]){
+                            cost *= 1.5;
                         }
+                        graph.setConnection(coords, new Vector2(i - 1, j), cost);
                     }
-                    if (j > 0 && Math.abs(heightMap[i][j] - heightMap[i][j - 1]) <= 1) {
-                        graph.setConnection(coords, new Vector2(i, j - 1), blocks[i][j][heightMap[i][j]].getCost());
+                    if (i < blocks.length - 1 && (heightMap[i][j] + 1 >= heightMap[i + 1][j])) {
+                        float cost = blocks[i][j][heightMap[i][j]].getCost();
+                        if (heightMap[i][j] < heightMap[i + 1][j]){
+                            cost *= 2;
+                        } if (heightMap[i][j] > heightMap[i + 1][j]){
+                            cost *= 1.5;
+                        }
+                        graph.setConnection(coords, new Vector2(i + 1, j), cost);
                     }
-                    if(j < blocks[0].length - 1 && Math.abs(heightMap[i][j] - heightMap[i][j + 1]) <= 1) {
 
-                        graph.setConnection(coords, new Vector2(i, j + 1), blocks[i][j][heightMap[i][j]].getCost());
+                    if (j > 0 && (heightMap[i][j] + 1 >= heightMap[i][j - 1])) {
+                        float cost = blocks[i][j][heightMap[i][j]].getCost();
+                        if (heightMap[i][j] < heightMap[i][j - 1]){
+                            cost *= 2;
+                        } if (heightMap[i][j] > heightMap[i][j - 1]){
+                            cost *= 1.5;
+                        }
+                        graph.setConnection(coords, new Vector2(i, j - 1), cost);
+                    }
+                    if(j < blocks[0].length - 1 && (heightMap[i][j] + 1 >= heightMap[i][j + 1])) {
+                        float cost = blocks[i][j][heightMap[i][j]].getCost();
+                        if (heightMap[i][j] < heightMap[i][j + 1]){
+                            cost *= 2;
+                        } if (heightMap[i][j] > heightMap[i][j + 1]){
+                            cost *= 1.5;
+                        }
+                        graph.setConnection(coords, new Vector2(i, j + 1), cost);
                     }
                     //TODO: climbing jumping into k.
                     if (i > 0 && j > 0
-                            && Math.abs(heightMap[i][j] - heightMap[i - 1][j - 1]) <= 1) {
+                            && (heightMap[i][j] + 1 >= heightMap[i - 1][j - 1])) {
+                        float cost = blocks[i][j][heightMap[i][j]].getCost();
+                        if (heightMap[i][j] < heightMap[i - 1][j - 1]){
+                            cost *= 2;
+                        } if (heightMap[i][j] > heightMap[i - 1][j - 1]){
+                            cost *= 1.5;
+                        }
                         graph.setConnection(coords, new Vector2(i - 1, j - 1),
-                                blocks[i][j][heightMap[i][j]].getCost() * (float) Math.sqrt(2));
+                                cost * (float) Math.sqrt(2));
                     }
                     if (i > 0 && j < blocks[0].length - 1
-                            && Math.abs(heightMap[i][j] - heightMap[i - 1][j + 1]) <= 1) {
+                            && (heightMap[i][j] + 1 >= heightMap[i - 1][j + 1])) {
+                        float cost = blocks[i][j][heightMap[i][j]].getCost();
+                        if (heightMap[i][j] < heightMap[i - 1][j + 1]){
+                            cost *= 2;
+                        } if (heightMap[i][j] > heightMap[i - 1][j + 1]){
+                            cost *= 1.5;
+                        }
                         graph.setConnection(coords, new Vector2(i - 1, j + 1),
-                                blocks[i][j][heightMap[i][j]].getCost() * (float) Math.sqrt(2));
+                                cost * (float) Math.sqrt(2));
                     }
                     if (i < blocks.length - 1 && j > 0
-                            && Math.abs(heightMap[i][j] - heightMap[i + 1][j - 1]) <= 1) {
+                            && (heightMap[i][j] + 1 >= heightMap[i + 1][j - 1])) {
+                        float cost = blocks[i][j][heightMap[i][j]].getCost();
+                        if (heightMap[i][j] < heightMap[i + 1][j - 1]){
+                            cost *= 2;
+                        } if (heightMap[i][j] > heightMap[i + 1][j - 1]){
+                            cost *= 1.5;
+                        }
                         graph.setConnection(coords, new Vector2(i + 1, j - 1),
-                                blocks[i][j][heightMap[i][j]].getCost() * (float) Math.sqrt(2));
+                                cost * (float) Math.sqrt(2));
                     }
                     if (i < blocks.length  - 1 && j < blocks[0].length - 1
-                            && Math.abs(heightMap[i][j] - heightMap[i + 1][j + 1]) <= 1) {
+                            && (heightMap[i][j] + 1 >= heightMap[i + 1][j + 1])) {
+                        float cost = blocks[i][j][heightMap[i][j]].getCost();
+                        if (heightMap[i][j] < heightMap[i + 1][j + 1]){
+                            cost *= 2;
+                        } if (heightMap[i][j] > heightMap[i + 1][j + 1]){
+                            cost *= 1.5;
+                        }
                         graph.setConnection(coords, new Vector2(i + 1, j + 1),
-                                blocks[i][j][heightMap[i][j]].getCost() * (float) Math.sqrt(2));
+                                cost * (float) Math.sqrt(2));
                     }
 //                }
             }
