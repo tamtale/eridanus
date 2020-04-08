@@ -45,9 +45,10 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
     public void remove(int entID) {
         nodes.remove(entID);
         // fix any targeting nodes.
-        for (TargetingNode node: nodes.values()) {
+        for (IntMap.Entry<TargetingNode> entry: nodes.entries()) {
+            TargetingNode node = entry.value;
             if (node.targetingComponent.targetID == entID) {
-                Gdx.app.log("TargetingSystem", "resetting target node on " + entID);
+                Gdx.app.debug("TargetingSystem", "resetting target for " + entry.key);
                 node.targetingComponent.targetID = -1;
             }
         }
@@ -76,7 +77,7 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
     }
     private void generateDamage(int id, TargetingNode node) {
         if (node.targetingComponent.targetID == -1) return;
-        Gdx.app.log("TargetingSystem", "creating damageevent by " + id + " against " + node.targetingComponent.targetID);
+        Gdx.app.debug("TargetingSystem", "creating damageevent by " + id + " against " + node.targetingComponent.targetID);
         DamageEvent damageEvent = new DamageEvent(id, node.targetingComponent.targetID);
         for (Subscriber<DamageEvent> subscriber: damageEventSubscribers) {
             subscriber.process(damageEvent);

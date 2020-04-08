@@ -144,7 +144,7 @@ public class Host {
                 if (didFail) {
                     outgoingMessages.add(0, MessageFormatter.packageMessage(new SyncIssueMessage(-1, SYNCERR, prevHash, hashes)));
                 } else if (didCheck) {
-                    Gdx.app.log("pjb3 - Host", "Nice. The hashes match up.");
+                    Gdx.app.debug("pjb3 - Host", "Nice. The hashes match up.");
                 }
 
                 Gdx.app.debug(TAG, "Host is about to broadcast update message to registered clients.");
