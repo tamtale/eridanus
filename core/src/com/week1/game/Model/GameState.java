@@ -510,6 +510,12 @@ public class GameState implements GameRenderable {
         for (int i = 0; i < damageables.size; i++) {
             damageables.get(i).drawHealthBar(config);
         }
+        
+        Array<PlayerBase> bases = playerBases.values().toArray();
+        for (int i = 0; i < bases.size; i++) {
+            bases.get(i).drawName(config);
+        }
+        
         batch2D.end();
     }
 
