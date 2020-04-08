@@ -36,6 +36,7 @@ public class LoadoutScreen implements Screen {
     private boolean sentTowers = false, isHostingClient;
     private SelectBox<TowerDetails> tower1, tower2, tower3;
     private Array<TowerDetails> allTowerOptions;
+    TextButton loadoutSelector;
 
 
     private TextButton startButton;
@@ -96,7 +97,7 @@ public class LoadoutScreen implements Screen {
         loadoutStage.addActor(new Image(reg));
 
 
-        TextButton loadoutSelector = new TextButton("Confirm Your Loadout!", new Skin(Gdx.files.internal("uiskin.json")));
+        loadoutSelector = new TextButton("Confirm Your Loadout!", new Skin(Gdx.files.internal("uiskin.json")));
         loadoutSelector.getLabel().setFontScale(2);
         loadoutSelector.setSize(375,64);
         loadoutSelector.setPosition(
@@ -106,24 +107,8 @@ public class LoadoutScreen implements Screen {
         loadoutStage.addActor(loadoutSelector);
         createLoadoutDropdowns();
 
-        loadoutSelector.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                loadoutSelector.setStyle(pressedStyle);
-                loadoutSelector.setText("Loadout confirmed.");
-                loadoutSelector.setTouchable(Touchable.disabled);
-                sendLoadout(Arrays.asList(
-                        tower1.getSelected().getTowerLite(),
-                        tower2.getSelected().getTowerLite(),
-                        tower3.getSelected().getTowerLite()));
-                tower1.setDisabled(false);
-                tower1.setTouchable(Touchable.disabled);
-                tower2.setDisabled(false);
-                tower2.setTouchable(Touchable.disabled);
-                tower3.setDisabled(false);
-                tower3.setTouchable(Touchable.disabled);
-            }
-        });
+        // Set the initial listener for the selector
+        loadoutSelector.addListener(acceptLoadoutHandler);
 
         // Make the font for the title
         Label.LabelStyle label1Style = new Label.LabelStyle();
@@ -179,18 +164,70 @@ public class LoadoutScreen implements Screen {
         }
         
 
-        networkClient.getScreenManager().setGameReadySequence(()-> {
-            if (isHostingClient) {
-                startButton.setDisabled(false);
-                startButton.setStyle(normalStyle);
-                startButton.setTouchable(Touchable.enabled);
-                startButton.setText("Launch Game");
-            }
-        });
+        networkClient.getScreenManager().setGameReadyUnReadySequences(
+                ()-> {
+                    if (isHostingClient) {
+                        startButton.setDisabled(false);
+                        startButton.setStyle(normalStyle);
+                        startButton.setTouchable(Touchable.enabled);
+                        startButton.setText("Launch Game");
+                    }
+                },
+                ()-> {
+                    if (isHostingClient) {
+                        startButton.setDisabled(true);
+                        startButton.setStyle(disabledStyle);
+                        startButton.setTouchable(Touchable.disabled);
+                        startButton.setText("Waiting for all players to chose loadouts...");
+                    }
+                });
 
         createNewGame(); // MAKE the game but don't start it yet.
         Gdx.input.setInputProcessor(loadoutStage);
     }
+
+    private ClickListener acceptLoadoutHandler =  new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+        loadoutSelector.removeListener(acceptLoadoutHandler);
+        loadoutSelector.addListener(retractLoadoutHandler);
+
+        loadoutSelector.setStyle(pressedStyle);
+        loadoutSelector.setText("Loadout confirmed. Click to undo");
+        sendLoadout(Arrays.asList(
+                tower1.getSelected().getTowerLite(),
+                tower2.getSelected().getTowerLite(),
+                tower3.getSelected().getTowerLite()));
+        tower1.setDisabled(false);
+        tower1.setTouchable(Touchable.disabled);
+        tower2.setDisabled(false);
+        tower2.setTouchable(Touchable.disabled);
+        tower3.setDisabled(false);
+        tower3.setTouchable(Touchable.disabled);
+        }
+    };
+
+    private ClickListener retractLoadoutHandler =  new ClickListener() {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+        loadoutSelector.removeListener(retractLoadoutHandler);
+        loadoutSelector.addListener(acceptLoadoutHandler);
+
+        loadoutSelector.setStyle(normalStyle);
+        loadoutSelector.setText("Press to confirm loadout.");
+        loadoutSelector.setTouchable(Touchable.enabled);
+        retractLoadout();
+        tower1.setTouchable(Touchable.enabled);
+        tower2.setTouchable(Touchable.enabled);
+        tower3.setTouchable(Touchable.enabled);
+        }
+    };
+
+    private void retractLoadout() {
+        networkClient.retractLoadout();
+    }
+
+
     private long parseMapSeed(String mapSeed) {
         try {
             return Long.parseLong(mapSeed);
@@ -242,12 +279,7 @@ public class LoadoutScreen implements Screen {
     }
 
     public void sendLoadout(List<TowerLite> details) {
-        if (!sentTowers) {
-
-
-            networkClient.sendLoadout(details);
-            sentTowers = false;
-        }
+        networkClient.sendLoadout(details);
     }
 
     @Override
