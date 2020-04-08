@@ -3,12 +3,10 @@ package com.week1.game.Settings;
 import com.badlogic.gdx.Gdx;
 import com.google.gson.Gson;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.Optional;
 
 public class Settings {
-    public static Settings DEFAULT = new Settings() {{setEdgePan(true);}};
+    public static Settings DEFAULT = new Settings() {{setEdgePan(false);}};
     public static Optional<Settings> fromFile(String path) {
         Gson gson = new Gson();
         try {
