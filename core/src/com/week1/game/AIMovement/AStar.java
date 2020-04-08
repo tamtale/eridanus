@@ -5,9 +5,6 @@ import com.badlogic.gdx.ai.pfa.*;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.week1.game.Model.OutputPath;
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -25,6 +22,9 @@ public class AStar<N> implements PathFinder<N> {
         this.graph = graph;
     }
 
+    /**
+     * Would search through connections rather than nodes, but it does NOT WORK. DO NOT CALL THIS METHOD.
+     */
     public boolean searchConnectionPath(N startNode, N endNode, Heuristic<N> heuristic, GraphPath<Connection<N>> outPath) {
         boolean found = this.search(startNode, endNode, heuristic);
         if (found) {
@@ -34,6 +34,11 @@ public class AStar<N> implements PathFinder<N> {
         return found;
     }
 
+    /**
+     * Takes a startNode and an EndNode and finds the AStar-iest path between them. Mostly just calls search and
+     * then generates the path if search works.
+     *
+     */
     public boolean searchNodePath(N startNode, N endNode, Heuristic<N> heuristic, GraphPath<N> outPath) {
         boolean found = this.search(startNode, endNode, heuristic);
         Gdx.app.debug("wab2 - AStar", "found? " + found);
@@ -44,6 +49,10 @@ public class AStar<N> implements PathFinder<N> {
         return found;
     }
 
+    /**
+     * Attempts to find a path between startNode and endNode.
+     * @return on success true
+     */
     protected boolean search(N startNode, N endNode, Heuristic<N> heuristic) {
         if (!this.initSearch(startNode, endNode, heuristic)) {
             return false;
@@ -51,16 +60,22 @@ public class AStar<N> implements PathFinder<N> {
         do {
             RouteNode<N> next = null;
             try {
+                //Take the first item off the priority queue.
                 next = openList.poll();
             }catch (Exception e){
                 e.printStackTrace();
                 return false;
             }
             assert next != null;
+
+            //if current node is the endNode, the search is complete.
             if (next.getNode().toString().equals(endNode.toString())){
                 this.endNode = next;
                 return true;
             }
+
+            //Go through all the connections for node "next" and estimate their value at getting to the endNode
+            //Then store all connections in the priorityQueue
             Array<Connection<N>> connections = graph.getConnections(next.node);
             for (int i = 0; i < connections.size; i++) {
                 Connection<N> connection = connections.get(i);
@@ -94,6 +109,9 @@ public class AStar<N> implements PathFinder<N> {
         return true;
     }
 
+    /**
+     * initialize all elements of the search.
+     */
     protected boolean initSearch(N startNode, N endNode, Heuristic<N> heuristic) {
 
         if (++this.searchId < 0) {
@@ -112,6 +130,9 @@ public class AStar<N> implements PathFinder<N> {
     protected void generateConnectionPath(N startNode, GraphPath<Connection<N>> outPath) {
     }
 
+    /**
+     * Generate the path which search found (traceback). Sets outPath to the path.
+     */
     protected void generateNodePath(N startNode, GraphPath<N> outPath) {
         RouteNode<N> node = endNode;
         do {
