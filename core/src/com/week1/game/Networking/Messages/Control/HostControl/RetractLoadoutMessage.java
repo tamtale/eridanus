@@ -31,7 +31,7 @@ public class RetractLoadoutMessage extends HostControlMessage {
         // remove their towers
         h.towerDetails.remove(playerID);
 
-        // Tell all clients that all players are ready to go if they want to do any rendering showing people are ready
+        // Tell all clients that not all players are ready to go and potentially undo any rendering for that
         for (Player p : h.registry.values()) {
             h.sendMessage(MessageFormatter.packageMessage(new UndoReadyToStart(-1)), p);
         }
