@@ -436,17 +436,21 @@ public class TowerDetails {
 
     }
 
-    public void saveTower() {
+    public boolean saveTower() {
         //write tower layout to a file
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream("customTowers/" +name +"_layout.txt"), "utf-8"))) {
             writer.write(getLayoutStr());
+            return true;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+            return false;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            return false;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
 
     }

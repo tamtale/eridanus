@@ -144,11 +144,15 @@ public class TowerBuilderScreen implements Screen {
     }
 
 
-    public void saveTower(String twrName) {
+    public void saveTowerAndView(String twrName) {
         System.out.println(twrName);
         towerCam.WIPTower.setName(twrName);
         towerCam.WIPTower.saveTower();
         towerStage.addTowertoSelections(towerCam.WIPTower);
+
+        //Make the tower show up in view mode and in the display select box
+        towerCam.setCurrTowerDetails(towerCam.WIPTower);
+        towerStage.setSelectedTower(towerCam.getCurrTowerDetails());
     }
 
     public void showErrorDialog(String msg) {
@@ -169,16 +173,22 @@ public class TowerBuilderScreen implements Screen {
     }
 
     public void saveEdits() {
-        //remove the old tower from the select box
+        //remove the old tower from the select box (select box holds the actual tower object, not just the string.
+        // it displays the toString of the tower which is the tower's name)
         towerStage.removeTowerFromSelection(towerCam.getCurrTowerDetails());
 
         //write the changes
-        towerCam.getWIPTower().saveTower();
+        boolean success = towerCam.getWIPTower().saveTower();
+        if (success) {
+            //View the new tower in the camera and the stage and add to select box
+            towerCam.setCurrTowerDetails(towerCam.getWIPTower());
+            towerStage.addTowerAndView(towerCam.getCurrTowerDetails());
 
-        //View the new tower in the came and the stage and add to select box
-        towerCam.setCurrTowerDetails(towerCam.getWIPTower());
-        towerStage.addTowerAndView(towerCam.getCurrTowerDetails());
+            towerStage.displaySuccessfulSave();
 
+        } else {
+            towerStage.displayFailedSave();
+        }
 
 
     }

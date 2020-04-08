@@ -41,6 +41,8 @@ public class TowerBuilderStage {
     //Build mode buttons
     private TextButton exitBuildBtn;
     private TextButton saveTowerBtn;
+    private Dialog successfulEditsDialog;
+    private Dialog failedEditsDialog;
     private boolean isEditing = false;
     private TextButton addBlockBtn;
     private TextButton removeBlockBtn;
@@ -146,7 +148,7 @@ public class TowerBuilderStage {
 
         materialSelection.setItems(materials);
 
-        newTwrBtn = new TextButton("Build New Towers", normalBtnStyle);
+        newTwrBtn = new TextButton("New Tower", normalBtnStyle);
         viewTowerLbl = new Label("View Tower: ", panelstyle);
         deleteTowerBtn = new TextButton("Delete Tower", normalBtnStyle);
         editTwrBtn = new TextButton("Edit Tower", normalBtnStyle);
@@ -209,6 +211,33 @@ public class TowerBuilderStage {
         saveTowerBtn = new TextButton("Save", normalBtnStyle);
         blockTypeLbl = new Label("Block Type: ", panelstyle);
 
+
+        TextButton okEditSuccessBtn = new TextButton("OK", normalBtnStyle);
+        okEditSuccessBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                successfulEditsDialog.hide();
+            }
+        });
+        successfulEditsDialog = new Dialog("Saving Edits", new Skin(Gdx.files.internal("uiskin.json")));
+        successfulEditsDialog.text("Edits Successfully saved");
+        successfulEditsDialog.getContentTable().row();
+        successfulEditsDialog.getContentTable().add(okEditSuccessBtn);
+
+
+
+        TextButton okEditFailedBtn = new TextButton("OK", normalBtnStyle);
+        okEditFailedBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                failedEditsDialog.hide();
+            }
+        });
+        failedEditsDialog = new Dialog("Error: Saving Edits", new Skin(Gdx.files.internal("uiskin.json")));
+        failedEditsDialog.text("Failed to save edits");
+        failedEditsDialog.getContentTable().row();
+        failedEditsDialog.getContentTable().add(okEditFailedBtn);
+
         TextField twrNameField = new TextField("", new Skin(Gdx.files.internal("uiskin.json")));
         enterNameDialog = new Dialog("Name your tower", new Skin(Gdx.files.internal("uiskin.json")));
         enterNameDialog.text("Enter a name for your tower below: ");
@@ -222,9 +251,14 @@ public class TowerBuilderStage {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println(twrNameField.getText());
-                screen.saveTower(twrNameField.getText());
+                screen.saveTowerAndView(twrNameField.getText());
                 enterNameDialog.hide();
                 twrNameField.setText("");
+
+                //Exit build mode after tower save
+                isBuildMode = false;
+                deactivateBuildMode();
+
             }});
         cancelBtn.addListener(new ClickListener() {
         @Override
@@ -380,7 +414,6 @@ public class TowerBuilderStage {
             public void clicked(InputEvent event, float x, float y) {
                 isBuildMode = false;
 
-                //TODO - this should look at the new tower (if a new tower was saved)
                 screen.setCamTower(displaySelection.getSelected());
                 sw.setLblTxt(screen.getTowerStats());
                 deactivateBuildMode();
@@ -552,6 +585,8 @@ public class TowerBuilderStage {
         deleteTowerBtn.setVisible(true);
         editTwrBtn.setVisible(true);
 
+        isEditing = false;
+
         deactivateAdd();
         deactivateRemove();
 
@@ -580,6 +615,19 @@ public class TowerBuilderStage {
         displaySelection.setItems(selectionTowers);
 
         displaySelection.setSelected(editedTower);
+        sw.setLblTxt(screen.getTowerStats());
+    }
+
+    public void displaySuccessfulSave() {
+        successfulEditsDialog.show(dialogStage);
+    }
+
+    public void displayFailedSave() {
+        failedEditsDialog.show(dialogStage);
+    }
+
+    public void setSelectedTower(TowerDetails tower) {
+        displaySelection.setSelected(tower);
         sw.setLblTxt(screen.getTowerStats());
     }
 }
