@@ -154,16 +154,10 @@ public abstract class Damageable {
     Decal floatingName = null;
     public void drawName(RenderConfig config, List<PlayerInfo> playerInfo) {
 
-        // Initialize the healthbar, if previously unrendered
+        // Initialize the name, if previously unrendered
         if (floatingName == null) {
-            
             Pixmap map = makePixmap(playerInfo.get(this.getPlayerId()).getPlayerName());
-//            Pixmap map = makePixmap("The quick brown fox jumped over the lazy dog. !@#$%^&*()");
-            
-            // pixmap -> texture
             Texture textTexture = new Texture(map);
-            
-            // texture -> texture region
             TextureRegion textTextureRegion = new TextureRegion(textTexture);
             
             float scaleFactor = 0.1f;
