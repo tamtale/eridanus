@@ -132,6 +132,7 @@ public class GameScreen implements Screen {
 			@Override
 			public void restartGame() {
 				networkClient.sendRestartRequest();
+				dispose();
 			}
 		}, util);
 		
@@ -252,8 +253,10 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void dispose () {
-
+		engine = null;
+		clickOracle = null;
+		renderer = null;
+		gameStage = null;
 	}
-
 }
 

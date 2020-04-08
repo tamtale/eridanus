@@ -30,7 +30,7 @@ public class ConnectionScreen implements Screen {
     private GameControllerSetScreenAdapter gameAdapter;
     private boolean hosting;
 
-    TextButton hostGameButton, joinGameButton, launchGameButton;
+    TextButton hostGameButton, joinGameButton, launchGameButton, returnToSpashButton;
     SelectBox<Pair.ColorPair> colorSelectBox;
     TextField nameField;
     Label waitJoinMsg;
@@ -61,8 +61,20 @@ public class ConnectionScreen implements Screen {
         TextureRegionDrawable reg = new TextureRegionDrawable(tex);
         connectionStage.addActor(new Image(reg));
 
+        returnToSpashButton = new TextButton("Back to Home", new Skin(Gdx.files.internal("uiskin.json")));
+        returnToSpashButton.getLabel().setFontScale(TEXTSCALE);
+        returnToSpashButton.setSize(350,64);
+        returnToSpashButton.setPosition(GameController.VIRTUAL_WIDTH/2 - returnToSpashButton.getWidth()/2,
+                GameController.VIRTUAL_HEIGHT/4 - returnToSpashButton.getHeight()/2);
+        connectionStage.addActor(returnToSpashButton);
+        returnToSpashButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                returnToSpashscreen();
+            }
+        });
 
-        hostGameButton= new TextButton("Begin Hosting", new Skin(Gdx.files.internal("uiskin.json")));
+        hostGameButton = new TextButton("Begin Hosting", new Skin(Gdx.files.internal("uiskin.json")));
         hostGameButton.getLabel().setFontScale(TEXTSCALE);
         hostGameButton.setSize(350,64);
         hostGameButton.setPosition(GameController.VIRTUAL_WIDTH/2 - 20 - hostGameButton.getWidth(),
@@ -157,7 +169,11 @@ public class ConnectionScreen implements Screen {
 
         Gdx.input.setInputProcessor(connectionStage);
     }
-    
+
+    private void returnToSpashscreen() {
+        gameAdapter.returnToMainMenu();
+    }
+
     public void updateJoinedPlayers(java.util.List<String> joinedPlayers) {
         StringBuilder s = new StringBuilder("Joined Players:\n");
         joinedPlayers.forEach(player -> s.append(player).append("\n"));
@@ -178,15 +194,16 @@ public class ConnectionScreen implements Screen {
     }
     
     private void joinGame(String ip, PlayerInfo info) {
-        switchToWater();
-        addPlayerList();
         networkClient = NetworkUtils.initNetworkObjects(false, ip, 42069, gameAdapter, this, info);
         if (networkClient == null) {
             // Something was wrong in the input
             Gdx.app.debug("pjb3 - ConnectionScreen", "Ruh roh. Something is wrong, with the IP probably");
         } else {
+            switchToWater();
+            addPlayerList();
             hostGameButton.remove();
             joinGameButton.remove();
+            returnToSpashButton.remove();
             ipField.setDisabled(true);
             connectionStage.addActor(waitJoinMsg);
         }
@@ -276,4 +293,5 @@ public class ConnectionScreen implements Screen {
     public void dispose() {
         connectionStage.dispose();
     }
+
 }

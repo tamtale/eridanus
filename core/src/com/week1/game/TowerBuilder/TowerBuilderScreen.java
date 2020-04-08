@@ -152,5 +152,4 @@ public class TowerBuilderScreen implements Screen {
     public void showErrorDialog(String msg) {
         towerStage.showDialog(msg);
     }
-
 }
