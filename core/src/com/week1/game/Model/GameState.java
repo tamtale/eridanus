@@ -515,7 +515,7 @@ public class GameState implements GameRenderable {
         
         Array<PlayerBase> bases = playerBases.values().toArray();
         for (int i = 0; i < bases.size; i++) {
-            bases.get(i).drawName(config, playerInfo);
+            bases.get(i).drawName(config, playerInfo.get(bases.get(i).getPlayerId()).getPlayerName());
         }
         
         batch2D.end();

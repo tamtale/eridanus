@@ -152,11 +152,11 @@ public abstract class Damageable {
     }
     
     Decal floatingName = null;
-    public void drawName(RenderConfig config, List<PlayerInfo> playerInfo) {
+    public void drawName(RenderConfig config, String name) {
 
         // Initialize the name, if previously unrendered
         if (floatingName == null) {
-            Pixmap map = makePixmap(playerInfo.get(this.getPlayerId()).getPlayerName());
+            Pixmap map = makePixmap(name);
             Texture textTexture = new Texture(map);
             TextureRegion textTextureRegion = new TextureRegion(textTexture);
             
