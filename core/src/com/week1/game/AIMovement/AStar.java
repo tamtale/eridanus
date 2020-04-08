@@ -26,12 +26,7 @@ public class AStar<N> implements PathFinder<N> {
      * Would search through connections rather than nodes, but it does NOT WORK. DO NOT CALL THIS METHOD.
      */
     public boolean searchConnectionPath(N startNode, N endNode, Heuristic<N> heuristic, GraphPath<Connection<N>> outPath) {
-        boolean found = this.search(startNode, endNode, heuristic);
-        if (found) {
-            this.generateConnectionPath(startNode, outPath);
-        }
-
-        return found;
+        return false;
     }
 
     /**

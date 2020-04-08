@@ -210,7 +210,6 @@ public class GameWorld implements GameRenderable {
                         }
                         graph.setConnection(coords, new Vector2(i, j + 1), cost);
                     }
-                    //TODO: climbing jumping into k.
                     if (i > 0 && j > 0
                             && (heightMap[i][j] + 1 >= heightMap[i - 1][j - 1])) {
                         float cost = blocks[i][j][heightMap[i][j]].getCost();
