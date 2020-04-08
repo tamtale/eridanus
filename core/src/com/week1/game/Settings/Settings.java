@@ -1,5 +1,6 @@
 package com.week1.game.Settings;
 
+import com.badlogic.gdx.Gdx;
 import com.google.gson.Gson;
 
 import java.io.FileNotFoundException;
@@ -7,12 +8,13 @@ import java.io.FileReader;
 import java.util.Optional;
 
 public class Settings {
+    public static Settings DEFAULT = new Settings() {{setEdgePan(true);}};
     public static Optional<Settings> fromFile(String path) {
         Gson gson = new Gson();
         try {
-            Settings settings = gson.fromJson(new FileReader(path), Settings.class);
+            Settings settings = gson.fromJson(Gdx.files.internal(path).readString(), Settings.class);
             return Optional.of(settings);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             return Optional.empty();
         }
     }
@@ -20,6 +22,10 @@ public class Settings {
     private boolean edgePan;
     public boolean getEdgePan() {
         return edgePan;
+    }
+
+    public void setEdgePan(boolean edgePan) {
+        this.edgePan = edgePan;
     }
 
 }

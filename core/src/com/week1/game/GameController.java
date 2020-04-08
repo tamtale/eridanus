@@ -36,6 +36,9 @@ public class GameController implements ApplicationListener {
         Settings.fromFile(configPath).ifPresent(settings -> {
             this.settings = settings;
         });
+        if (this.settings == null) {
+            this.settings = Settings.DEFAULT;
+        }
 
     }
 

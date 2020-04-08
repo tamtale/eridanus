@@ -116,6 +116,7 @@ public class TowerDetails {
             }
             myReader.close();
 
+            Gdx.app.log("towerdetails", filename);
             String twrName = filename.substring(13, filename.length() - 11);
             layout = blocks;
             name = twrName;
