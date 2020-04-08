@@ -40,6 +40,7 @@ public class GameState implements GameRenderable {
     private Array<Damageable> damageables = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
+    private List<PlayerInfo> playerInfo;
     
     private Array<Crystal> crystals = new Array<>();
     private Array<Pair<Integer, Crystal>> crystalsWaitingToRespawn = new Array<>();
@@ -55,8 +56,9 @@ public class GameState implements GameRenderable {
         return this;
     }
 
-    public GameState(IWorldBuilder worldBuilder, Runnable postInit){
+    public GameState(IWorldBuilder worldBuilder, Runnable postInit, List<PlayerInfo> playerInfo){
         // TODO tower types in memory after exchange
+        this.playerInfo = playerInfo;
         this.worldBuilder = worldBuilder;
         this.u2s = new Unit2StateAdapter() {
             @Override
@@ -510,6 +512,12 @@ public class GameState implements GameRenderable {
         for (int i = 0; i < damageables.size; i++) {
             damageables.get(i).drawHealthBar(config);
         }
+        
+        Array<PlayerBase> bases = playerBases.values().toArray();
+        for (int i = 0; i < bases.size; i++) {
+            bases.get(i).drawName(config, playerInfo.get(bases.get(i).getPlayerId()).getPlayerName());
+        }
+        
         batch2D.end();
     }
 
