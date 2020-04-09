@@ -119,7 +119,7 @@ public class ConnectionScreen implements Screen {
         Skin uiskin = new Skin(Gdx.files.internal("uiskin.json"));
         TextField.TextFieldStyle textFieldStyle = uiskin.get(TextField.TextFieldStyle.class);
         textFieldStyle.font.getData().scale(INPUTSCALE);
-        ipField = new TextField("10.122.178.55", textFieldStyle);
+        ipField = new TextField(NetworkUtils.getLocalHostAddr(), textFieldStyle);
         ipField.setSize(joinGameButton.getWidth(),64);
         ipField.setPosition(GameController.VIRTUAL_WIDTH / 2 + 20 ,GameController.VIRTUAL_HEIGHT / 2);
         connectionStage.addActor(ipField);
@@ -211,7 +211,7 @@ public class ConnectionScreen implements Screen {
         
 //        10.122.178.55
         networkClient = NetworkUtils.initNetworkObjects(true, null, 42069,
-                gameAdapter, this, new PlayerInfo(nameField.getText(), colorSelectBox.getSelected().value));
+                gameAdapter, this, new PlayerInfo(name, colorSelectBox.getSelected().value));
 //        Gdx.app.debug("pjb3 - ConnectionScreen", "Created the Host network object");
         connectionStage.addActor(launchGameButton);
         

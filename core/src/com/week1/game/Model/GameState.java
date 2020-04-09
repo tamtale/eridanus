@@ -47,10 +47,11 @@ public class GameState implements GameRenderable {
     private PathfindingSystem pathfindingSystem;
     private RenderSystem renderSystem = new RenderSystem();
     private TargetingSystem targetingSystem;
+    private InterpolatorSystem interpolatorSystem = new InterpolatorSystem();
     private DeathSystem deathSystem;
     private DamageSystem damageSystem = new DamageSystem();
     private EntityManager entityManager = new EntityManager();
-
+    private List<PlayerInfo> playerInfo;
     private Array<Crystal> crystals = new Array<>();
     private Array<Pair<Integer, Crystal>> crystalsWaitingToRespawn = new Array<>();
     
@@ -61,8 +62,9 @@ public class GameState implements GameRenderable {
     private Runnable postInit;
     private boolean fullyInitialized = false;
 
-    public GameState(IWorldBuilder worldBuilder, Runnable postInit){
+    public GameState(IWorldBuilder worldBuilder, Runnable postInit, List<PlayerInfo> playerInfo){
         // TODO tower types in memory after exchange
+        this.playerInfo = playerInfo;
         this.worldBuilder = worldBuilder;
         this.u2s = new Unit2StateAdapter() {
             @Override
@@ -176,6 +178,7 @@ public class GameState implements GameRenderable {
         pathfindingSystem.update(THRESHOLD);
         movementSystem.update(THRESHOLD);
         targetingSystem.update(THRESHOLD);
+        interpolatorSystem.update(THRESHOLD);
         renderSystem.update(THRESHOLD);
         damageSystem.update(THRESHOLD);
         deathSystem.update(THRESHOLD);
@@ -292,7 +295,9 @@ public class GameState implements GameRenderable {
         units.add(u);
         movementSystem.addNode(u.ID, positionComponent, velocityComponent);
         pathfindingSystem.addNode(u.ID, positionComponent, velocityComponent, pathComponent);
-        renderSystem.addNode(u.ID, renderComponent, positionComponent, velocityComponent);
+        PositionComponent interpolated = new PositionComponent(positionComponent.position);
+        interpolatorSystem.addNode(u.ID, positionComponent, interpolated, velocityComponent);
+        renderSystem.addNode(u.ID, renderComponent, interpolated);
         targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(u.ID, healthComponent);
         damageSystem.addDamage(u.ID, damagingComponent);
@@ -306,6 +311,7 @@ public class GameState implements GameRenderable {
     public void removeEntity(int id) {
         movementSystem.remove(id);
         pathfindingSystem.remove(id);
+        interpolatorSystem.remove(id);
         renderSystem.remove(id);
         damageSystem.remove(id);
         targetingSystem.remove(id);
@@ -523,12 +529,8 @@ public class GameState implements GameRenderable {
     @Override
     public void render(RenderConfig config) {
         world.render(config);
-        ModelBatch modelBatch = config.getModelBatch();
-        Batch batch2D = config.getBatch();
-
+        interpolatorSystem.render(config);
         renderSystem.render(config);
-
-        // TODO Render overlay stuff
     }
 
 

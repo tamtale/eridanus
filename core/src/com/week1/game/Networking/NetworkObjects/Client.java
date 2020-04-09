@@ -138,4 +138,8 @@ public class Client {
     public void setInfoList(List<PlayerInfo> infoList) {
         this.infoList = infoList;
     }
+
+    public void retractLoadout() {
+        sendStringMessage(MessageFormatter.packageMessage(new RetractLoadoutMessage(playerId)));
+    }
 }

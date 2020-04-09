@@ -48,7 +48,8 @@ public class GameEngine implements GameRenderable {
                     // Give the system the center of the map for camera rotation.
                     int[] dimensions = getGameState().getWorld().getWorldDimensions();
                     adapter.setCenter(new Vector3(dimensions[0] / 2f, dimensions[1] / 2f, dimensions[2] / 2f));
-                });
+                },
+                adapter.getPlayerInfo());
         Gdx.app.log("wab2- GameEngine", "gameState built");
         this.util = util;
 

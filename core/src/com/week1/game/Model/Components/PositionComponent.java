@@ -7,4 +7,7 @@ public class PositionComponent extends AComponent {
     public PositionComponent(float x, float y, float z) {
         this.position = new Vector3(x, y, z);
     }
+    public PositionComponent(Vector3 position) {
+        this(position.x, position.y, position.z);
+    }
 }
