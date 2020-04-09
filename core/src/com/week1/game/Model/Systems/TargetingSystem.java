@@ -80,7 +80,7 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
     private void generateDamage(int id, TargetingNode node) {
         if (node.targetingComponent.targetID == -1) return;
         Gdx.app.debug("TargetingSystem", "creating damageevent by " + id + " against " + node.targetingComponent.targetID);
-        DamageEvent damageEvent = new DamageEvent(id, node.targetingComponent.targetID);
+        DamageEvent damageEvent = new DamageEvent(node.ownedComponent.playerID, id, node.targetingComponent.targetID);
         for (Subscriber<DamageEvent> subscriber: damageEventSubscribers) {
             subscriber.process(damageEvent);
         }

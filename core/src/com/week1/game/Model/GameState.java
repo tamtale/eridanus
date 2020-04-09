@@ -183,48 +183,55 @@ public class GameState implements GameRenderable {
             }
         });
     }
-    
+
     private void initCrystalRespawnSystem() {
         this.crystalRespawnSystem = new CrystalRespawnSystem(
-                new IService<PositionComponent, Boolean>() {
-                    @Override
-                    public Boolean query(PositionComponent key) {
-                        //make sure that there aren't any towers in the way
-                        int tempX = (int) key.position.x;
-                        int tempY = (int) key.position.y;
-                        int tempZ = (int) key.position.z;
-                        if (world.getBlock(tempX, tempY, tempZ) == Block.TerrainBlock.AIR) {
-                            // nothing's in the way, crystal respawns
-                            addCrystal(tempX, tempY, tempZ);
-                            return true;
-                        } 
-                        
-                        return false;
+                (key) -> {
+                    //make sure that there aren't any towers in the way
+                    int tempX = (int) key.position.x;
+                    int tempY = (int) key.position.y;
+                    int tempZ = (int) key.position.z;
+                    if (world.getBlock(tempX, tempY, tempZ) == Block.TerrainBlock.AIR) {
+                        // nothing's in the way, crystal respawns
+                        addCrystal(tempX, tempY, tempZ);
+                        return true;
                     }
-                },
-                new IService<Integer, PositionComponent>() {
-                    @Override
-                    public PositionComponent query(Integer key) {
 
-                        // Does the given id 'key' correspond to a crystal?
-                        for (int i = 0; i < crystals.size; i++) {
-                            if (crystals.get(i).ID == key) {
-                                return crystals.get(i).getPositionComponent();
-                            }
+                    return false;
+                },
+                (key) -> {
+                    // Does the given id 'key' correspond to a crystal?
+                    for (int i = 0; i < crystals.size; i++) {
+                        if (crystals.get(i).ID == key) {
+                            return crystals.get(i).getPositionComponent();
                         }
-                        return null;
                     }
+                    return null;
                 });
     }
 
+    
     private void initDeathSystem() {
-        this.deathSystem = new DeathSystem(new IService<Integer, Void>() {
-            @Override
-            public Void query(Integer key) {
-                removeEntity(key);
-                return null;
-            }
-        });
+        this.deathSystem = new DeathSystem(
+                new IService<Integer, Void>() {
+                    @Override
+                    public Void query(Integer key) {
+                        removeEntity(key);
+                        return null;
+                    }
+                },
+                new IService<Pair<Integer, Integer>, Void>() {
+                    @Override
+                    public Void query(Pair<Integer, Integer> key) {
+                        int damagerPlayerId = key.key;
+                        int rewardAmt = key.value;
+                        
+                        Gdx.app.log("ManaRewardService - lji1", "Rewarding player: " + damagerPlayerId + " with " + rewardAmt + " mana for their kill");
+                        playerStats.get(damagerPlayerId).giveMana(rewardAmt);
+                        return null;
+                    }
+                }
+        );
     }
 
     public void synchronousUpdateState(int communicationTurn) {
@@ -331,13 +338,16 @@ public class GameState implements GameRenderable {
     public void addCrystal(float x, float y, float z) {
         PositionComponent positionComponent = new PositionComponent(x, y, z);
         HealthComponent healthComponent = new HealthComponent(CRYSTAL_HEALTH, CRYSTAL_HEALTH);
+        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 1f);
         
-        Crystal c = new Crystal(positionComponent, healthComponent, entityManager.newID());
+        Crystal c = new Crystal(positionComponent, healthComponent, manaRewardComponent, entityManager.newID());
         crystals.add(c);
         c.setCrystalToStateAdapter(c2s); //TODO: want this?
         
         // Register with the damage system, so that the crystal can take damage
         damageSystem.addHealth(c.ID, healthComponent);
+        // Register with the death system, to give reward on death
+        deathSystem.addManaReward(c.ID, manaRewardComponent);
         
         // Add the crystal to the map
         world.setBlock((int)c.getX(), (int)c.getY(), (int)c.getZ(), Block.TerrainBlock.CRYSTAL);
@@ -352,7 +362,8 @@ public class GameState implements GameRenderable {
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true, TargetingComponent.TargetingStrategy.ENEMY);
         HealthComponent healthComponent = new HealthComponent(tempHealth, tempHealth);
         DamagingComponent damagingComponent = new DamagingComponent((float) tempDamage);
-        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, healthComponent, damagingComponent);
+        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(0, 0);
+        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, healthComponent, damagingComponent, manaRewardComponent);
         u.ID = entityManager.newID();
         units.add(u);
         movementSystem.addNode(u.ID, positionComponent, velocityComponent);
@@ -361,6 +372,7 @@ public class GameState implements GameRenderable {
         targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(u.ID, healthComponent);
         damageSystem.addDamage(u.ID, damagingComponent);
+        deathSystem.addManaReward(u.ID, manaRewardComponent);
         clickables.add(u);
         return u;
     }
@@ -411,10 +423,12 @@ public class GameState implements GameRenderable {
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
             TargetingComponent.TargetingStrategy.ENEMY);
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
-        Tower tower = new Tower(positionComponent, healthComponent, damagingComponent, targetingComponent, ownedComponent, towerDetails, towerType, entityManager.newID());
+        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
+        Tower tower = new Tower(positionComponent, healthComponent, damagingComponent, targetingComponent, ownedComponent, manaRewardComponent, towerDetails, towerType, entityManager.newID());
         targetingSystem.addNode(tower.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(tower.ID, healthComponent);
         damageSystem.addDamage(tower.ID, damagingComponent);
+        deathSystem.addManaReward(tower.ID, manaRewardComponent);
         towers.add(tower);
         addBuilding(tower, playerID);
         return tower;

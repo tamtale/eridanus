@@ -2,6 +2,7 @@ package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.Components.HealthComponent;
+import com.week1.game.Model.Components.ManaRewardComponent;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.CrystalToStateAdapter;
 import com.week1.game.Model.Damage;
@@ -17,11 +18,13 @@ public class Crystal extends Damageable {
     
     private PositionComponent positionComponent;
     private HealthComponent healthComponent;
+    private ManaRewardComponent manaRewardComponent;
 //    private static final OwnedComponent ownedComponent = new OwnedComponent(-1); // owned by -1, so that the crystal appears as enemy to all units
 
-    public Crystal(PositionComponent positionComponent, HealthComponent healthComponent, int ID) {
+    public Crystal(PositionComponent positionComponent, HealthComponent healthComponent, ManaRewardComponent manaRewardComponent, int ID) {
         this.positionComponent = positionComponent;
         this.healthComponent = healthComponent;
+        this.manaRewardComponent = manaRewardComponent;
         this.ID = ID;
     }
     

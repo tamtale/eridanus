@@ -26,6 +26,7 @@ public class Unit implements Damaging, Clickable {
     private TargetingComponent targetingComponent;
     private DamagingComponent damagingComponent;
     private HealthComponent healthComponent;
+    private ManaRewardComponent manaRewardComponent;
 
     private boolean selected;
     private int turn = 0;
@@ -60,7 +61,8 @@ public class Unit implements Damaging, Clickable {
         OwnedComponent ownedComponent,
         TargetingComponent targetingComponent,
         HealthComponent healthComponent,
-        DamagingComponent damagingComponent
+        DamagingComponent damagingComponent,
+        ManaRewardComponent manaRewardComponent
     ) {
         this.positionComponent = positionComponent;
         this.velocityComponent = velocityComponent;
@@ -70,6 +72,7 @@ public class Unit implements Damaging, Clickable {
         this.targetingComponent = targetingComponent;
         this.healthComponent = healthComponent;
         this.damagingComponent = damagingComponent;
+        this.manaRewardComponent = manaRewardComponent;
         this.model = modelMap.get(ownedComponent.playerID);
         this.originalMaterial = model.materials.get(0);
     }
