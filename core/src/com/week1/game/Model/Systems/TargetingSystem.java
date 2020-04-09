@@ -65,16 +65,18 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
 
         if (!targetingComponent.switchTargets) return;
 
+        // Look for a new target
         serviceQuery.set(ownedComponent, targetingComponent, positionComponent);
         Pair<Integer, PositionComponent> nearby = findNearbyService.query(serviceQuery);
         targetingComponent.targetID = nearby.key;
-        if (targetingComponent.targetID!= -1) {
+        
+        if (targetingComponent.targetID!= -1) { // a target has been found
             node.targetPositionComponent = nearby.value;
-        } else {
+        } else { // no target has been found
             node.targetPositionComponent = null;
         }
-
     }
+    
     private void generateDamage(int id, TargetingNode node) {
         if (node.targetingComponent.targetID == -1) return;
         Gdx.app.debug("TargetingSystem", "creating damageevent by " + id + " against " + node.targetingComponent.targetID);

@@ -24,6 +24,7 @@ import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
 import com.week1.game.Tuple3;
 
+import javax.swing.text.Position;
 import java.util.List;
 
 import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
@@ -48,6 +49,7 @@ public class GameState implements GameRenderable {
     private RenderSystem renderSystem = new RenderSystem();
     private TargetingSystem targetingSystem;
     private DeathSystem deathSystem;
+    private CrystalRespawnSystem crystalRespawnSystem;
     private DamageSystem damageSystem = new DamageSystem();
     private EntityManager entityManager = new EntityManager();
 
@@ -78,8 +80,10 @@ public class GameState implements GameRenderable {
         this.pathfindingSystem = new PathfindingSystem(u2s);
         initTargetingSystem();
         initDeathSystem();
+        initCrystalRespawnSystem();
         targetingSystem.addSubscriber(damageSystem);
         damageSystem.addSubscriber(deathSystem);
+        damageSystem.addSubscriber(crystalRespawnSystem);
         this.c2s = new CrystalToStateAdapter() {
             @Override
             public void rewardPlayer(int playerId, double amt) {
@@ -109,7 +113,7 @@ public class GameState implements GameRenderable {
                 PositionComponent otherPositionComponent;
                 minDist = targetingComponent.range; // Any target must be within range.
                 float dist;
-                // Check all the units for the closest suitable target.
+                // Check through all units to determine closet suitable target
                 for (Unit unit: units) {
                     // Check if unit owner follows owner rule.
                     int unitOwner = unit.getPlayerId();
@@ -134,6 +138,7 @@ public class GameState implements GameRenderable {
                     }
                 }
 
+                // Are there any towers that might be closer suitable targets?
                 for (Tower tower: towers) {
                     int towerOwner = tower.getPlayerId();
                     switch (targetingComponent.strategy) {
@@ -156,9 +161,64 @@ public class GameState implements GameRenderable {
                         result.value = tower.getPositionComponent();
                     }
                 }
+                
+                // Any crystals that are closer suitable targets?
+                for (Crystal crystal: crystals) {
+                    switch (targetingComponent.strategy) {
+                        case ENEMY:
+                            break;
+                        case TEAM:
+                            continue; // if attempting to team kill, don't target crystals
+                        case ALL:
+                            break;
+                    }
+                    // Check position of unit.
+                    otherPositionComponent = crystal.getPositionComponent();
+                    // Don't need to check for self-target here, because crystals don't deal damage
+                    dist = positionComponent.position.dst(otherPositionComponent.position);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        result.key = crystal.ID;
+                        result.value = crystal.getPositionComponent();
+                    }
+                }
+                
                 return result;
             }
         });
+    }
+    
+    private void initCrystalRespawnSystem() {
+        this.crystalRespawnSystem = new CrystalRespawnSystem(
+                new IService<PositionComponent, Boolean>() {
+                    @Override
+                    public Boolean query(PositionComponent key) {
+                        //make sure that there aren't any towers in the way
+                        int tempX = (int) key.position.x;
+                        int tempY = (int) key.position.y;
+                        int tempZ = (int) key.position.z;
+                        if (world.getBlock(tempX, tempY, tempZ) == Block.TerrainBlock.AIR) {
+                            // nothing's in the way, crystal respawns
+                            addCrystal(tempX, tempY, tempZ);
+                            return true;
+                        } 
+                        
+                        return false;
+                    }
+                },
+                new IService<Integer, PositionComponent>() {
+                    @Override
+                    public PositionComponent query(Integer key) {
+
+                        // Does the given id 'key' correspond to a crystal?
+                        for (int i = 0; i < crystals.size; i++) {
+                            if (crystals.get(i).ID == key) {
+                                return crystals.get(i).getPositionComponent();
+                            }
+                        }
+                        return null;
+                    }
+                });
     }
 
     private void initDeathSystem() {
@@ -178,6 +238,7 @@ public class GameState implements GameRenderable {
         targetingSystem.update(THRESHOLD);
         renderSystem.update(THRESHOLD);
         damageSystem.update(THRESHOLD);
+        crystalRespawnSystem.update(THRESHOLD); // important that this happens before death (or else crystal may be removed before being queued for respawn)
         deathSystem.update(THRESHOLD);
         doTowerSpecialAbilities(communicationTurn);
     }
@@ -248,8 +309,7 @@ public class GameState implements GameRenderable {
                 // Place the crystal in the first available airblock
                 if ((world.getBlock((int)desiredLoc.x, (int)desiredLoc.y, z) == Block.TerrainBlock.AIR) &&
                         (world.getBlock((int)desiredLoc.x, (int)(desiredLoc.y), z - 1).canSupportTower())){
-                    Crystal c = new Crystal(desiredLoc.x, desiredLoc.y, z);
-                    addCrystal(c);
+                    addCrystal(desiredLoc.x, desiredLoc.y, z);
                     break;
                 }
             }
@@ -272,9 +332,18 @@ public class GameState implements GameRenderable {
         }
     }
     
-    public void addCrystal(Crystal c) {
+    public void addCrystal(float x, float y, float z) {
+        PositionComponent positionComponent = new PositionComponent(x, y, z);
+        HealthComponent healthComponent = new HealthComponent(CRYSTAL_HEALTH, 100);
+        
+        Crystal c = new Crystal(positionComponent, healthComponent, entityManager.newID());
         crystals.add(c);
-        c.setCrystalToStateAdapter(c2s);
+        c.setCrystalToStateAdapter(c2s); //TODO: want this?
+        
+        // Register with the damage system, so that the crystal can take damage
+        damageSystem.addHealth(c.ID, healthComponent);
+        
+        // Add the crystal to the map
         world.setBlock((int)c.getX(), (int)c.getY(), (int)c.getZ(), Block.TerrainBlock.CRYSTAL);
     }
 
@@ -325,6 +394,16 @@ public class GameState implements GameRenderable {
             if (playerBases.containsValue(tower, true)) {
                 playerBases.remove(tower.getPlayerID());
             }
+        });
+        crystals.select(c -> c.ID == id).forEach(crystal -> {
+            world.setBlock(
+                    (int)crystal.getX(),
+                    (int)crystal.getY(),
+                    (int)crystal.getZ(),
+                    Block.TerrainBlock.AIR
+            );
+            
+            crystals.removeValue(crystal, true);
         });
 
     }
@@ -413,34 +492,6 @@ public class GameState implements GameRenderable {
         updateGoal(u, new Vector3(x, y, 0));
     }
     
-    public void crystalRespawn() {
-        Array<Pair<Integer, Crystal>> remainingWaitingCrystals = new Array<>();
-        for (int i = 0; i < crystalsWaitingToRespawn.size; i++) {
-            Pair<Integer, Crystal> waitingCrystal = crystalsWaitingToRespawn.get(i);
-            
-            if (--waitingCrystal.key == 0) { // Decrement turns to wait, are we there yet?
-                // crystal is done waiting to respawn
-                
-                //make sure that there aren't any towers in the way
-                int tempX = (int)waitingCrystal.value.getX();
-                int tempY = (int)waitingCrystal.value.getY();
-                int tempZ = (int)waitingCrystal.value.getZ();
-                if (world.getBlock(tempX, tempY, tempZ) != Block.TerrainBlock.AIR) {
-                    // There's a tower in the way, so let the crystal wait a while longer
-                    waitingCrystal.key = SECONDARY_CRYSTAL_RESPAWN_INTERVAL;
-                    remainingWaitingCrystals.add(waitingCrystal);
-                    
-                } else {
-                    // It's safe to add the crystal
-                    addCrystal(waitingCrystal.value);
-                }
-            } else {
-                // not there yet, keep waiting
-                remainingWaitingCrystals.add(waitingCrystal);
-            }
-        }
-    }
-
     private Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
     public void rewardPlayerById(int playerId, double amount) {
         playerStats.get(playerId).giveMana(amount);

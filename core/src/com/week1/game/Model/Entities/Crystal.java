@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.Components.HealthComponent;
+import com.week1.game.Model.Components.OwnedComponent;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.CrystalToStateAdapter;
 import com.week1.game.Model.Damage;
@@ -21,15 +22,19 @@ import static com.week1.game.Renderer.TextureUtils.makeTexture;
  * Crystals are damageable entities that give mana any time it's hit by a unit.
  */
 public class Crystal extends Damageable {
+    
+    public int ID;
    
     private CrystalToStateAdapter adapter; // TODO: does this fit?
     
     private PositionComponent positionComponent;
     private HealthComponent healthComponent;
+//    private static final OwnedComponent ownedComponent = new OwnedComponent(-1); // owned by -1, so that the crystal appears as enemy to all units
 
-    public Crystal(PositionComponent positionComponent, HealthComponent healthComponent) {
+    public Crystal(PositionComponent positionComponent, HealthComponent healthComponent, int ID) {
         this.positionComponent = positionComponent;
         this.healthComponent = healthComponent;
+        this.ID = ID;
     }
     
     public void setCrystalToStateAdapter(CrystalToStateAdapter adapter) {
@@ -93,6 +98,11 @@ public class Crystal extends Damageable {
         } else {
             return false;
         }
+    }
+
+
+    public PositionComponent getPositionComponent() {
+        return positionComponent;
     }
 }
 
