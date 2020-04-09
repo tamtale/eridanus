@@ -1,22 +1,10 @@
 package com.week1.game.Model.Entities;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.Components.HealthComponent;
-import com.week1.game.Model.Components.OwnedComponent;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.CrystalToStateAdapter;
 import com.week1.game.Model.Damage;
-import com.week1.game.Model.GameState;
-import com.week1.game.Renderer.RenderConfig;
-
-import javax.swing.text.Position;
-
-import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
 /*
  * Crystals are damageable entities that give mana any time it's hit by a unit.
