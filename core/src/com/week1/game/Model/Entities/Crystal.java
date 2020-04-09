@@ -6,10 +6,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
 import com.badlogic.gdx.math.Vector3;
+import com.week1.game.Model.Components.HealthComponent;
+import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.CrystalToStateAdapter;
 import com.week1.game.Model.Damage;
 import com.week1.game.Model.GameState;
 import com.week1.game.Renderer.RenderConfig;
+
+import javax.swing.text.Position;
 
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
@@ -17,14 +21,15 @@ import static com.week1.game.Renderer.TextureUtils.makeTexture;
  * Crystals are damageable entities that give mana any time it's hit by a unit.
  */
 public class Crystal extends Damageable {
-
-
-    private Vector3 position = new Vector3();
+   
+    private CrystalToStateAdapter adapter; // TODO: does this fit?
     
-    private CrystalToStateAdapter adapter;
+    private PositionComponent positionComponent;
+    private HealthComponent healthComponent;
 
-    public Crystal(float x, float y, float z) {
-        position.set(x, y, z);
+    public Crystal(PositionComponent positionComponent, HealthComponent healthComponent) {
+        this.positionComponent = positionComponent;
+        this.healthComponent = healthComponent;
     }
     
     public void setCrystalToStateAdapter(CrystalToStateAdapter adapter) {
@@ -43,20 +48,20 @@ public class Crystal extends Damageable {
 
     @Override
     public float getX() {
-        return position.x;
+        return this.positionComponent.position.x;
     }
 
     @Override
     public float getY() {
-        return position.y;
+        return this.positionComponent.position.y;
     }
 
     @Override
-    public float getZ() { return position.z; }
+    public float getZ() { return this.positionComponent.position.z; }
 
 
     public boolean isDead() {
-        return this.currentHealth <= 0;
+        return this.healthComponent.curHealth <= 0;
     }
 
     @Override
@@ -66,29 +71,24 @@ public class Crystal extends Damageable {
 
     @Override
     public void getPos(Vector3 pos) {
-        pos.set(position);
+        pos.set(this.positionComponent.position.x, this.positionComponent.position.y, this.positionComponent.position.z);
 
     }
 
-
-    private static final float maxHealth = 1000;
-    private float currentHealth = 1000;
-    
     @Override
     public float getCurrentHealth() {
-        return currentHealth;
+        return healthComponent.curHealth;
     }
     @Override
     public float getMaxHealth() {
-        return maxHealth;
+        return healthComponent.maxHealth;
     }
-
 
     @Override
     public boolean takeDamage(Damaging attacker, double dmg, Damage.type damageType) {
-        this.currentHealth -= dmg;
+        this.healthComponent.curHealth -= dmg;
         adapter.rewardPlayer(attacker.getPlayerId(), dmg);
-        if (this.currentHealth <= 0) {
+        if (this.healthComponent.curHealth <= 0) {
             return true;
         } else {
             return false;
