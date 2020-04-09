@@ -51,7 +51,6 @@ public class GameState implements GameRenderable {
     private EntityManager entityManager = new EntityManager();
 
     private Array<Crystal> crystals = new Array<>();
-    private Array<Pair<Integer, Crystal>> crystalsWaitingToRespawn = new Array<>();
     
     private TowerLoadouts towerLoadouts;
     /*
