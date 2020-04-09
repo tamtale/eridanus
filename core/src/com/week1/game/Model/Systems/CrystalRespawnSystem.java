@@ -32,12 +32,9 @@ public class CrystalRespawnSystem implements ISystem, Subscriber<DamageEvent> {
     public void update(float delta) {
         List<Pair<Integer, PositionComponent>> remainingWaitingCrystals = new ArrayList<>();
 
-        System.out.println("crystalsWaiting: " + crystalsWaitingForRespawn);
         for (Pair<Integer, PositionComponent> waitingCrystal : crystalsWaitingForRespawn) {
 
             if (--waitingCrystal.key == 0) { // Decrement turns to wait, are we there yet?
-                // crystal is done waiting to respawn
-
                 // use respawnService to attempt a respawn
                 if (!respawnService.query(waitingCrystal.value)) {
                     // respawn failed (presumably because there's something in the way)
@@ -65,9 +62,7 @@ public class CrystalRespawnSystem implements ISystem, Subscriber<DamageEvent> {
         PositionComponent pC = crystalService.query(damageEvent.victimID);
         if (pC != null) {
             crystalsWaitingForRespawn.add(new Pair<>(CRYSTAL_RESPAWN_INTERVAL, pC));
-            System.out.println("keeping crystal death");
         } else {
-            System.out.println("throwing away a death");
         }
     }
 

@@ -334,7 +334,7 @@ public class GameState implements GameRenderable {
     
     public void addCrystal(float x, float y, float z) {
         PositionComponent positionComponent = new PositionComponent(x, y, z);
-        HealthComponent healthComponent = new HealthComponent(CRYSTAL_HEALTH, 100);
+        HealthComponent healthComponent = new HealthComponent(CRYSTAL_HEALTH, CRYSTAL_HEALTH);
         
         Crystal c = new Crystal(positionComponent, healthComponent, entityManager.newID());
         crystals.add(c);
