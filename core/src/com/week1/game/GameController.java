@@ -6,7 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.week1.game.MenuScreens.MainMenuScreen;
 import com.week1.game.Settings.Settings;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
 
 public class GameController implements ApplicationListener {
 
@@ -42,12 +42,17 @@ public class GameController implements ApplicationListener {
     @Override
     public void create() {
         Gdx.app.setLogLevel(logLevel);
+        returnToMainMenu();
+    }
+
+    public void returnToMainMenu() {
         setScreen(new MainMenuScreen(this));
     }
 
     public Screen getScreen() {
         return this.currScreen;
     }
+
     public void setScreen(Screen screen) {
         if (this.currScreen != null) {
             this.currScreen.hide();
