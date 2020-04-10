@@ -63,4 +63,8 @@ public class ScreenManager {
     public void unsetReadyToStart() {
         gameNotReady.run();
     }
+
+    public void goToSplashScreen() {
+        Gdx.app.postRunnable(() ->  gameControllerSetScreenAdapter.returnToMainMenu());
+    }
 }

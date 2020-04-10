@@ -38,8 +38,7 @@ public class LoadoutScreen implements Screen {
     private Array<TowerDetails> allTowerOptions;
     TextButton loadoutSelector;
 
-
-    private TextButton startButton;
+    private TextButton startButton, returnToSpashButton;
     private TextField mapSeedField;
 
     private static TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
@@ -123,6 +122,18 @@ public class LoadoutScreen implements Screen {
         label1.setAlignment(Align.center);
         loadoutStage.addActor(label1);
 
+        returnToSpashButton = new TextButton("Back to Home", new Skin(Gdx.files.internal("uiskin.json")));
+        returnToSpashButton.getLabel().setFontScale(2f);// needs to be the same as in the ConnectionScreen
+        returnToSpashButton.setSize(350,64);
+        returnToSpashButton.setPosition(GameController.VIRTUAL_WIDTH/2 - returnToSpashButton.getWidth()/2,
+                returnToSpashButton.getHeight()/2);
+        loadoutStage.addActor(returnToSpashButton);
+        returnToSpashButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                client.sendDisconnectRequest();
+            }
+        });
 
         if (isHostingClient) {
             // Set up the map seed field and label
