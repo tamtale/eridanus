@@ -442,13 +442,7 @@ public class TowerDetails {
                 new FileOutputStream("customTowers/" +name +"_layout.txt"), "utf-8"))) {
             writer.write(getLayoutStr());
             return true;
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return false;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return false;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }

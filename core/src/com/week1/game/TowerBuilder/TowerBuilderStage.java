@@ -250,7 +250,6 @@ public class TowerBuilderStage {
         enterNameBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println(twrNameField.getText());
                 screen.saveTowerAndView(twrNameField.getText());
                 enterNameDialog.hide();
                 twrNameField.setText("");

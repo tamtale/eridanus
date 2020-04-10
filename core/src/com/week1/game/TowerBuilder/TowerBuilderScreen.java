@@ -139,8 +139,8 @@ public class TowerBuilderScreen implements Screen {
         towerCam.stopHighlighting();
     }
 
-    public void setBuildModeTower(boolean useBuildCore) {
-        towerCam.setWIPTower(useBuildCore);
+    public void setBuildModeTower(boolean newTower) {
+        towerCam.setWIPTower(newTower);
     }
 
 
@@ -165,9 +165,7 @@ public class TowerBuilderScreen implements Screen {
         towerCam.setCurrTowerDetails(TowerPresets.presets.get(0));
         String path = ".\\customTowers\\" + twr.getName() +"_layout.txt";
         File deletedTower = new File(path);
-        System.out.println(path);
         boolean success = deletedTower.delete();
-        System.out.println(success);
 
         towerStage.removeTowerFromSelection(twr);
     }
