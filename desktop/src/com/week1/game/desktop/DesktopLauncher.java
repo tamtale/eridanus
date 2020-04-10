@@ -1,12 +1,10 @@
 package com.week1.game.desktop;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
+
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.week1.game.GameController;
 import org.apache.commons.cli.*;
-import org.lwjgl.Sys;
 
 public class DesktopLauncher {
 
