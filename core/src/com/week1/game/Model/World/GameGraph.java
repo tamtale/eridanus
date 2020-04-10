@@ -6,6 +6,7 @@ import com.badlogic.gdx.ai.pfa.PathFinder;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.week1.game.AIMovement.AStar;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.OutputPath;
 
@@ -13,7 +14,7 @@ public class GameGraph implements IndexedGraph<Vector2> {
 
     private int nodeCount;
     private GameHeuristic heuristic = new GameHeuristic();
-    private WarrenIndexedAStarPathFinder<Vector2> pathFinder;
+    private AStar<Vector2> pathFinder;
     Array<Vector2> Vector2s = new Array<>();
     Border[][][][] borders;
     private Array<Connection<Vector2>>[][] edges;
@@ -22,7 +23,7 @@ public class GameGraph implements IndexedGraph<Vector2> {
         super();
         edges = new Array[blocks.length][blocks[0].length];
         borders = new Border[blocks.length][blocks[0].length][3][3];
-        this.pathFinder = new WarrenIndexedAStarPathFinder<>(this);
+        this.pathFinder = new AStar<>(this);
         this.nodeCount = 0;
         for (int i = 0; i < edges.length; i++) {
             for (int j = 0; j < edges[0].length; j++) {
@@ -91,7 +92,7 @@ public class GameGraph implements IndexedGraph<Vector2> {
         return pathFinder;
     }
 
-    public void setPathFinder(WarrenIndexedAStarPathFinder<Vector2> pathFinder) {
+    public void setPathFinder(AStar<Vector2> pathFinder) {
         this.pathFinder = pathFinder;
     }
 
@@ -123,9 +124,5 @@ public class GameGraph implements IndexedGraph<Vector2> {
         if (i >= 0 && i <= 2 && j >= 0 && j <= 2){
             borders[fromX][fromY][i][j] = null;
         }
-    }
-
-    public void aStarReset() {
-        this.pathFinder.reset();
     }
 }
