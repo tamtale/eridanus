@@ -99,7 +99,9 @@ public class Host {
 
 
                             } catch (IOException e) {
-
+                                if (listeningThread.isInterrupted()) {
+                                    return;
+                                }
                                 e.printStackTrace();
                             }
                         }
