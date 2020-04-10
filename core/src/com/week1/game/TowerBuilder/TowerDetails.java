@@ -21,6 +21,7 @@ public class TowerDetails {
     private double rawHp = 0;
     private double rawAtk = 0;
     private double price = 0;
+    private int numGuns = 0;
 
     //These stats are based off raw stats and multipliers
     private double hp = 0;
@@ -37,6 +38,14 @@ public class TowerDetails {
     // -> the tower will spawn a number of minions of each type proportional to
     //    the number of the corresponding spawner blocks in the tower
     private Map<Integer, Integer> spawnerBlockCounts = new HashMap<>();
+
+    public static TowerDetails copy(TowerDetails tower) {
+        List<BlockSpec> layoutCopy = new ArrayList<>();
+        for (int i = 0; i < tower.layout.size(); i++) {
+            layoutCopy.add(tower.layout.get(i));
+        }
+        return new TowerDetails(layoutCopy, tower.name);
+    }
 
     public List<BlockSpec> getLayout() {
         return layout;
@@ -173,6 +182,11 @@ public class TowerDetails {
                 averageLocationOfHighestBlock.add(block.getX(), block.getY(), block.getZ());
                 numBlocksAtMaxHeight++;
             }
+
+            if (code == BlockType.WATER || code == BlockType.EARTH || code == BlockType.FIRE) {
+                numGuns+= 1;
+            }
+
             
             if (code == BlockType.SPAWNER) {
                 // TODO: When there are multiple minion types, different spawner blocks will increase different counts
@@ -200,12 +214,17 @@ public class TowerDetails {
         //penalties up to basesize of 5
         hp = rawHp * Math.min(1, baseSize/5.0);
 
+
 //        atk is inversely prop to range
         if (rawHeight > 4) {
 //            Note: this if statement is required because the height of the ground in the tower editor is 0
             atk = atk  - rawHeight * 3;
         }
 
+        //Negate the atk if there is no gun block
+        if (numGuns == 0) {
+            atk = 0;
+        }
 
     }
 
@@ -242,6 +261,10 @@ public class TowerDetails {
 
         if (y == 0) {
             baseSize += 1;
+        }
+
+        if (code == BlockType.FIRE || code == BlockType.EARTH || code == BlockType.WATER) {
+            numGuns += 1;
         }
 
         //populate the fields
@@ -378,6 +401,10 @@ public class TowerDetails {
 
 
         //update the fields
+        if (code == BlockType.EARTH || code == BlockType.WATER || code == BlockType.FIRE) {
+            numGuns -= 1;
+        }
+
         this.rawAtk -= TowerMaterials.blockAtk.get(code);
         this.rawHp -= TowerMaterials.blockHp.get(code);
         this.price -= TowerMaterials.blockPrice.get(code);
@@ -409,17 +436,15 @@ public class TowerDetails {
 
     }
 
-    public void saveTower() {
+    public boolean saveTower() {
         //write tower layout to a file
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream("customTowers/" +name +"_layout.txt"), "utf-8"))) {
             writer.write(getLayoutStr());
-        } catch (UnsupportedEncodingException e) {
+            return true;
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            return false;
         }
 
     }
