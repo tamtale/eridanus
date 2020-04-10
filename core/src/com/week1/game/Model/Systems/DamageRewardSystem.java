@@ -38,6 +38,10 @@ public class DamageRewardSystem implements ISystem, Subscriber<DamageEvent> {
         manaRewardComponents.remove(entID);
         damagingComponents.remove(entID);
     }
+    
+    public void removePlayer(int playerID) {
+        manaComponents.remove(playerID);
+    }
 
     @Override
     public void process(DamageEvent damageEvent) {

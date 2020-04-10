@@ -20,7 +20,10 @@ public class ManaRegenSystem implements ISystem {
     }
 
     @Override
-    public void remove(int playerID) {
+    public void remove(int entID) {
+    }
+    
+    public void removePlayer(int playerID) {
         manaComponents.remove(playerID);
     }
 

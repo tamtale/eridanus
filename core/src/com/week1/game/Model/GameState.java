@@ -379,49 +379,6 @@ public class GameState implements GameRenderable {
         return u;
     }
 
-    /*
-     * Remove all references to this entity (purge all systems and game state).
-     */
-    public void removeEntity(int id) {
-        movementSystem.remove(id);
-        pathfindingSystem.remove(id);
-        renderSystem.remove(id);
-        damageSystem.remove(id);
-        targetingSystem.remove(id);
-        renderSystem.remove(id);
-        crystalRespawnSystem.remove(id); // noop
-        deathRewardSystem.remove(id);
-        damageRewardSystem.remove(id);
-        
-        units.select(u -> u.ID == id).forEach(unit -> units.removeValue(unit, true));
-        towers.select(t -> t.ID == id).forEach(tower -> {
-            List<BlockSpec> blockSpecs = tower.getLayout();
-            for(int k = 0; k < blockSpecs.size(); k++) {
-                BlockSpec bs = blockSpecs.get(k);
-                world.setBlock(
-                    (int)(tower.getX() + bs.getX()),
-                    (int)(tower.getY() + bs.getZ()),
-                    (int)(tower.getZ() + bs.getY()),
-                    Block.TerrainBlock.AIR);
-            }
-            towers.removeValue(tower, true);
-            if (playerBases.containsValue(tower, true)) {
-                playerBases.remove(tower.getPlayerID());
-            }
-        });
-        crystals.select(c -> c.ID == id).forEach(crystal -> {
-            world.setBlock(
-                    (int)crystal.getX(),
-                    (int)crystal.getY(),
-                    (int)crystal.getZ(),
-                    Block.TerrainBlock.AIR
-            );
-            
-            crystals.removeValue(crystal, true);
-        });
-
-    }
-
     public Tower addTower(int x, int y, int z, TowerDetails towerDetails, int playerID, int towerType) {
         PositionComponent positionComponent = new PositionComponent((float) x, (float) y, (float) z);
         HealthComponent healthComponent = new HealthComponent((float) towerDetails.getHp(), (float) towerDetails.getHp());
@@ -459,6 +416,55 @@ public class GameState implements GameRenderable {
         }
     }
 
+    /*
+     * Remove all references to this entity (purge all systems and game state).
+     */
+    public void removeEntity(int id) {
+        movementSystem.remove(id);
+        pathfindingSystem.remove(id);
+        renderSystem.remove(id);
+        damageSystem.remove(id);
+        targetingSystem.remove(id);
+        renderSystem.remove(id);
+        crystalRespawnSystem.remove(id); // noop
+        deathRewardSystem.remove(id);
+        damageRewardSystem.remove(id);
+
+        units.select(u -> u.ID == id).forEach(unit -> units.removeValue(unit, true));
+        towers.select(t -> t.ID == id).forEach(tower -> {
+            List<BlockSpec> blockSpecs = tower.getLayout();
+            for(int k = 0; k < blockSpecs.size(); k++) {
+                BlockSpec bs = blockSpecs.get(k);
+                world.setBlock(
+                        (int)(tower.getX() + bs.getX()),
+                        (int)(tower.getY() + bs.getZ()),
+                        (int)(tower.getZ() + bs.getY()),
+                        Block.TerrainBlock.AIR);
+            }
+            towers.removeValue(tower, true);
+            if (playerBases.containsValue(tower, true)) {
+                playerDies(tower.getPlayerId());
+                playerBases.remove(tower.getPlayerID());
+            }
+        });
+        crystals.select(c -> c.ID == id).forEach(crystal -> {
+            world.setBlock(
+                    (int)crystal.getX(),
+                    (int)crystal.getY(),
+                    (int)crystal.getZ(),
+                    Block.TerrainBlock.AIR
+            );
+
+            crystals.removeValue(crystal, true);
+        });
+    }
+    
+    private void playerDies(int playerID) {
+        manaRegenSystem.removePlayer(playerID);
+        damageRewardSystem.removePlayer(playerID);
+        deathRewardSystem.removePlayer(playerID);
+    }
+    
     public void updateGoal(Unit unit, Vector3 goal) {
         Vector2 unitPos = new Vector2((int) unit.getX(), (int) unit.getY()); //TODO: make acutal z;
         unit.setGoal(goal);
