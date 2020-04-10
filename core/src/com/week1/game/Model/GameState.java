@@ -32,15 +32,11 @@ import static com.week1.game.Model.StatsConfig.*;
 public class GameState implements GameRenderable {
     
     private final Unit2StateAdapter u2s;
-    private final CrystalToStateAdapter c2s;
     private GameGraph graph;
     private Array<Clickable> clickables = new Array<>();
-    private Array<Unit> units = new Array<>();
-    private Array<Tower> towers = new Array<>();
-    private IntMap<Tower> playerBases = new IntMap<>();
-    private Array<PlayerStat> playerStats = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
+    
     private MovementSystem movementSystem = new MovementSystem();
     private PathfindingSystem pathfindingSystem;
     private RenderSystem renderSystem = new RenderSystem();
@@ -48,9 +44,16 @@ public class GameState implements GameRenderable {
     private DeathSystem deathSystem;
     private CrystalRespawnSystem crystalRespawnSystem;
     private DamageSystem damageSystem = new DamageSystem();
-    private EntityManager entityManager = new EntityManager();
+    private ManaRegenSystem manaRegenSystem = new ManaRegenSystem();
+    private DeathRewardSystem deathRewardSystem = new DeathRewardSystem();
+    private DamageRewardSystem damageRewardSystem = new DamageRewardSystem();
 
+    private EntityManager entityManager = new EntityManager();
     private Array<Crystal> crystals = new Array<>();
+    private Array<Unit> units = new Array<>();
+    private Array<Tower> towers = new Array<>();
+    private IntMap<Tower> playerBases = new IntMap<>();
+    private Array<PlayerEntity> players = new Array<>();
     
     private TowerLoadouts towerLoadouts;
     /*
@@ -78,14 +81,10 @@ public class GameState implements GameRenderable {
         initDeathSystem();
         initCrystalRespawnSystem();
         targetingSystem.addSubscriber(damageSystem);
+        targetingSystem.addSubscriber(damageRewardSystem);
         damageSystem.addSubscriber(deathSystem);
+        damageSystem.addSubscriber(deathRewardSystem);
         damageSystem.addSubscriber(crystalRespawnSystem);
-        this.c2s = new CrystalToStateAdapter() {
-            @Override
-            public void rewardPlayer(int playerId, double amt) {
-                rewardPlayerById(playerId, amt);
-            }
-        };
         this.postInit = postInit;
     }
 
@@ -219,29 +218,20 @@ public class GameState implements GameRenderable {
                         removeEntity(key);
                         return null;
                     }
-                },
-                new IService<Pair<Integer, Integer>, Void>() {
-                    @Override
-                    public Void query(Pair<Integer, Integer> key) {
-                        int damagerPlayerId = key.key;
-                        int rewardAmt = key.value;
-                        
-                        Gdx.app.log("ManaRewardService - lji1", "Rewarding player: " + damagerPlayerId + " with " + rewardAmt + " mana for their kill");
-                        playerStats.get(damagerPlayerId).giveMana(rewardAmt);
-                        return null;
-                    }
                 }
         );
     }
 
     public void synchronousUpdateState(int communicationTurn) {
-        updateMana(1);
+        manaRegenSystem.update(THRESHOLD);
         pathfindingSystem.update(THRESHOLD);
         movementSystem.update(THRESHOLD);
         targetingSystem.update(THRESHOLD);
         renderSystem.update(THRESHOLD);
         damageSystem.update(THRESHOLD);
         crystalRespawnSystem.update(THRESHOLD); // important that this happens before death (or else crystal may be removed before being queued for respawn)
+        damageRewardSystem.update(THRESHOLD);
+        deathRewardSystem.update(THRESHOLD);
         deathSystem.update(THRESHOLD);
         doTowerSpecialAbilities(communicationTurn);
     }
@@ -286,7 +276,7 @@ public class GameState implements GameRenderable {
         // Create the correct amount of actual players
         Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
-            playerStats.add(new PlayerStat());
+            addPlayer(i);
 
             // Create and add a base for each player
             Tower newBase = addTower((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z,
@@ -321,20 +311,29 @@ public class GameState implements GameRenderable {
         // If there are no suitable blocks, then maybe the crystal doesn't get placed
     }
 
-    public PlayerStat getPlayerStats(int playerNum) {
+    public PlayerEntity getPlayer(int playerNum) {
         if (isInitialized()) {
-            return playerStats.get(playerNum);
+            return players.get(playerNum);
         } else {
-            return PlayerStat.BLANK;
+            return PlayerEntity.BLANK;
         }
     }
 
-    public void updateMana(float amount){
-        for (PlayerStat player : playerStats) {
-            player.regenMana(amount);
-        }
+    public void addPlayer(int playerID) {
+        OwnedComponent ownedComponent = new OwnedComponent(playerID);
+        ManaComponent manaComponent = new ManaComponent(startingMana);
+        
+        PlayerEntity player = new PlayerEntity(ownedComponent, manaComponent);
+        players.add(player);
+        
+        // Register with manaRegenSystem so that the player's mana will regenerate over time.
+        manaRegenSystem.addMana(player.getPlayerID(), manaComponent);
+        
+        // Register with reward systems, so the player can be rewarded for kills and damage
+        damageRewardSystem.addMana(player.getPlayerID(), manaComponent);
+        deathRewardSystem.addMana(player.getPlayerID(), manaComponent);
     }
-    
+
     public void addCrystal(float x, float y, float z) {
         PositionComponent positionComponent = new PositionComponent(x, y, z);
         HealthComponent healthComponent = new HealthComponent(CRYSTAL_HEALTH, CRYSTAL_HEALTH);
@@ -342,12 +341,13 @@ public class GameState implements GameRenderable {
         
         Crystal c = new Crystal(positionComponent, healthComponent, manaRewardComponent, entityManager.newID());
         crystals.add(c);
-        c.setCrystalToStateAdapter(c2s); //TODO: want this?
         
         // Register with the damage system, so that the crystal can take damage
         damageSystem.addHealth(c.ID, healthComponent);
-        // Register with the death system, to give reward on death
-        deathSystem.addManaReward(c.ID, manaRewardComponent);
+        // Register with damage reward system, so rewards are given for damaging this crystal
+        damageRewardSystem.addManaReward(c.ID, manaRewardComponent);
+        // Resiter with death reward system, so rewards are given for killing this crystal
+        deathRewardSystem.addManaReward(c.ID, manaRewardComponent);
         
         // Add the crystal to the map
         world.setBlock((int)c.getX(), (int)c.getY(), (int)c.getZ(), Block.TerrainBlock.CRYSTAL);
@@ -372,7 +372,9 @@ public class GameState implements GameRenderable {
         targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(u.ID, healthComponent);
         damageSystem.addDamage(u.ID, damagingComponent);
-        deathSystem.addManaReward(u.ID, manaRewardComponent);
+        damageRewardSystem.addManaReward(u.ID, manaRewardComponent);
+        damageRewardSystem.addDamage(u.ID, damagingComponent);
+        deathRewardSystem.addManaReward(u.ID, manaRewardComponent);
         clickables.add(u);
         return u;
     }
@@ -387,6 +389,10 @@ public class GameState implements GameRenderable {
         damageSystem.remove(id);
         targetingSystem.remove(id);
         renderSystem.remove(id);
+        crystalRespawnSystem.remove(id); // noop
+        deathRewardSystem.remove(id);
+        damageRewardSystem.remove(id);
+        
         units.select(u -> u.ID == id).forEach(unit -> units.removeValue(unit, true));
         towers.select(t -> t.ID == id).forEach(tower -> {
             List<BlockSpec> blockSpecs = tower.getLayout();
@@ -428,7 +434,9 @@ public class GameState implements GameRenderable {
         targetingSystem.addNode(tower.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(tower.ID, healthComponent);
         damageSystem.addDamage(tower.ID, damagingComponent);
-        deathSystem.addManaReward(tower.ID, manaRewardComponent);
+        damageRewardSystem.addManaReward(tower.ID, manaRewardComponent);
+        damageRewardSystem.addDamage(tower.ID, damagingComponent);
+        deathRewardSystem.addManaReward(tower.ID, manaRewardComponent);
         towers.add(tower);
         addBuilding(tower, playerID);
         return tower;
@@ -502,11 +510,6 @@ public class GameState implements GameRenderable {
         updateGoal(u, new Vector3(x, y, 0));
     }
     
-    private Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
-    public void rewardPlayerById(int playerId, double amount) {
-        playerStats.get(playerId).giveMana(amount);
-    }
-
     public void doTowerSpecialAbilities(int communicationTurn) {
         for (int i = 0; i < towers.size; i++) {
             Tower t = towers.get(i);
@@ -578,7 +581,7 @@ public class GameState implements GameRenderable {
     }
 
     public PackagedGameState packState(int turn) {
-        return new PackagedGameState(turn, units, towers, playerBases, playerStats);
+        return new PackagedGameState(turn, units, towers, playerBases, players);
     }
 
     @Override
@@ -603,7 +606,10 @@ public class GameState implements GameRenderable {
         int encodedhash;
         private String gameString;
 
-        public PackagedGameState (int turn, Array<Unit> units, Array<Tower> towers, IntMap<Tower> bases, Array<PlayerStat> stats) {
+        public PackagedGameState (int turn, Array<Unit> units, Array<Tower> towers, IntMap<Tower> bases, Array<PlayerEntity> players) {
+            
+            // TODO: Should use StringBuilder utility
+            
             gameString = "Turn " + turn;
             Unit u;
             for (int i = 0; i < units.size; i++) {
@@ -628,9 +634,9 @@ public class GameState implements GameRenderable {
             }
             gameString += "\n";
 
-            PlayerStat s;
-            for (int i = 0; i < stats.size; i++) {
-                s = stats.get(i);
+            PlayerEntity s;
+            for (int i = 0; i < players.size; i++) {
+                s = players.get(i);
                 gameString += s.toString();
             }
 
