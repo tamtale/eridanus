@@ -45,6 +45,7 @@ public class Tower extends Building implements Damaging {
         DamagingComponent damagingComponent,
         TargetingComponent targetingComponent,
         OwnedComponent ownedComponent,
+        ManaRewardComponent manaRewardComponent,
         TowerDetails towerDetails,
         int towerType,
         int ID
