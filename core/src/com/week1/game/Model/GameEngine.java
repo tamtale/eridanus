@@ -1,6 +1,7 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.InfoUtil;
@@ -58,17 +59,17 @@ public class GameEngine implements GameRenderable {
 
         // Initialize and truncate the log file for the engine and Error log.
         try {
-            File logFile = new File("logs/STATE-ERROR-LOG.txt");
+            File logFile = Gdx.files.local("logs/STATE-ERROR-LOG.txt").file();
             FileChannel outChan = new FileOutputStream(logFile, true).getChannel();
             outChan.truncate(0);
 
-            logFile = new File("logs/LOCAL-SYNC-STATE-LOG.txt");
+            logFile = Gdx.files.local("logs/LOCAL-SYNC-STATE-LOG.txt").file();
             writer = new BufferedWriter(new FileWriter(logFile, true));
             outChan = new FileOutputStream(logFile, true).getChannel();
             outChan.truncate(0);
             writer.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            Gdx.app.error("GameEngine", "UNABLE TO CREATE LOG FILES");
         }
     }
 
@@ -90,12 +91,14 @@ public class GameEngine implements GameRenderable {
             adapter.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash(), communicationTurn));
 
             // Log the state to the file
-            try {
-                String newContent = "Turn: " + communicationTurn + " hash: " + getGameStateHash() + " String: " + getGameStateString() + "\n";
-                writer.append(newContent);
-                writer.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (writer != null) {
+                try {
+                    String newContent = "Turn: " + communicationTurn + " hash: " + getGameStateHash() + " String: " + getGameStateString() + "\n";
+                    writer.append(newContent);
+                    writer.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

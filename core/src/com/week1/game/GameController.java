@@ -2,15 +2,19 @@ package com.week1.game;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.week1.game.MenuScreens.MainMenuScreen;
 import com.week1.game.Settings.Settings;
 import org.apache.commons.cli.CommandLine;
 
+import java.io.File;
+
 public class GameController implements ApplicationListener {
 
     Screen currScreen;
+    public static Preferences PREFS;
     public static final float VIRTUAL_WIDTH = 800;
     public static final float VIRTUAL_HEIGHT = 800;
     private int logLevel = Gdx.app.LOG_INFO;
@@ -36,12 +40,26 @@ public class GameController implements ApplicationListener {
         Settings.fromFile(configPath).ifPresent(settings -> {
             this.settings = settings;
         });
+        if (this.settings == null) {
+            this.settings = Settings.DEFAULT;
+        }
 
     }
 
     @Override
     public void create() {
         Gdx.app.setLogLevel(logLevel);
+        PREFS = Gdx.app.getPreferences("eridanusSavedContent");
+        if (!PREFS.contains("saveDir")) {
+            PREFS.putString("saveDir", System.getProperty("user.home"));
+            PREFS.flush();
+        }
+
+        //Make the eridanus dir
+        File eridanusDir = Gdx.files.internal(GameController.PREFS.getString("saveDir") +"/eridanus").file();
+        if (!eridanusDir.exists()) {
+            eridanusDir.mkdir();
+        }
         returnToMainMenu();
     }
 

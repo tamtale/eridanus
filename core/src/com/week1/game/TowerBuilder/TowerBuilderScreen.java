@@ -6,6 +6,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.week1.game.GameController;
 
+import java.io.File;
+
 public class TowerBuilderScreen implements Screen {
 
     private GameController game;
@@ -137,19 +139,56 @@ public class TowerBuilderScreen implements Screen {
         towerCam.stopHighlighting();
     }
 
-    public void displayBuildCore() {
-        towerCam.setCurrTowerDetails(TowerPresets.getBuildCore());
+    public void setBuildModeTower(boolean newTower) {
+        towerCam.setWIPTower(newTower);
     }
 
 
-    public void saveTower(String twrName) {
+    public void saveTowerAndView(String twrName) {
         System.out.println(twrName);
         towerCam.WIPTower.setName(twrName);
         towerCam.WIPTower.saveTower();
         towerStage.addTowertoSelections(towerCam.WIPTower);
+
+        //Make the tower show up in view mode and in the display select box
+        towerCam.setCurrTowerDetails(towerCam.WIPTower);
+        towerStage.setSelectedTower(towerCam.getCurrTowerDetails());
     }
 
     public void showErrorDialog(String msg) {
         towerStage.showDialog(msg);
     }
+
+    public void deleteTower(TowerDetails twr) {
+        //delete the current tower
+        //display preset 1
+        towerCam.setCurrTowerDetails(TowerPresets.presets.get(0));
+        String path = GameController.PREFS.getString("saveDir") + "/eridanus/customTowers/" + twr.getName() +"_layout.txt";
+        File deletedTower = new File(path);
+        boolean success = deletedTower.delete();
+
+        towerStage.removeTowerFromSelection(twr);
+    }
+
+    public void saveEdits() {
+        //remove the old tower from the select box (select box holds the actual tower object, not just the string.
+        // it displays the toString of the tower which is the tower's name)
+        towerStage.removeTowerFromSelection(towerCam.getCurrTowerDetails());
+
+        //write the changes
+        boolean success = towerCam.getWIPTower().saveTower();
+        if (success) {
+            //View the new tower in the camera and the stage and add to select box
+            towerCam.setCurrTowerDetails(towerCam.getWIPTower());
+            towerStage.addTowerAndView(towerCam.getCurrTowerDetails());
+
+            towerStage.displaySuccessfulSave();
+
+        } else {
+            towerStage.displayFailedSave();
+        }
+
+
+    }
+
 }
