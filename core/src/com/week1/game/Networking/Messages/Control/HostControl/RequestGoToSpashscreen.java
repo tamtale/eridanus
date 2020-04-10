@@ -1,5 +1,7 @@
 package com.week1.game.Networking.Messages.Control.HostControl;
 
+import com.week1.game.Networking.Messages.Control.ClientControl.GoToSplashscreenMessage;
+import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Networking.NetworkObjects.Host;
 
@@ -19,6 +21,7 @@ public class RequestGoToSpashscreen extends HostControlMessage {
 
     @Override
     public void updateHost(Host h, InetAddress addr, int port) {
-
+        h.broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new GoToSplashscreenMessage(-1)));
+        h.shutdown();
     }
 }

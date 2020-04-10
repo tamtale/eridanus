@@ -61,16 +61,13 @@ public class ConnectionScreen implements Screen {
         TextureRegionDrawable reg = new TextureRegionDrawable(tex);
         connectionStage.addActor(new Image(reg));
 
-        returnToSpashButton = new TextButton("Back to Home", new Skin(Gdx.files.internal("uiskin.json")));
-        returnToSpashButton.getLabel().setFontScale(TEXTSCALE);
-        returnToSpashButton.setSize(350,64);
-        returnToSpashButton.setPosition(GameController.VIRTUAL_WIDTH/2 - returnToSpashButton.getWidth()/2,
-                GameController.VIRTUAL_HEIGHT/4 - returnToSpashButton.getHeight()/2);
+        // TIDIDIS
+        getNewReturnToSpashButton();
         connectionStage.addActor(returnToSpashButton);
         returnToSpashButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                returnToSpashscreen();
+                returnToSpashscreenSimple();
             }
         });
 
@@ -160,6 +157,13 @@ public class ConnectionScreen implements Screen {
         colorSelectBox.setPosition(GameController.VIRTUAL_WIDTH/2 - 20 - colorSelectBox.getWidth(),GameController.VIRTUAL_HEIGHT  *2 / 3);
         connectionStage.addActor(colorSelectBox);
 
+        joinedPlayersLabel = new Label("Joined Players: ", labelStyle);
+        joinedPlayersLabel.setFontScale(TITLESCALE);
+        joinedPlayersLabel.setSize(200, 64);
+        joinedPlayersLabel.setPosition(
+                GameController.VIRTUAL_WIDTH / 2 - joinedPlayersLabel.getWidth() / 2,
+                GameController.VIRTUAL_HEIGHT / 2 - 160);
+        joinedPlayersLabel.setAlignment(Align.center);
 
         nameField = new TextField("Enter Your Name", textFieldStyle);
         nameField.setSize(joinGameButton.getWidth(),64);
@@ -170,8 +174,21 @@ public class ConnectionScreen implements Screen {
         Gdx.input.setInputProcessor(connectionStage);
     }
 
-    private void returnToSpashscreen() {
+    private void getNewReturnToSpashButton() {
+        returnToSpashButton = new TextButton("Back to Home", new Skin(Gdx.files.internal("uiskin.json")));
+        returnToSpashButton.getLabel().setFontScale(TEXTSCALE);
+        returnToSpashButton.setSize(350,64);
+        returnToSpashButton.setPosition(GameController.VIRTUAL_WIDTH/2 - returnToSpashButton.getWidth()/2,
+                returnToSpashButton.getHeight()/2);
+
+    }
+
+    private void returnToSpashscreenSimple() {
         gameAdapter.returnToMainMenu();
+    }
+
+    private void returnToSpashscreenDisconnect() {
+        networkClient.sendDisconnectRequest();
     }
 
     public void updateJoinedPlayers(java.util.List<String> joinedPlayers) {
@@ -183,13 +200,6 @@ public class ConnectionScreen implements Screen {
 
     private void addPlayerList() {
         // Display the joined players
-        joinedPlayersLabel = new Label("Joined Players: ", labelStyle);
-        joinedPlayersLabel.setFontScale(TITLESCALE);
-        joinedPlayersLabel.setSize(200, 64);
-        joinedPlayersLabel.setPosition(
-                GameController.VIRTUAL_WIDTH / 2 - joinedPlayersLabel.getWidth() / 2,
-                GameController.VIRTUAL_HEIGHT / 2 - 160);
-        joinedPlayersLabel.setAlignment(Align.center);
         connectionStage.addActor(joinedPlayersLabel);
     }
     
@@ -201,9 +211,9 @@ public class ConnectionScreen implements Screen {
         } else {
             switchToWater();
             addPlayerList();
+            Gdx.app.log("pjb3", "Finished making the water and the player liast");
             hostGameButton.remove();
             joinGameButton.remove();
-            returnToSpashButton.remove();
             ipField.setDisabled(true);
             connectionStage.addActor(waitJoinMsg);
         }
@@ -225,18 +235,15 @@ public class ConnectionScreen implements Screen {
         label1.setAlignment(Align.center);
         connectionStage.addActor(label1);
         addPlayerList();
-        
-//        10.122.178.55
+
         networkClient = NetworkUtils.initNetworkObjects(true, null, 42069,
                 gameAdapter, this, new PlayerInfo(nameField.getText(), colorSelectBox.getSelected().value));
-//        Gdx.app.debug("pjb3 - ConnectionScreen", "Created the Host network object");
         connectionStage.addActor(launchGameButton);
-        
-        
-
+        connectionStage.addActor(returnToSpashButton);
     }
 
     private void switchToWater() {
+        Gdx.app.log("pjb3", "switching to water");
         Pixmap waterPix = new Pixmap(Gdx.files.internal("waterdark.png"));
         Pixmap waterPixScaled = new Pixmap((int)GameController.VIRTUAL_WIDTH, (int)GameController.VIRTUAL_HEIGHT, waterPix.getFormat());
         waterPixScaled.drawPixmap(waterPix,
@@ -247,7 +254,16 @@ public class ConnectionScreen implements Screen {
         waterPix.dispose();
         waterPixScaled.dispose();
         TextureRegionDrawable reg = new TextureRegionDrawable(tex);
+        returnToSpashButton.remove();
         connectionStage.addActor(new Image(reg));
+        getNewReturnToSpashButton();
+        returnToSpashButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                returnToSpashscreenDisconnect();
+            }
+        });
+        connectionStage.addActor(returnToSpashButton);
     }
 
     private void progressToLoadouts() {

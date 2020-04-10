@@ -44,7 +44,8 @@ public class Host {
     private boolean loopStarted = false;
     
     private ConcurrentLinkedQueue<String> incomingMessages = new ConcurrentLinkedQueue<>();
-    
+    Thread joiningPlayersThread, updateLoopThread, listeningThread;
+
     public Host(int port) throws IOException {
         this.port = port;
         this.serverSocket = new ServerSocket(port);
@@ -61,9 +62,12 @@ public class Host {
     public void listenForClientMessages() {
         
         // Accepts connections to joining players
-        Thread joiningPlayersThead = new Thread(() -> {
+        joiningPlayersThread = new Thread(() -> {
             while (true) {
                 try {
+                    if (joiningPlayersThread.isInterrupted()) {
+                        return;
+                    }
                     Socket socket = this.serverSocket.accept();
                     Player player = new Player(
                             this.runningPlayerId++,
@@ -79,27 +83,35 @@ public class Host {
                     sendMessage(playerIdMessage, player);
 
                     // spawn a thread to listen on this socket
-                    new Thread(() -> {
+                    listeningThread = new Thread(() -> {
                         String msg = "";
                         while (true) {
                             try {
+                                if (listeningThread.isInterrupted()) {
+                                    return;
+                                }
                                 Gdx.app.debug(TAG, "Host is listening for next client message from: "  + player.address);
                                 msg = player.in.readLine();
                                 processMessage(msg, player.address, player.port);
 
 
                             } catch (IOException e) {
+
                                 e.printStackTrace();
                             }
                         }
 
-                    }).start();
+                    });
+                    listeningThread.start();
                 } catch (IOException e) {
+                    if (joiningPlayersThread.isInterrupted()) {
+                        return;
+                    }
                     e.printStackTrace();
                 }
             }
         });
-        joiningPlayersThead.start(); 
+        joiningPlayersThread.start();
     }
 
     public void runUpdateLoop() {
@@ -110,7 +122,7 @@ public class Host {
         loopStarted = true;
         // spawn a new thread to broadcast updates to the registered clients
         Gdx.app.log(TAG, "Host is about to begin running update loop.");
-        new Thread(() -> {
+        updateLoopThread = new Thread(() -> {
             while (true) {
                 List<String> outgoingMessages = new ArrayList<>();
                 while (!incomingMessages.isEmpty()) { // TODO: dangerous, if many messages coming all at once
@@ -158,7 +170,8 @@ public class Host {
                 }
 
             }
-        }).start();
+        });
+        updateLoopThread.start();
     }
 
 
@@ -214,5 +227,24 @@ public class Host {
         nameList.sort(Comparator.comparingInt(pair -> pair.key));
         nameList.forEach( pair -> infoList.add(pair.value));
         return infoList;
+    }
+
+    public void shutdown() {
+        Gdx.app.log("pjb3", "Shutting down Host");
+        if (joiningPlayersThread != null) {
+            joiningPlayersThread.interrupt();
+        }
+        if (listeningThread != null) {
+            listeningThread.interrupt();
+        }
+        if (updateLoopThread != null) {
+            updateLoopThread.interrupt();
+        }
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
