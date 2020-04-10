@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.week1.game.GameController;
 import com.week1.game.Model.TowerFootprint;
 import com.week1.game.Model.TowerLite;
 
@@ -117,7 +118,8 @@ public class TowerDetails {
             myReader.close();
 
             Gdx.app.log("towerdetails", filename);
-            String twrName = filename.substring(13, filename.length() - 11);
+            System.out.println(GameController.PREFS.getString("saveDir"));
+            String twrName = filename.substring(("/eridanus/customTowers/").length() + GameController.PREFS.getString("saveDir").length(), filename.length() - 11);
             layout = blocks;
             name = twrName;
             calcRawStats();
@@ -413,7 +415,7 @@ public class TowerDetails {
     public void saveTower() {
         //write tower layout to a file
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream("customTowers/" +name +"_layout.txt"), "utf-8"))) {
+                new FileOutputStream(GameController.PREFS.getString("saveDir") + "/eridanus/customTowers/" +name +"_layout.txt"), "utf-8"))) {
             writer.write(getLayoutStr());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
