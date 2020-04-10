@@ -13,22 +13,17 @@ public class DeathSystem implements ISystem, Subscriber<DamageEvent> {
 
     /* Service to remove an entity from the GameState, given its ID.*/
     IService<Integer, Void> deleteService;
-    /* Service to reward the player who killed the dying entity. */
-    IService<Pair<Integer, Integer>, Void> rewardService;
-    Queue<DamageEvent> deaths = new ConcurrentLinkedQueue<>();
     
-    private IntMap<ManaRewardComponent> manaRewardComponents = new IntMap<>();
+    Queue<DamageEvent> deaths = new ConcurrentLinkedQueue<>();
 
-    public DeathSystem(IService<Integer, Void> deleteService, IService<Pair<Integer, Integer>, Void> rewardService) {
+    public DeathSystem(IService<Integer, Void> deleteService) {
         this.deleteService = deleteService;
-        this.rewardService = rewardService;
     }
 
     @Override
     public void update(float delta) {
         for (DamageEvent event: deaths) {
             Gdx.app.log("DeathSystem", "deleting " + event.victimID);
-            rewardService.query(new Pair<>(event.damagerPlayerID, manaRewardComponents.get(event.victimID).deathReward));
             deleteService.query(event.victimID);
         }
         deaths.clear();
@@ -43,7 +38,4 @@ public class DeathSystem implements ISystem, Subscriber<DamageEvent> {
         deaths.add(damageEvent);
     }
 
-    public void addManaReward(int entID, ManaRewardComponent manaRewardComponent) {
-        manaRewardComponents.put(entID, manaRewardComponent);
-    }
 }

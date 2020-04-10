@@ -4,18 +4,14 @@ import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.Components.HealthComponent;
 import com.week1.game.Model.Components.ManaRewardComponent;
 import com.week1.game.Model.Components.PositionComponent;
-import com.week1.game.Model.CrystalToStateAdapter;
 import com.week1.game.Model.Damage;
 
 /*
  * Crystals are damageable entities that give mana any time it's hit by a unit.
  */
 public class Crystal extends Damageable {
-    
     public int ID;
    
-    private CrystalToStateAdapter adapter; // TODO: does this fit?
-    
     private PositionComponent positionComponent;
     private HealthComponent healthComponent;
     private ManaRewardComponent manaRewardComponent;
@@ -27,10 +23,6 @@ public class Crystal extends Damageable {
         this.ID = ID;
     }
     
-    public void setCrystalToStateAdapter(CrystalToStateAdapter adapter) {
-        this.adapter = adapter;
-    }
-
     @Override
     public float getReward() {
         return 100;
@@ -81,13 +73,15 @@ public class Crystal extends Damageable {
 
     @Override
     public boolean takeDamage(Damaging attacker, double dmg, Damage.type damageType) {
-        this.healthComponent.curHealth -= dmg;
-        adapter.rewardPlayer(attacker.getPlayerId(), dmg);
-        if (this.healthComponent.curHealth <= 0) {
-            return true;
-        } else {
-            return false;
-        }
+        //TODO: delete (unused)
+//        this.healthComponent.curHealth -= dmg;
+//        adapter.rewardPlayer(attacker.getPlayerId(), dmg);
+//        if (this.healthComponent.curHealth <= 0) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+        return false;
     }
 
 
