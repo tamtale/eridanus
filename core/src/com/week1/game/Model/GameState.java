@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
+import com.week1.game.AIMovement.AStar;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.World.Block;
@@ -26,7 +27,7 @@ import static com.week1.game.Model.StatsConfig.*;
 public class GameState implements GameRenderable {
     private final static int CRYSTAL_RESPAWN_INTERVAL = 400;
     private final static int SECONDARY_CRYSTAL_RESPAWN_INTERVAL = 10;
-    
+
     private final Unit2StateAdapter u2s;
     private final CrystalToStateAdapter c2s;
     private GameGraph graph;
@@ -40,10 +41,11 @@ public class GameState implements GameRenderable {
     private Array<Damageable> damageables = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
+    private List<PlayerInfo> playerInfo;
     
     private Array<Crystal> crystals = new Array<>();
     private Array<Pair<Integer, Crystal>> crystalsWaitingToRespawn = new Array<>();
-    
+
     private TowerLoadouts towerLoadouts;
     /*
      * Runnable to execute immediately after the game state has been initialized.
@@ -55,8 +57,9 @@ public class GameState implements GameRenderable {
         return this;
     }
 
-    public GameState(IWorldBuilder worldBuilder, Runnable postInit){
+    public GameState(IWorldBuilder worldBuilder, Runnable postInit, List<PlayerInfo> playerInfo){
         // TODO tower types in memory after exchange
+        this.playerInfo = playerInfo;
         this.worldBuilder = worldBuilder;
         this.u2s = new Unit2StateAdapter() {
             @Override
@@ -98,8 +101,8 @@ public class GameState implements GameRenderable {
             world = new GameWorld(worldBuilder);
             world.getHeightMap();
             graph = world.buildGraph();
-            graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
-            
+            graph.setPathFinder(new AStar<>(graph));
+
             // notify the GameState that it can proceed with initialization
             mapReady[0] = true; // 'the array trick'
         });
@@ -126,14 +129,14 @@ public class GameState implements GameRenderable {
             addBase(newBase, i);
         }
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
-        
+
         // Create the crystals
         placeCrystals();
-        
+
         fullyInitialized = true;
         postInit.run();
     }
-    
+
     private void placeCrystals() {
         Vector2[] crystalLocs = worldBuilder.crystalLocations();
 
@@ -150,7 +153,7 @@ public class GameState implements GameRenderable {
                 }
             }
         }
-        
+
         // If there are no suitable blocks, then maybe the crystal doesn't get placed
     }
 
@@ -167,7 +170,7 @@ public class GameState implements GameRenderable {
             player.regenMana(amount);
         }
     }
-    
+
     public void addCrystal(Crystal c) {
         crystals.add(c);
         damageables.add(c);
@@ -258,15 +261,15 @@ public class GameState implements GameRenderable {
     public void moveMinion(float x, float y, Unit u) {
         updateGoal(u, new Vector3(x, y, 0));
     }
-    
+
     public void crystalRespawn() {
         Array<Pair<Integer, Crystal>> remainingWaitingCrystals = new Array<>();
         for (int i = 0; i < crystalsWaitingToRespawn.size; i++) {
             Pair<Integer, Crystal> waitingCrystal = crystalsWaitingToRespawn.get(i);
-            
+
             if (--waitingCrystal.key == 0) { // Decrement turns to wait, are we there yet?
                 // crystal is done waiting to respawn
-                
+
                 //make sure that there aren't any towers in the way
                 int tempX = (int)waitingCrystal.value.getX();
                 int tempY = (int)waitingCrystal.value.getY();
@@ -275,7 +278,7 @@ public class GameState implements GameRenderable {
                     // There's a tower in the way, so let the crystal wait a while longer
                     waitingCrystal.key = SECONDARY_CRYSTAL_RESPAWN_INTERVAL;
                     remainingWaitingCrystals.add(waitingCrystal);
-                    
+
                 } else {
                     // It's safe to add the crystal
                     addCrystal(waitingCrystal.value);
@@ -337,7 +340,7 @@ public class GameState implements GameRenderable {
             deadEntity.accept(deathVisitor);
         }
     }
-    
+
     public void rewardPlayerById(int playerId, double amount) {
         playerStats.get(playerId).giveMana(amount);
     }
@@ -397,14 +400,14 @@ public class GameState implements GameRenderable {
                     (int)pos.z,
                     Block.TerrainBlock.AIR
             );
-            
+
             // Remove it from the GameState
             crystals.removeValue(crystal, true);
             damageables.removeValue(crystal, true);
-            
+
             // The crystal will respawn in the same location later
             crystalsWaitingToRespawn.add(new Pair<>(CRYSTAL_RESPAWN_INTERVAL, new Crystal(crystal.getX(), crystal.getY(), crystal.getZ())));
-            
+
             return null;
         }
     };
@@ -510,6 +513,12 @@ public class GameState implements GameRenderable {
         for (int i = 0; i < damageables.size; i++) {
             damageables.get(i).drawHealthBar(config);
         }
+        
+        Array<PlayerBase> bases = playerBases.values().toArray();
+        for (int i = 0; i < bases.size; i++) {
+            bases.get(i).drawName(config, playerInfo.get(bases.get(i).getPlayerId()).getPlayerName());
+        }
+        
         batch2D.end();
     }
 

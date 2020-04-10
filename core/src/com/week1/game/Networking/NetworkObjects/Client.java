@@ -158,4 +158,9 @@ public class Client {
         }
         screenManager.goToSplashScreen();
     }
+
+    public void retractLoadout() {
+        sendStringMessage(MessageFormatter.packageMessage(new RetractLoadoutMessage(playerId)));
+
+    }
 }
