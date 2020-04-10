@@ -34,5 +34,12 @@ public class PlayerEntity {
             return true;
         }
     }
+
+    @Override
+    public String toString() {
+        return "PlayerStat{" +
+                "mana=" + manaComponent.mana +
+                '}';
+    }
     
 }
