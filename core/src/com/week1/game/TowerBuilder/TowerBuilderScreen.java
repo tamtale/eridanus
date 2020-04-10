@@ -163,7 +163,7 @@ public class TowerBuilderScreen implements Screen {
         //delete the current tower
         //display preset 1
         towerCam.setCurrTowerDetails(TowerPresets.presets.get(0));
-        String path = ".\\customTowers\\" + twr.getName() +"_layout.txt";
+        String path = GameController.PREFS.getString("saveDir") + "/eridanus/customTowers/" + twr.getName() +"_layout.txt";
         File deletedTower = new File(path);
         boolean success = deletedTower.delete();
 
