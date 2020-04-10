@@ -61,7 +61,6 @@ public class ConnectionScreen implements Screen {
         TextureRegionDrawable reg = new TextureRegionDrawable(tex);
         connectionStage.addActor(new Image(reg));
 
-        // TIDIDIS
         getNewReturnToSpashButton();
         connectionStage.addActor(returnToSpashButton);
         returnToSpashButton.addListener(new ClickListener() {

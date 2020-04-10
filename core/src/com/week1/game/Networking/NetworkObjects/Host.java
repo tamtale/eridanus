@@ -34,7 +34,8 @@ public class Host {
     private int port;
     public ServerSocket serverSocket;
     private int nextPlayerId = 0;
-    private boolean magicBoolean = false;
+    private boolean magicBoolean = false; // When threads are asleep and woken, they are not interrupted so they can
+                                          // check this variable to see if they have been stopped by a disconnect action
 
     List<String> joinedPlayers = Collections.synchronizedList(new ArrayList<>());
     public Map<Integer, List<TowerLite>> towerDetails = new HashMap<>(); // first index is implicitly the player id
