@@ -16,7 +16,6 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
-import com.week1.game.MenuScreens.MainMenuScreen;
 
 public class TowerBuilderStage {
 
@@ -460,7 +459,7 @@ public class TowerBuilderStage {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.debug("pjb3 - TowerBuilderStage", "Trying to go back to the main Menu Screen");
-                gameController.setScreen(new MainMenuScreen(gameController));
+                gameController.returnToMainMenu();
             }
         });
     }
