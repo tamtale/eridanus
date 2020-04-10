@@ -38,6 +38,7 @@ public class MainMenuScreen implements Screen {
 
     }
 
+
     private void setWidgets() {
         buildTowersButton = new TextButton("Build Towers", new Skin(Gdx.files.internal("uiskin.json")));
         playButton = new TextButton( "Play Game!", new Skin(Gdx.files.internal("uiskin.json")));
@@ -78,6 +79,11 @@ public class MainMenuScreen implements Screen {
                     @Override
                     public void setScreen(Screen newScreen) {
                         game.setScreen(newScreen);
+                    }
+
+                    @Override
+                    public void returnToMainMenu() {
+                        game.returnToMainMenu();
                     }
 
                     @Override

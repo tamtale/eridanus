@@ -80,7 +80,12 @@ public class GameScreen implements Screen {
 				renderer.zoom(amount);
 			}
 
-            @Override
+			@Override
+			public List<PlayerInfo> getPlayerInfo() {
+				return networkClient.getInfoList();
+			}
+
+			@Override
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
@@ -132,6 +137,7 @@ public class GameScreen implements Screen {
 			@Override
 			public void restartGame() {
 				networkClient.sendRestartRequest();
+				dispose();
 			}
 		}, util);
 		
@@ -252,8 +258,14 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void dispose () {
-
+		// Cannot null these out because in restarting messages may still need to
+		// interact with the engine since the screens are not updates instantaneously
+		// This may be a memory leak over time when restarting the game but not one im going
+		// to think about fixing haha since I dont *think* it is.
+//		engine = null;
+//		clickOracle = null;
+//		renderer = null;
+//		gameStage = null;
 	}
-
 }
 

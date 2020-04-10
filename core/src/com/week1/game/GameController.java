@@ -7,7 +7,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.week1.game.MenuScreens.MainMenuScreen;
 import com.week1.game.Settings.Settings;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
 
 import java.io.File;
 
@@ -60,12 +60,17 @@ public class GameController implements ApplicationListener {
         if (!eridanusDir.exists()) {
             eridanusDir.mkdir();
         }
+        returnToMainMenu();
+    }
+
+    public void returnToMainMenu() {
         setScreen(new MainMenuScreen(this));
     }
 
     public Screen getScreen() {
         return this.currScreen;
     }
+
     public void setScreen(Screen screen) {
         if (this.currScreen != null) {
             this.currScreen.hide();
