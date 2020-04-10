@@ -3,7 +3,6 @@ package com.week1.game.Networking.Messages.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.InfoUtil;
-import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
@@ -37,7 +36,7 @@ public class CreateTowerMessage extends GameMessage {
         towerCost = towerDetails.getPrice();
 
         // Does the player have enough mana
-        if (towerCost > inputState.getPlayerStats(playerID).getMana()) {
+        if (towerCost > inputState.getPlayer(playerID).getMana()) {
             // Do not have enough mana!
             util.log("pjb3 - CreateTowerMessage", "Not enough mana to create tower. Need " + towerCost);
             return false; // indicate it was NOT placed
@@ -59,7 +58,7 @@ public class CreateTowerMessage extends GameMessage {
 
         // Deduct the mana cost from the creating player
         util.log("pjb3 - CreateTowerMessage", "Used " + towerCost + " mana to create tower.");
-        inputState.getPlayerStats(playerID).useMana(towerCost);
+        inputState.getPlayer(playerID).useMana(towerCost);
 
         // Only create the tower once we're sure it's safe to do so
         inputState.addTower((int) x, (int) y, (int) z, towerDetails, playerID, towerType);

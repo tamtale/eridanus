@@ -101,7 +101,7 @@ public class GameScreen implements Screen {
 			}
 
 			public double getPlayerMana(int playerId) {
-				return engine.getGameState().getPlayerStats(playerId).getMana();
+				return engine.getGameState().getPlayer(playerId).getMana();
 			}
 
             @Override
