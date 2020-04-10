@@ -16,6 +16,11 @@ public class StatsConfig {
 
     static public final double tempDamage = 1;
     
+    public static final int CRYSTAL_RESPAWN_INTERVAL = 200; 
+    public static final int SECONDARY_CRYSTAL_RESPAWN_INTERVAL = 10;
+    public static final int CRYSTAL_HEALTH = 700;
+    
+    
 
     public enum attackType {
         BASIC_DMG,
