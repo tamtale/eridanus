@@ -302,7 +302,10 @@ public class GameState implements GameRenderable {
         everythingDamageable.clear();
         everythingDamageable.addAll(units);
         everythingDamageable.addAll(towers);
-        playerBases.values().forEach(everythingDamageable::add);
+//        playerBases.values().forEach(everythingDamageable::add);
+        for (int i = 0; i < playerBases.size; i++) {
+            everythingDamageable.add(playerBases.get(i));
+        }
         everythingDamageable.addAll();
         everythingDamageable.addAll(crystals);
 
