@@ -19,7 +19,6 @@ public class Crystal extends Damageable {
     private PositionComponent positionComponent;
     private HealthComponent healthComponent;
     private ManaRewardComponent manaRewardComponent;
-//    private static final OwnedComponent ownedComponent = new OwnedComponent(-1); // owned by -1, so that the crystal appears as enemy to all units
 
     public Crystal(PositionComponent positionComponent, HealthComponent healthComponent, ManaRewardComponent manaRewardComponent, int ID) {
         this.positionComponent = positionComponent;
