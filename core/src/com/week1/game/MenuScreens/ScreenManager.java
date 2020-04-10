@@ -15,7 +15,7 @@ public class ScreenManager {
     private boolean isHostScreenManager;
     private GameScreen actualGameScreen;
     private ConnectionScreen connectionScreen;
-    private Runnable gameReady;
+    private Runnable gameReady, gameNotReady;
 
 
     public ScreenManager(GameControllerSetScreenAdapter gameControllerSetScreenAdapter, boolean isHost, ConnectionScreen connectionScreen) {
@@ -38,8 +38,9 @@ public class ScreenManager {
         this.actualGameScreen = actualGame;
     }
 
-    public void setGameReadySequence(Runnable gs) {
-        gameReady = gs;
+    public void setGameReadyUnReadySequences(Runnable gr, Runnable gur) {
+        gameReady = gr;
+        gameNotReady = gur;
     }
 
     public boolean getIsHost() {
@@ -57,6 +58,9 @@ public class ScreenManager {
 
     public void setReadyToStart() {
         gameReady.run();
-        gameReady = null; // Null it out. Needs to be reset before it is called again on a restart.
+    }
+
+    public void unsetReadyToStart() {
+        gameNotReady.run();
     }
 }

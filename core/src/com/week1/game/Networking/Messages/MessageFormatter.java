@@ -72,6 +72,8 @@ public class MessageFormatter {
                 return g.fromJson(jsonString, RequestRestartMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.SUBMITLOADOUT) {
                 return g.fromJson(jsonString, SubmitLoadoutMessage.class);
+            } else if (parsedMsg.messageTypeID == MessageType.RETRACTLOADOUT) {
+                return g.fromJson(jsonString, RetractLoadoutMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.SUBMITPLAYERINFO) {
                 return g.fromJson(jsonString, SubmitPlayerInfo.class);
             }
@@ -95,6 +97,8 @@ public class MessageFormatter {
                 return g.fromJson(jsonString, GoToGameMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.READYTOSTART) {
                 return g.fromJson(jsonString, ReadyToStartMessage.class);
+            } else if (parsedMsg.messageTypeID == MessageType.UNDOREADYTOSTART) {
+                return g.fromJson(jsonString, UndoReadyToStart.class);
             } else if (parsedMsg.messageTypeID == MessageType.RESTART) {
                 return g.fromJson(jsonString, RestartMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.JOINEDPLAYERS) {

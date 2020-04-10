@@ -6,6 +6,8 @@ import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Renderer.RenderConfig;
 
+import java.util.List;
+
 public interface IEngineAdapter {
     void sendMessage(AMessage msg);
     void setDefaultLocation(Vector3 location);
@@ -20,4 +22,6 @@ public interface IEngineAdapter {
         close to the map.
      */
     void zoom(float amount);
+    
+    List<PlayerInfo> getPlayerInfo();
 }

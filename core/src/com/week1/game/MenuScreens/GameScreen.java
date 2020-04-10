@@ -80,7 +80,12 @@ public class GameScreen implements Screen {
 				renderer.zoom(amount);
 			}
 
-            @Override
+			@Override
+			public List<PlayerInfo> getPlayerInfo() {
+				return networkClient.getInfoList();
+			}
+
+			@Override
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
