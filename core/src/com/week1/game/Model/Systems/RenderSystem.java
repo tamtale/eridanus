@@ -2,11 +2,9 @@ package com.week1.game.Model.Systems;
 
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.Components.RenderComponent;
-import com.week1.game.Model.Components.VelocityComponent;
 import com.week1.game.Renderer.RenderConfig;
 
 /*
@@ -26,7 +24,7 @@ public class RenderSystem implements ISystem {
             node.renderComponent.modelInstance.transform.setTranslation(node.positionComponent.position);
             modelBatch.render(node.renderComponent.modelInstance, env);
         }
-        config.getModelBatch().end();
+        modelBatch.end();
     }
 
     public void addNode(int id, RenderComponent renderComponent, PositionComponent positionComponent) {
