@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
+import com.week1.game.AIMovement.AStar;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Components.*;
 import com.week1.game.Model.Entities.*;
@@ -29,12 +30,12 @@ import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
 import static com.week1.game.Model.StatsConfig.*;
 
 public class GameState implements GameRenderable {
-    
     private final Unit2StateAdapter u2s;
     private GameGraph graph;
     private Array<Clickable> clickables = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
+    private List<PlayerInfo> playerInfo;
     
     private MovementSystem movementSystem = new MovementSystem();
     private PathfindingSystem pathfindingSystem;
@@ -56,7 +57,6 @@ public class GameState implements GameRenderable {
     private IntMap<Tower> playerBases = new IntMap<>();
     private Array<PlayerEntity> players = new Array<>();
     private OwnedComponent noOwn = new OwnedComponent(-1);
-    
     private TowerLoadouts towerLoadouts;
     /*
      * Runnable to execute immediately after the game state has been initialized.
@@ -71,7 +71,6 @@ public class GameState implements GameRenderable {
             PlayerInfo info = playerInfo.get(playerId);
             addPlayer(playerId, info.getPlayerName(), info.getColor());
         }
-        
         this.worldBuilder = worldBuilder;
         this.u2s = new Unit2StateAdapter() {
             @Override
@@ -266,8 +265,8 @@ public class GameState implements GameRenderable {
             world = new GameWorld(worldBuilder);
             world.getHeightMap();
             graph = world.buildGraph();
-            graph.setPathFinder(new WarrenIndexedAStarPathFinder<>(graph));
-            
+            graph.setPathFinder(new AStar<>(graph));
+
             // notify the GameState that it can proceed with initialization
             mapReady[0] = true; // 'the array trick'
         });
@@ -292,14 +291,14 @@ public class GameState implements GameRenderable {
             addBase(newBase, i);
         }
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
-        
+
         // Create the crystals
         placeCrystals();
-        
+
         fullyInitialized = true;
         postInit.run();
     }
-    
+
     private void placeCrystals() {
         Vector2[] crystalLocs = worldBuilder.crystalLocations();
 
@@ -315,7 +314,7 @@ public class GameState implements GameRenderable {
                 }
             }
         }
-        
+
         // If there are no suitable blocks, then maybe the crystal doesn't get placed
     }
 
@@ -360,7 +359,7 @@ public class GameState implements GameRenderable {
         deathRewardSystem.addManaReward(c.ID, manaRewardComponent);
         healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn);
         // Add the crystal to the map
-        world.setBlock((int)c.getX(), (int)c.getY(), (int)c.getZ(), Block.TerrainBlock.CRYSTAL);
+        world.setBlock((int) x, (int) y, (int) z, Block.TerrainBlock.CRYSTAL);
     }
 
     public Unit addUnit(float x, float y, float z, float tempHealth, int playerID){
@@ -371,7 +370,7 @@ public class GameState implements GameRenderable {
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true, TargetingComponent.TargetingStrategy.ENEMY);
         HealthComponent healthComponent = new HealthComponent(tempHealth, tempHealth);
-        DamagingComponent damagingComponent = new DamagingComponent((float) tempDamage);
+        DamagingComponent damagingComponent = new DamagingComponent((float) tempMinionDamage);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(0, 0);
         Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, healthComponent, damagingComponent, manaRewardComponent);
         u.ID = entityManager.newID();
@@ -534,7 +533,7 @@ public class GameState implements GameRenderable {
     public void moveMinion(float x, float y, Unit u) {
         updateGoal(u, new Vector3(x, y, 0));
     }
-    
+
     public void doTowerSpecialAbilities(int communicationTurn) {
         for (int i = 0; i < towers.size; i++) {
             Tower t = towers.get(i);
@@ -595,14 +594,6 @@ public class GameState implements GameRenderable {
 
         int numPlayersAlive = playerBases.size;
         return numPlayersAlive <= 1;
-    }
-
-    public Array<Building> getBuildings() {
-        Array<Building> buildings = new Array<>();
-//        buildings.addAll(getPlayerBases());
-        playerBases.values().forEach(buildings::add);
-        buildings.addAll(towers);
-        return buildings;
     }
 
     public PackagedGameState packState(int turn) {

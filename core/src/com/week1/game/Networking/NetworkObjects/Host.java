@@ -34,6 +34,8 @@ public class Host {
     private int port;
     public ServerSocket serverSocket;
     private int nextPlayerId = 0;
+    private boolean magicBoolean = false; // When threads are asleep and woken, they are not interrupted so they can
+                                          // check this variable to see if they have been stopped by a disconnect action
 
     List<String> joinedPlayers = Collections.synchronizedList(new ArrayList<>());
     public Map<Integer, List<TowerLite>> towerDetails = new HashMap<>(); // first index is implicitly the player id
@@ -44,7 +46,8 @@ public class Host {
     private boolean loopStarted = false;
     
     private ConcurrentLinkedQueue<String> incomingMessages = new ConcurrentLinkedQueue<>();
-    
+    Thread joiningPlayersThread, updateLoopThread, listeningThread;
+
     public Host(int port) throws IOException {
         this.port = port;
         this.serverSocket = new ServerSocket(port);
@@ -61,9 +64,13 @@ public class Host {
     public void listenForClientMessages() {
         
         // Accepts connections to joining players
-        Thread joiningPlayersThead = new Thread(() -> {
+        joiningPlayersThread = new Thread(() -> {
             while (true) {
                 try {
+                    if (joiningPlayersThread.isInterrupted()) {
+                        return;
+                    }
+                    Gdx.app.log("Host - pjb3", "waiting for a new client to join...");
                     Socket socket = this.serverSocket.accept();
                     Player player = new Player(
                             this.runningPlayerId++,
@@ -72,6 +79,7 @@ public class Host {
                             socket.getInputStream(),
                             socket.getOutputStream()
                     );
+                    Gdx.app.log("Host -pjb3", "NEW CLIENT yaya. Set is:" + registry.keySet()+ " and adding new:" + socket.getInetAddress());
                     registry.put(socket.getInetAddress(), player);
 
                     // Tell them their playerID
@@ -79,27 +87,37 @@ public class Host {
                     sendMessage(playerIdMessage, player);
 
                     // spawn a thread to listen on this socket
-                    new Thread(() -> {
+                    listeningThread = new Thread(() -> {
                         String msg = "";
                         while (true) {
                             try {
+                                if (listeningThread.isInterrupted()) {
+                                    return;
+                                }
                                 Gdx.app.debug(TAG, "Host is listening for next client message from: "  + player.address);
                                 msg = player.in.readLine();
                                 processMessage(msg, player.address, player.port);
 
 
                             } catch (IOException e) {
+                                if (listeningThread.isInterrupted()) {
+                                    return;
+                                }
                                 e.printStackTrace();
                             }
                         }
 
-                    }).start();
+                    });
+                    listeningThread.start();
                 } catch (IOException e) {
+                    if (joiningPlayersThread.isInterrupted()) {
+                        return;
+                    }
                     e.printStackTrace();
                 }
             }
         });
-        joiningPlayersThead.start(); 
+        joiningPlayersThread.start();
     }
 
     public void runUpdateLoop() {
@@ -110,8 +128,14 @@ public class Host {
         loopStarted = true;
         // spawn a new thread to broadcast updates to the registered clients
         Gdx.app.log(TAG, "Host is about to begin running update loop.");
-        new Thread(() -> {
+        updateLoopThread = new Thread(() -> {
             while (true) {
+                if (updateLoopThread.isInterrupted() || magicBoolean) {
+                    Gdx.app.log("Host pjb3" ,"updateloop STOPPING");
+                    return;
+                } else {
+                    Gdx.app.log("Host pjb3" ,"I AINT STOPPING");
+                }
                 List<String> outgoingMessages = new ArrayList<>();
                 while (!incomingMessages.isEmpty()) { // TODO: dangerous, if many messages coming all at once
                     outgoingMessages.add(incomingMessages.poll());
@@ -148,17 +172,22 @@ public class Host {
                 }
 
                 Gdx.app.debug(TAG, "Host is about to broadcast update message to registered clients.");
+
                 broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new Update(outgoingMessages)));
 
                 // Take a break before the next update
                 try {
                     Thread.sleep(UPDATE_INTERVAL);
                 } catch (InterruptedException e) {
+                    if (updateLoopThread.isInterrupted() || magicBoolean) {
+                        return;
+                    }
                     e.printStackTrace();
                 }
 
             }
-        }).start();
+        });
+        updateLoopThread.start();
     }
 
 
@@ -184,6 +213,10 @@ public class Host {
 
     public void sendMessage(String msg, Player player) {
         try {
+            if (updateLoopThread != null && updateLoopThread.isInterrupted()) {
+                Gdx.app.log("Host pjb3", "Stopping sending a message. disconnecting....");
+                return;
+            }
             player.out.write(msg + "\n");
             player.out.flush();
         } catch (IOException e) {
@@ -214,5 +247,39 @@ public class Host {
         nameList.sort(Comparator.comparingInt(pair -> pair.key));
         nameList.forEach( pair -> infoList.add(pair.value));
         return infoList;
+    }
+
+    public void shutdown() {
+        Gdx.app.log("pjb3", "Shutting down Host");
+        magicBoolean = true; // This is to strong-handedly deal with the sleeping thread not realizing it was interrupted for some dumb reason
+        if (joiningPlayersThread != null) {
+            Gdx.app.log("pjb3", "Shutting down joiningplayersthread");
+            joiningPlayersThread.interrupt();
+        }
+        if (listeningThread != null) {
+            Gdx.app.log("pjb3", "Shutting down listeningThreas");
+            listeningThread.interrupt();
+        }
+        if (updateLoopThread != null) {
+            Gdx.app.log("pjb3", "Shutting down updateLoopThread");
+            updateLoopThread.interrupt();
+        }
+
+        try {
+            Gdx.app.log("pjb3", "Shutting down serversocket");
+            serverSocket.close();
+            registry.forEach((addr, plyr) -> {
+                try {
+                    plyr.in.close();
+                    plyr.out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

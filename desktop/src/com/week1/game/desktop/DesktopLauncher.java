@@ -1,11 +1,14 @@
 package com.week1.game.desktop;
 
+
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.week1.game.GameController;
 import org.apache.commons.cli.*;
 
 public class DesktopLauncher {
+
+
 	public static void main (String[] args) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "RTS";
@@ -17,6 +20,7 @@ public class DesktopLauncher {
 			CommandLine commandLine = parser.parse(createOptions(), args);
 			if (validate(commandLine)) {
 				new LwjglApplication(new GameController(commandLine), config);
+
 			} else {
 				new HelpFormatter().printHelp("game", options);
 			}

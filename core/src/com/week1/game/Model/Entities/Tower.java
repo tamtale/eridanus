@@ -1,41 +1,32 @@
 package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.pfa.Connection;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Components.*;
-import com.week1.game.Model.Damage;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.World.Block;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import static com.week1.game.Model.StatsConfig.*;
 
-public class Tower extends Building implements Damaging {
+public class Tower {
     public int ID;
-    private static final int SIDELENGTH = 3;
     private static final Random r = new Random(123456789);
     private PositionComponent positionComponent;
     private HealthComponent healthComponent;
     private DamagingComponent damagingComponent;
     private OwnedComponent ownedComponent;
     private TargetingComponent targetingComponent;
-    private static Texture skin; // TODO change this when we go to 3D to actually use the model of the tower.
     protected int towerType;
-    private final static Map<Integer, Texture> colorMap = new HashMap<>();
     protected double dmg;
     protected double range;
     protected double cost;
     private List<BlockSpec> layout;
-    private Map<Vector3, Array<Connection<Vector3>>> removedEdges = new HashMap<>();
     private Map<Integer, Integer> spawnerCounts;
     public Vector3 highestBlockLocation;
     
@@ -65,121 +56,19 @@ public class Tower extends Building implements Damaging {
         this.ID = ID;
     }
 
-    @Override
-    public boolean takeDamage(Damaging attacker, double dmg, Damage.type damageType) {
-        this.healthComponent.curHealth -= dmg;
-        if (this.healthComponent.curHealth <= 0) {
-            return true;
-            // TODO probably need to send something to engine more than just returning true
-        } else {
-            return false;
-        }
-    }
-
-    @Override
     public float getX() {
         return this.positionComponent.position.x;
     }
 
-    @Override
     public float getY() {
         return this.positionComponent.position.y;
     }
 
-    @Override
     public float getZ() {
         return this.positionComponent.position.z;
     }
 
-    @Override
-    public float getCurrentHealth() {
-        return healthComponent.curHealth;
-    }
-
-    @Override
-    public float getMaxHealth() {
-        return healthComponent.maxHealth;
-    }
-
-    @Override
-    public boolean isDead() {
-        return this.healthComponent.curHealth <= 0;
-    }
-
-    @Override
-    public boolean hasTargetInRange(Damageable victim) {
-        return Math.sqrt(Math.pow(this.positionComponent.position.x - victim.getX(), 2) + Math.pow(this.positionComponent.position.y - victim.getY(), 2)) < range;
-    }
-
-    @Override
-    public double getDamage() {
-        return this.dmg;
-    }
-
-    @Override
     public int getPlayerId(){return ownedComponent.playerID;}
-
-    @Override
-    public void getPos(Vector3 pos) {
-        pos.set(positionComponent.position.x, positionComponent.position.y, positionComponent.position.z);
-    }
-
-    @Override
-    public float getReward() {
-        return (float) cost * (float) towerDestructionBonus;
-    }
-
-
-    @Override
-    public <T> T accept(DamageableVisitor<T> visitor) {
-        return visitor.acceptTower(this);
-    }
-
-    public int getSidelength(){
-        return SIDELENGTH;
-    }
-
-    @Override
-    public boolean overlap(float x, float y) {
-        int startX = (int) this.positionComponent.position.x - getSidelength()/2;
-        int startY = (int) this.positionComponent.position.y - getSidelength()/2;
-        int endX = startX + getSidelength();
-        int endY = startY + getSidelength();
-        return (x > startX && x < endX && y > startY && y < endY);
-    }
-
-    @Override
-    public Vector3 closestPoint(float x, float y) {
-        int startX = (int) this.positionComponent.position.x - getSidelength()/2;
-        int startY = (int) this.positionComponent.position.y - getSidelength()/2;
-        int endX = startX + getSidelength();
-        int endY = startY + getSidelength();
-
-        if (x < startX && y < startY) {
-            return new Vector3(startX, startY, 0);
-        }
-        else if (x < startX && y > startY && y < endY){
-            return new Vector3(startX, y, 0);
-        }
-        else if (x < startX && y > endY) {
-            return new Vector3(startX, endY, 0);
-        }
-        else if (x > startX && x < endX && y > endY) {
-            return new Vector3(x, endY, 0);
-        }
-        else if (x > endX && y > endY) {
-            return new Vector3(endX, endY, 0);
-        }
-        else if (x > endX && y > startY && y < endY) {
-            return new Vector3(endX, y, 0);
-        }
-        else if (x > endX && y < startY) {
-            return new Vector3(endX, startY, 0);
-        }
-        else{
-            return new Vector3(x, startY, 0);
-        }
-    }
 
     public List<BlockSpec> getLayout() {
         return layout;
@@ -256,11 +145,6 @@ public class Tower extends Building implements Damaging {
     }
 
     @Override
-    public void putRemovedEdges(Vector3 fromNode, Array<Connection<Vector3>> connections) {
-        removedEdges.put(fromNode, connections);
-    }
-
-    @Override
     public String toString() {
         return "Tower{" +
                 "x=" + positionComponent.position.x +
@@ -275,11 +159,6 @@ public class Tower extends Building implements Damaging {
                 '}';
     }
     
-    @Override
-    public void getDisplayPos(Vector3 displayPos) {
-        displayPos.set(highestBlockLocation);
-    }
-
     public int getPlayerID() {
         return ownedComponent.playerID;
     }

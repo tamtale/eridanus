@@ -44,15 +44,18 @@ public class TowerBuilderCamera {
         this.camController = camController;
     }
 
-    public void setCurrTowerDetails(TowerDetails newTower) {
-
-        if (towerScreen.isBuildMode()) {
+    public void setWIPTower(boolean useBuildCore) {
+        if (useBuildCore) {
             this.WIPTower = TowerPresets.getBuildCore();
-            calcNewInvisiBlox();
         } else {
-            this.currTowerDetails = newTower;
+            //a copy of the current tower
+            this.WIPTower = TowerDetails.copy(currTowerDetails);
         }
+        calcNewInvisiBlox();
+    }
 
+    public void setCurrTowerDetails(TowerDetails selectedTower) {
+        this.currTowerDetails = selectedTower;
     }
 
     public TowerDetails getWIPTower() {
@@ -226,6 +229,8 @@ public class TowerBuilderCamera {
         int result = selectInvisiblock(screenX, screenY);
 
         if (result > -1) {
+
+
             WIPTower.addBlock(new BlockSpec(TowerMaterials.materialCodes.get(materialSelection),
                     (int) invisiBlocks.get(result).x, (int) invisiBlocks.get(result).y, (int) invisiBlocks.get(result).z));
             towerScreen.updateTowerStats();

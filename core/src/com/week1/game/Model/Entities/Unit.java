@@ -14,10 +14,7 @@ import com.week1.game.Util3D;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.week1.game.Model.StatsConfig.tempDamage;
-import static com.week1.game.Model.StatsConfig.tempMinionRange;
-
-public class Unit implements Damaging, Clickable {
+public class Unit implements Clickable {
     private PositionComponent positionComponent;
     private VelocityComponent velocityComponent;
     private PathComponent pathComponent;
@@ -105,17 +102,6 @@ public class Unit implements Damaging, Clickable {
         return positionComponent;
     }
 
-    @Override
-    public boolean hasTargetInRange(Damageable victim) {
-        return Math.sqrt(Math.pow(positionComponent.position.x - victim.getX(), 2) + Math.pow(positionComponent.position.y - victim.getY(), 2)) < tempMinionRange;
-    }
-    
-    @Override
-    public double getDamage() {
-        return tempDamage;
-    }
-
-    @Override
     public int getPlayerId() {return ownedComponent.playerID;}
 
     public void setPath(OutputPath path) {
