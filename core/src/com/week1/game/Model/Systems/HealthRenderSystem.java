@@ -89,6 +89,7 @@ public class HealthRenderSystem implements ISystem {
             node.hpBar = Decal.newDecal(1, 0.15f, getTextureRegion(node.owned.playerID));
         }
         Decal hpBar = node.hpBar;
+        hpBar.lookAt(lookAt, config.getCam().up);
         float newWidth = node.maxWidth * node.health.curHealth / node.health.maxHealth;
         // Set the position of the decal
         hpBar.setWidth(newWidth);
