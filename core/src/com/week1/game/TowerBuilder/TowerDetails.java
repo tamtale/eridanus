@@ -21,7 +21,7 @@ public class TowerDetails {
     private double rawHeight = 0;
     private double rawHp = 0;
     private double rawAtk = 0;
-    private double price = 0;
+    private double rawPrice = 0;
     private int numGuns = 0;
 
     //These stats are based off raw stats and multipliers
@@ -29,6 +29,7 @@ public class TowerDetails {
     private double atk = 0;
     private double range = 0;
     private int armour = 1;
+    private int price = 0;
 
     //For penalizing small bases
     private int baseSize = 0;
@@ -168,7 +169,7 @@ public class TowerDetails {
             rawHp += TowerMaterials.blockHp.get(code);
             rawAtk += TowerMaterials.blockAtk.get(code);
             rawHeight = Math.max(rawHeight, y + 1);
-            price += TowerMaterials.blockPrice.get(code);
+            rawPrice += TowerMaterials.blockPrice.get(code);
 
 
             //Getting the base size
@@ -209,6 +210,9 @@ public class TowerDetails {
     }
 
     private void calcFinalStats() {
+        //Tower base cost
+        price = (int) Math.max(150, rawPrice);
+
         atk = rawAtk * 0.2;
         range = rawHeight * 2;
 
@@ -275,7 +279,7 @@ public class TowerDetails {
         this.rawHp += TowerMaterials.blockHp.get(code);
         rawHeight = Math.max(rawHeight, y + 1);
 //        range = rawHeight * 3;
-        this.price += TowerMaterials.blockPrice.get(code);
+        this.rawPrice += TowerMaterials.blockPrice.get(code);
 
         calcFinalStats();
 
@@ -410,7 +414,7 @@ public class TowerDetails {
 
         this.rawAtk -= TowerMaterials.blockAtk.get(code);
         this.rawHp -= TowerMaterials.blockHp.get(code);
-        this.price -= TowerMaterials.blockPrice.get(code);
+        this.rawPrice -= TowerMaterials.blockPrice.get(code);
 
         //updating range and footprint
         if (shrinkFootprint) {
@@ -457,7 +461,7 @@ public class TowerDetails {
     }
 
     public int getCost() {
-        return (int)price;
+        return (int) rawPrice;
     }
 
     public TowerLite getTowerLite() {
