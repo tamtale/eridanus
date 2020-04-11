@@ -38,6 +38,7 @@ public class GameState implements GameRenderable {
     private MovementSystem movementSystem = new MovementSystem();
     private PathfindingSystem pathfindingSystem;
     private RenderSystem renderSystem = new RenderSystem();
+    private RenderDecalsSystem rendeerDecalsSystem = new RenderDecalsSystem();
     private TargetingSystem targetingSystem;
     private InterpolatorSystem interpolatorSystem = new InterpolatorSystem();
     private DeathSystem deathSystem;
@@ -229,6 +230,7 @@ public class GameState implements GameRenderable {
         targetingSystem.update(THRESHOLD);
         interpolatorSystem.update(THRESHOLD);
         renderSystem.update(THRESHOLD);
+        rendeerDecalsSystem.update(THRESHOLD);
         damageSystem.update(THRESHOLD);
         crystalRespawnSystem.update(THRESHOLD); // important that this happens before death (or else crystal may be removed before being queued for respawn)
         damageRewardSystem.update(THRESHOLD);
@@ -372,6 +374,7 @@ public class GameState implements GameRenderable {
         PositionComponent interpolated = new PositionComponent(positionComponent.position);
         interpolatorSystem.addNode(u.ID, positionComponent, interpolated, velocityComponent);
         renderSystem.addNode(u.ID, renderComponent, interpolated);
+        rendeerDecalsSystem.addHpbarNode(u.ID, null, positionComponent, healthComponent); // TODO: fix null pointer
         targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(u.ID, healthComponent);
         damageSystem.addDamage(u.ID, damagingComponent);
@@ -397,12 +400,14 @@ public class GameState implements GameRenderable {
         damageRewardSystem.addManaReward(tower.ID, manaRewardComponent);
         damageRewardSystem.addDamage(tower.ID, damagingComponent);
         deathRewardSystem.addManaReward(tower.ID, manaRewardComponent);
+        rendeerDecalsSystem.addHpbarNode(tower.ID, null, positionComponent, healthComponent); // TODO: fix null pointer
         towers.add(tower);
         addBuilding(tower, playerID);
         return tower;
     }
 
     public void addBase(Tower pb, int playerID) {
+        rendeerDecalsSystem.addNametagNode();
         playerBases.put(playerID, pb);
         addBuilding(pb, playerID);
     }
@@ -598,6 +603,7 @@ public class GameState implements GameRenderable {
         world.render(config);
         interpolatorSystem.render(config);
         renderSystem.render(config);
+        renderDecalsSystem.render(config);
     }
 
 
