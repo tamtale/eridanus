@@ -38,7 +38,7 @@ public class RenderNametagSystem implements ISystem {
 
             // Set the position of the nametag
             tempPos.set(loc);
-            tempPos.add(0,0,3.5f);
+            tempPos.add(0,0,5f);
             nameTag.setPosition((tempPos));
             
             decalBatch.add(nameTag);
