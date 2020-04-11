@@ -48,11 +48,13 @@ public class GameState implements GameRenderable {
     private ManaRegenSystem manaRegenSystem = new ManaRegenSystem();
     private DeathRewardSystem deathRewardSystem = new DeathRewardSystem();
     private DamageRewardSystem damageRewardSystem = new DamageRewardSystem();
+    private HealthRenderSystem healthRenderSystem = new HealthRenderSystem();
     private Array<Crystal> crystals = new Array<>();
     private Array<Unit> units = new Array<>();
     private Array<Tower> towers = new Array<>();
     private IntMap<Tower> playerBases = new IntMap<>();
     private Array<PlayerEntity> players = new Array<>();
+    private OwnedComponent noOwn = new OwnedComponent(-1);
     
     private TowerLoadouts towerLoadouts;
     /*
@@ -347,9 +349,9 @@ public class GameState implements GameRenderable {
         damageSystem.addHealth(c.ID, healthComponent);
         // Register with damage reward system, so rewards are given for damaging this crystal
         damageRewardSystem.addManaReward(c.ID, manaRewardComponent);
-        // Resiter with death reward system, so rewards are given for killing this crystal
+        // Register with death reward system, so rewards are given for killing this crystal
         deathRewardSystem.addManaReward(c.ID, manaRewardComponent);
-        
+        healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn);
         // Add the crystal to the map
         world.setBlock((int)c.getX(), (int)c.getY(), (int)c.getZ(), Block.TerrainBlock.CRYSTAL);
     }
@@ -378,6 +380,7 @@ public class GameState implements GameRenderable {
         damageRewardSystem.addManaReward(u.ID, manaRewardComponent);
         damageRewardSystem.addDamage(u.ID, damagingComponent);
         deathRewardSystem.addManaReward(u.ID, manaRewardComponent);
+        healthRenderSystem.addNode(u.ID, interpolated, healthComponent, ownedComponent);
         clickables.add(u);
         return u;
     }
@@ -397,6 +400,7 @@ public class GameState implements GameRenderable {
         damageRewardSystem.addManaReward(tower.ID, manaRewardComponent);
         damageRewardSystem.addDamage(tower.ID, damagingComponent);
         deathRewardSystem.addManaReward(tower.ID, manaRewardComponent);
+        healthRenderSystem.addNode(tower.ID, new PositionComponent(tower.highestBlockLocation), healthComponent, ownedComponent);
         towers.add(tower);
         addBuilding(tower, playerID);
         return tower;
@@ -428,10 +432,10 @@ public class GameState implements GameRenderable {
         renderSystem.remove(id);
         damageSystem.remove(id);
         targetingSystem.remove(id);
-        renderSystem.remove(id);
         crystalRespawnSystem.remove(id); // noop
         deathRewardSystem.remove(id);
         damageRewardSystem.remove(id);
+        healthRenderSystem.remove(id);
 
         units.select(u -> u.ID == id).forEach(unit -> units.removeValue(unit, true));
         towers.select(t -> t.ID == id).forEach(tower -> {
@@ -598,6 +602,7 @@ public class GameState implements GameRenderable {
         world.render(config);
         interpolatorSystem.render(config);
         renderSystem.render(config);
+        healthRenderSystem.render(config);
     }
 
 
