@@ -24,7 +24,10 @@ public class DeathRewardSystem implements ISystem, Subscriber<DamageEvent> {
     public void update(float delta) {
         for (DamageEvent event: deaths) {
             int reward = manaRewardComponents.get(event.victimID).deathReward;
-            manaComponents.get(event.damagerPlayerID).mana += reward;
+            ManaComponent manaComponent = manaComponents.get(event.damagerPlayerID);
+            if (manaComponent != null) {
+                manaComponent.mana +=reward;
+            }
             
             Gdx.app.log("DeathRewardSystem - lji1", "Rewarding player: " + event.damagerPlayerID +
                     " with " + reward + " mana for their kill");

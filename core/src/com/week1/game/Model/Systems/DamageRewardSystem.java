@@ -25,7 +25,11 @@ public class DamageRewardSystem implements ISystem, Subscriber<DamageEvent> {
     public void update(float delta) {
         for (DamageEvent event: damageEvents) {
             int reward = (int)(manaRewardComponents.get(event.victimID).damageReward * damagingComponents.get(event.damagerID).baseDamage);
-            manaComponents.get(event.damagerPlayerID).mana += reward;
+            
+            ManaComponent manaComponent = manaComponents.get(event.damagerPlayerID);
+            if (manaComponent != null) {
+                manaComponent.mana +=reward;
+            }
             
             Gdx.app.log("DamageRewardSystem - lji1", "Rewarding player: " + event.damagerPlayerID +
                     " with " + reward + " mana for damage done");
