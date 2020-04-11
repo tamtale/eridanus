@@ -47,6 +47,10 @@ public class PlayerEntity {
     public String getName() {
         return nameComponent.name;
     }
+    
+    public Color getColor() {
+        return colorComponent.color;
+    }
 
     @Override
     public String toString() {

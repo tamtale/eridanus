@@ -408,12 +408,10 @@ public class GameState implements GameRenderable {
         addBuilding(tower, playerID);
         return tower;
     }
-
-
-    
     
     public void addBase(Tower pb, int playerID) {
         String playerName = players.get(playerID).getName();
+        Color playerColor = players.get(playerID).getColor();
         
         renderNametagSystem.addNode(pb.ID, new RenderNametagComponent(playerName), pb.getPositionComponent());
         playerBases.put(playerID, pb);
