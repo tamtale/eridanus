@@ -614,8 +614,8 @@ public class GameState implements GameRenderable {
         world.render(config);
         interpolatorSystem.render(config);
         renderSystem.render(config);
+        healthRenderSystem.render(config); // need to be rendered before nametags, or they get covered
         renderNametagSystem.render(config);
-        healthRenderSystem.render(config);
     }
 
 

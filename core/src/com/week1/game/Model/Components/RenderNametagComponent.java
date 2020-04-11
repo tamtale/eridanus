@@ -37,7 +37,7 @@ public class RenderNametagComponent {
         // Initialize the map
         int mapHeight = 20;
         Pixmap map = new Pixmap(requiredWidth, mapHeight, Pixmap.Format.RGBA8888);
-//        map.setColor(0, 0,255,100); // tint the background
+//        map.setColor(100, 0,0,100); // tint the background
         map.setColor(0,0,0,255);
         map.fill();
 
