@@ -50,7 +50,7 @@ public class Unit implements Damaging, Clickable {
 
     private Material originalMaterial;
 
-    private static Map<Integer, Color> colorMap;
+    public static Map<Integer, Color> colorMap;
     public static Map<Integer, Model> modelMap;
 
     public Unit(

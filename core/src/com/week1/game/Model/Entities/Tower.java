@@ -37,7 +37,7 @@ public class Tower extends Building implements Damaging {
     private List<BlockSpec> layout;
     private Map<Vector3, Array<Connection<Vector3>>> removedEdges = new HashMap<>();
     private Map<Integer, Integer> spawnerCounts;
-    private Vector3 highestBlockLocation = null;
+    public Vector3 highestBlockLocation;
     
     public Tower(
         PositionComponent positionComponent,
