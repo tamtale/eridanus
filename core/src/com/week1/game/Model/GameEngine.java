@@ -72,8 +72,8 @@ public class GameEngine implements GameRenderable {
         // Modify things like mana, deal damage, moving units, and checking if the game ends
         synchronousUpdateState();
         // Process the messages that come in, if there are any
-        for (GameMessage message : messages) {
-            message.process(this, gameState, util);
+        for (int m = 0; m < messages.size(); m++) {
+            messages.get(m).process(this, gameState, util);
         }
         // Process any messages in the replay queue.
         for (TaggedMessage message = replayQueue.peek(); message != null && message.turn == communicationTurn; message = replayQueue.peek()) {
