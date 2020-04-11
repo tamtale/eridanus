@@ -1,6 +1,7 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -38,14 +39,13 @@ public class GameState implements GameRenderable {
     private MovementSystem movementSystem = new MovementSystem();
     private PathfindingSystem pathfindingSystem;
     private RenderSystem renderSystem = new RenderSystem();
-    private RenderDecalsSystem rendeerDecalsSystem = new RenderDecalsSystem();
+    private RenderNametagSystem renderNametagSystem = new RenderNametagSystem();
     private TargetingSystem targetingSystem;
     private InterpolatorSystem interpolatorSystem = new InterpolatorSystem();
     private DeathSystem deathSystem;
     private CrystalRespawnSystem crystalRespawnSystem;
     private DamageSystem damageSystem = new DamageSystem();
     private EntityManager entityManager = new EntityManager();
-    private List<PlayerInfo> playerInfo;
     private ManaRegenSystem manaRegenSystem = new ManaRegenSystem();
     private DeathRewardSystem deathRewardSystem = new DeathRewardSystem();
     private DamageRewardSystem damageRewardSystem = new DamageRewardSystem();
@@ -64,7 +64,12 @@ public class GameState implements GameRenderable {
 
     public GameState(IWorldBuilder worldBuilder, Runnable postInit, List<PlayerInfo> playerInfo){
         // TODO tower types in memory after exchange
-        this.playerInfo = playerInfo;
+        // Create player entities
+        for (int playerId = 0; playerId < playerInfo.size(); playerId++) {
+            PlayerInfo info = playerInfo.get(playerId);
+            addPlayer(playerId, info.getPlayerName(), info.getColor());
+        }
+        
         this.worldBuilder = worldBuilder;
         this.u2s = new Unit2StateAdapter() {
             @Override
@@ -230,7 +235,7 @@ public class GameState implements GameRenderable {
         targetingSystem.update(THRESHOLD);
         interpolatorSystem.update(THRESHOLD);
         renderSystem.update(THRESHOLD);
-        rendeerDecalsSystem.update(THRESHOLD);
+        renderNametagSystem.update(THRESHOLD);
         damageSystem.update(THRESHOLD);
         crystalRespawnSystem.update(THRESHOLD); // important that this happens before death (or else crystal may be removed before being queued for respawn)
         damageRewardSystem.update(THRESHOLD);
@@ -279,8 +284,6 @@ public class GameState implements GameRenderable {
         // Create the correct amount of actual players
         Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
-            addPlayer(i);
-
             // Create and add a base for each player
             Tower newBase = addTower((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z,
                     towerLoadouts.getTowerDetails(i,-1), i, -1);
@@ -322,11 +325,13 @@ public class GameState implements GameRenderable {
         }
     }
 
-    public void addPlayer(int playerID) {
+    public void addPlayer(int playerID, String name, Color color) {
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaComponent manaComponent = new ManaComponent(startingMana);
+        NameComponent nameComponent = new NameComponent(name);
+        ColorComponent colorComponent = new ColorComponent(color);
         
-        PlayerEntity player = new PlayerEntity(ownedComponent, manaComponent);
+        PlayerEntity player = new PlayerEntity(ownedComponent, manaComponent, nameComponent, colorComponent);
         players.add(player);
         
         // Register with manaRegenSystem so that the player's mana will regenerate over time.
@@ -374,7 +379,6 @@ public class GameState implements GameRenderable {
         PositionComponent interpolated = new PositionComponent(positionComponent.position);
         interpolatorSystem.addNode(u.ID, positionComponent, interpolated, velocityComponent);
         renderSystem.addNode(u.ID, renderComponent, interpolated);
-        rendeerDecalsSystem.addHpbarNode(u.ID, null, positionComponent, healthComponent); // TODO: fix null pointer
         targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(u.ID, healthComponent);
         damageSystem.addDamage(u.ID, damagingComponent);
@@ -400,14 +404,18 @@ public class GameState implements GameRenderable {
         damageRewardSystem.addManaReward(tower.ID, manaRewardComponent);
         damageRewardSystem.addDamage(tower.ID, damagingComponent);
         deathRewardSystem.addManaReward(tower.ID, manaRewardComponent);
-        rendeerDecalsSystem.addHpbarNode(tower.ID, null, positionComponent, healthComponent); // TODO: fix null pointer
         towers.add(tower);
         addBuilding(tower, playerID);
         return tower;
     }
 
+
+    
+    
     public void addBase(Tower pb, int playerID) {
-        rendeerDecalsSystem.addNametagNode();
+        String playerName = players.get(playerID).getName();
+        
+        renderNametagSystem.addNode(pb.ID, new RenderNametagComponent(playerName), pb.getPositionComponent());
         playerBases.put(playerID, pb);
         addBuilding(pb, playerID);
     }
@@ -437,6 +445,7 @@ public class GameState implements GameRenderable {
         crystalRespawnSystem.remove(id); // noop
         deathRewardSystem.remove(id);
         damageRewardSystem.remove(id);
+        renderNametagSystem.remove(id);
 
         units.select(u -> u.ID == id).forEach(unit -> units.removeValue(unit, true));
         towers.select(t -> t.ID == id).forEach(tower -> {
@@ -603,7 +612,7 @@ public class GameState implements GameRenderable {
         world.render(config);
         interpolatorSystem.render(config);
         renderSystem.render(config);
-        renderDecalsSystem.render(config);
+        renderNametagSystem.render(config);
     }
 
 
