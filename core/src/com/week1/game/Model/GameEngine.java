@@ -182,6 +182,6 @@ public class GameEngine implements GameRenderable {
     }
 
     public int getTowerCost(int playerId, int slot) {
-        return gameState.getTowerDetails(playerId, slot).getCost();
+        return gameState.getTowerDetails(playerId, slot).getPrice();
     }
 }

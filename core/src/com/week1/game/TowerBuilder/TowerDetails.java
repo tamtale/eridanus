@@ -53,7 +53,7 @@ public class TowerDetails {
         return layout;
     }
 
-    public double getPrice() {
+    public int getPrice() {
         return price;
     }
 
@@ -460,9 +460,6 @@ public class TowerDetails {
         return name;
     }
 
-    public int getCost() {
-        return (int) rawPrice;
-    }
 
     public TowerLite getTowerLite() {
         return new TowerLite(name, layout);
