@@ -116,7 +116,8 @@ public class GameState implements GameRenderable {
                 minDist = targetingComponent.range; // Any target must be within range.
                 float dist;
                 // Check through all units to determine closet suitable target
-                for (Unit unit: units) {
+                for (int i = 0; i < units.size; i++) {
+                    Unit unit = units.get(i);
                     // Check if unit owner follows owner rule.
                     int unitOwner = unit.getPlayerId();
                     switch (targetingComponent.strategy) {
@@ -165,7 +166,8 @@ public class GameState implements GameRenderable {
                 }
                 
                 // Any crystals that are closer suitable targets?
-                for (Crystal crystal: crystals) {
+                for (int c = 0; c < crystals.size; c++) {
+                    Crystal crystal = crystals.get(c);
                     switch (targetingComponent.strategy) {
                         case ENEMY:
                             break;
@@ -346,7 +348,7 @@ public class GameState implements GameRenderable {
     public void addCrystal(float x, float y, float z) {
         PositionComponent positionComponent = new PositionComponent(x, y, z);
         HealthComponent healthComponent = new HealthComponent(CRYSTAL_HEALTH, CRYSTAL_HEALTH);
-        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 1f);
+       ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0.25f);
         
         Crystal c = new Crystal(positionComponent, healthComponent, manaRewardComponent, entityManager.newID());
         crystals.add(c);
