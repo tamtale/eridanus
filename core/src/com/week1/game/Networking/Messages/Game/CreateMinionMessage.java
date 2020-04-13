@@ -1,13 +1,13 @@
 package com.week1.game.Networking.Messages.Game;
 
-import com.badlogic.gdx.Gdx;
+import com.week1.game.InfoUtil;
 import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.World.Block;
 import com.week1.game.Networking.Messages.MessageType;
-import com.week1.game.InfoUtil;
 
-import static com.week1.game.Model.StatsConfig.*;
+import static com.week1.game.Model.StatsConfig.tempMinion1Cost;
+import static com.week1.game.Model.StatsConfig.tempMinion1Health;
 
 public class CreateMinionMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.CREATEMINION;
@@ -54,10 +54,11 @@ public class CreateMinionMessage extends GameMessage {
 
         inputState.getPlayer(playerID).useMana(tempMinion1Cost);
 
-        Gdx.app.postRunnable(() -> {
-            util.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
-            inputState.addUnit(x, y, z, (float) tempMinion1Health, playerID);
-        });
+        util.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
+        inputState.addUnit(x, y, z, (float) tempMinion1Health, playerID);
+//        Gdx.app.postRunnable(() -> {
+//
+//        });
         return true;
     }
 

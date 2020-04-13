@@ -135,10 +135,9 @@ public class Tower {
                     
                     final float finalMoveX = moveX;
                     final float finalMoveY = moveY;
-                    Gdx.app.postRunnable(() -> {
-                        Unit unit = state.addUnit(finalMinionX, finalMinionY, finalMinionZ, (float) tempMinion1Health, ownedComponent.playerID);
-                        state.moveMinion(finalMoveX,finalMoveY, unit);
-                    });
+
+                    Unit unit = state.addUnit(finalMinionX, finalMinionY, finalMinionZ, (float) tempMinion1Health, ownedComponent.playerID);
+                    state.moveMinion(finalMoveX,finalMoveY, unit);
                 }
             }
         }
