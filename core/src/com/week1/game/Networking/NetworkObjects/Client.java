@@ -72,7 +72,7 @@ public class Client {
                     // try parsing as a control message first
                     ClientControlMessage controlMsg = MessageFormatter.parseClientControlMessage(messages);
                     if (controlMsg != null) {
-                        Gdx.app.log(TAG, "Received control message: " + controlMsg);
+                        Gdx.app.debug(TAG, "Received control message: " + controlMsg);
                         controlMsg.updateClient(this);
                         continue; // don't need to try parsing as game messages if already successfully parsed as control message
                     }

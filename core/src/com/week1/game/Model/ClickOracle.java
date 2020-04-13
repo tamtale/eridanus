@@ -178,7 +178,7 @@ public class ClickOracle extends InputAdapter {
 
         // If the player was dragging, the friendly units in the drag box are selected
         if (dragging) {
-            System.out.println("Done dragging");
+            Gdx.app.debug("ClickOracle", "Done dragging");
 
             // Add the units in the drag box to multiselected
             deMultiSelect();

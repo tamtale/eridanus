@@ -1,8 +1,8 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
@@ -10,7 +10,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.AIMovement.AStar;
 import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
+import com.week1.game.Model.Components.*;
 import com.week1.game.Model.Entities.*;
+import com.week1.game.Model.Systems.*;
 import com.week1.game.Model.World.Block;
 import com.week1.game.Model.World.GameGraph;
 import com.week1.game.Model.World.GameWorld;
@@ -20,46 +22,55 @@ import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
+import com.week1.game.Tuple3;
+
 import java.util.List;
 
+import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
 import static com.week1.game.Model.StatsConfig.*;
 
 public class GameState implements GameRenderable {
-    private final static int CRYSTAL_RESPAWN_INTERVAL = 400;
-    private final static int SECONDARY_CRYSTAL_RESPAWN_INTERVAL = 10;
-
     private final Unit2StateAdapter u2s;
-    private final CrystalToStateAdapter c2s;
     private GameGraph graph;
-
     private Array<Clickable> clickables = new Array<>();
-    private int minionCount;
-    private Array<Unit> units = new Array<>();
-    private Array<Tower> towers = new Array<>();
-    private IntMap<PlayerBase> playerBases = new IntMap<>();
-    private Array<PlayerStat> playerStats = new Array<>();
-    private Array<Damageable> damageables = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
     private List<PlayerInfo> playerInfo;
     
+    private MovementSystem movementSystem = new MovementSystem();
+    private PathfindingSystem pathfindingSystem;
+    private RenderSystem renderSystem = new RenderSystem();
+    private RenderNametagSystem renderNametagSystem = new RenderNametagSystem();
+    private TargetingSystem targetingSystem;
+    private InterpolatorSystem interpolatorSystem = new InterpolatorSystem();
+    private DeathSystem deathSystem;
+    private CrystalRespawnSystem crystalRespawnSystem;
+    private DamageSystem damageSystem = new DamageSystem();
+    private EntityManager entityManager = new EntityManager();
+    private ManaRegenSystem manaRegenSystem = new ManaRegenSystem();
+    private DeathRewardSystem deathRewardSystem = new DeathRewardSystem();
+    private DamageRewardSystem damageRewardSystem = new DamageRewardSystem();
+    private HealthRenderSystem healthRenderSystem = new HealthRenderSystem();
     private Array<Crystal> crystals = new Array<>();
-    private Array<Pair<Integer, Crystal>> crystalsWaitingToRespawn = new Array<>();
-
+    private Array<Unit> units = new Array<>();
+    private Array<Tower> towers = new Array<>();
+    private IntMap<Tower> playerBases = new IntMap<>();
+    private Array<PlayerEntity> players = new Array<>();
+    private OwnedComponent noOwn = new OwnedComponent(-1);
     private TowerLoadouts towerLoadouts;
     /*
      * Runnable to execute immediately after the game state has been initialized.
      */
     private Runnable postInit;
     private boolean fullyInitialized = false;
-    
-    private GameState getGameState() {
-        return this;
-    }
 
     public GameState(IWorldBuilder worldBuilder, Runnable postInit, List<PlayerInfo> playerInfo){
         // TODO tower types in memory after exchange
-        this.playerInfo = playerInfo;
+        // Create player entities
+        for (int playerId = 0; playerId < playerInfo.size(); playerId++) {
+            PlayerInfo info = playerInfo.get(playerId);
+            addPlayer(playerId, info.getPlayerName(), info.getColor());
+        }
         this.worldBuilder = worldBuilder;
         this.u2s = new Unit2StateAdapter() {
             @Override
@@ -72,16 +83,169 @@ public class GameState implements GameRenderable {
                 return world.getHeight(i, j);
             }
         };
-        this.c2s = new CrystalToStateAdapter() {
-            @Override
-            public void rewardPlayer(int playerId, double amt) {
-                rewardPlayerById(playerId, amt);
-            }
-        };
+        this.pathfindingSystem = new PathfindingSystem(u2s);
+        initTargetingSystem();
+        initDeathSystem();
+        initCrystalRespawnSystem();
+        targetingSystem.addSubscriber(damageSystem);
+        targetingSystem.addSubscriber(damageRewardSystem);
+        damageSystem.addSubscriber(deathSystem);
+        damageSystem.addSubscriber(deathRewardSystem);
+        damageSystem.addSubscriber(crystalRespawnSystem);
         this.postInit = postInit;
     }
 
-    public PlayerBase getPlayerBase(int playerId) {
+    /*
+     * Targeting system uses a service that (currently) needs intimate access to the gamestate,
+     * so we'll do the initialization here.
+     */
+    private void initTargetingSystem() {
+        this.targetingSystem = new TargetingSystem(new IService<Tuple3<OwnedComponent, TargetingComponent, PositionComponent>, Pair<Integer, PositionComponent>>() {
+            Vector3 otherPosition = new Vector3();
+            float minDist = Float.POSITIVE_INFINITY;
+            Pair<Integer, PositionComponent> result = new Pair<>(-1, null);
+            @Override
+            public Pair<Integer, PositionComponent> query(Tuple3<OwnedComponent, TargetingComponent, PositionComponent> key) {
+                result.key = -1;
+                result.value = null;
+                OwnedComponent ownedComponent = key._1;
+                TargetingComponent targetingComponent = key._2;
+                PositionComponent positionComponent = key._3;
+
+                PositionComponent otherPositionComponent;
+                minDist = targetingComponent.range; // Any target must be within range.
+                float dist;
+                // Check through all units to determine closet suitable target
+                for (Unit unit: units) {
+                    // Check if unit owner follows owner rule.
+                    int unitOwner = unit.getPlayerId();
+                    switch (targetingComponent.strategy) {
+                        case ENEMY:
+                            if (unitOwner == ownedComponent.playerID) continue;
+                            break;
+                        case TEAM:
+                            if (unitOwner != ownedComponent.playerID) continue;
+                            break;
+                        case ALL:
+                            break;
+                    }
+                    // Check position of unit.
+                    otherPositionComponent = unit.getPositionComponent();
+                    if (otherPositionComponent == positionComponent) continue; // TODO should be a better way of making sure there's no self targeting
+                    dist = positionComponent.position.dst(otherPositionComponent.position);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        result.key = unit.ID;
+                        result.value = unit.getPositionComponent();
+                    }
+                }
+
+                // Are there any towers that might be closer suitable targets?
+                for (Tower tower: towers) {
+                    int towerOwner = tower.getPlayerId();
+                    switch (targetingComponent.strategy) {
+                        case ENEMY:
+                            if (towerOwner == ownedComponent.playerID) continue;
+                            break;
+                        case TEAM:
+                            if (towerOwner != ownedComponent.playerID) continue;
+                            break;
+                        case ALL:
+                            break;
+                    }
+                    // Check position of unit.
+                    otherPositionComponent = tower.getPositionComponent();
+                    if (otherPositionComponent == positionComponent) continue; // TODO should be a better way of making sure there's no self targeting
+                    dist = positionComponent.position.dst(otherPositionComponent.position);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        result.key = tower.ID;
+                        result.value = tower.getPositionComponent();
+                    }
+                }
+                
+                // Any crystals that are closer suitable targets?
+                for (Crystal crystal: crystals) {
+                    switch (targetingComponent.strategy) {
+                        case ENEMY:
+                            break;
+                        case TEAM:
+                            continue; // if attempting to team kill, don't target crystals
+                        case ALL:
+                            break;
+                    }
+                    // Check position of unit.
+                    otherPositionComponent = crystal.getPositionComponent();
+                    // Don't need to check for self-target here, because crystals don't deal damage
+                    dist = positionComponent.position.dst(otherPositionComponent.position);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        result.key = crystal.ID;
+                        result.value = crystal.getPositionComponent();
+                    }
+                }
+                
+                return result;
+            }
+        });
+    }
+
+    private void initCrystalRespawnSystem() {
+        this.crystalRespawnSystem = new CrystalRespawnSystem(
+                (key) -> {
+                    //make sure that there aren't any towers in the way
+                    int tempX = (int) key.position.x;
+                    int tempY = (int) key.position.y;
+                    int tempZ = (int) key.position.z;
+                    if (world.getBlock(tempX, tempY, tempZ) == Block.TerrainBlock.AIR) {
+                        // nothing's in the way, crystal respawns
+                        addCrystal(tempX, tempY, tempZ);
+                        return true;
+                    }
+
+                    return false;
+                },
+                (key) -> {
+                    // Does the given id 'key' correspond to a crystal?
+                    for (int i = 0; i < crystals.size; i++) {
+                        if (crystals.get(i).ID == key) {
+                            return crystals.get(i).getPositionComponent();
+                        }
+                    }
+                    return null;
+                });
+    }
+
+    
+    private void initDeathSystem() {
+        this.deathSystem = new DeathSystem(
+                new IService<Integer, Void>() {
+                    @Override
+                    public Void query(Integer key) {
+                        removeEntity(key);
+                        return null;
+                    }
+                }
+        );
+    }
+
+    public void synchronousUpdateState(int communicationTurn) {
+        manaRegenSystem.update(THRESHOLD);
+        pathfindingSystem.update(THRESHOLD);
+        movementSystem.update(THRESHOLD);
+        targetingSystem.update(THRESHOLD);
+        interpolatorSystem.update(THRESHOLD);
+        renderSystem.update(THRESHOLD);
+        renderNametagSystem.update(THRESHOLD);
+        damageSystem.update(THRESHOLD);
+        crystalRespawnSystem.update(THRESHOLD); // important that this happens before death (or else crystal may be removed before being queued for respawn)
+        damageRewardSystem.update(THRESHOLD);
+        deathRewardSystem.update(THRESHOLD);
+        deathSystem.update(THRESHOLD);
+        doTowerSpecialAbilities(communicationTurn);
+    }
+
+    public Tower getPlayerBase(int playerId) {
         return playerBases.get(playerId);
     }
 
@@ -121,10 +285,8 @@ public class GameState implements GameRenderable {
         // Create the correct amount of actual players
         Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
-            playerStats.add(new PlayerStat());
-
             // Create and add a base for each player
-            PlayerBase newBase = new PlayerBase((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z,
+            Tower newBase = addTower((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z,
                     towerLoadouts.getTowerDetails(i,-1), i, -1);
             addBase(newBase, i);
         }
@@ -147,8 +309,7 @@ public class GameState implements GameRenderable {
                 // Place the crystal in the first available airblock
                 if ((world.getBlock((int)desiredLoc.x, (int)desiredLoc.y, z) == Block.TerrainBlock.AIR) &&
                         (world.getBlock((int)desiredLoc.x, (int)(desiredLoc.y), z - 1).canSupportTower())){
-                    Crystal c = new Crystal(desiredLoc.x, desiredLoc.y, z);
-                    addCrystal(c);
+                    addCrystal(desiredLoc.x, desiredLoc.y, z);
                     break;
                 }
             }
@@ -157,45 +318,106 @@ public class GameState implements GameRenderable {
         // If there are no suitable blocks, then maybe the crystal doesn't get placed
     }
 
-    public PlayerStat getPlayerStats(int playerNum) {
+    public PlayerEntity getPlayer(int playerNum) {
         if (isInitialized()) {
-            return playerStats.get(playerNum);
+            return players.get(playerNum);
         } else {
-            return PlayerStat.BLANK;
+            return PlayerEntity.BLANK;
         }
     }
 
-    public void updateMana(float amount){
-        for (PlayerStat player : playerStats) {
-            player.regenMana(amount);
-        }
+    public void addPlayer(int playerID, String name, Color color) {
+        OwnedComponent ownedComponent = new OwnedComponent(playerID);
+        ManaComponent manaComponent = new ManaComponent(startingMana);
+        NameComponent nameComponent = new NameComponent(name);
+        ColorComponent colorComponent = new ColorComponent(color);
+        
+        PlayerEntity player = new PlayerEntity(ownedComponent, manaComponent, nameComponent, colorComponent);
+        players.add(player);
+        
+        // Register with manaRegenSystem so that the player's mana will regenerate over time.
+        manaRegenSystem.addMana(player.getPlayerID(), manaComponent);
+        
+        // Register with reward systems, so the player can be rewarded for kills and damage
+        damageRewardSystem.addMana(player.getPlayerID(), manaComponent);
+        deathRewardSystem.addMana(player.getPlayerID(), manaComponent);
     }
 
-    public void addCrystal(Crystal c) {
+    public void addCrystal(float x, float y, float z) {
+        PositionComponent positionComponent = new PositionComponent(x, y, z);
+        HealthComponent healthComponent = new HealthComponent(CRYSTAL_HEALTH, CRYSTAL_HEALTH);
+        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 1f);
+        
+        Crystal c = new Crystal(positionComponent, healthComponent, manaRewardComponent, entityManager.newID());
         crystals.add(c);
-        damageables.add(c);
-        c.setCrystalToStateAdapter(c2s);
-        world.setBlock((int)c.getX(), (int)c.getY(), (int)c.getZ(), Block.TerrainBlock.CRYSTAL);
+        
+        // Register with the damage system, so that the crystal can take damage
+        damageSystem.addHealth(c.ID, healthComponent);
+        // Register with damage reward system, so rewards are given for damaging this crystal
+        damageRewardSystem.addManaReward(c.ID, manaRewardComponent);
+        // Register with death reward system, so rewards are given for killing this crystal
+        deathRewardSystem.addManaReward(c.ID, manaRewardComponent);
+        healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn);
+        // Add the crystal to the map
+        world.setBlock((int) x, (int) y, (int) z, Block.TerrainBlock.CRYSTAL);
     }
 
-    public void addUnit(Unit u){
-        u.ID = minionCount;
+    public Unit addUnit(float x, float y, float z, float tempHealth, int playerID){
+        PositionComponent positionComponent = new PositionComponent(x, y, z);
+        VelocityComponent velocityComponent = new VelocityComponent((float) Unit.speed, 0, 0, 0);
+        PathComponent pathComponent = new PathComponent();
+        RenderComponent renderComponent = new RenderComponent(new ModelInstance(Unit.modelMap.get(playerID)));
+        OwnedComponent ownedComponent = new OwnedComponent(playerID);
+        TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true, TargetingComponent.TargetingStrategy.ENEMY);
+        HealthComponent healthComponent = new HealthComponent(tempHealth, tempHealth);
+        DamagingComponent damagingComponent = new DamagingComponent((float) tempMinionDamage);
+        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(0, 0);
+        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, healthComponent, damagingComponent, manaRewardComponent);
+        u.ID = entityManager.newID();
         units.add(u);
-        u.setUnit2StateAdapter(u2s);
+        movementSystem.addNode(u.ID, positionComponent, velocityComponent);
+        pathfindingSystem.addNode(u.ID, positionComponent, velocityComponent, pathComponent);
+        PositionComponent interpolated = new PositionComponent(positionComponent.position);
+        interpolatorSystem.addNode(u.ID, positionComponent, interpolated, velocityComponent);
+        renderSystem.addNode(u.ID, renderComponent, interpolated);
+        targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
+        damageSystem.addHealth(u.ID, healthComponent);
+        damageSystem.addDamage(u.ID, damagingComponent);
+        damageRewardSystem.addManaReward(u.ID, manaRewardComponent);
+        damageRewardSystem.addDamage(u.ID, damagingComponent);
+        deathRewardSystem.addManaReward(u.ID, manaRewardComponent);
+        healthRenderSystem.addNode(u.ID, interpolated, healthComponent, ownedComponent);
         clickables.add(u);
-        damageables.add(u);
-        minionCount += 1;
+        return u;
     }
 
-    public void addTower(Tower t, int playerID) {
-        towers.add(t);
-        damageables.add(t);
-        addBuilding(t, playerID);
+    public Tower addTower(int x, int y, int z, TowerDetails towerDetails, int playerID, int towerType) {
+        PositionComponent positionComponent = new PositionComponent((float) x, (float) y, (float) z);
+        HealthComponent healthComponent = new HealthComponent((float) towerDetails.getHp(), (float) towerDetails.getHp());
+        DamagingComponent damagingComponent = new DamagingComponent((float) towerDetails.getAtk());
+        TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
+            TargetingComponent.TargetingStrategy.ENEMY);
+        OwnedComponent ownedComponent = new OwnedComponent(playerID);
+        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
+        Tower tower = new Tower(positionComponent, healthComponent, damagingComponent, targetingComponent, ownedComponent, manaRewardComponent, towerDetails, towerType, entityManager.newID());
+        targetingSystem.addNode(tower.ID, ownedComponent, targetingComponent, positionComponent);
+        damageSystem.addHealth(tower.ID, healthComponent);
+        damageSystem.addDamage(tower.ID, damagingComponent);
+        damageRewardSystem.addManaReward(tower.ID, manaRewardComponent);
+        damageRewardSystem.addDamage(tower.ID, damagingComponent);
+        deathRewardSystem.addManaReward(tower.ID, manaRewardComponent);
+        healthRenderSystem.addNode(tower.ID, new PositionComponent(tower.highestBlockLocation), healthComponent, ownedComponent);
+        towers.add(tower);
+        addBuilding(tower, playerID);
+        return tower;
     }
-
-    public void addBase(PlayerBase pb, int playerID) {
+    
+    public void addBase(Tower pb, int playerID) {
+        String playerName = players.get(playerID).getName();
+        Color playerColor = players.get(playerID).getColor();
+        
+        renderNametagSystem.addNode(pb.ID, new RenderNametagComponent(playerName), pb.getPositionComponent());
         playerBases.put(playerID, pb);
-        damageables.add(pb);
         addBuilding(pb, playerID);
     }
 
@@ -203,14 +425,64 @@ public class GameState implements GameRenderable {
         List<BlockSpec> blockSpecs = t.getLayout();
         for (int k = 0; k < blockSpecs.size(); k++) {
             BlockSpec bs = blockSpecs.get(k);
-            world.setBlock(
-                    (int)(t.x + bs.getX()),
-                    (int)(t.y + bs.getZ()),
-                    (int)(t.z + bs.getY()),
+            this.world.setBlock(
+                    (int)(t.getX() + bs.getX()),
+                    (int)(t.getY() + bs.getZ()),
+                    (int)(t.getZ() + bs.getY()),
                     Block.TowerBlock.towerBlockMap.get(bs.getBlockCode()));
         }
     }
 
+    /*
+     * Remove all references to this entity (purge all systems and game state).
+     */
+    public void removeEntity(int id) {
+        movementSystem.remove(id);
+        pathfindingSystem.remove(id);
+        renderSystem.remove(id);
+        damageSystem.remove(id);
+        targetingSystem.remove(id);
+        crystalRespawnSystem.remove(id); // noop
+        deathRewardSystem.remove(id);
+        damageRewardSystem.remove(id);
+        renderNametagSystem.remove(id);
+        healthRenderSystem.remove(id);
+
+        units.select(u -> u.ID == id).forEach(unit -> units.removeValue(unit, true));
+        towers.select(t -> t.ID == id).forEach(tower -> {
+            List<BlockSpec> blockSpecs = tower.getLayout();
+            for(int k = 0; k < blockSpecs.size(); k++) {
+                BlockSpec bs = blockSpecs.get(k);
+                world.setBlock(
+                        (int)(tower.getX() + bs.getX()),
+                        (int)(tower.getY() + bs.getZ()),
+                        (int)(tower.getZ() + bs.getY()),
+                        Block.TerrainBlock.AIR);
+            }
+            towers.removeValue(tower, true);
+            if (playerBases.containsValue(tower, true)) {
+                playerDies(tower.getPlayerId());
+                playerBases.remove(tower.getPlayerID());
+            }
+        });
+        crystals.select(c -> c.ID == id).forEach(crystal -> {
+            world.setBlock(
+                    (int)crystal.getX(),
+                    (int)crystal.getY(),
+                    (int)crystal.getZ(),
+                    Block.TerrainBlock.AIR
+            );
+
+            crystals.removeValue(crystal, true);
+        });
+    }
+    
+    private void playerDies(int playerID) {
+        manaRegenSystem.removePlayer(playerID);
+        damageRewardSystem.removePlayer(playerID);
+        deathRewardSystem.removePlayer(playerID);
+    }
+    
     public void updateGoal(Unit unit, Vector3 goal) {
         Vector2 unitPos = new Vector2((int) unit.getX(), (int) unit.getY()); //TODO: make acutal z;
         unit.setGoal(goal);
@@ -262,175 +534,19 @@ public class GameState implements GameRenderable {
         updateGoal(u, new Vector3(x, y, 0));
     }
 
-    public void crystalRespawn() {
-        Array<Pair<Integer, Crystal>> remainingWaitingCrystals = new Array<>();
-        for (int i = 0; i < crystalsWaitingToRespawn.size; i++) {
-            Pair<Integer, Crystal> waitingCrystal = crystalsWaitingToRespawn.get(i);
-
-            if (--waitingCrystal.key == 0) { // Decrement turns to wait, are we there yet?
-                // crystal is done waiting to respawn
-
-                //make sure that there aren't any towers in the way
-                int tempX = (int)waitingCrystal.value.getX();
-                int tempY = (int)waitingCrystal.value.getY();
-                int tempZ = (int)waitingCrystal.value.getZ();
-                if (world.getBlock(tempX, tempY, tempZ) != Block.TerrainBlock.AIR) {
-                    // There's a tower in the way, so let the crystal wait a while longer
-                    waitingCrystal.key = SECONDARY_CRYSTAL_RESPAWN_INTERVAL;
-                    remainingWaitingCrystals.add(waitingCrystal);
-
-                } else {
-                    // It's safe to add the crystal
-                    addCrystal(waitingCrystal.value);
-                }
-            } else {
-                // not there yet, keep waiting
-                remainingWaitingCrystals.add(waitingCrystal);
-            }
-        }
-    }
-
-    private Array<Pair<Damaging, Damageable>> deadEntities  = new Array<>();
-    private Array<Damaging> everythingDamaging = new Array<>();
-    private Array<Damageable> everythingDamageable = new Array<>();
-    public void dealDamage(float delta) {
-
-        everythingDamaging.clear();
-        everythingDamaging.addAll(units);
-        everythingDamaging.addAll(towers);
-
-        everythingDamageable.clear();
-        everythingDamageable.addAll(units);
-        everythingDamageable.addAll(towers);
-//        playerBases.values().forEach(everythingDamageable::add);
-        for (int i = 0; i < playerBases.size; i++) {
-            everythingDamageable.add(playerBases.get(i));
-        }
-        everythingDamageable.addAll();
-        everythingDamageable.addAll(crystals);
-
-        deadEntities.clear();
-        // Loop through all entities (units and towers) that can attack
-        for (int attackerIdx = 0; attackerIdx < everythingDamaging.size; attackerIdx++) {
-            Damaging attacker = everythingDamaging.get(attackerIdx);
-
-            // Loop though all entities that can be damaged (units, towers, and bases)
-            for (int victimIdx = 0; victimIdx < everythingDamageable.size; victimIdx++) {
-                Damageable victim = everythingDamageable.get(victimIdx);
-
-                if (attacker.hasTargetInRange(victim) && // victim is within range
-                        !victim.isDead() && // the victim is not already dead
-                        attacker.getPlayerId() != victim.getPlayerId()) {
-
-                    if (victim.takeDamage(attacker, attacker.getDamage() * delta)) {
-                        deadEntities.add(new Pair<>(attacker, victim));
-                    }
-                    // the attacker can only damage one opponent per attack cycle
-                    break;
-                }
-            }
-        }
-
-        // get rid of all the dead entities and gives rewards
-        for (int deadIndex = 0; deadIndex < deadEntities.size; deadIndex++) {
-            Pair<Damaging, Damageable> deadPair = deadEntities.get(deadIndex);
-            int attackingPlayerId = deadPair.key.getPlayerId();
-            Damageable deadEntity = deadPair.value;
-
-            // Reward mana.
-            rewardPlayerById(attackingPlayerId, deadEntity.getReward());
-            // Do other bookkeeping related to death.
-            deadEntity.accept(deathVisitor);
-        }
-    }
-
-    public void rewardPlayerById(int playerId, double amount) {
-        playerStats.get(playerId).giveMana(amount);
-    }
-
     public void doTowerSpecialAbilities(int communicationTurn) {
         for (int i = 0; i < towers.size; i++) {
             Tower t = towers.get(i);
             t.doSpecialEffect(communicationTurn, this);
         }
     }
-    
-    /**
-     * Visitor handling when a damageable is killed.
-     */
-    private Damageable.DamageableVisitor<Void> deathVisitor = new Damageable.DamageableVisitor<Void>() {
-        @Override
-        public Void acceptTower(Tower t) {
-            // Remove the tower from the map
-            List<BlockSpec> blockSpecs = t.getLayout();
-            for(int k = 0; k < blockSpecs.size(); k++) {
-                BlockSpec bs = blockSpecs.get(k);
-                world.setBlock(
-                        (int)(t.x + bs.getX()),
-                        (int)(t.y + bs.getZ()),
-                        (int)(t.z + bs.getY()),
-                        Block.TerrainBlock.AIR);
-            }
-            
-            // Remove the tower from the game state
-            towers.removeValue(t, true);
-            damageables.removeValue(t, true);
-            return null;
-        }
-
-        @Override
-        public Void acceptUnit(Unit unit) {
-            units.removeValue(unit, true);
-            damageables.removeValue(unit, true);
-            clickables.removeValue(unit, true);
-            return null;
-        }
-
-        @Override
-        public Void acceptBase(PlayerBase base) {
-            playerBases.remove(base.getPlayerId());
-            return null;
-        }
-
-        @Override
-        public Void acceptCrystal(Crystal crystal) {
-            // Replace the crystal with air
-            Vector3 pos = new Vector3();
-            crystal.getPos(pos);
-            world.setBlock(
-                    (int)pos.x,
-                    (int)pos.y,
-                    (int)pos.z,
-                    Block.TerrainBlock.AIR
-            );
-
-            // Remove it from the GameState
-            crystals.removeValue(crystal, true);
-            damageables.removeValue(crystal, true);
-
-            // The crystal will respawn in the same location later
-            crystalsWaitingToRespawn.add(new Pair<>(CRYSTAL_RESPAWN_INTERVAL, new Crystal(crystal.getX(), crystal.getY(), crystal.getZ())));
-
-            return null;
-        }
-    };
 
     public boolean findNearbyStructure(float x, float y, float z, int playerId) {
-        // Check if it is near the home base
-        PlayerBase base = playerBases.get(playerId);
-        if (base != null) {
-            if (Math.sqrt(
-                Math.pow(x - base.x, 2) +
-                    Math.pow(y - base.y, 2) +
-                    Math.pow(z - base.z, 2)) < placementRange){
-                return true;
-            }
-        }
 
         // Check if it is near any of your towers
         for (Tower t : towers) {
             if (t.getPlayerId() == playerId) {
-                if (Math.sqrt(Math.pow(x - t.x, 2) + Math.pow(y - t.y, 2) + Math.pow(z - t.z, 2)) < placementRange){
+                if (Math.sqrt(Math.pow(x - t.getX(), 2) + Math.pow(y - t.getY(), 2) + Math.pow(z - t.getZ(), 2)) < placementRange){
                     return true;
                 }
             }
@@ -480,49 +596,17 @@ public class GameState implements GameRenderable {
         return numPlayersAlive <= 1;
     }
 
-    public Array<Building> getBuildings() {
-        Array<Building> buildings = new Array<>();
-//        buildings.addAll(getPlayerBases());
-        playerBases.values().forEach(buildings::add);
-        buildings.addAll(towers);
-        return buildings;
-    }
-
-    public void moveUnits(float movementAmount) {
-        for (int i = 0; i < units.size; i++) {
-            units.get(i).step(movementAmount);
-        }
-    }
-
     public PackagedGameState packState(int turn) {
-        return new PackagedGameState(turn, units, towers, playerBases, playerStats);
+        return new PackagedGameState(turn, units, towers, playerBases, players);
     }
 
     @Override
     public void render(RenderConfig config) {
         world.render(config);
-        ModelBatch modelBatch = config.getModelBatch();
-        Batch batch2D = config.getBatch();
-
-        // Render Units
-        modelBatch.begin(config.getCam());
-        for (int i = 0; i < units.size; i++) {
-            units.get(i).render(config);
-        }
-        modelBatch.end();
-
-        // Render overlay stuff
-        batch2D.begin();
-        for (int i = 0; i < damageables.size; i++) {
-            damageables.get(i).drawHealthBar(config);
-        }
-        
-        Array<PlayerBase> bases = playerBases.values().toArray();
-        for (int i = 0; i < bases.size; i++) {
-            bases.get(i).drawName(config, playerInfo.get(bases.get(i).getPlayerId()).getPlayerName());
-        }
-        
-        batch2D.end();
+        interpolatorSystem.render(config);
+        renderSystem.render(config);
+        healthRenderSystem.render(config); // need to be rendered before nametags, or they get covered
+        renderNametagSystem.render(config);
     }
 
 
@@ -536,7 +620,10 @@ public class GameState implements GameRenderable {
         int encodedhash;
         private String gameString;
 
-        public PackagedGameState (int turn, Array<Unit> units, Array<Tower> towers, IntMap<PlayerBase> bases, Array<PlayerStat> stats) {
+        public PackagedGameState (int turn, Array<Unit> units, Array<Tower> towers, IntMap<Tower> bases, Array<PlayerEntity> players) {
+            
+            // TODO: Should use StringBuilder utility
+            
             gameString = "Turn " + turn;
             Unit u;
             for (int i = 0; i < units.size; i++) {
@@ -561,9 +648,9 @@ public class GameState implements GameRenderable {
             }
             gameString += "\n";
 
-            PlayerStat s;
-            for (int i = 0; i < stats.size; i++) {
-                s = stats.get(i);
+            PlayerEntity s;
+            for (int i = 0; i < players.size; i++) {
+                s = players.get(i);
                 gameString += s.toString();
             }
 

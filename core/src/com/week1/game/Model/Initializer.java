@@ -1,8 +1,11 @@
 package com.week1.game.Model;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
@@ -34,6 +37,10 @@ public class Initializer {
     public static Model spaceGold;
     public static Model easterEgg;
     public static Model spawner;
+
+    // Used for nametags
+    public static BitmapFont.BitmapFontData bmfData;
+    public static Pixmap fontPixmap;
     
     public static void init() {
         waterBlock = fileBasedModel("water2.png");
@@ -44,6 +51,9 @@ public class Initializer {
         spaceGold = fileBasedModel("gold2.png");
         easterEgg = fileBasedModel("cat_boi.png");
         spawner = fileBasedModel("spawner2.png");
+
+        bmfData = new BitmapFont().getData();
+        fontPixmap = new Pixmap(Gdx.files.internal(bmfData.getImagePath(0)));
     }
     
     private static Model fileBasedModel(String fileName) {
