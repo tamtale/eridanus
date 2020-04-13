@@ -9,12 +9,12 @@ public class StatsConfig {
 
     static public final double placementRange = 15;
 
-    static public final double tempMinion1Cost = 10;
-    static public final double tempMinion1Health = 50;
+    static public final double tempMinion1Cost = 20;
+    static public final double tempMinion1Health = 80;
     
     static public final double tempMinionRange = 8;
 
-    static public final double tempDamage = 1;
+    static public final double tempMinionDamage = 2;
     
 
     public enum attackType {

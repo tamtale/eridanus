@@ -30,6 +30,7 @@ public class Client {
     private BufferedWriter out;
     
     private INetworkClientToEngineAdapter adapter;
+    private Thread updateThread;
     
     private int playerId = -1;
     private List<PlayerInfo> infoList; // info of all the players in the game.
@@ -64,7 +65,7 @@ public class Client {
     }
     
     public void awaitUpdates() {
-        new Thread(() -> {
+        updateThread = new Thread(() -> {
             while (true) {
                 try {
                     String messages = this.in.readLine();
@@ -81,11 +82,16 @@ public class Client {
                     adapter.deliverUpdate(msgList); 
 
                 } catch (IOException e) {
+                    if(updateThread.isInterrupted()) {
+                        return;
+                    }
                     e.printStackTrace();
                     Gdx.app.error(TAG, "Failed to receive update messages.");
                 }
             }
-        }).start();
+
+        });
+        updateThread.start();
     }
     
     
@@ -109,6 +115,10 @@ public class Client {
 
     public void sendGoToLoadout() {
         sendStringMessage(MessageFormatter.packageMessage(new RequestGoToLoadoutMessage(-1)));
+    }
+
+    public void sendDisconnectRequest() {
+        sendStringMessage(MessageFormatter.packageMessage(new RequestGoToSpashscreen(-1)));
     }
 
     public void sendRestartRequest() {
@@ -137,5 +147,20 @@ public class Client {
 
     public void setInfoList(List<PlayerInfo> infoList) {
         this.infoList = infoList;
+    }
+
+    public void disconnect() {
+        updateThread.interrupt();
+        try {
+            tcpSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        screenManager.goToSplashScreen();
+    }
+
+    public void retractLoadout() {
+        sendStringMessage(MessageFormatter.packageMessage(new RetractLoadoutMessage(playerId)));
+
     }
 }

@@ -22,7 +22,7 @@ import com.week1.game.Util3D;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.week1.game.Model.StatsConfig.tempDamage;
+import static com.week1.game.Model.StatsConfig.tempMinionDamage;
 import static com.week1.game.Model.StatsConfig.tempMinionRange;
 
 public class Unit extends Damageable implements Damaging, GameRenderable, Clickable {
@@ -214,7 +214,7 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     
     @Override
     public double getDamage() {
-        return tempDamage;
+        return tempMinionDamage;
     }
 
     @Override
