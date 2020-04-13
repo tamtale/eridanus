@@ -47,9 +47,10 @@ public class GameScreen implements Screen {
 	public GameScreen(Client givenNetworkClient) {
 		Initializer.init();
 		gameStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
-		util = new InfoUtil(true);
 		// Finish setting up the client.
 		this.networkClient = givenNetworkClient;
+
+		util = new InfoUtil(networkClient.getPlayerId(), true);
 
 		setColorMapping(givenNetworkClient.getInfoList());
 
