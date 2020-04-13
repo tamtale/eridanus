@@ -471,13 +471,6 @@ public class GameState implements GameRenderable {
             }
         });
         crystals.select(c -> c.ID == id).forEach(crystal -> {
-            world.setBlock(
-                    (int)crystal.getX(),
-                    (int)crystal.getY(),
-                    (int)crystal.getZ(),
-                    Block.TerrainBlock.AIR
-            );
-
             crystals.removeValue(crystal, true);
             clickables.removeValue(crystal, true);
         });
