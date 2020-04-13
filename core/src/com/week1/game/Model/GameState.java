@@ -363,8 +363,6 @@ public class GameState implements GameRenderable {
         deathRewardSystem.addManaReward(c.ID, manaRewardComponent);
         healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn);
         renderSystem.addNode(c.ID, renderComponent, positionComponent);
-        // Add the crystal to the map
-        // world.setBlock((int) x, (int) y, (int) z, Block.TerrainBlock.CRYSTAL);
     }
 
     public Unit addUnit(float x, float y, float z, float tempHealth, int playerID){
