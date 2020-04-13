@@ -87,7 +87,7 @@ public class MessageFormatter {
 
     public static ClientControlMessage parseClientControlMessage(String jsonString) {
         
-        Gdx.app.log(TAG, "About to parse as ClientControlMessage: " + jsonString);
+        Gdx.app.debug(TAG, "About to parse as ClientControlMessage: " + jsonString);
         
         AMessage parsedMsg = g.fromJson(jsonString, PrototypeMessage.class);
         if (parsedMsg != null) {

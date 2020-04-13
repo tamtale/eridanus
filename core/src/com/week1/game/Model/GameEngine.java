@@ -2,9 +2,7 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 import com.week1.game.InfoUtil;
-import com.week1.game.Model.Entities.Building;
 import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.World.CoolWorldBuilder;
 import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
@@ -74,8 +72,8 @@ public class GameEngine implements GameRenderable {
         // Modify things like mana, deal damage, moving units, and checking if the game ends
         synchronousUpdateState();
         // Process the messages that come in, if there are any
-        for (GameMessage message : messages) {
-            message.process(this, gameState, util);
+        for (int m = 0; m < messages.size(); m++) {
+            messages.get(m).process(this, gameState, util);
         }
         // Process any messages in the replay queue.
         for (TaggedMessage message = replayQueue.peek(); message != null && message.turn == communicationTurn; message = replayQueue.peek()) {
@@ -100,12 +98,7 @@ public class GameEngine implements GameRenderable {
     }
 
     public void synchronousUpdateState() {
-        gameState.updateMana(1);
-        gameState.dealDamage(1);
-        gameState.moveUnits(THRESHOLD);
-        gameState.doTowerSpecialAbilities(communicationTurn);
-        gameState.crystalRespawn();
-
+        gameState.synchronousUpdateState(communicationTurn);
         // Check the win/loss/restart conditions
         if (!sentWinLoss) {
             if (!gameState.isPlayerAlive(enginePlayerId)) {
@@ -151,10 +144,6 @@ public class GameEngine implements GameRenderable {
             return true;
         }
         return gameState.isPlayerAlive(enginePlayerId);
-    }
-
-    public Array<Building> getBuildings() {
-        return gameState.getBuildings();
     }
 
     /**
