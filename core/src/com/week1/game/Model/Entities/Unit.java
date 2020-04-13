@@ -170,15 +170,13 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
         displayPosition.y = displayPosition.y + (vel.y * delta);
 
         modelInstance.transform.setToTranslation(displayPosition);
-        //rotate the minion to look in that direction
-        if (vel != Vector3.Zero) {
+
+        //rotate the minion to look in direction of movement
+        if (vel.x != 0 & vel.y != 0) {
+            //Store the prev rotation angle so the minion doesn't reset to looking down when it is done moving
             prev_rotation_angle = MathUtils.atan2(vel.x, vel.y)* MathUtils.radiansToDegrees;
         }
-//            modelInstance.transform.setToLookAt(vel, Vector3.X);
         modelInstance.transform.rotate(Vector3.Z, prev_rotation_angle);
-//        modelInstance.transform.setToRotation(Vector3.Y, 90);
-//            modelInstance.transform.setToRotation(Vector3.X, MathUtils.atan2(vel.x, vel.y));
-//        }
 
     }
 
