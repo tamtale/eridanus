@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
@@ -48,6 +49,7 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     private ModelInstance modelInstance;
     private Vector3 position = new Vector3();
     private Vector3 displayPosition = new Vector3();
+    private float prev_rotation_angle = 0;
     
     /*
      * Material to apply to a selected unit.
@@ -77,7 +79,8 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
         this.hp = hp;
         this.maxHp = hp;
         this.vel = new Vector3(0, 0, 0);
-        this.model = modelMap.get(playerID);
+//        this.model = modelMap.get(playerID);
+        this.model = UnitModels.MINION;
         this.modelInstance = new ModelInstance(model);
         modelInstance.transform.setTranslation(x, y, z);
         this.originalMaterial = model.materials.get(0);
@@ -155,13 +158,28 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
         Gdx.app.debug("move", "moving:" + position);
         position.set(position.x + (vel.x * delta), position.y + (vel.y * delta), position.z);
         modelInstance.transform.setToTranslation(position);
+
+        //rotate the minion to look in that direction
+//        modelInstance.transform.setToRotation(Vector3.X, (float) Math.atan2(vel.y, vel.x));
+
         this.distanceTraveled += Math.sqrt(Math.pow(vel.x * delta, 2) + Math.pow(vel.y * delta, 2));
     }
 
     private void moveRender(float delta) {
         displayPosition.x = displayPosition.x + (vel.x * delta);
         displayPosition.y = displayPosition.y + (vel.y * delta);
+
         modelInstance.transform.setToTranslation(displayPosition);
+        //rotate the minion to look in that direction
+        if (vel != Vector3.Zero) {
+            prev_rotation_angle = MathUtils.atan2(vel.x, vel.y)* MathUtils.radiansToDegrees;
+        }
+//            modelInstance.transform.setToLookAt(vel, Vector3.X);
+        modelInstance.transform.rotate(Vector3.Z, prev_rotation_angle);
+//        modelInstance.transform.setToRotation(Vector3.Y, 90);
+//            modelInstance.transform.setToRotation(Vector3.X, MathUtils.atan2(vel.x, vel.y));
+//        }
+
     }
 
     @Override
@@ -291,13 +309,13 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
     }
 
     public void setMaterial(Material newMat, boolean changeToMat) {
-        Material mat = modelInstance.materials.get(0);
-        mat.clear();
-        if (changeToMat) {
-            mat.set(newMat);
-        } else {
-            mat.set(originalMaterial);
-        }
+//        Material mat = modelInstance.materials.get(0);
+//        mat.clear();
+//        if (changeToMat) {
+//            mat.set(newMat);
+//        } else {
+//            mat.set(originalMaterial);
+//        }
     }
 
     @Override
