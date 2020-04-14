@@ -7,14 +7,20 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+
+import static com.week1.game.Model.Initializer.hiddenMaterial;
+import static com.week1.game.Model.Initializer.showMaterial;
 
 public class GameWorld implements GameRenderable {
     private Block[][][] blocks;
@@ -30,6 +36,8 @@ public class GameWorld implements GameRenderable {
 
     private BoundingBox[][][] chunkBoundingBoxes;
     private int[][][] activeBlocksPerChunk;
+    
+    private Material[][][] originalMaterials;
 
     public static final float blockOffset = 0.5f;
 
@@ -97,6 +105,19 @@ public class GameWorld implements GameRenderable {
             chunkedModelCaches[i] = new ModelCache();
         }
         Arrays.fill(shouldRefreshChunk, true);
+        
+        // Fill up the original materials array
+        originalMaterials = new Material[LENGTH][WIDTH][HEIGHT];
+        for (int i = 0; i < LENGTH; i++) {
+            for (int j = 0; j < WIDTH; j++) {
+                for (int k = 0; k < HEIGHT; k++) {
+                    ModelInstance instance = getModelInstance(i, j, k);
+                    if (instance != null) {
+                        originalMaterials[i][j][k] = instance.model.materials.get(0);
+                    }
+                }
+            }
+        }
     }
 
     private void updateActiveBlocks(int i, int j, int k) {
@@ -130,6 +151,54 @@ public class GameWorld implements GameRenderable {
         }
     }
 
+    private List<Pair<Integer,Integer>> hides = new ArrayList<>();
+    public void markForHide(int i, int j) {
+        hides.add(new Pair<>(i, j));
+//        hideColumn(i,j);
+    }
+    private List<Pair<Integer,Integer>> unhides = new ArrayList<>();
+    public void markForUnhide(int i, int j) {
+        unhides.add(new Pair<>(i, j));
+//        unhideColumn(i,j);
+    }
+    
+    
+    public void hideColumn(int i, int j) {
+        for (int k = 0; k < HEIGHT; k++) {
+            ModelInstance modelInstance = getModelInstance(i, j, k);
+
+            // Only need to hide the block if not air (otherwise, just let it stay air)
+            if (modelInstance != null) {
+                Material mat = modelInstance.materials.get(0);
+                mat.clear();
+
+                mat.set(hiddenMaterial);
+
+                shouldRefreshChunk[((i * WIDTH * HEIGHT + j * HEIGHT + k)) / CHUNKSIZE] = true;
+            }
+        }
+    }
+
+    public void unhideColumn(int i, int j) {
+        for (int k = 0; k < HEIGHT; k++) {
+            ModelInstance modelInstance = getModelInstance(i, j, k);
+
+            // Don't need to unhide air
+            if (modelInstance != null) {
+                Material mat = modelInstance.materials.get(0);
+                mat.clear();
+
+                if (originalMaterials[i][j][k] == null) {
+                    System.out.println("uh oh material is null.");
+                    throw new NullPointerException("uhoh material is null");
+                }
+                mat.set(originalMaterials[i][j][k]);
+//                mat.set(showMaterial);
+
+                shouldRefreshChunk[((i * WIDTH * HEIGHT + j * HEIGHT + k)) / CHUNKSIZE] = true;
+            }
+        }
+    }
 
     public Block getBlock(int i, int j, int k) {
         return blocks[i][j][k];
@@ -139,8 +208,10 @@ public class GameWorld implements GameRenderable {
         Optional<ModelInstance> modelInstance = blocks[i][j][k].modelInstance(i,j,k);
         if (modelInstance.isPresent()) {
             setModelInstance(i, j, k, modelInstance.get());
+            originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
         } else {
             setModelInstance(i, j, k, null);
+            originalMaterials[i][j][k] = null;
         }
         updateBoundingBox(i,j,k);
         updateActiveBlocks(i,j,k);
@@ -383,9 +454,13 @@ public class GameWorld implements GameRenderable {
                         " k: " + closestCoords.z +
                         " intersection: " + intersection);
 
+//        System.out.println("Is the originalMaterial null? " + originalMaterials[(int)closestCoords.x][(int)closestCoords.y][(int)closestCoords.z]);
+//        System.out.println("But what about the modelinstance: " + closestModelInstance_final.model.materials.get(0));
         return new Clickable() {
             private BoundingBox boundingBox = new BoundingBox(closestBox);
-            private Material originalMaterial = closestModelInstance_final.model.materials.get(0);
+            private int x = (int)closestCoords.x;
+            private int y = (int)closestCoords.y;
+            private int z = (int)closestCoords.z;
 
             @Override
             public boolean intersects(Ray ray, Vector3 intersection) {
@@ -399,9 +474,9 @@ public class GameWorld implements GameRenderable {
                 if (selected) {
                     mat.set(Unit.selectedMaterial);
                 } else {
-                    mat.set(originalMaterial);
+                    mat.set(originalMaterials[x][y][z]);
                 }
-                shouldRefreshChunk[((int) (closestCoords.x * WIDTH * HEIGHT + closestCoords.y * HEIGHT + closestCoords.z)) / CHUNKSIZE] = true;
+                shouldRefreshChunk[((x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
             }
 
             @Override
@@ -411,9 +486,18 @@ public class GameWorld implements GameRenderable {
                 if (hovered) {
                     mat.set(Unit.hoveredMaterial);
                 } else {
-                    mat.set(originalMaterial);
+
+//                    System.out.println(originalMaterials);
+//                    System.out.println(originalMaterials[x][y][z]);
+                    mat.set(originalMaterials[x][y][z]);
                 }
-                shouldRefreshChunk[((int) (closestCoords.x * WIDTH * HEIGHT + closestCoords.y * HEIGHT + closestCoords.z)) / CHUNKSIZE] = true;
+                shouldRefreshChunk[( (x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
+                
+//                if (hovered) {
+//                    unhideColumn(x, y);
+//                } else {
+//                    hideColumn(x, y);
+//                }
             }
 
             @Override
@@ -426,7 +510,11 @@ public class GameWorld implements GameRenderable {
     public int[] getWorldDimensions() {
         return new int[]{blocks.length, blocks[0].length, blocks[0][0].length};
     }
-
+    
+    
+    
+    
+    
     /*
      * Fetches the current state of the given chunk and updates the modelcache for that chunk.
      */
@@ -442,6 +530,15 @@ public class GameWorld implements GameRenderable {
 
     @Override
     public void render(RenderConfig config) {
+        // change stuff
+        hides.forEach((hidePair) -> hideColumn(hidePair.key, hidePair.value));
+        hides = new ArrayList<>();
+        unhides.forEach((unhidePair) -> unhideColumn(unhidePair.key, unhidePair.value));
+        unhides = new ArrayList<>();
+        
+        
+        
+        // update
         for (int i = 0; i < chunkedModelCaches.length; i++) {
             if (shouldRefreshChunk[i]) {
                 refreshChunkModelCache(i);
@@ -449,14 +546,57 @@ public class GameWorld implements GameRenderable {
             }
         }
 
+        
+        // render
         ModelBatch batch = config.getModelBatch();
         Environment env = config.getEnv();
         batch.begin(config.getCam());
         for (int i = 0; i < chunkedModelCaches.length; i++) {
             batch.render(chunkedModelCaches[i], env);
         }
-        batch.end();
 
+        System.out.println("hmm");
+        try {
+            batch.end();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            System.out.println("uh oh");
+        }
+        
+
+//        System.out.println("null materials: " + anyNullMaterials());
+    }
+    
+    public void printAll(ModelCache[] modelCaches) {
+        System.out.println("Printing info: ");
+        for (int i = 0; i < modelCaches.length; i++) {
+            Array<Renderable> renderables = new Array<>();
+            modelCaches[i].getRenderables(renderables, null);
+            for (int j = 0; j < renderables.size; j++) {
+                Renderable r = renderables.get(j);
+                System.out.println("renderable: " + r + " fields: " + r.shader + ", " + 
+                        r.environment + ", " + 
+                        r.material + ", " + 
+                        r.meshPart + ", " + 
+                        r.userData);
+            }
+        }
+    }
+    
+    
+    public int anyNullMaterials() {
+        int numNullMaterials = 0;
+        for (int i = 0; i < chunkedModelCaches.length; i++) {
+            Array<Renderable> renderables = new Array<>();
+            chunkedModelCaches[i].getRenderables(renderables, null);
+            for (int j = 0; j < renderables.size; j++) {
+                if (renderables.get(j).material == null) {
+                    numNullMaterials++;
+                }
+//                System.out.println("Shader: " + renderables.get(j).shader);
+            }
+        }
+        return numNullMaterials;
     }
 
     public int getHeight(int i, int j) {

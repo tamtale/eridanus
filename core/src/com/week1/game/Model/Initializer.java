@@ -2,12 +2,14 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -36,6 +38,9 @@ public class Initializer {
     public static BitmapFont.BitmapFontData bmfData;
     public static Pixmap fontPixmap;
     
+    public static Material hiddenMaterial;
+    public static Material showMaterial;
+    
     public static void init() {
         waterBlock = fileBasedModel("water2.png");
         earthBlock = fileBasedModel("earth3.png");
@@ -49,6 +54,13 @@ public class Initializer {
         bmfData = new BitmapFont().getData();
         fontPixmap = new Pixmap(Gdx.files.internal(bmfData.getImagePath(0)));
         initCrystalModel();
+        
+        hiddenMaterial = new Material() {{
+            set(ColorAttribute.createDiffuse(Color.BLACK));
+        }};
+        showMaterial = new Material() {{
+            set(ColorAttribute.createDiffuse(Color.BLUE));
+        }};
     }
 
     public static void initCrystalModel() {
@@ -70,7 +82,8 @@ public class Initializer {
 
     private static Model fileBasedModel(String fileName) {
         return BUILDER.createBox(1f, 1f, 1f,
-                new Material(TextureAttribute.createDiffuse(new Texture(fileName))), 
+                new Material(
+                        TextureAttribute.createDiffuse(new Texture(fileName))), 
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
     }
 }

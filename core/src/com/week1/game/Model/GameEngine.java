@@ -38,8 +38,8 @@ public class GameEngine implements GameRenderable {
         this.enginePlayerId = playerId;
         this.replayQueue = replayQueue;
         gameState = new GameState(
-                CoolWorldBuilder.ONLY,
-//                SmallWorldBuilder.ONLY,
+//                CoolWorldBuilder.ONLY,
+                SmallWorldBuilder.ONLY,
                 () -> {
                     Vector3 position = new Vector3();
                     Tower myBase = gameState.getPlayerBase(this.enginePlayerId);

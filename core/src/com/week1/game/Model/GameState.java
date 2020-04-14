@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.AIMovement.AStar;
-import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Components.*;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.Systems.*;
@@ -51,6 +50,7 @@ public class GameState implements GameRenderable {
     private DeathRewardSystem deathRewardSystem = new DeathRewardSystem();
     private DamageRewardSystem damageRewardSystem = new DamageRewardSystem();
     private HealthRenderSystem healthRenderSystem = new HealthRenderSystem();
+    private FogSystem fogSystem = new FogSystem();
     private Array<Crystal> crystals = new Array<>();
     private Array<Unit> units = new Array<>();
     private Array<Tower> towers = new Array<>();
@@ -232,6 +232,7 @@ public class GameState implements GameRenderable {
     }
 
     public void synchronousUpdateState(int communicationTurn) {
+        fogSystem.update(THRESHOLD);
         manaRegenSystem.update(THRESHOLD);
         pathfindingSystem.update(THRESHOLD);
         movementSystem.update(THRESHOLD);
@@ -296,6 +297,10 @@ public class GameState implements GameRenderable {
 
         // Create the crystals
         placeCrystals();
+        
+        // Initialize the fog of war system, now that the game world is ready
+        fogSystem.init(world);
+        fogSystem.update(0);
 
         fullyInitialized = true;
         postInit.run();
@@ -390,6 +395,7 @@ public class GameState implements GameRenderable {
         damageRewardSystem.addDamage(u.ID, damagingComponent);
         deathRewardSystem.addManaReward(u.ID, manaRewardComponent);
         healthRenderSystem.addNode(u.ID, interpolated, healthComponent, ownedComponent);
+        fogSystem.addSeer(u.ID, interpolated, targetingComponent);
         clickables.add(u);
         return u;
     }
@@ -450,6 +456,7 @@ public class GameState implements GameRenderable {
         damageRewardSystem.remove(id);
         renderNametagSystem.remove(id);
         healthRenderSystem.remove(id);
+        fogSystem.remove(id);
 
         units.select(u -> u.ID == id).forEach(unit -> units.removeValue(unit, true));
         towers.select(t -> t.ID == id).forEach(tower -> {

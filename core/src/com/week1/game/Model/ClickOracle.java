@@ -103,7 +103,7 @@ public class ClickOracle extends InputAdapter {
         }
 
         dragging = true;
-        passiveSelected.setHovered(false);
+//        passiveSelected.setHovered(false); // TODO: put back
         selectionLocationEnd.set(screenX, Gdx.graphics.getHeight() - screenY, 0);
         Gdx.app.debug("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
         return false;
@@ -151,9 +151,9 @@ public class ClickOracle extends InputAdapter {
     }
 
     private void setPassiveClickable (Clickable clickable) {
-        passiveSelected.setHovered(false);
+//        passiveSelected.setHovered(false);
         passiveSelected = clickable;
-        passiveSelected.setHovered(true);
+//        passiveSelected.setHovered(true);
     }
 
     private void addToMultiselected(Unit u) {
