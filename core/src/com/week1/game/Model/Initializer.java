@@ -2,6 +2,7 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -31,6 +32,8 @@ public class Initializer {
     public static Model easterEgg;
     public static Model spawner;
     public static Model crystal;
+    public static Cursor defaultCursor;
+    public static Cursor targetCursor;
 
     // Used for nametags
     public static BitmapFont.BitmapFontData bmfData;
@@ -49,6 +52,7 @@ public class Initializer {
         bmfData = new BitmapFont().getData();
         fontPixmap = new Pixmap(Gdx.files.internal(bmfData.getImagePath(0)));
         initCrystalModel();
+        initCursor();
     }
 
     public static void initCrystalModel() {
@@ -66,6 +70,16 @@ public class Initializer {
             crystal.calculateTransforms();
         }
 
+    }
+
+    private static void initCursor() {
+        Pixmap pm = new Pixmap(Gdx.files.internal("pointer.png"));
+        defaultCursor = Gdx.graphics.newCursor(pm, 0, 0);
+        pm.dispose();
+
+        Pixmap targetPm = new Pixmap(Gdx.files.internal("pointer_target.png"));
+        targetCursor = Gdx.graphics.newCursor(targetPm, 15, 15);
+        targetPm.dispose();
     }
 
     private static Model fileBasedModel(String fileName) {
