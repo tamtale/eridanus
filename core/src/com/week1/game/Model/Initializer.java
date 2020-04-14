@@ -9,20 +9,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 
 /*
  * Static asset initializer to ensure that all the models
  * are ready for use by the time the user has loaded the game.
  */
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.week1.game.Model.Entities.Crystal;
-
-import java.awt.*;
-
-import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
 public class Initializer {
 
@@ -37,6 +30,7 @@ public class Initializer {
     public static Model spaceGold;
     public static Model easterEgg;
     public static Model spawner;
+    public static Model crystal;
 
     // Used for nametags
     public static BitmapFont.BitmapFontData bmfData;
@@ -54,8 +48,26 @@ public class Initializer {
 
         bmfData = new BitmapFont().getData();
         fontPixmap = new Pixmap(Gdx.files.internal(bmfData.getImagePath(0)));
+        initCrystalModel();
     }
-    
+
+    public static void initCrystalModel() {
+        {
+            String crystalName = "crystals/blueCrystal.g3db";
+            Initializer.assetManager.load(crystalName, Model.class);
+            Initializer.assetManager.finishLoading();
+            crystal = assetManager.get(crystalName, Model.class);
+
+            // Adjust the model to fit nicely into the blocky world
+            for (Node node : crystal.nodes) {
+                node.scale.set(0.25f,0.25f,0.25f);
+                node.translation.set(0f, 0f, -0.5f);
+            }
+            crystal.calculateTransforms();
+        }
+
+    }
+
     private static Model fileBasedModel(String fileName) {
         return BUILDER.createBox(1f, 1f, 1f,
                 new Material(TextureAttribute.createDiffuse(new Texture(fileName))), 

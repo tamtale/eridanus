@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Entities.Clickable;
+import com.week1.game.Model.Entities.Crystal;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
@@ -218,6 +219,11 @@ public class ClickOracle extends InputAdapter {
                     }
 
                     @Override
+                    public Void acceptCrystal(Crystal crystal) {
+                        return null;
+                    }
+
+                    @Override
                     public Void acceptNull() {
                         // if the player clicks on nothing, empty the selection
                         deMultiSelect();
@@ -252,6 +258,12 @@ public class ClickOracle extends InputAdapter {
                             Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 3 via state");
                             adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 2, adapter.getPlayerId(), currentGameHash));
                         }
+                        return null;
+                    }
+
+                    @Override
+                    public Void acceptCrystal(Crystal crystal) {
+                        // TODO attack this crystal
                         return null;
                     }
 
