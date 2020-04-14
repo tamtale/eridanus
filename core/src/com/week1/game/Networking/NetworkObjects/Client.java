@@ -9,6 +9,7 @@ import com.week1.game.Networking.Messages.Control.ClientControl.ClientControlMes
 import com.week1.game.Networking.Messages.Control.HostControl.*;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
+import com.week1.game.Pair;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -124,6 +125,11 @@ public class Client {
     public void sendRestartRequest() {
         sendStringMessage(MessageFormatter.packageMessage(new RequestRestartMessage(playerId)));
     }
+
+    public void sendFactionSelection(Pair.FactionPair selected) {
+        sendStringMessage(MessageFormatter.packageMessage(new SubmitFactionMessage(playerId, selected)));
+    }
+
     /**
      * This is needed because I don't want to add the adapter during creation because connection
      * should ha[pen before the game is created
@@ -163,4 +169,6 @@ public class Client {
         sendStringMessage(MessageFormatter.packageMessage(new RetractLoadoutMessage(playerId)));
 
     }
+
+
 }

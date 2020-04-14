@@ -21,10 +21,10 @@ public class Pair<K,V> {
         return "Pair(" + this.key.toString() + ", " + this.value.toString() + ")";
     }
 
-    public static class ColorPair extends Pair<String, Color>{
+    public static class FactionPair extends Pair<String, Color>{
 
-        public ColorPair(String key, Color value) {
-            super(key, value);
+        public FactionPair(String name, Color color) {
+            super(name, color);
         }
 
         @Override

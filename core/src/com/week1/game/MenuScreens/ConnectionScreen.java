@@ -6,9 +6,12 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -19,6 +22,8 @@ import com.week1.game.Model.PlayerInfo;
 import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Networking.NetworkObjects.NetworkUtils;
 import com.week1.game.Pair;
+
+import static com.week1.game.Model.PlayerInfo.defaultColor;
 
 /**
  * This is the Screen where people chose to host or to join someone who is already hosting.
@@ -31,21 +36,19 @@ public class ConnectionScreen implements Screen {
     private boolean hosting;
 
     TextButton hostGameButton, joinGameButton, launchGameButton, returnToSpashButton;
-    SelectBox<Pair.ColorPair> colorSelectBox;
+    SelectBox<Pair.FactionPair> colorSelectBox;
     TextField nameField;
-    Label waitJoinMsg;
+    Label joinedPlayersLabel, waitJoinMsg;
     TextField ipField;
     Label.LabelStyle labelStyle;
     float TEXTSCALE = 2f;
     float TITLESCALE = 2f;
     public static final float INPUTSCALE = 1.3f;
-    private boolean isHostingClient;
-    
-    private Label joinedPlayersLabel;
+
+
 
     public ConnectionScreen(GameControllerSetScreenAdapter gameAdapter) {
         this.gameAdapter = gameAdapter;
-        this.isHostingClient = isHostingClient;
         connectionStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
 
 
@@ -94,7 +97,7 @@ public class ConnectionScreen implements Screen {
         joinGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                joinGame(ipField.getText(), new PlayerInfo(nameField.getText(), colorSelectBox.getSelected().value));
+                joinGame(ipField.getText(), new PlayerInfo(nameField.getText()));
             }
         });
 
@@ -103,14 +106,8 @@ public class ConnectionScreen implements Screen {
         launchGameButton.setSize(500,64);
         launchGameButton.setPosition(
                 GameController.VIRTUAL_WIDTH / 2 - launchGameButton.getWidth()/2,
-                GameController.VIRTUAL_HEIGHT / 2 - 80);
-        launchGameButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                progressToLoadouts();
-            }
-        });
-
+                GameController.VIRTUAL_HEIGHT * 2/ 3 - 80);
+        launchGameButton.setTouchable(Touchable.disabled);
 
         // Make the font for the title
         labelStyle = new Label.LabelStyle();
@@ -118,7 +115,7 @@ public class ConnectionScreen implements Screen {
         labelStyle.font = myFont;
         labelStyle.fontColor = Color.WHITE;
 
-        waitJoinMsg = new Label("Waiting for all players to join and for the host to start...", labelStyle);
+        waitJoinMsg = new Label("Choose a unique faction and wait for all players to join and the host to start the game.", labelStyle);
         waitJoinMsg.setFontScale(TEXTSCALE);
         waitJoinMsg.setAlignment(Align.center);
         waitJoinMsg.setSize(300,64);
@@ -141,32 +138,36 @@ public class ConnectionScreen implements Screen {
         connectionStage.addActor(label1);
 
 
-        colorSelectBox = new SelectBox<Pair.ColorPair>(uiskin);
-        colorSelectBox.setItems(new Pair.ColorPair("Red", Color.RED),
-                new Pair.ColorPair("Green", Color.FOREST),
-                new Pair.ColorPair("Cyan", Color.CYAN),
-                new Pair.ColorPair("Blue", Color.BLUE),
-                new Pair.ColorPair("Purple", Color.PURPLE),
-                new Pair.ColorPair("Magenta", Color.MAGENTA),
-                new Pair.ColorPair("Black", Color.BLACK),
-                new Pair.ColorPair("Brown", Color.BROWN),
-                new Pair.ColorPair("White", Color.WHITE),
-                new Pair.ColorPair("Dark Gray", Color.DARK_GRAY));
+        colorSelectBox = new SelectBox<Pair.FactionPair>(uiskin);
+        colorSelectBox.setItems(new Pair.FactionPair("Default", defaultColor),
+                new Pair.FactionPair("Fire", Color.RED),
+                new Pair.FactionPair("Water", new Color(0, 0, 0.545f, 1f)),
+                new Pair.FactionPair("Earth", Color.GREEN),
+                new Pair.FactionPair("Air", new Color( 0.678f, 0.847f, 0.902f, 1f))
+        );
         colorSelectBox.setSize(350,64);
-        colorSelectBox.setPosition(GameController.VIRTUAL_WIDTH/2 - 20 - colorSelectBox.getWidth(),GameController.VIRTUAL_HEIGHT  *2 / 3);
-        connectionStage.addActor(colorSelectBox);
+        colorSelectBox.setSelectedIndex(0);
+        colorSelectBox.setPosition(GameController.VIRTUAL_WIDTH/2 - colorSelectBox.getWidth()/2,GameController.VIRTUAL_HEIGHT  *2 / 3 + 80);
+        colorSelectBox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                submitColor(colorSelectBox.getSelected());
+            }
+        });
+
 
         joinedPlayersLabel = new Label("Joined Players: ", labelStyle);
         joinedPlayersLabel.setFontScale(TITLESCALE);
         joinedPlayersLabel.setSize(200, 64);
         joinedPlayersLabel.setPosition(
                 GameController.VIRTUAL_WIDTH / 2 - joinedPlayersLabel.getWidth() / 2,
-                GameController.VIRTUAL_HEIGHT / 2 - 160);
+                GameController.VIRTUAL_HEIGHT * 2 / 3 - 160);
         joinedPlayersLabel.setAlignment(Align.center);
 
         nameField = new TextField("Enter Your Name", textFieldStyle);
         nameField.setSize(joinGameButton.getWidth(),64);
-        nameField.setPosition(GameController.VIRTUAL_WIDTH / 2 + 20 ,GameController.VIRTUAL_HEIGHT  *2 / 3);
+        nameField.setAlignment(Align.center);
+        nameField.setPosition(GameController.VIRTUAL_WIDTH / 2 - nameField.getWidth()/2 ,GameController.VIRTUAL_HEIGHT  *2 / 3);
         connectionStage.addActor(nameField);
 
 
@@ -194,7 +195,6 @@ public class ConnectionScreen implements Screen {
         StringBuilder s = new StringBuilder("Joined Players:\n");
         joinedPlayers.forEach(player -> s.append(player).append("\n"));
         joinedPlayersLabel.setText(s.toString());
-        joinedPlayersLabel.setPosition(joinedPlayersLabel.getX(), joinedPlayersLabel.getY() - 40);
     }
 
     private void addPlayerList() {
@@ -230,13 +230,13 @@ public class ConnectionScreen implements Screen {
         Label label1 = new Label(name + ", your IP is " + NetworkUtils.getLocalHostAddr(), labelStyle);
         label1.setFontScale(TEXTSCALE);
         label1.setSize(200, 64);
-        label1.setPosition(GameController.VIRTUAL_WIDTH/2 - label1.getWidth()/2, GameController.VIRTUAL_HEIGHT/2 - hostGameButton.getHeight() + 64 );
+        label1.setPosition(GameController.VIRTUAL_WIDTH/2 - label1.getWidth()/2, GameController.VIRTUAL_HEIGHT*2/3 - hostGameButton.getHeight() + 64 );
         label1.setAlignment(Align.center);
         connectionStage.addActor(label1);
         addPlayerList();
 
         networkClient = NetworkUtils.initNetworkObjects(true, null, 42069,
-                gameAdapter, this, new PlayerInfo(name, colorSelectBox.getSelected().value));
+                gameAdapter, this, new PlayerInfo(name));
 
         connectionStage.addActor(launchGameButton);
         connectionStage.addActor(returnToSpashButton);
@@ -263,15 +263,39 @@ public class ConnectionScreen implements Screen {
                 returnToSpashscreenDisconnect();
             }
         });
+        connectionStage.addActor(colorSelectBox);
         connectionStage.addActor(returnToSpashButton);
     }
 
-    private void progressToLoadouts() {
-        if (!hosting) {
-            Gdx.app.debug("pjb3 - ConnectionScreen", "No. You must be host to move the game onward. How did you even click this");
-            return;
+    private ClickListener progressToLoadoutsListener = new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!hosting) {
+                    Gdx.app.log("pjb3 - ConnectionScreen", "No. You must be host to move the game onward. How did you even click this");
+                    return;
+                }
+                networkClient.sendGoToLoadout(); // Send the request for everyone to move to the loadout screen.
+            }
+        };
+
+    private void submitColor(Pair.FactionPair pair) {
+        networkClient.sendFactionSelection(pair);
+
+    }
+
+    public void setReadyToStart(boolean isReady) {
+        //asdf
+        if (hosting) {
+            if (isReady) {
+                launchGameButton.setText("Create game with connected players!");
+                launchGameButton.setTouchable(Touchable.enabled);
+                launchGameButton.addListener(progressToLoadoutsListener);
+            } else {
+                launchGameButton.setText("Waiting for all players to choose unique factions...");
+                launchGameButton.setTouchable(Touchable.disabled);
+                launchGameButton.removeListener(progressToLoadoutsListener);
+            }
         }
-        networkClient.sendGoToLoadout(); // Send the request for everyone to move to the loadout screen.
     }
 
     @Override
@@ -309,5 +333,4 @@ public class ConnectionScreen implements Screen {
     public void dispose() {
         connectionStage.dispose();
     }
-
 }
