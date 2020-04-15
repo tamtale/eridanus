@@ -23,8 +23,7 @@ import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Networking.NetworkObjects.NetworkUtils;
 import com.week1.game.Pair;
 
-import static com.week1.game.MenuScreens.LoadoutScreen.disabledStyle;
-import static com.week1.game.MenuScreens.LoadoutScreen.normalStyle;
+import static com.week1.game.MenuScreens.LoadoutScreen.*;
 import static com.week1.game.Model.PlayerInfo.defaultColor;
 
 /**
@@ -118,11 +117,11 @@ public class ConnectionScreen implements Screen {
         labelStyle.font = myFont;
         labelStyle.fontColor = Color.WHITE;
 
-        waitJoinMsg = new Label("Choose a unique faction and wait for all players to join and the host to start the game.", labelStyle);
+        waitJoinMsg = new Label("Choose a unique faction and wait for \nall players to join and the host to start the game.", labelStyle);
         waitJoinMsg.setFontScale(TEXTSCALE);
         waitJoinMsg.setAlignment(Align.center);
         waitJoinMsg.setSize(300,64);
-        waitJoinMsg.setPosition(GameController.VIRTUAL_WIDTH / 2 - waitJoinMsg.getWidth()/2, GameController.VIRTUAL_HEIGHT / 2 - 80);
+        waitJoinMsg.setPosition(GameController.VIRTUAL_WIDTH / 2 - waitJoinMsg.getWidth()/2, GameController.VIRTUAL_HEIGHT * 2/ 3 - 40);
 
         Skin uiskin = new Skin(Gdx.files.internal("uiskin.json"));
         TextField.TextFieldStyle textFieldStyle = uiskin.get(TextField.TextFieldStyle.class);
@@ -163,8 +162,8 @@ public class ConnectionScreen implements Screen {
         joinedPlayersLabel.setFontScale(TITLESCALE);
         joinedPlayersLabel.setSize(200, 64);
         joinedPlayersLabel.setPosition(
-                GameController.VIRTUAL_WIDTH / 2 - joinedPlayersLabel.getWidth() / 2,
-                GameController.VIRTUAL_HEIGHT * 2 / 3 - 180);
+                    GameController.VIRTUAL_WIDTH / 2 - joinedPlayersLabel.getWidth() / 2,
+                    GameController.VIRTUAL_HEIGHT * 2 / 3 - 180);
         joinedPlayersLabel.setAlignment(Align.center);
 
         nameField = new TextField("Enter Your Name", textFieldStyle);
@@ -235,6 +234,12 @@ public class ConnectionScreen implements Screen {
         label1.setSize(200, 64);
         label1.setPosition(GameController.VIRTUAL_WIDTH/2 - label1.getWidth()/2, GameController.VIRTUAL_HEIGHT*2/3 - hostGameButton.getHeight() + 64 );
         label1.setAlignment(Align.center);
+
+        // Shift the joinedplayerslabel down a bit since the host has an extra button
+        joinedPlayersLabel.setPosition(
+                    GameController.VIRTUAL_WIDTH / 2 - joinedPlayersLabel.getWidth() / 2,
+                    GameController.VIRTUAL_HEIGHT * 2 / 3 - 240);
+
         connectionStage.addActor(label1);
         addPlayerList();
 
@@ -295,7 +300,7 @@ public class ConnectionScreen implements Screen {
             if (isReady) {
                 launchGameButton.setText("Create game with connected players!");
                 launchGameButton.setTouchable(Touchable.enabled);
-                launchGameButton.setStyle(normalStyle);
+                launchGameButton.setStyle(blueStyle);
                 launchGameButton.addListener(progressToLoadoutsListener);
             } else {
                 launchGameButton.setText("Waiting for all players to choose unique factions...");

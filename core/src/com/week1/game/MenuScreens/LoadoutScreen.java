@@ -42,9 +42,14 @@ public class LoadoutScreen implements Screen {
     private TextField mapSeedField;
 
     public static TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down"),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down"),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down"), new BitmapFont());
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round"),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round"),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round"), new BitmapFont());
+
+    public static TextButton.TextButtonStyle blueStyle = new TextButton.TextButtonStyle(
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("add8e6")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("add8e6")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("add8e6")), new BitmapFont());
 
     private static TextButton.TextButtonStyle pressedStyle = new TextButton.TextButtonStyle(
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.DARK_GRAY),
