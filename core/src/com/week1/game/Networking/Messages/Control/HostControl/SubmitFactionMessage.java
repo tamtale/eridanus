@@ -15,6 +15,9 @@ import java.util.Set;
 
 import static com.week1.game.Model.PlayerInfo.defaultColor;
 
+/*
+ * This is when a player selects their Faction/Color combo on the second part of the connection screen
+ */
 public class SubmitFactionMessage extends HostControlMessage  {
     private final static MessageType MESSAGE_TYPE = MessageType.SUBMITCOLOR;
     private Pair<String, Color> faction;

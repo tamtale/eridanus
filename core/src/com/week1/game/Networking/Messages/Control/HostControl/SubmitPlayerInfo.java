@@ -9,7 +9,7 @@ import com.week1.game.Networking.NetworkObjects.Host;
 
 import java.net.InetAddress;
 
-// This is the initial Message
+// This is the initial Message that all players send when they are connecting
 public class SubmitPlayerInfo extends HostControlMessage {
 
     private final static MessageType MESSAGE_TYPE = MessageType.SUBMITPLAYERINFO;

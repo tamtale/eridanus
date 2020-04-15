@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static com.week1.game.MenuScreens.MenuStyles.*;
+
 /**
  * This is the screen that you chose your loadout in. This is the screen that is returned to
  * after a game ends so players can choose their loadout again and play another game
@@ -41,32 +43,7 @@ public class LoadoutScreen implements Screen {
     private TextButton startButton, returnToSpashButton;
     private TextField mapSeedField;
 
-    public static TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round"),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round"),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round"), new BitmapFont());
 
-    public static TextButton.TextButtonStyle blueStyle = new TextButton.TextButtonStyle(
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("add8e6")),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("add8e6")),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("add8e6")), new BitmapFont());
-
-    private static TextButton.TextButtonStyle pressedStyle = new TextButton.TextButtonStyle(
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.DARK_GRAY),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.DARK_GRAY),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.DARK_GRAY), new BitmapFont());
-
-
-    public static TextButton.TextButtonStyle disabledStyle = new TextButton.TextButtonStyle(
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLACK),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLACK),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLACK), new BitmapFont());
-
-    private static ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle(new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-rect", Color.valueOf("9e8196")),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-scroll", Color.valueOf("8e7186")),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-large", Color.valueOf("8e7186")),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-scroll", Color.valueOf("8e7186")),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-large", Color.valueOf("8e7186")));
 
     private static com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle listStyle = new com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle(new BitmapFont(), Color.WHITE, Color.GRAY, new Skin(Gdx.files.internal("uiskin.json")).newDrawable("selection"));
 
@@ -184,7 +161,7 @@ public class LoadoutScreen implements Screen {
                 ()-> {
                     if (isHostingClient) {
                         startButton.setDisabled(false);
-                        startButton.setStyle(normalStyle);
+                        startButton.setStyle(redStyle);
                         startButton.setTouchable(Touchable.enabled);
                         startButton.setText("Launch Game");
                     }

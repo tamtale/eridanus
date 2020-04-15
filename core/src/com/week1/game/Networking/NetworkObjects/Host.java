@@ -221,12 +221,13 @@ public class Host {
         }
     }
 
-
     public void setPlayerInfo(InetAddress address, PlayerInfo info) {
         this.registry.get(address).setPlayerInfo(info);
-
-
     }
+
+    /**
+     * Returns a list of strings to display for each player on clients
+     */
     public List<String> getJoinedPlayers() {
         List<String> joinedPlayers = Collections.synchronizedList(new ArrayList<>());;
         registry.forEach((addr, plyr) -> joinedPlayers.add(plyr.getName() + ": " + plyr.getFactionName()));

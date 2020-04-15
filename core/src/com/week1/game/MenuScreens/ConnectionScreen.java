@@ -23,7 +23,8 @@ import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Networking.NetworkObjects.NetworkUtils;
 import com.week1.game.Pair;
 
-import static com.week1.game.MenuScreens.LoadoutScreen.*;
+import static com.week1.game.MenuScreens.MenuStyles.blueStyle;
+import static com.week1.game.MenuScreens.MenuStyles.disabledStyle;
 import static com.week1.game.Model.PlayerInfo.defaultColor;
 
 /**
@@ -286,6 +287,9 @@ public class ConnectionScreen implements Screen {
             }
         };
 
+    /*
+     * This is when a player makes a change in their faction, it will send this along to the host to be processed.
+     */
     private void submitColor(Pair.FactionPair pair) {
         if (pair.value.equals(defaultColor)) {
             // Do not display the faction as "Select new faction" in the joined players area
@@ -295,6 +299,9 @@ public class ConnectionScreen implements Screen {
         }
     }
 
+    /*
+     * This toggles the progress to loadouts button on the host. Set when players have chosen a unique faction.
+     */
     public void setReadyToGoToLoadouts(boolean isReady) {
         if (hosting) {
             if (isReady) {

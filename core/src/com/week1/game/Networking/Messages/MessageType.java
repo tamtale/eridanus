@@ -20,7 +20,6 @@ public enum MessageType {
     UNDOREADYTOSTART,
     RESTART,
     JOINEDPLAYERS,
-    COLORRESPONSE,
     
     // Host Control Messages
     SUBMITLOADOUT,
