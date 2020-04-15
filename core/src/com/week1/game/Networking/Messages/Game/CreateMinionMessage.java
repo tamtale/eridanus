@@ -30,31 +30,31 @@ public class CreateMinionMessage extends GameMessage {
         // TODO do lookup of the cost based on unitType, do not use hardcoded number [tempMinion1Cost/tempMinion1Health]
         if (tempMinion1Cost > inputState.getPlayer(playerID).getMana()) {
             // Do not have enough mana!
-            util.log("pjb3 - CreateMinionMessage", "Not enough mana (" +
+            util.log(playerID, "pjb3 - CreateMinionMessage", "Not enough mana (" +
                     inputState.getPlayer(playerID).getMana() + ") to create unit of cost " + tempMinion1Cost);
             return false; // indicate it was NOT placed
         }
 
         // Test to see if it is in the proximity of a tower or a home base
         if (!inputState.findNearbyStructure(x, y, z, playerID)) {
-            util.log("pjb3 - CreateMinionMessage", "Not close enough to an existing tower or home base");
+            util.log(playerID, "pjb3 - CreateMinionMessage", "Not close enough to an existing tower or home base");
              return false;
         }
         
         if (!inputState.getWorld().getBlock((int)x, (int)y, (int)z - 1).allowMinionToSpawnOn()) {
-            util.log("lji1 - CreateMinionMessage", "Not allowed to spawn minion on tower.");
+            util.log(playerID, "lji1 - CreateMinionMessage", "Not allowed to spawn minion on tower.");
             return false;
         }
         
         if (!(inputState.getWorld().getBlock((int)x, (int)y, (int)z) == Block.TerrainBlock.AIR)) {
-            util.log("lji1 - CreateMinionMessage", "Not allowed to spawn minion in another block");
+            util.log(playerID, "lji1 - CreateMinionMessage", "Not allowed to spawn minion in another block");
             return false;
         }
 
 
         inputState.getPlayer(playerID).useMana(tempMinion1Cost);
 
-        util.log("pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
+        util.log(playerID, "pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
         inputState.addUnit(x, y, z, (float) tempMinion1Health, playerID);
         return true;
     }

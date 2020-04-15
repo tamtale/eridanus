@@ -114,6 +114,33 @@ public class ClickOracle extends InputAdapter {
     int events = 0;
     int sum = 0;
 
+    /* Visitor to change the cursor based on what's being hovered over. */
+    Clickable.ClickableVisitor<Void> cursorVisitor = new Clickable.ClickableVisitor<Void>() {
+        @Override
+        public Void acceptUnit(Unit unit) {
+            Gdx.graphics.setCursor(Initializer.defaultCursor);
+            return null;
+        }
+
+        @Override
+        public Void acceptBlockLocation(Vector3 vector) {
+            Gdx.graphics.setCursor(Initializer.defaultCursor);
+            return null;
+        }
+
+        @Override
+        public Void acceptCrystal(Crystal crystal) {
+            Gdx.graphics.setCursor(Initializer.targetCursor);
+            return null;
+        }
+
+        @Override
+        public Void acceptNull() {
+            Gdx.graphics.setCursor(Initializer.defaultCursor);
+            return null;
+        }
+    };
+
     private static int SCREEN_THRESHOLD = 30;
     private boolean edgePanning = false; // Panning due to mouse on edge.
     @Override
@@ -126,7 +153,9 @@ public class ClickOracle extends InputAdapter {
         }
         startTime = System.nanoTime();
 
-        setPassiveClickable(adapter.selectClickable(screenX, screenY, touchPos));
+        Clickable passive = adapter.selectClickable(screenX, screenY, touchPos);
+        setPassiveClickable(passive);
+        passive.accept(cursorVisitor);
 
         // If the mouse is on the edge of the screen, translate the camera.
         if (settings.getEdgePan()) {
