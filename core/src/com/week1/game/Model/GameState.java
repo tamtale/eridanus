@@ -433,14 +433,14 @@ public class GameState implements GameRenderable {
             unfinishedBlockSpecs.add(newSpec);
         }
         TowerDetails unfinishedTowerDetails = new TowerDetails(unfinishedBlockSpecs, "unfinished " + towerDetails.getName());
-        Tower unfinishedTower = new Tower(positionComponent, unfinishedHealthComponent, damagingComponent, targetingComponent, ownedComponent, manaRewardComponent, unfinishedTowerDetails, towerType, entityManager.newID());
-        Tower tower = new Tower(positionComponent, healthComponent, damagingComponent, targetingComponent, ownedComponent, manaRewardComponent, towerDetails, towerType, entityManager.newID());
+        Tower unfinishedTower = new Tower(positionComponent, unfinishedHealthComponent, damagingComponent, targetingComponent, ownedComponent, manaRewardComponent, visibleComponent, unfinishedTowerDetails, towerType, entityManager.newID());
+        Tower tower = new Tower(positionComponent, healthComponent, damagingComponent, targetingComponent, ownedComponent, manaRewardComponent,visibleComponent, towerDetails, towerType, entityManager.newID());
         damageSystem.addHealth(unfinishedTower.ID, unfinishedHealthComponent);
         damageSystem.addDamage(unfinishedTower.ID, damagingComponent);
         damageRewardSystem.addManaReward(unfinishedTower.ID, manaRewardComponent);
         damageRewardSystem.addDamage(unfinishedTower.ID, damagingComponent);
         deathRewardSystem.addManaReward(unfinishedTower.ID, manaRewardComponent);
-        healthRenderSystem.addNode(unfinishedTower.ID, new PositionComponent(unfinishedTower.highestBlockLocation), unfinishedHealthComponent, ownedComponent);
+        healthRenderSystem.addNode(unfinishedTower.ID, new PositionComponent(unfinishedTower.highestBlockLocation), unfinishedHealthComponent, ownedComponent, visibleComponent);
         healthGrowthSystem.addHealthGrowth(unfinishedTower.ID, unfinishedHealthComponent);
         if (ownedComponent.playerID == localPlayerID) { // only locally owned seers should be added
             fogSystem.addSeer(unfinishedTower.ID, positionComponent, targetingComponent);
@@ -465,7 +465,7 @@ public class GameState implements GameRenderable {
                     damageRewardSystem.addManaReward(tower.ID, manaRewardComponent);
                     damageRewardSystem.addDamage(tower.ID, damagingComponent);
                     deathRewardSystem.addManaReward(tower.ID, manaRewardComponent);
-                    healthRenderSystem.addNode(tower.ID, new PositionComponent(tower.highestBlockLocation), healthComponent, ownedComponent);
+                    healthRenderSystem.addNode(tower.ID, new PositionComponent(tower.highestBlockLocation), healthComponent, ownedComponent, visibleComponent);
                     if (ownedComponent.playerID == localPlayerID) { // only locally owned seers should be added
                         fogSystem.addSeer(tower.ID, positionComponent, targetingComponent);
                     }
