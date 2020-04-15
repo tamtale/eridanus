@@ -11,11 +11,9 @@ import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.AIMovement.AStar;
 import com.week1.game.Model.Components.*;
 import com.week1.game.Model.Entities.*;
+import com.week1.game.Model.Events.SelectionEvent;
 import com.week1.game.Model.Systems.*;
-import com.week1.game.Model.World.Block;
-import com.week1.game.Model.World.GameGraph;
-import com.week1.game.Model.World.GameWorld;
-import com.week1.game.Model.World.IWorldBuilder;
+import com.week1.game.Model.World.*;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
@@ -40,6 +38,7 @@ public class GameState implements GameRenderable {
     private RenderSystem renderSystem = new RenderSystem();
     private RenderNametagSystem renderNametagSystem = new RenderNametagSystem();
     private TargetingSystem targetingSystem;
+    private TargetingSystem.RenderTargetingSystem renderTargetingSystem;
     private InterpolatorSystem interpolatorSystem = new InterpolatorSystem();
     private DeathSystem deathSystem;
     private CrystalRespawnSystem crystalRespawnSystem;
@@ -195,6 +194,7 @@ public class GameState implements GameRenderable {
                 return result;
             }
         });
+        this.renderTargetingSystem = targetingSystem.new RenderTargetingSystem();
     }
 
     private void initCrystalRespawnSystem() {
@@ -260,6 +260,9 @@ public class GameState implements GameRenderable {
         // Needs to happen in initializeGame, so that the host can send the mapSeed,
         // needs to happen in postRunnable because initializeGame is not called on the right thread
         Gdx.app.postRunnable(() -> {
+            if (mapSeed == 0) {
+                worldBuilder = SmallWorldBuilder.ONLY;
+            }
             worldBuilder.addSeed(mapSeed);
             world = new GameWorld(worldBuilder);
             world.getHeightMap();
@@ -633,6 +636,7 @@ public class GameState implements GameRenderable {
         renderSystem.render(config);
         healthRenderSystem.render(config); // need to be rendered before nametags, or they get covered
         renderNametagSystem.render(config);
+        renderTargetingSystem.render(config);
     }
 
 
@@ -703,7 +707,7 @@ public class GameState implements GameRenderable {
 
         // Look through all the standard clickables
         for (Clickable clickable: clickables) {
-            if (clickable.intersects(ray, intersection)) {
+            if (clickable.intersects(ray, intersection) && clickable.visible()) {
                 return clickable;
             }
         }
@@ -712,5 +716,10 @@ public class GameState implements GameRenderable {
         Clickable clickedBlock = world.getBlockOnRay(ray, intersection);
 
         return clickedBlock;
+    }
+
+    /* Give the world a subscriber of selection events.*/
+    public Subscriber<SelectionEvent> getSelectionSubscriber() {
+        return renderTargetingSystem;
     }
 }

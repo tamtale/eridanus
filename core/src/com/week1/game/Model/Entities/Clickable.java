@@ -23,6 +23,11 @@ public interface Clickable {
     }
 
     @Override
+    public boolean visible() {
+      return false;
+    }
+
+    @Override
     public <T> T accept(ClickableVisitor<T> clickableVisitor) {
       return clickableVisitor.acceptNull();
     }
@@ -50,6 +55,9 @@ public interface Clickable {
    * Visually indicates that the clickable is hovered over.
    */
   void setHovered(boolean hovered);
+
+  /* Whether or not the entity is visible through fog of war. */
+  boolean visible();
 
   <T> T accept(ClickableVisitor<T> clickableVisitor);
 }

@@ -555,6 +555,11 @@ public class GameWorld implements GameRenderable {
             }
 
             @Override
+            public boolean visible() {
+                return true; // For the purposes of the ClickOracle, all blocks will be "visible".
+            }
+
+            @Override
             public <T> T accept(ClickableVisitor<T> clickableVisitor) {
                 return clickableVisitor.acceptBlockLocation(closestCoords);
             }

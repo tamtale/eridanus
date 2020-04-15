@@ -3,23 +3,31 @@ package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
+import com.week1.game.GameController;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Crystal;
 import com.week1.game.Model.Entities.Unit;
+import com.week1.game.Model.Events.SelectionEvent;
+import com.week1.game.Model.Systems.Publisher;
+import com.week1.game.Model.Systems.Subscriber;
 import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Renderer.TextureUtils;
-import com.week1.game.Settings.Settings;
 
-public class ClickOracle extends InputAdapter {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public class ClickOracle extends InputAdapter implements Publisher<SelectionEvent> {
 
     private static final String TAG = "ClickOracle";
 
@@ -27,15 +35,19 @@ public class ClickOracle extends InputAdapter {
 
     private Vector3 touchPos = new Vector3();
 
+    private boolean edgePan;
+
     private Clickable passiveSelected = Clickable.NULL;
     private Array<Unit> multiSelected = new Array<>();
+    private List<Integer> selectedIDs = new ArrayList<>();
 
     private RenderConfig renderConfig;
-    private Settings settings;
 
     private Vector3 selectionLocationStart = new Vector3();
     private Vector3 selectionLocationEnd = new Vector3();
     private boolean dragging = false;
+
+    private List<Subscriber<SelectionEvent>> selectionSubscribers = new ArrayList<>();
 
     private ClickOracleCommand nullCommand = () -> {};
     private ClickOracleCommand panUp = () -> adapter.setTranslationDirection(Direction.UP);
@@ -67,10 +79,14 @@ public class ClickOracle extends InputAdapter {
 
     private SpawnInfo.SpawnType spawnType;
 
-    public ClickOracle(IClickOracleAdapter adapter, RenderConfig renderConfig, Settings settings) {
+    public ClickOracle(IClickOracleAdapter adapter, RenderConfig renderConfig) {
         this.adapter = adapter;
         this.renderConfig = renderConfig;
-        this.settings = settings;
+        if (!GameController.PREFS.contains("edgePan")) {
+            GameController.PREFS.putBoolean("edgePan", false);
+            GameController.PREFS.flush();
+        }
+        this.edgePan = GameController.PREFS.getBoolean("edgePan");
     }
 
     @Override
@@ -158,7 +174,7 @@ public class ClickOracle extends InputAdapter {
         passive.accept(cursorVisitor);
 
         // If the mouse is on the edge of the screen, translate the camera.
-        if (settings.getEdgePan()) {
+        if (edgePan) {
             if (screenX < SCREEN_THRESHOLD) {
                 edgePanning = true;
                 panLeft.execute();
@@ -188,6 +204,7 @@ public class ClickOracle extends InputAdapter {
     private void addToMultiselected(Unit u) {
         u.setSelected(true);
         multiSelected.add(u);
+        selectedIDs.add(u.ID);
     }
 
     @Override
@@ -218,7 +235,7 @@ public class ClickOracle extends InputAdapter {
                     addToMultiselected(dragSelected.get(u));
                 }
             }
-
+            publish(new SelectionEvent(selectedIDs));
             dragging = false;
             return true;
         } else { // the player was not dragging, so maybe they clicked directly on something
@@ -309,6 +326,7 @@ public class ClickOracle extends InputAdapter {
     private void deMultiSelect() {
         multiSelected.forEach(clickable -> clickable.setSelected(false));
         multiSelected.clear();
+        selectedIDs.clear();
     }
 
     public void setSpawnType(SpawnInfo newInfo) {
@@ -335,6 +353,16 @@ public class ClickOracle extends InputAdapter {
 
         batch.end();
         batch.setColor(1, 1,1, 1);
+    }
+
+    @Override
+    public void addSubscriber(Subscriber<SelectionEvent> subscriber) {
+        selectionSubscribers.add(subscriber);
+    }
+
+    @Override
+    public Collection<Subscriber<SelectionEvent>> getSubscribers() {
+        return selectionSubscribers;
     }
 }
 

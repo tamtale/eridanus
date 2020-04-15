@@ -24,6 +24,7 @@ public class Unit implements Clickable {
     private DamagingComponent damagingComponent;
     private HealthComponent healthComponent;
     private ManaRewardComponent manaRewardComponent;
+    private VisibleComponent visibleComponent;
 
     private boolean selected;
     private int turn = 0;
@@ -73,6 +74,7 @@ public class Unit implements Clickable {
         this.manaRewardComponent = manaRewardComponent;
         this.model = modelMap.get(ownedComponent.playerID);
         this.originalMaterial = model.materials.get(0);
+        this.visibleComponent = visibleComponent;
     }
 
     public static void setColorMapping(Map<Integer, Color> colorMapping) {
@@ -172,6 +174,11 @@ public class Unit implements Clickable {
     public void setHovered(boolean hovered) {
         if (this.selected) return;
         setMaterial(hoveredMaterial, hovered);
+    }
+
+    @Override
+    public boolean visible() {
+        return visibleComponent.visible;
     }
 
     @Override
