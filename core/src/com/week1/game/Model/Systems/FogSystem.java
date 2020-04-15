@@ -19,7 +19,6 @@ public class FogSystem implements ISystem {
     
     private IntMap<Tuple3<PositionComponent, TargetingComponent, OwnedComponent>> seeingNodes = new IntMap<>();
     private IntMap<Pair<PositionComponent, VisibleComponent>> seenNodes = new IntMap<>();
-    
 
     private boolean initialized = false;
     private GameWorld world;
@@ -28,9 +27,6 @@ public class FogSystem implements ISystem {
     
     private boolean[][] oldVisible;
     boolean[][] newVisible;
-
-    // used for internal calcuations
-    private Vector3 loc = new Vector3();
 
     public FogSystem() {
     }
@@ -54,7 +50,6 @@ public class FogSystem implements ISystem {
         initialized = true;
     }
 
-//    int i = 300;
     @Override
     public void update(float delta) {
         if (!initialized) {
@@ -63,42 +58,23 @@ public class FogSystem implements ISystem {
         newVisible = new boolean[x][y];
         
         
-        // TODO: iterate through all registered seers (towers, units, bases) to mark blocks as visible
         seeingNodes.values().forEach((node) -> {
             
             Vector3 position = node._1.position;
-//            float range = node._2.range;
+//            float range = node._2.range; // TODO: range based on actual range?
             int range = 10;
             int ownerID = node._3.playerID;
 
-//            System.out.println("Starting iter");
             for (int i = (int)position.x - range; i < position.x + range; i++) {
                 for (int j = (int)position.y - range; j < position.y + range; j++) {
                     if (this.localPlayer == ownerID) {
                         float dist  = (float)Math.sqrt(Math.pow(i - position.x, 2) + Math.pow(j - position.y, 2));
-//                        System.out.println("Checking coords: " + i + ", " + j + " distance: " + dist);
                         if (dist <= range) {
                             safeSetNewVisible(i, j);
                         }
                     }
                 }
             }
-//            System.out.println("Done with iter");
-            
-            
-            
-            
-//            if (this.localPlayer == ownerID) { // only consider seers owned by the local player
-//                safeSetNewVisible((int) position.x + 1, (int) position.y);
-//                safeSetNewVisible((int) position.x + 1, (int) position.y - 1);
-//                safeSetNewVisible((int) position.x + 1, (int) position.y + 1);
-//                safeSetNewVisible((int) position.x, (int) position.y);
-//                safeSetNewVisible((int) position.x, (int) position.y - 1);
-//                safeSetNewVisible((int) position.x, (int) position.y + 1);
-//                safeSetNewVisible((int) position.x - 1, (int) position.y);
-//                safeSetNewVisible((int) position.x - 1, (int) position.y - 1);
-//                safeSetNewVisible((int) position.x - 1, (int) position.y + 1);
-//            }
         });
 
 
@@ -134,8 +110,6 @@ public class FogSystem implements ISystem {
             
             v.visible = newVisible[(int)p.position.x][(int)p.position.y];
         });
-        
-        
         
         oldVisible = newVisible;
     }

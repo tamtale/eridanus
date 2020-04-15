@@ -184,15 +184,10 @@ public class GameWorld implements GameRenderable {
     private void hideBlock(int i, int j, int k) {
         ModelInstance modelInstance = getModelInstance(i, j, k);
 
-//             Only need to hide the block if not air (otherwise, just let it stay air)
         if (modelInstance != null) {
 
             if (blocks[i][j][k] instanceof Block.TowerBlock) { // hide towers completely
                 setModelInstance(i, j, k, null);
-//                    Material mat = modelInstance.materials.get(0);
-//                    mat.clear();
-//
-//                    mat.set(clearMaterial);
             } else { // just turn Terrain Blocks black
                 Material mat = modelInstance.materials.get(0);
                 mat.clear();
@@ -221,7 +216,6 @@ public class GameWorld implements GameRenderable {
                 mat.clear();
 
                 mat.set(originalMaterials[i][j][k]);
-//                mat.set(showMaterial);
             }
         }
         shouldRefreshChunk[((i * WIDTH * HEIGHT + j * HEIGHT + k)) / CHUNKSIZE] = true;
@@ -521,8 +515,6 @@ public class GameWorld implements GameRenderable {
                         " k: " + closestCoords.z +
                         " intersection: " + intersection);
 
-//        System.out.println("Is the originalMaterial null? " + originalMaterials[(int)closestCoords.x][(int)closestCoords.y][(int)closestCoords.z]);
-//        System.out.println("But what about the modelinstance: " + closestModelInstance_final.model.materials.get(0));
         return new Clickable() {
             private BoundingBox boundingBox = new BoundingBox(closestBox);
             private int x = (int)closestCoords.x;
@@ -623,47 +615,7 @@ public class GameWorld implements GameRenderable {
         }
 
         batch.end();
-//        try {
-//        } catch (NullPointerException e) {
-//            e.printStackTrace();
-//            System.out.println("uh oh");
-//        }
-        
-
-//        System.out.println("null materials: " + anyNullMaterials());
     }
-    
-//    public void printAll(ModelCache[] modelCaches) {
-//        System.out.println("Printing info: ");
-//        for (int i = 0; i < modelCaches.length; i++) {
-//            Array<Renderable> renderables = new Array<>();
-//            modelCaches[i].getRenderables(renderables, null);
-//            for (int j = 0; j < renderables.size; j++) {
-//                Renderable r = renderables.get(j);
-//                System.out.println("renderable: " + r + " fields: " + r.shader + ", " + 
-//                        r.environment + ", " + 
-//                        r.material + ", " + 
-//                        r.meshPart + ", " + 
-//                        r.userData);
-//            }
-//        }
-//    }
-//    
-//    
-//    public int anyNullMaterials() {
-//        int numNullMaterials = 0;
-//        for (int i = 0; i < chunkedModelCaches.length; i++) {
-//            Array<Renderable> renderables = new Array<>();
-//            chunkedModelCaches[i].getRenderables(renderables, null);
-//            for (int j = 0; j < renderables.size; j++) {
-//                if (renderables.get(j).material == null) {
-//                    numNullMaterials++;
-//                }
-////                System.out.println("Shader: " + renderables.get(j).shader);
-//            }
-//        }
-//        return numNullMaterials;
-//    }
 
     public int getHeight(int i, int j) {
         getHeightMap();
