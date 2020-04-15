@@ -24,7 +24,7 @@ public class JoinedPlayersMessage extends ClientControlMessage {
     public void updateClient(Client c) {
         System.out.println("Joined players: " + players);
         c.getScreenManager().getConnectionScreen().updateJoinedPlayers(this.players);
-        c.getScreenManager().getConnectionScreen().setReadyToStart(this.isReady);
+        c.getScreenManager().getConnectionScreen().setReadyToGoToLoadouts(this.isReady);
     }
     
     @Override

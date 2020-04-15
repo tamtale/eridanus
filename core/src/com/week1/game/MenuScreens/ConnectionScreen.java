@@ -23,6 +23,8 @@ import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Networking.NetworkObjects.NetworkUtils;
 import com.week1.game.Pair;
 
+import static com.week1.game.MenuScreens.LoadoutScreen.disabledStyle;
+import static com.week1.game.MenuScreens.LoadoutScreen.normalStyle;
 import static com.week1.game.Model.PlayerInfo.defaultColor;
 
 /**
@@ -108,6 +110,7 @@ public class ConnectionScreen implements Screen {
                 GameController.VIRTUAL_WIDTH / 2 - launchGameButton.getWidth()/2,
                 GameController.VIRTUAL_HEIGHT * 2/ 3 - 80);
         launchGameButton.setTouchable(Touchable.disabled);
+        launchGameButton.setStyle(disabledStyle);
 
         // Make the font for the title
         labelStyle = new Label.LabelStyle();
@@ -139,13 +142,13 @@ public class ConnectionScreen implements Screen {
 
 
         colorSelectBox = new SelectBox<Pair.FactionPair>(uiskin);
-        colorSelectBox.setItems(new Pair.FactionPair("Default", defaultColor),
+        colorSelectBox.setItems(new Pair.FactionPair("Select Faction!", defaultColor),
                 new Pair.FactionPair("Fire", Color.RED),
                 new Pair.FactionPair("Water", new Color(0, 0, 0.545f, 1f)),
                 new Pair.FactionPair("Earth", Color.GREEN),
                 new Pair.FactionPair("Air", new Color( 0.678f, 0.847f, 0.902f, 1f))
         );
-        colorSelectBox.setSize(350,64);
+        colorSelectBox.setSize(450,64);
         colorSelectBox.setSelectedIndex(0);
         colorSelectBox.setPosition(GameController.VIRTUAL_WIDTH/2 - colorSelectBox.getWidth()/2,GameController.VIRTUAL_HEIGHT  *2 / 3 + 80);
         colorSelectBox.addListener(new ChangeListener() {
@@ -161,7 +164,7 @@ public class ConnectionScreen implements Screen {
         joinedPlayersLabel.setSize(200, 64);
         joinedPlayersLabel.setPosition(
                 GameController.VIRTUAL_WIDTH / 2 - joinedPlayersLabel.getWidth() / 2,
-                GameController.VIRTUAL_HEIGHT * 2 / 3 - 160);
+                GameController.VIRTUAL_HEIGHT * 2 / 3 - 180);
         joinedPlayersLabel.setAlignment(Align.center);
 
         nameField = new TextField("Enter Your Name", textFieldStyle);
@@ -279,20 +282,25 @@ public class ConnectionScreen implements Screen {
         };
 
     private void submitColor(Pair.FactionPair pair) {
-        networkClient.sendFactionSelection(pair);
-
+        if (pair.value.equals(defaultColor)) {
+            // Do not display the faction as "Select new faction" in the joined players area
+            networkClient.sendFactionSelection(new Pair.FactionPair("Factionless", defaultColor));
+        } else {
+            networkClient.sendFactionSelection(pair);
+        }
     }
 
-    public void setReadyToStart(boolean isReady) {
-        //asdf
+    public void setReadyToGoToLoadouts(boolean isReady) {
         if (hosting) {
             if (isReady) {
                 launchGameButton.setText("Create game with connected players!");
                 launchGameButton.setTouchable(Touchable.enabled);
+                launchGameButton.setStyle(normalStyle);
                 launchGameButton.addListener(progressToLoadoutsListener);
             } else {
                 launchGameButton.setText("Waiting for all players to choose unique factions...");
                 launchGameButton.setTouchable(Touchable.disabled);
+                launchGameButton.setStyle(disabledStyle);
                 launchGameButton.removeListener(progressToLoadoutsListener);
             }
         }

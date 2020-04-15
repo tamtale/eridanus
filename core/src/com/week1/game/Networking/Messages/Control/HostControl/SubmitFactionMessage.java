@@ -36,10 +36,11 @@ public class SubmitFactionMessage extends HostControlMessage  {
 
         Set<Color> selectedColors = new HashSet<>();
         for (Player p : h.registry.values()) {
-           if( p.getColor() == defaultColor) {
+           if( p.getColor().equals(defaultColor)) {
                sendNewColors(h, false);
                return;
            }
+           Gdx.app.debug("SubmitFactionMessage", "Color is " + p.getColor() + " vs " + defaultColor);
            selectedColors.add(p.getColor());
         }
         if (selectedColors.size() != h.registry.size()) {

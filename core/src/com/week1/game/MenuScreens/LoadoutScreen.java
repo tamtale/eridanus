@@ -41,7 +41,7 @@ public class LoadoutScreen implements Screen {
     private TextButton startButton, returnToSpashButton;
     private TextField mapSeedField;
 
-    private static TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
+    public static TextButton.TextButtonStyle normalStyle = new TextButton.TextButtonStyle(
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down"),
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down"),
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down"), new BitmapFont());
@@ -52,7 +52,7 @@ public class LoadoutScreen implements Screen {
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.DARK_GRAY), new BitmapFont());
 
 
-    private static TextButton.TextButtonStyle disabledStyle = new TextButton.TextButtonStyle(
+    public static TextButton.TextButtonStyle disabledStyle = new TextButton.TextButtonStyle(
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLACK),
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLACK),
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.BLACK), new BitmapFont());
