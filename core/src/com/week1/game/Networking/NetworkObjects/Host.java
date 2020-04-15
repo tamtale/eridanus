@@ -134,7 +134,7 @@ public class Host {
                     Gdx.app.log("Host pjb3" ,"updateloop STOPPING");
                     return;
                 } else {
-                    Gdx.app.log("Host pjb3" ,"I AINT STOPPING");
+//                    Gdx.app.log("Host pjb3" ,"I AINT STOPPING");
                 }
                 List<String> outgoingMessages = new ArrayList<>();
                 while (!incomingMessages.isEmpty()) { // TODO: dangerous, if many messages coming all at once
