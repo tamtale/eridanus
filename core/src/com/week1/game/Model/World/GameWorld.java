@@ -19,8 +19,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.week1.game.Model.Initializer.hiddenMaterial;
-import static com.week1.game.Model.Initializer.showMaterial;
+import static com.week1.game.Model.Initializer.blueMaterial;
+import static com.week1.game.Model.Initializer.clearMaterial;
 
 public class GameWorld implements GameRenderable {
     private Block[][][] blocks;
@@ -38,11 +38,14 @@ public class GameWorld implements GameRenderable {
     private int[][][] activeBlocksPerChunk;
     
     private Material[][][] originalMaterials;
+    private boolean[][] visible;
 
     public static final float blockOffset = 0.5f;
 
     private int chunkSide;
     private int chunkHeight;
+    
+    private Array<Pair<Integer, Integer>> recentlyChangedLocations = new Array<>();
 
     public GameWorld(IWorldBuilder worldBuilder) {
         blocks = worldBuilder.terrain();
@@ -108,8 +111,10 @@ public class GameWorld implements GameRenderable {
         
         // Fill up the original materials array
         originalMaterials = new Material[LENGTH][WIDTH][HEIGHT];
+        visible = new boolean[LENGTH][WIDTH];
         for (int i = 0; i < LENGTH; i++) {
             for (int j = 0; j < WIDTH; j++) {
+                visible[i][j] = false;
                 for (int k = 0; k < HEIGHT; k++) {
                     ModelInstance instance = getModelInstance(i, j, k);
                     if (instance != null) {
@@ -164,55 +169,110 @@ public class GameWorld implements GameRenderable {
     
     
     public void hideColumn(int i, int j) {
+        visible[i][j] = false;
         for (int k = 0; k < HEIGHT; k++) {
-            ModelInstance modelInstance = getModelInstance(i, j, k);
+            hideBlock(i,j,k);
+        }
+    }
+    private void hideBlock(int i, int j, int k) {
+        ModelInstance modelInstance = getModelInstance(i, j, k);
 
-            // Only need to hide the block if not air (otherwise, just let it stay air)
-            if (modelInstance != null) {
+//             Only need to hide the block if not air (otherwise, just let it stay air)
+        if (modelInstance != null) {
+
+            if (blocks[i][j][k] instanceof Block.TowerBlock) { // hide towers completely
+                setModelInstance(i, j, k, null);
+//                    Material mat = modelInstance.materials.get(0);
+//                    mat.clear();
+//
+//                    mat.set(clearMaterial);
+            } else { // just turn Terrain Blocks black
                 Material mat = modelInstance.materials.get(0);
                 mat.clear();
 
-                mat.set(hiddenMaterial);
-
-                shouldRefreshChunk[((i * WIDTH * HEIGHT + j * HEIGHT + k)) / CHUNKSIZE] = true;
+                mat.set(blueMaterial);
             }
+            shouldRefreshChunk[((i * WIDTH * HEIGHT + j * HEIGHT + k)) / CHUNKSIZE] = true;
         }
     }
 
     public void unhideColumn(int i, int j) {
+        visible[i][j] = true;
         for (int k = 0; k < HEIGHT; k++) {
+            unhideBlock(i, j, k);
+        }
+    }
+    
+    public void unhideBlock(int i, int j, int k) {
+        // Don't need to unhide air
+        if (blocks[i][j][k] instanceof Block.TowerBlock) {
+            setModelInstance(i,j,k,blocks[i][j][k].modelInstance(i,j,k).orElse(null));
+        } else {
             ModelInstance modelInstance = getModelInstance(i, j, k);
-
-            // Don't need to unhide air
             if (modelInstance != null) {
                 Material mat = modelInstance.materials.get(0);
                 mat.clear();
 
-                if (originalMaterials[i][j][k] == null) {
-                    System.out.println("uh oh material is null.");
-                    throw new NullPointerException("uhoh material is null");
-                }
                 mat.set(originalMaterials[i][j][k]);
 //                mat.set(showMaterial);
-
-                shouldRefreshChunk[((i * WIDTH * HEIGHT + j * HEIGHT + k)) / CHUNKSIZE] = true;
             }
         }
+        shouldRefreshChunk[((i * WIDTH * HEIGHT + j * HEIGHT + k)) / CHUNKSIZE] = true;
     }
 
+    /*
+     * Clears the locations after checking
+     */
+    public Array<Pair<Integer, Integer>> pollRecentlyChangedLocations() {
+        Array<Pair<Integer, Integer>> ret = this.recentlyChangedLocations;
+        this.recentlyChangedLocations = new Array<>();
+        return ret;
+    }
+    
     public Block getBlock(int i, int j, int k) {
         return blocks[i][j][k];
     }
-    public void setBlock(int i, int j, int k, Block block) {
+    
+    public void addTowerBlock(int i, int j, int k, Block.TowerBlock block, boolean locallyOwned) {
+        // Keep track of recently updated blocks, so that the fog system can appropriately hide/show
+        Pair<Integer, Integer> newLoc = new Pair<>(i, j);
+        if (!recentlyChangedLocations.contains(newLoc, false)) {
+            recentlyChangedLocations.add(newLoc);
+        }
+
         blocks[i][j][k] = block;
         Optional<ModelInstance> modelInstance = blocks[i][j][k].modelInstance(i,j,k);
         if (modelInstance.isPresent()) {
-            setModelInstance(i, j, k, modelInstance.get());
-            originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
+            if (locallyOwned) { // if the tower is locally owned, show the blocks immediately
+                setModelInstance(i, j, k, modelInstance.get());
+                originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
+            } else { // if the tower is owned by an opponent, only show the blocks once confirmed by fog system
+                setModelInstance(i, j, k, null);
+                originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
+            }
         } else {
             setModelInstance(i, j, k, null);
             originalMaterials[i][j][k] = null;
         }
+        updateBoundingBox(i,j,k);
+        updateActiveBlocks(i,j,k);
+        updateGraph(i, j, block);
+        refreshHeight = true;
+        shouldRefreshChunk[(i * WIDTH * HEIGHT +  j * HEIGHT + k) / CHUNKSIZE] = true;
+
+    }
+    
+    public void clearBlock(int i, int j, int k) {
+        Block block = Block.TerrainBlock.AIR;
+        blocks[i][j][k] = block;
+        Optional<ModelInstance> modelInstance = blocks[i][j][k].modelInstance(i,j,k);
+//        if (modelInstance.isPresent()) {
+//            setModelInstance(i, j, k, modelInstance.get());
+//            originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
+//        } else {
+            setModelInstance(i, j, k, null);
+            originalMaterials[i][j][k] = null;
+//        }
         updateBoundingBox(i,j,k);
         updateActiveBlocks(i,j,k);
         updateGraph(i, j, block);
@@ -481,23 +541,18 @@ public class GameWorld implements GameRenderable {
 
             @Override
             public void setHovered(boolean hovered) {
-                Material mat = closestModelInstance_final.materials.get(0);
-                mat.clear();
                 if (hovered) {
+                    Material mat = closestModelInstance_final.materials.get(0);
+                    mat.clear();
                     mat.set(Unit.hoveredMaterial);
-                } else {
-
-//                    System.out.println(originalMaterials);
-//                    System.out.println(originalMaterials[x][y][z]);
-                    mat.set(originalMaterials[x][y][z]);
+                    shouldRefreshChunk[( (x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
+                } else { // these take care of refreshing the chunk in unhide/hide
+                    if (visible[x][y]) {
+                        unhideBlock(x,y,z);
+                    } else {
+                        hideBlock(x,y,z);
+                    }
                 }
-                shouldRefreshChunk[( (x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
-                
-//                if (hovered) {
-//                    unhideColumn(x, y);
-//                } else {
-//                    hideColumn(x, y);
-//                }
             }
 
             @Override
@@ -555,49 +610,48 @@ public class GameWorld implements GameRenderable {
             batch.render(chunkedModelCaches[i], env);
         }
 
-        System.out.println("hmm");
-        try {
-            batch.end();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            System.out.println("uh oh");
-        }
+        batch.end();
+//        try {
+//        } catch (NullPointerException e) {
+//            e.printStackTrace();
+//            System.out.println("uh oh");
+//        }
         
 
 //        System.out.println("null materials: " + anyNullMaterials());
     }
     
-    public void printAll(ModelCache[] modelCaches) {
-        System.out.println("Printing info: ");
-        for (int i = 0; i < modelCaches.length; i++) {
-            Array<Renderable> renderables = new Array<>();
-            modelCaches[i].getRenderables(renderables, null);
-            for (int j = 0; j < renderables.size; j++) {
-                Renderable r = renderables.get(j);
-                System.out.println("renderable: " + r + " fields: " + r.shader + ", " + 
-                        r.environment + ", " + 
-                        r.material + ", " + 
-                        r.meshPart + ", " + 
-                        r.userData);
-            }
-        }
-    }
-    
-    
-    public int anyNullMaterials() {
-        int numNullMaterials = 0;
-        for (int i = 0; i < chunkedModelCaches.length; i++) {
-            Array<Renderable> renderables = new Array<>();
-            chunkedModelCaches[i].getRenderables(renderables, null);
-            for (int j = 0; j < renderables.size; j++) {
-                if (renderables.get(j).material == null) {
-                    numNullMaterials++;
-                }
-//                System.out.println("Shader: " + renderables.get(j).shader);
-            }
-        }
-        return numNullMaterials;
-    }
+//    public void printAll(ModelCache[] modelCaches) {
+//        System.out.println("Printing info: ");
+//        for (int i = 0; i < modelCaches.length; i++) {
+//            Array<Renderable> renderables = new Array<>();
+//            modelCaches[i].getRenderables(renderables, null);
+//            for (int j = 0; j < renderables.size; j++) {
+//                Renderable r = renderables.get(j);
+//                System.out.println("renderable: " + r + " fields: " + r.shader + ", " + 
+//                        r.environment + ", " + 
+//                        r.material + ", " + 
+//                        r.meshPart + ", " + 
+//                        r.userData);
+//            }
+//        }
+//    }
+//    
+//    
+//    public int anyNullMaterials() {
+//        int numNullMaterials = 0;
+//        for (int i = 0; i < chunkedModelCaches.length; i++) {
+//            Array<Renderable> renderables = new Array<>();
+//            chunkedModelCaches[i].getRenderables(renderables, null);
+//            for (int j = 0; j < renderables.size; j++) {
+//                if (renderables.get(j).material == null) {
+//                    numNullMaterials++;
+//                }
+////                System.out.println("Shader: " + renderables.get(j).shader);
+//            }
+//        }
+//        return numNullMaterials;
+//    }
 
     public int getHeight(int i, int j) {
         getHeightMap();

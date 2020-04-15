@@ -34,7 +34,6 @@ public class GameState implements GameRenderable {
     private Array<Clickable> clickables = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
-    private List<PlayerInfo> playerInfo;
     
     private MovementSystem movementSystem = new MovementSystem();
     private PathfindingSystem pathfindingSystem;
@@ -51,6 +50,7 @@ public class GameState implements GameRenderable {
     private DamageRewardSystem damageRewardSystem = new DamageRewardSystem();
     private HealthRenderSystem healthRenderSystem = new HealthRenderSystem();
     private FogSystem fogSystem = new FogSystem();
+    
     private Array<Crystal> crystals = new Array<>();
     private Array<Unit> units = new Array<>();
     private Array<Tower> towers = new Array<>();
@@ -58,13 +58,18 @@ public class GameState implements GameRenderable {
     private Array<PlayerEntity> players = new Array<>();
     private OwnedComponent noOwn = new OwnedComponent(-1);
     private TowerLoadouts towerLoadouts;
+    
+    // need to determine which units should push back the fog of war
+    private int localPlayerID; 
+    
     /*
      * Runnable to execute immediately after the game state has been initialized.
      */
     private Runnable postInit;
     private boolean fullyInitialized = false;
 
-    public GameState(IWorldBuilder worldBuilder, Runnable postInit, List<PlayerInfo> playerInfo){
+    public GameState(IWorldBuilder worldBuilder, Runnable postInit, List<PlayerInfo> playerInfo, int localPlayerID){
+        this.localPlayerID = localPlayerID;
         // TODO tower types in memory after exchange
         // Create player entities
         for (int playerId = 0; playerId < playerInfo.size(); playerId++) {
@@ -299,7 +304,7 @@ public class GameState implements GameRenderable {
         placeCrystals();
         
         // Initialize the fog of war system, now that the game world is ready
-        fogSystem.init(world);
+        fogSystem.init(world, this.localPlayerID);
         fogSystem.update(0);
 
         fullyInitialized = true;
@@ -355,8 +360,9 @@ public class GameState implements GameRenderable {
         HealthComponent healthComponent = new HealthComponent(CRYSTAL_HEALTH, CRYSTAL_HEALTH);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0.25f);
         RenderComponent renderComponent = new RenderComponent(new ModelInstance(Initializer.crystal));
+        VisibleComponent visibleComponent = new VisibleComponent(false);
         
-        Crystal c = new Crystal(positionComponent, healthComponent, manaRewardComponent, renderComponent, entityManager.newID());
+        Crystal c = new Crystal(positionComponent, healthComponent, manaRewardComponent, renderComponent, visibleComponent, entityManager.newID());
         crystals.add(c);
         clickables.add(c);
         
@@ -366,8 +372,8 @@ public class GameState implements GameRenderable {
         damageRewardSystem.addManaReward(c.ID, manaRewardComponent);
         // Register with death reward system, so rewards are given for killing this crystal
         deathRewardSystem.addManaReward(c.ID, manaRewardComponent);
-        healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn);
-        renderSystem.addNode(c.ID, renderComponent, positionComponent);
+        healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn, visibleComponent);
+        renderSystem.addNode(c.ID, renderComponent, positionComponent, visibleComponent);
     }
 
     public Unit addUnit(float x, float y, float z, float tempHealth, int playerID){
@@ -380,22 +386,24 @@ public class GameState implements GameRenderable {
         HealthComponent healthComponent = new HealthComponent(tempHealth, tempHealth);
         DamagingComponent damagingComponent = new DamagingComponent((float) tempMinionDamage);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(0, 0);
-        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, healthComponent, damagingComponent, manaRewardComponent);
+        VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID); // if built locally, show the hp right away
+        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, healthComponent, damagingComponent, manaRewardComponent, visibleComponent);
         u.ID = entityManager.newID();
         units.add(u);
         movementSystem.addNode(u.ID, positionComponent, velocityComponent);
         pathfindingSystem.addNode(u.ID, positionComponent, velocityComponent, pathComponent);
         PositionComponent interpolated = new PositionComponent(positionComponent.position);
         interpolatorSystem.addNode(u.ID, positionComponent, interpolated, velocityComponent);
-        renderSystem.addNode(u.ID, renderComponent, interpolated);
+        renderSystem.addNode(u.ID, renderComponent, interpolated, visibleComponent);
         targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(u.ID, healthComponent);
         damageSystem.addDamage(u.ID, damagingComponent);
         damageRewardSystem.addManaReward(u.ID, manaRewardComponent);
         damageRewardSystem.addDamage(u.ID, damagingComponent);
         deathRewardSystem.addManaReward(u.ID, manaRewardComponent);
-        healthRenderSystem.addNode(u.ID, interpolated, healthComponent, ownedComponent);
-        fogSystem.addSeer(u.ID, interpolated, targetingComponent);
+        healthRenderSystem.addNode(u.ID, interpolated, healthComponent, ownedComponent, visibleComponent);
+        fogSystem.addSeer(u.ID, interpolated, targetingComponent, ownedComponent);
+        fogSystem.addSeen(u.ID, positionComponent, visibleComponent);
         clickables.add(u);
         return u;
     }
@@ -408,14 +416,17 @@ public class GameState implements GameRenderable {
             TargetingComponent.TargetingStrategy.ENEMY);
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
-        Tower tower = new Tower(positionComponent, healthComponent, damagingComponent, targetingComponent, ownedComponent, manaRewardComponent, towerDetails, towerType, entityManager.newID());
+        VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID); // if built locally, show the hp right away
+        Tower tower = new Tower(positionComponent, healthComponent, damagingComponent, targetingComponent, ownedComponent, manaRewardComponent, visibleComponent, towerDetails, towerType, entityManager.newID());
         targetingSystem.addNode(tower.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(tower.ID, healthComponent);
         damageSystem.addDamage(tower.ID, damagingComponent);
         damageRewardSystem.addManaReward(tower.ID, manaRewardComponent);
         damageRewardSystem.addDamage(tower.ID, damagingComponent);
         deathRewardSystem.addManaReward(tower.ID, manaRewardComponent);
-        healthRenderSystem.addNode(tower.ID, new PositionComponent(tower.highestBlockLocation), healthComponent, ownedComponent);
+        healthRenderSystem.addNode(tower.ID, new PositionComponent(tower.highestBlockLocation), healthComponent, ownedComponent, visibleComponent);
+        fogSystem.addSeer(tower.ID, positionComponent, targetingComponent, ownedComponent);
+        fogSystem.addSeen(tower.ID, positionComponent, visibleComponent);
         towers.add(tower);
         addBuilding(tower, playerID);
         return tower;
@@ -434,11 +445,13 @@ public class GameState implements GameRenderable {
         List<BlockSpec> blockSpecs = t.getLayout();
         for (int k = 0; k < blockSpecs.size(); k++) {
             BlockSpec bs = blockSpecs.get(k);
-            this.world.setBlock(
+            world.addTowerBlock(
                     (int)(t.getX() + bs.getX()),
                     (int)(t.getY() + bs.getZ()),
                     (int)(t.getZ() + bs.getY()),
-                    Block.TowerBlock.towerBlockMap.get(bs.getBlockCode()));
+                    Block.TowerBlock.towerBlockMap.get(bs.getBlockCode()),
+                    t.getPlayerId() == this.localPlayerID);
+            
         }
     }
 
@@ -463,16 +476,15 @@ public class GameState implements GameRenderable {
             List<BlockSpec> blockSpecs = tower.getLayout();
             for(int k = 0; k < blockSpecs.size(); k++) {
                 BlockSpec bs = blockSpecs.get(k);
-                world.setBlock(
+                world.clearBlock(
                         (int)(tower.getX() + bs.getX()),
                         (int)(tower.getY() + bs.getZ()),
-                        (int)(tower.getZ() + bs.getY()),
-                        Block.TerrainBlock.AIR);
+                        (int)(tower.getZ() + bs.getY()));
             }
             towers.removeValue(tower, true);
             if (playerBases.containsValue(tower, true)) {
                 playerDies(tower.getPlayerId());
-                playerBases.remove(tower.getPlayerID());
+                playerBases.remove(tower.getPlayerId());
             }
         });
         crystals.select(c -> c.ID == id).forEach(crystal -> {

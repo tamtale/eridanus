@@ -1,12 +1,15 @@
 package com.week1.game.Model.Systems;
 
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
+import com.week1.game.Model.Components.OwnedComponent;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.Components.TargetingComponent;
+import com.week1.game.Model.Components.VisibleComponent;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Pair;
-
+import com.week1.game.Tuple3;
 
 
 /*
@@ -14,11 +17,13 @@ import com.week1.game.Pair;
  */
 public class FogSystem implements ISystem {
     
-    private IntMap<Pair<PositionComponent, TargetingComponent>> seeingNodes = new IntMap<>();
+    private IntMap<Tuple3<PositionComponent, TargetingComponent, OwnedComponent>> seeingNodes = new IntMap<>();
+    private IntMap<Pair<PositionComponent, VisibleComponent>> seenNodes = new IntMap<>();
     
 
     private boolean initialized = false;
     private GameWorld world;
+    private int localPlayer;
     private int x, y;
     
     private boolean[][] oldVisible;
@@ -30,9 +35,10 @@ public class FogSystem implements ISystem {
     public FogSystem() {
     }
     
-    public void init(GameWorld world) {
+    public void init(GameWorld world, int localPlayer) {
             
         this.world = world;
+        this.localPlayer = localPlayer;
         
         int[] dims = world.getWorldDimensions();
         x = dims[0];
@@ -59,25 +65,24 @@ public class FogSystem implements ISystem {
         
         // TODO: iterate through all registered seers (towers, units, bases) to mark blocks as visible
         seeingNodes.values().forEach((node) -> {
-            Vector3 position = node.key.position;
-            float range = node.value.range;
-//            Vector3 position = new Vector3(i % (x -20), i / x, 0);
-//            i++;
-//            if (i >= x*y) {
-//                i = 0;
-//            }
+            
+            Vector3 position = node._1.position;
+            float range = node._2.range;
+            int ownerID = node._3.playerID;
 
-            System.out.println("Lighting up near: " + position.x + ", " + position.y);
-
-            safeSetNewVisible((int) position.x + 1, (int) position.y);
-            safeSetNewVisible((int) position.x + 1, (int) position.y - 1);
-            safeSetNewVisible((int) position.x + 1, (int) position.y + 1);
-            safeSetNewVisible((int) position.x, (int) position.y);
-            safeSetNewVisible((int) position.x, (int) position.y - 1);
-            safeSetNewVisible((int) position.x, (int) position.y + 1);
-            safeSetNewVisible((int) position.x - 1, (int) position.y);
-            safeSetNewVisible((int) position.x - 1, (int) position.y - 1);
-            safeSetNewVisible((int) position.x - 1, (int) position.y + 1);
+//            System.out.println("Lighting up near: " + position.x + ", " + position.y);
+            
+            if (this.localPlayer == ownerID) { // only consider seers owned by the local player
+                safeSetNewVisible((int) position.x + 1, (int) position.y);
+                safeSetNewVisible((int) position.x + 1, (int) position.y - 1);
+                safeSetNewVisible((int) position.x + 1, (int) position.y + 1);
+                safeSetNewVisible((int) position.x, (int) position.y);
+                safeSetNewVisible((int) position.x, (int) position.y - 1);
+                safeSetNewVisible((int) position.x, (int) position.y + 1);
+                safeSetNewVisible((int) position.x - 1, (int) position.y);
+                safeSetNewVisible((int) position.x - 1, (int) position.y - 1);
+                safeSetNewVisible((int) position.x - 1, (int) position.y + 1);
+            }
         });
 
 
@@ -94,13 +99,29 @@ public class FogSystem implements ISystem {
             }
         }
         
+        // Also update columns with recently placed blocks
+        Array<Pair<Integer, Integer>> recentLocs = world.pollRecentlyChangedLocations();
+        for (int i = 0; i < recentLocs.size; i++) {
+            int x = recentLocs.get(i).key;
+            int y = recentLocs.get(i).value;
+            if (newVisible[x][y]) {
+                world.markForUnhide(x, y);
+            } else {
+                world.markForHide(x, y);
+            }
+        }
+        
+        // update visiblity for things like units and hp bars
+        seenNodes.forEach((seenNode) ->  {
+            PositionComponent p = seenNode.value.key;
+            VisibleComponent v = seenNode.value.value;
+            
+            v.visible = newVisible[(int)p.position.x][(int)p.position.y];
+        });
+        
+        
         
         oldVisible = newVisible;
-        
-        
-        
-        
-        
     }
     
     public void safeSetNewVisible(int i, int j) {
@@ -109,13 +130,18 @@ public class FogSystem implements ISystem {
         }
     }
     
-    public void addSeer(int entId, PositionComponent positionComponent, TargetingComponent targetingComponent) {
-       seeingNodes.put(entId, new Pair<>(positionComponent, targetingComponent));
+    public void addSeer(int entId, PositionComponent positionComponent, TargetingComponent targetingComponent, OwnedComponent ownedComponent) {
+       seeingNodes.put(entId, new Tuple3<>(positionComponent, targetingComponent, ownedComponent));
+    }
+    
+    public void addSeen(int entId, PositionComponent positionComponent, VisibleComponent visibleComponent) {
+        seenNodes.put(entId, new Pair<>(positionComponent, visibleComponent));
     }
 
     @Override
     public void remove(int entID) {
         seeingNodes.remove(entID);
+        seenNodes.remove(entID);
     }
     
 }

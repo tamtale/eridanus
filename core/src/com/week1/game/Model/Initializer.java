@@ -39,7 +39,8 @@ public class Initializer {
     public static Pixmap fontPixmap;
     
     public static Material hiddenMaterial;
-    public static Material showMaterial;
+    public static Material blueMaterial;
+    public static Material clearMaterial;
     
     public static void init() {
         waterBlock = fileBasedModel("water2.png");
@@ -58,9 +59,13 @@ public class Initializer {
         hiddenMaterial = new Material() {{
             set(ColorAttribute.createDiffuse(Color.BLACK));
         }};
-        showMaterial = new Material() {{
+        blueMaterial = new Material() {{
             set(ColorAttribute.createDiffuse(Color.BLUE));
         }};
+        clearMaterial = new Material() {{
+            set(ColorAttribute.createDiffuse(Color.CLEAR));
+        }};
+        
     }
 
     public static void initCrystalModel() {

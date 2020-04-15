@@ -151,9 +151,9 @@ public class ClickOracle extends InputAdapter {
     }
 
     private void setPassiveClickable (Clickable clickable) {
-//        passiveSelected.setHovered(false);
+        passiveSelected.setHovered(false);
         passiveSelected = clickable;
-//        passiveSelected.setHovered(true);
+        passiveSelected.setHovered(true);
     }
 
     private void addToMultiselected(Unit u) {

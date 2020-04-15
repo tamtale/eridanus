@@ -38,8 +38,8 @@ public class GameEngine implements GameRenderable {
         this.enginePlayerId = playerId;
         this.replayQueue = replayQueue;
         gameState = new GameState(
-//                CoolWorldBuilder.ONLY,
-                SmallWorldBuilder.ONLY,
+                CoolWorldBuilder.ONLY,
+//                SmallWorldBuilder.ONLY,
                 () -> {
                     Vector3 position = new Vector3();
                     Tower myBase = gameState.getPlayerBase(this.enginePlayerId);
@@ -51,7 +51,8 @@ public class GameEngine implements GameRenderable {
                     int[] dimensions = getGameState().getWorld().getWorldDimensions();
                     adapter.setCenter(new Vector3(dimensions[0] / 2f, dimensions[1] / 2f, dimensions[2] / 2f));
                 },
-                adapter.getPlayerInfo());
+                adapter.getPlayerInfo(),
+                playerId);
         Gdx.app.log("wab2- GameEngine", "gameState built");
         this.util = util;
 
