@@ -15,7 +15,7 @@ public class StatsConfig {
     static public final double tempMinionRange = 8;
 
     static public final double tempMinionDamage = 2;
-    
+    public static final int buildDelay = 10;
     public static final int CRYSTAL_RESPAWN_INTERVAL = 200; 
     public static final int SECONDARY_CRYSTAL_RESPAWN_INTERVAL = 10;
     public static final int CRYSTAL_HEALTH = 700;

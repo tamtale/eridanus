@@ -11,20 +11,24 @@ import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
 
+import java.util.Date;
+
 
 public class CreateTowerMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.CREATETOWER;
 
     private float x, y, z; // The coordinates of the center of the tower (the core block is the center)
     private int towerType;
+    private Date time;
 
 
-    public CreateTowerMessage(float x, float y, float z, int towerType, int playerID, int intHash) {
+    public CreateTowerMessage(float x, float y, float z, int towerType, int playerID, int intHash, Date time) {
         super(playerID, MESSAGE_TYPE, intHash);
         this.x = x;
         this.y = y;
         this.z = z;
         this.towerType = towerType;
+        this.time = time;
     }
 
     @Override
@@ -61,7 +65,7 @@ public class CreateTowerMessage extends GameMessage {
         inputState.getPlayer(playerID).useMana(towerCost);
 
         // Only create the tower once we're sure it's safe to do so
-        inputState.addTower((int) x, (int) y, (int) z, towerDetails, playerID, towerType);
+        inputState.addTower((int) x, (int) y, (int) z, towerDetails, playerID, towerType, time);
 
         return true;
     }

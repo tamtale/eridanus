@@ -26,10 +26,7 @@ import com.week1.game.TowerBuilder.BlockType;
 import com.week1.game.TowerBuilder.TowerDetails;
 import com.week1.game.Tuple3;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
 import static com.week1.game.Model.StatsConfig.*;
@@ -296,7 +293,7 @@ public class GameState implements GameRenderable {
         for (int i = 0; i < numPlayers; i++) {
             // Create and add a base for each player
             Tower newBase = addTower((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z,
-                    towerLoadouts.getTowerDetails(i,-1), i, -1);
+                    towerLoadouts.getTowerDetails(i,-1), i, -1, new Date());
             addBase(newBase, i);
         }
         Gdx.app.log("GameState -pjb3", " Finished creating bases and Player Stats" +  numPlayers);
@@ -401,11 +398,10 @@ public class GameState implements GameRenderable {
         return u;
     }
 
-    public Tower addTower(int x, int y, int z, TowerDetails towerDetails, int playerID, int towerType) {
-        float delay = 10f;
+    public Tower addTower(int x, int y, int z, TowerDetails towerDetails, int playerID, int towerType, Date time) {
         PositionComponent positionComponent = new PositionComponent((float) x, (float) y, (float) z);
         HealthComponent healthComponent = new HealthComponent((float) towerDetails.getHp(), (float) towerDetails.getHp());
-        HealthComponent unfinishedHealthComponent = new HealthComponent((float) towerDetails.getHp(),1f, (float) towerDetails.getHp()/delay);
+        HealthComponent unfinishedHealthComponent = new HealthComponent((float) towerDetails.getHp(),1f, (float) towerDetails.getHp()/buildDelay);
         DamagingComponent damagingComponent = new DamagingComponent((float) towerDetails.getAtk());
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
             TargetingComponent.TargetingStrategy.ENEMY);
@@ -430,6 +426,9 @@ public class GameState implements GameRenderable {
         towers.add(unfinishedTower);
         addBuilding(unfinishedTower, playerID);
         Timer timer = new Timer();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(time);
+        cal.add(Calendar.SECOND, buildDelay);
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -448,7 +447,7 @@ public class GameState implements GameRenderable {
                     addBuilding(tower, playerID);
                 }
             }
-        }, (long) (delay * 1000));
+        }, cal.getTime());
 
 
         return tower;

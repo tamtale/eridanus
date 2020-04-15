@@ -19,6 +19,8 @@ import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Renderer.TextureUtils;
 import com.week1.game.Settings.Settings;
 
+import java.util.Date;
+
 public class ClickOracle extends InputAdapter {
 
     private static final String TAG = "ClickOracle";
@@ -250,13 +252,13 @@ public class ClickOracle extends InputAdapter {
                             adapter.sendMessage(new CreateMinionMessage(vector.x, vector.y, vector.z + 1, 69, adapter.getPlayerId(), currentGameHash));
                         } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
                             Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 1 via state");
-                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 0, adapter.getPlayerId(), currentGameHash));
+                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 0, adapter.getPlayerId(), currentGameHash, new Date()));
                         } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
                             Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 2 via state");
-                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 1, adapter.getPlayerId(), currentGameHash));
+                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 1, adapter.getPlayerId(), currentGameHash, new Date()));
                         } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
                             Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 3 via state");
-                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 2, adapter.getPlayerId(), currentGameHash));
+                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 2, adapter.getPlayerId(), currentGameHash, new Date()));
                         }
                         return null;
                     }
