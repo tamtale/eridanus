@@ -7,8 +7,8 @@ public class UnitModel {
     private String factionName;
 
     public UnitModel(Model model, String factionName) {
-        model = model;
-        factionName = factionName;
+        this.model = model;
+        this.factionName = factionName;
     }
 
     public Model getModel() {
