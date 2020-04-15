@@ -14,8 +14,10 @@ public class InfoUtil {
     private Array<DisplayMessage> toDelete = new Array<>();
     private Matrix4 projectionMatrix = new Matrix4();
     private BitmapFont font = new BitmapFont();
+    int playerID;
 
-    public InfoUtil(boolean messagesOnScreen) {
+    public InfoUtil(int playerID, boolean messagesOnScreen) {
+        this.playerID = playerID;
         this.messagesOnScreen = messagesOnScreen;
     }
 
@@ -23,6 +25,13 @@ public class InfoUtil {
         Gdx.app.log(tag, message);
         if (messagesOnScreen) {
             messages.add(new DisplayMessage(message));
+        }
+    }
+
+    /* Log the message for the given player only. */
+    public void log(int playerID, String tag, String message) {
+        if (this.playerID == playerID) {
+            log(tag, message);
         }
     }
 
@@ -52,7 +61,7 @@ public class InfoUtil {
 
 class DisplayMessage {
     final String text;
-    private int time = 30; // TODO maybe use the delta time to decrement
+    private int time = 40; // TODO maybe use the delta time to decrement
     void decay() {
         time--;
     }

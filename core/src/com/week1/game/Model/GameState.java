@@ -10,7 +10,6 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.AIMovement.AStar;
-import com.week1.game.AIMovement.WarrenIndexedAStarPathFinder;
 import com.week1.game.Model.Components.*;
 import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.Systems.*;
@@ -37,7 +36,6 @@ public class GameState implements GameRenderable {
     private Array<Clickable> clickables = new Array<>();
     private IWorldBuilder worldBuilder;
     private GameWorld world;
-    private List<PlayerInfo> playerInfo;
     
     private MovementSystem movementSystem = new MovementSystem();
     private PathfindingSystem pathfindingSystem;
@@ -54,6 +52,8 @@ public class GameState implements GameRenderable {
     private DamageRewardSystem damageRewardSystem = new DamageRewardSystem();
     private HealthRenderSystem healthRenderSystem = new HealthRenderSystem();
     private HealthGrowthSystem healthGrowthSystem = new HealthGrowthSystem();
+    private FogSystem fogSystem = new FogSystem();
+
     private Array<Crystal> crystals = new Array<>();
     private Array<Unit> units = new Array<>();
     private Array<Tower> towers = new Array<>();
@@ -61,13 +61,18 @@ public class GameState implements GameRenderable {
     private Array<PlayerEntity> players = new Array<>();
     private OwnedComponent noOwn = new OwnedComponent(-1);
     private TowerLoadouts towerLoadouts;
+
+    // need to determine which units should push back the fog of war
+    private int localPlayerID;
+
     /*
      * Runnable to execute immediately after the game state has been initialized.
      */
     private Runnable postInit;
     private boolean fullyInitialized = false;
 
-    public GameState(IWorldBuilder worldBuilder, Runnable postInit, List<PlayerInfo> playerInfo){
+    public GameState(IWorldBuilder worldBuilder, Runnable postInit, List<PlayerInfo> playerInfo, int localPlayerID){
+        this.localPlayerID = localPlayerID;
         // TODO tower types in memory after exchange
         // Create player entities
         for (int playerId = 0; playerId < playerInfo.size(); playerId++) {
@@ -235,6 +240,7 @@ public class GameState implements GameRenderable {
     }
 
     public void synchronousUpdateState(int communicationTurn) {
+        fogSystem.update(THRESHOLD);
         manaRegenSystem.update(THRESHOLD);
         pathfindingSystem.update(THRESHOLD);
         movementSystem.update(THRESHOLD);
@@ -285,6 +291,10 @@ public class GameState implements GameRenderable {
             e.printStackTrace();
         }
 
+        // Initialize the fog of war system, now that the game world is ready
+        fogSystem.init(world, this.localPlayerID);
+        fogSystem.update(0);
+
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
 
@@ -300,6 +310,7 @@ public class GameState implements GameRenderable {
 
         // Create the crystals
         placeCrystals();
+
 
         fullyInitialized = true;
         postInit.run();
@@ -354,8 +365,9 @@ public class GameState implements GameRenderable {
         HealthComponent healthComponent = new HealthComponent(CRYSTAL_HEALTH, CRYSTAL_HEALTH);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0.25f);
         RenderComponent renderComponent = new RenderComponent(new ModelInstance(Initializer.crystal));
-        
-        Crystal c = new Crystal(positionComponent, healthComponent, manaRewardComponent, renderComponent, entityManager.newID());
+        VisibleComponent visibleComponent = new VisibleComponent(false);
+
+        Crystal c = new Crystal(positionComponent, healthComponent, manaRewardComponent, renderComponent, visibleComponent, entityManager.newID());
         crystals.add(c);
         clickables.add(c);
         
@@ -365,8 +377,9 @@ public class GameState implements GameRenderable {
         damageRewardSystem.addManaReward(c.ID, manaRewardComponent);
         // Register with death reward system, so rewards are given for killing this crystal
         deathRewardSystem.addManaReward(c.ID, manaRewardComponent);
-        healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn);
-        renderSystem.addNode(c.ID, renderComponent, positionComponent);
+        healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn, visibleComponent);
+        renderSystem.addNode(c.ID, renderComponent, positionComponent, visibleComponent);
+        fogSystem.addSeen(c.ID, positionComponent, visibleComponent);
     }
 
     public Unit addUnit(float x, float y, float z, float tempHealth, int playerID){
@@ -379,21 +392,26 @@ public class GameState implements GameRenderable {
         HealthComponent healthComponent = new HealthComponent(tempHealth, tempHealth);
         DamagingComponent damagingComponent = new DamagingComponent((float) tempMinionDamage);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(0, 0);
-        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, healthComponent, damagingComponent, manaRewardComponent);
+        VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID); // if built locally, show the hp right away
+        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, healthComponent, damagingComponent, manaRewardComponent, visibleComponent);
         u.ID = entityManager.newID();
         units.add(u);
         movementSystem.addNode(u.ID, positionComponent, velocityComponent);
         pathfindingSystem.addNode(u.ID, positionComponent, velocityComponent, pathComponent);
         PositionComponent interpolated = new PositionComponent(positionComponent.position);
         interpolatorSystem.addNode(u.ID, positionComponent, interpolated, velocityComponent);
-        renderSystem.addNode(u.ID, renderComponent, interpolated);
+        renderSystem.addNode(u.ID, renderComponent, interpolated, visibleComponent);
         targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(u.ID, healthComponent);
         damageSystem.addDamage(u.ID, damagingComponent);
         damageRewardSystem.addManaReward(u.ID, manaRewardComponent);
         damageRewardSystem.addDamage(u.ID, damagingComponent);
         deathRewardSystem.addManaReward(u.ID, manaRewardComponent);
-        healthRenderSystem.addNode(u.ID, interpolated, healthComponent, ownedComponent);
+        healthRenderSystem.addNode(u.ID, interpolated, healthComponent, ownedComponent, visibleComponent);
+        if (ownedComponent.playerID == localPlayerID) { // only locally owned seers should be added
+            fogSystem.addSeer(u.ID, interpolated, targetingComponent);
+        }
+        fogSystem.addSeen(u.ID, positionComponent, visibleComponent);
         clickables.add(u);
         return u;
     }
@@ -407,6 +425,7 @@ public class GameState implements GameRenderable {
             TargetingComponent.TargetingStrategy.ENEMY);
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
+        VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID);
         List<BlockSpec> unfinishedBlockSpecs = new ArrayList<BlockSpec>();
         for(int i = 0; i < towerDetails.getLayout().size(); i++){
             BlockSpec spec = towerDetails.getLayout().get(i);
@@ -423,6 +442,10 @@ public class GameState implements GameRenderable {
         deathRewardSystem.addManaReward(unfinishedTower.ID, manaRewardComponent);
         healthRenderSystem.addNode(unfinishedTower.ID, new PositionComponent(unfinishedTower.highestBlockLocation), unfinishedHealthComponent, ownedComponent);
         healthGrowthSystem.addHealthGrowth(unfinishedTower.ID, unfinishedHealthComponent);
+        if (ownedComponent.playerID == localPlayerID) { // only locally owned seers should be added
+            fogSystem.addSeer(unfinishedTower.ID, positionComponent, targetingComponent);
+        }
+        fogSystem.addSeen(unfinishedTower.ID, positionComponent, visibleComponent);
         towers.add(unfinishedTower);
         addBuilding(unfinishedTower, playerID);
         Timer timer = new Timer();
@@ -443,6 +466,10 @@ public class GameState implements GameRenderable {
                     damageRewardSystem.addDamage(tower.ID, damagingComponent);
                     deathRewardSystem.addManaReward(tower.ID, manaRewardComponent);
                     healthRenderSystem.addNode(tower.ID, new PositionComponent(tower.highestBlockLocation), healthComponent, ownedComponent);
+                    if (ownedComponent.playerID == localPlayerID) { // only locally owned seers should be added
+                        fogSystem.addSeer(tower.ID, positionComponent, targetingComponent);
+                    }
+                    fogSystem.addSeen(tower.ID, positionComponent, visibleComponent);
                     towers.add(tower);
                     addBuilding(tower, playerID);
                 }
@@ -466,11 +493,13 @@ public class GameState implements GameRenderable {
         List<BlockSpec> blockSpecs = t.getLayout();
         for (int k = 0; k < blockSpecs.size(); k++) {
             BlockSpec bs = blockSpecs.get(k);
-            this.world.setBlock(
+            world.addTowerBlock(
                     (int)(t.getX() + bs.getX()),
                     (int)(t.getY() + bs.getZ()),
                     (int)(t.getZ() + bs.getY()),
-                    Block.TowerBlock.towerBlockMap.get(bs.getBlockCode()));
+                    Block.TowerBlock.towerBlockMap.get(bs.getBlockCode()),
+                    t.getPlayerId() == this.localPlayerID);
+
         }
     }
 
@@ -488,22 +517,23 @@ public class GameState implements GameRenderable {
         damageRewardSystem.remove(id);
         renderNametagSystem.remove(id);
         healthRenderSystem.remove(id);
+        fogSystem.remove(id);
+
         healthGrowthSystem.remove(id);
         units.select(u -> u.ID == id).forEach(unit -> units.removeValue(unit, true));
         towers.select(t -> t.ID == id).forEach(tower -> {
             List<BlockSpec> blockSpecs = tower.getLayout();
             for(int k = 0; k < blockSpecs.size(); k++) {
                 BlockSpec bs = blockSpecs.get(k);
-                world.setBlock(
+                world.clearBlock(
                         (int)(tower.getX() + bs.getX()),
                         (int)(tower.getY() + bs.getZ()),
-                        (int)(tower.getZ() + bs.getY()),
-                        Block.TerrainBlock.AIR);
+                        (int)(tower.getZ() + bs.getY()));
             }
             towers.removeValue(tower, true);
             if (playerBases.containsValue(tower, true)) {
                 playerDies(tower.getPlayerId());
-                playerBases.remove(tower.getPlayerID());
+                playerBases.remove(tower.getPlayerId());
             }
         });
         crystals.select(c -> c.ID == id).forEach(crystal -> {

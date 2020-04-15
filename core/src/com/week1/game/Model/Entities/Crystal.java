@@ -7,10 +7,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
-import com.week1.game.Model.Components.HealthComponent;
-import com.week1.game.Model.Components.ManaRewardComponent;
-import com.week1.game.Model.Components.PositionComponent;
-import com.week1.game.Model.Components.RenderComponent;
+import com.week1.game.Model.Components.*;
 import com.week1.game.Model.Initializer;
 
 /*
@@ -42,7 +39,7 @@ public class Crystal implements Clickable {
     private static Material originalMaterial = Initializer.crystal.materials.get(0);
 
 
-    public Crystal(PositionComponent positionComponent, HealthComponent healthComponent, ManaRewardComponent manaRewardComponent, RenderComponent renderComponent, int ID) {
+    public Crystal(PositionComponent positionComponent, HealthComponent healthComponent, ManaRewardComponent manaRewardComponent, RenderComponent renderComponent, VisibleComponent visibleComponent, int ID) {
         this.positionComponent = positionComponent;
         this.healthComponent = healthComponent;
         this.manaRewardComponent = manaRewardComponent;

@@ -37,6 +37,7 @@ public class Tower {
         TargetingComponent targetingComponent,
         OwnedComponent ownedComponent,
         ManaRewardComponent manaRewardComponent,
+        VisibleComponent visibleComponent,
         TowerDetails towerDetails,
         int towerType,
         int ID
@@ -158,10 +159,6 @@ public class Tower {
                 '}';
     }
     
-    public int getPlayerID() {
-        return ownedComponent.playerID;
-    }
-
     public PositionComponent getPositionComponent() {
         return positionComponent;
     }

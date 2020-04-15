@@ -59,7 +59,8 @@ public class Unit implements Clickable {
         TargetingComponent targetingComponent,
         HealthComponent healthComponent,
         DamagingComponent damagingComponent,
-        ManaRewardComponent manaRewardComponent
+        ManaRewardComponent manaRewardComponent,
+        VisibleComponent visibleComponent
     ) {
         this.positionComponent = positionComponent;
         this.velocityComponent = velocityComponent;

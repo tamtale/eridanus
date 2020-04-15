@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
 import com.week1.game.GameControllerSetScreenAdapter;
+import com.week1.game.Model.Initializer;
 import com.week1.game.TowerBuilder.TowerBuilderScreen;
 
 /**
@@ -33,11 +34,8 @@ public class MainMenuScreen implements Screen {
         setWidgets();
         configureWidgets();
         setListeners();
-
         Gdx.input.setInputProcessor(stage);
-
     }
-
 
     private void setWidgets() {
         buildTowersButton = new TextButton("Build Towers", new Skin(Gdx.files.internal("uiskin.json")));
