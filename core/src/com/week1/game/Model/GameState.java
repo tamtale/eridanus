@@ -348,10 +348,12 @@ public class GameState implements GameRenderable {
     public void addCrystal(float x, float y, float z) {
         PositionComponent positionComponent = new PositionComponent(x, y, z);
         HealthComponent healthComponent = new HealthComponent(CRYSTAL_HEALTH, CRYSTAL_HEALTH);
-       ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0.25f);
+        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0.25f);
+        RenderComponent renderComponent = new RenderComponent(new ModelInstance(Initializer.crystal));
         
-        Crystal c = new Crystal(positionComponent, healthComponent, manaRewardComponent, entityManager.newID());
+        Crystal c = new Crystal(positionComponent, healthComponent, manaRewardComponent, renderComponent, entityManager.newID());
         crystals.add(c);
+        clickables.add(c);
         
         // Register with the damage system, so that the crystal can take damage
         damageSystem.addHealth(c.ID, healthComponent);
@@ -360,8 +362,7 @@ public class GameState implements GameRenderable {
         // Register with death reward system, so rewards are given for killing this crystal
         deathRewardSystem.addManaReward(c.ID, manaRewardComponent);
         healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn);
-        // Add the crystal to the map
-        world.setBlock((int) x, (int) y, (int) z, Block.TerrainBlock.CRYSTAL);
+        renderSystem.addNode(c.ID, renderComponent, positionComponent);
     }
 
     public Unit addUnit(float x, float y, float z, float tempHealth, int playerID){
@@ -468,14 +469,8 @@ public class GameState implements GameRenderable {
             }
         });
         crystals.select(c -> c.ID == id).forEach(crystal -> {
-            world.setBlock(
-                    (int)crystal.getX(),
-                    (int)crystal.getY(),
-                    (int)crystal.getZ(),
-                    Block.TerrainBlock.AIR
-            );
-
             crystals.removeValue(crystal, true);
+            clickables.removeValue(crystal, true);
         });
     }
     

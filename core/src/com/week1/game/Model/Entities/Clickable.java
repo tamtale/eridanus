@@ -31,6 +31,7 @@ public interface Clickable {
   interface ClickableVisitor<T> {
     T acceptUnit(Unit unit);
     T acceptBlockLocation(Vector3 vector);
+    T acceptCrystal(Crystal crystal);
     T acceptNull();
   }
 

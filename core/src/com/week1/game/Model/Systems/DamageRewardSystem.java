@@ -24,7 +24,7 @@ public class DamageRewardSystem implements ISystem, Subscriber<DamageEvent> {
     @Override
     public void update(float delta) {
         for (DamageEvent event: damageEvents) {
-            int reward = (int)(manaRewardComponents.get(event.victimID).damageReward * damagingComponents.get(event.damagerID).baseDamage);
+            float reward = (manaRewardComponents.get(event.victimID).damageReward * damagingComponents.get(event.damagerID).baseDamage);
             
             ManaComponent manaComponent = manaComponents.get(event.damagerPlayerID);
             if (manaComponent != null) {
