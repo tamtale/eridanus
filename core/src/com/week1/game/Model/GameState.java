@@ -404,7 +404,9 @@ public class GameState implements GameRenderable {
         damageRewardSystem.addDamage(u.ID, damagingComponent);
         deathRewardSystem.addManaReward(u.ID, manaRewardComponent);
         healthRenderSystem.addNode(u.ID, interpolated, healthComponent, ownedComponent, visibleComponent);
-        fogSystem.addSeer(u.ID, interpolated, targetingComponent, ownedComponent);
+        if (ownedComponent.playerID == localPlayerID) { // only locally owned seers should be added
+            fogSystem.addSeer(u.ID, interpolated, targetingComponent);
+        }
         fogSystem.addSeen(u.ID, positionComponent, visibleComponent);
         clickables.add(u);
         return u;
@@ -427,7 +429,9 @@ public class GameState implements GameRenderable {
         damageRewardSystem.addDamage(tower.ID, damagingComponent);
         deathRewardSystem.addManaReward(tower.ID, manaRewardComponent);
         healthRenderSystem.addNode(tower.ID, new PositionComponent(tower.highestBlockLocation), healthComponent, ownedComponent, visibleComponent);
-        fogSystem.addSeer(tower.ID, positionComponent, targetingComponent, ownedComponent);
+        if (ownedComponent.playerID == localPlayerID) { // only locally owned seers should be added
+            fogSystem.addSeer(tower.ID, positionComponent, targetingComponent);
+        }
         fogSystem.addSeen(tower.ID, positionComponent, visibleComponent);
         towers.add(tower);
         addBuilding(tower, playerID);

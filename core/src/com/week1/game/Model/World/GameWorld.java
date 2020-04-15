@@ -22,8 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.week1.game.Model.Initializer.blueMaterial;
-import static com.week1.game.Model.Initializer.clearMaterial;
+import static com.week1.game.Model.Initializer.*;
 
 public class GameWorld implements GameRenderable {
     private Block[][][] blocks;
@@ -192,7 +191,7 @@ public class GameWorld implements GameRenderable {
                 Material mat = modelInstance.materials.get(0);
                 mat.clear();
 
-                mat.set(blueMaterial);
+                mat.set(hiddenMaterial);
             }
             shouldRefreshChunk[((i * WIDTH * HEIGHT + j * HEIGHT + k)) / CHUNKSIZE] = true;
         }

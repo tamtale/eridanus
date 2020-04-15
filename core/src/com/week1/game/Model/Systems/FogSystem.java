@@ -17,7 +17,7 @@ import com.week1.game.Tuple3;
  */
 public class FogSystem implements ISystem {
     
-    private IntMap<Tuple3<PositionComponent, TargetingComponent, OwnedComponent>> seeingNodes = new IntMap<>();
+    private IntMap<Pair<PositionComponent, TargetingComponent>> seeingNodes = new IntMap<>();
     private IntMap<Pair<PositionComponent, VisibleComponent>> seenNodes = new IntMap<>();
 
     private boolean initialized = false;
@@ -59,19 +59,16 @@ public class FogSystem implements ISystem {
         
         
         seeingNodes.values().forEach((node) -> {
-            
-            Vector3 position = node._1.position;
+
+            Vector3 position = node.key.position;
 //            float range = node._2.range; // TODO: range based on actual range?
             int range = 10;
-            int ownerID = node._3.playerID;
 
             for (int i = (int)position.x - range; i < position.x + range; i++) {
                 for (int j = (int)position.y - range; j < position.y + range; j++) {
-                    if (this.localPlayer == ownerID) {
-                        float dist  = (float)Math.sqrt(Math.pow(i - position.x, 2) + Math.pow(j - position.y, 2));
-                        if (dist <= range) {
-                            safeSetNewVisible(i, j);
-                        }
+                    float dist  = (float)Math.sqrt(Math.pow(i - position.x, 2) + Math.pow(j - position.y, 2));
+                    if (dist <= range) {
+                        safeSetNewVisible(i, j);
                     }
                 }
             }
@@ -120,8 +117,8 @@ public class FogSystem implements ISystem {
         }
     }
     
-    public void addSeer(int entId, PositionComponent positionComponent, TargetingComponent targetingComponent, OwnedComponent ownedComponent) {
-       seeingNodes.put(entId, new Tuple3<>(positionComponent, targetingComponent, ownedComponent));
+    public void addSeer(int entId, PositionComponent positionComponent, TargetingComponent targetingComponent) {
+       seeingNodes.put(entId, new Pair<>(positionComponent, targetingComponent));
     }
     
     public void addSeen(int entId, PositionComponent positionComponent, VisibleComponent visibleComponent) {
