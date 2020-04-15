@@ -67,22 +67,38 @@ public class FogSystem implements ISystem {
         seeingNodes.values().forEach((node) -> {
             
             Vector3 position = node._1.position;
-            float range = node._2.range;
+//            float range = node._2.range;
+            int range = 10;
             int ownerID = node._3.playerID;
 
-//            System.out.println("Lighting up near: " + position.x + ", " + position.y);
-            
-            if (this.localPlayer == ownerID) { // only consider seers owned by the local player
-                safeSetNewVisible((int) position.x + 1, (int) position.y);
-                safeSetNewVisible((int) position.x + 1, (int) position.y - 1);
-                safeSetNewVisible((int) position.x + 1, (int) position.y + 1);
-                safeSetNewVisible((int) position.x, (int) position.y);
-                safeSetNewVisible((int) position.x, (int) position.y - 1);
-                safeSetNewVisible((int) position.x, (int) position.y + 1);
-                safeSetNewVisible((int) position.x - 1, (int) position.y);
-                safeSetNewVisible((int) position.x - 1, (int) position.y - 1);
-                safeSetNewVisible((int) position.x - 1, (int) position.y + 1);
+//            System.out.println("Starting iter");
+            for (int i = (int)position.x - range; i < position.x + range; i++) {
+                for (int j = (int)position.y - range; j < position.y + range; j++) {
+                    if (this.localPlayer == ownerID) {
+                        float dist  = (float)Math.sqrt(Math.pow(i - position.x, 2) + Math.pow(j - position.y, 2));
+//                        System.out.println("Checking coords: " + i + ", " + j + " distance: " + dist);
+                        if (dist <= range) {
+                            safeSetNewVisible(i, j);
+                        }
+                    }
+                }
             }
+//            System.out.println("Done with iter");
+            
+            
+            
+            
+//            if (this.localPlayer == ownerID) { // only consider seers owned by the local player
+//                safeSetNewVisible((int) position.x + 1, (int) position.y);
+//                safeSetNewVisible((int) position.x + 1, (int) position.y - 1);
+//                safeSetNewVisible((int) position.x + 1, (int) position.y + 1);
+//                safeSetNewVisible((int) position.x, (int) position.y);
+//                safeSetNewVisible((int) position.x, (int) position.y - 1);
+//                safeSetNewVisible((int) position.x, (int) position.y + 1);
+//                safeSetNewVisible((int) position.x - 1, (int) position.y);
+//                safeSetNewVisible((int) position.x - 1, (int) position.y - 1);
+//                safeSetNewVisible((int) position.x - 1, (int) position.y + 1);
+//            }
         });
 
 

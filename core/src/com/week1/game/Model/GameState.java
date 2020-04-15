@@ -287,6 +287,10 @@ public class GameState implements GameRenderable {
             e.printStackTrace();
         }
 
+        // Initialize the fog of war system, now that the game world is ready
+        fogSystem.init(world, this.localPlayerID);
+        fogSystem.update(0);
+        
         // Create the correct amount of bases.
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
 
@@ -303,9 +307,6 @@ public class GameState implements GameRenderable {
         // Create the crystals
         placeCrystals();
         
-        // Initialize the fog of war system, now that the game world is ready
-        fogSystem.init(world, this.localPlayerID);
-        fogSystem.update(0);
 
         fullyInitialized = true;
         postInit.run();
@@ -374,6 +375,7 @@ public class GameState implements GameRenderable {
         deathRewardSystem.addManaReward(c.ID, manaRewardComponent);
         healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn, visibleComponent);
         renderSystem.addNode(c.ID, renderComponent, positionComponent, visibleComponent);
+        fogSystem.addSeen(c.ID, positionComponent, visibleComponent);
     }
 
     public Unit addUnit(float x, float y, float z, float tempHealth, int playerID){

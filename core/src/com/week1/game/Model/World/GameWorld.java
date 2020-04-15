@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static com.week1.game.Model.Initializer.blueMaterial;
 import static com.week1.game.Model.Initializer.clearMaterial;
@@ -156,15 +159,19 @@ public class GameWorld implements GameRenderable {
         }
     }
 
+    private Lock hidesLock = new ReentrantLock();
     private List<Pair<Integer,Integer>> hides = new ArrayList<>();
     public void markForHide(int i, int j) {
+        hidesLock.lock();
         hides.add(new Pair<>(i, j));
-//        hideColumn(i,j);
+        hidesLock.unlock();
     }
+    private Lock unhidesLock = new ReentrantLock();
     private List<Pair<Integer,Integer>> unhides = new ArrayList<>();
     public void markForUnhide(int i, int j) {
+        unhidesLock.lock();
         unhides.add(new Pair<>(i, j));
-//        unhideColumn(i,j);
+        unhidesLock.unlock();
     }
     
     
@@ -586,10 +593,15 @@ public class GameWorld implements GameRenderable {
     @Override
     public void render(RenderConfig config) {
         // change stuff
+        hidesLock.lock();
         hides.forEach((hidePair) -> hideColumn(hidePair.key, hidePair.value));
         hides = new ArrayList<>();
+        hidesLock.unlock();
+        
+        unhidesLock.lock();
         unhides.forEach((unhidePair) -> unhideColumn(unhidePair.key, unhidePair.value));
         unhides = new ArrayList<>();
+        unhidesLock.unlock();
         
         
         
