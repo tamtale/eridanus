@@ -1,5 +1,6 @@
 package com.week1.game.Model;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -21,10 +22,14 @@ import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.TowerBuilder.BlockSpec;
+import com.week1.game.TowerBuilder.BlockType;
 import com.week1.game.TowerBuilder.TowerDetails;
 import com.week1.game.Tuple3;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
 import static com.week1.game.Model.StatsConfig.*;
@@ -51,6 +56,7 @@ public class GameState implements GameRenderable {
     private DeathRewardSystem deathRewardSystem = new DeathRewardSystem();
     private DamageRewardSystem damageRewardSystem = new DamageRewardSystem();
     private HealthRenderSystem healthRenderSystem = new HealthRenderSystem();
+    private HealthGrowthSystem healthGrowthSystem = new HealthGrowthSystem();
     private Array<Crystal> crystals = new Array<>();
     private Array<Unit> units = new Array<>();
     private Array<Tower> towers = new Array<>();
@@ -244,6 +250,7 @@ public class GameState implements GameRenderable {
         damageRewardSystem.update(THRESHOLD);
         deathRewardSystem.update(THRESHOLD);
         deathSystem.update(THRESHOLD);
+        healthGrowthSystem.update(THRESHOLD);
         doTowerSpecialAbilities(communicationTurn);
     }
 
@@ -395,23 +402,55 @@ public class GameState implements GameRenderable {
     }
 
     public Tower addTower(int x, int y, int z, TowerDetails towerDetails, int playerID, int towerType) {
+        float delay = 10f;
         PositionComponent positionComponent = new PositionComponent((float) x, (float) y, (float) z);
         HealthComponent healthComponent = new HealthComponent((float) towerDetails.getHp(), (float) towerDetails.getHp());
+        HealthComponent unfinishedHealthComponent = new HealthComponent((float) towerDetails.getHp(),1f, (float) towerDetails.getHp()/delay);
         DamagingComponent damagingComponent = new DamagingComponent((float) towerDetails.getAtk());
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
             TargetingComponent.TargetingStrategy.ENEMY);
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
+        List<BlockSpec> unfinishedBlockSpecs = new ArrayList<BlockSpec>();
+        for(int i = 0; i < towerDetails.getLayout().size(); i++){
+            BlockSpec spec = towerDetails.getLayout().get(i);
+            BlockSpec newSpec = new BlockSpec(BlockType.ETHERITE, spec.getX(), spec.getY(), spec.getZ());//TODO:switch to unfinished
+            unfinishedBlockSpecs.add(newSpec);
+        }
+        TowerDetails unfinishedTowerDetails = new TowerDetails(unfinishedBlockSpecs, "unfinished " + towerDetails.getName());
+        Tower unfinishedTower = new Tower(positionComponent, unfinishedHealthComponent, damagingComponent, targetingComponent, ownedComponent, manaRewardComponent, unfinishedTowerDetails, towerType, entityManager.newID());
         Tower tower = new Tower(positionComponent, healthComponent, damagingComponent, targetingComponent, ownedComponent, manaRewardComponent, towerDetails, towerType, entityManager.newID());
-        targetingSystem.addNode(tower.ID, ownedComponent, targetingComponent, positionComponent);
-        damageSystem.addHealth(tower.ID, healthComponent);
-        damageSystem.addDamage(tower.ID, damagingComponent);
-        damageRewardSystem.addManaReward(tower.ID, manaRewardComponent);
-        damageRewardSystem.addDamage(tower.ID, damagingComponent);
-        deathRewardSystem.addManaReward(tower.ID, manaRewardComponent);
-        healthRenderSystem.addNode(tower.ID, new PositionComponent(tower.highestBlockLocation), healthComponent, ownedComponent);
-        towers.add(tower);
-        addBuilding(tower, playerID);
+        damageSystem.addHealth(unfinishedTower.ID, unfinishedHealthComponent);
+        damageSystem.addDamage(unfinishedTower.ID, damagingComponent);
+        damageRewardSystem.addManaReward(unfinishedTower.ID, manaRewardComponent);
+        damageRewardSystem.addDamage(unfinishedTower.ID, damagingComponent);
+        deathRewardSystem.addManaReward(unfinishedTower.ID, manaRewardComponent);
+        healthRenderSystem.addNode(unfinishedTower.ID, new PositionComponent(unfinishedTower.highestBlockLocation), unfinishedHealthComponent, ownedComponent);
+        healthGrowthSystem.addHealthGrowth(unfinishedTower.ID, unfinishedHealthComponent);
+        towers.add(unfinishedTower);
+        addBuilding(unfinishedTower, playerID);
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (unfinishedTower.getPositionComponent() != null) {
+                    Gdx.app.log("wab2 - Tower", "Tower finished building");
+                    removeEntity(unfinishedTower.ID);
+                    towers.removeValue(unfinishedTower, true);
+                    targetingSystem.addNode(tower.ID, ownedComponent, targetingComponent, positionComponent);
+                    damageSystem.addHealth(tower.ID, healthComponent);
+                    damageSystem.addDamage(tower.ID, damagingComponent);
+                    damageRewardSystem.addManaReward(tower.ID, manaRewardComponent);
+                    damageRewardSystem.addDamage(tower.ID, damagingComponent);
+                    deathRewardSystem.addManaReward(tower.ID, manaRewardComponent);
+                    healthRenderSystem.addNode(tower.ID, new PositionComponent(tower.highestBlockLocation), healthComponent, ownedComponent);
+                    towers.add(tower);
+                    addBuilding(tower, playerID);
+                }
+            }
+        }, (long) (delay * 1000));
+
+
         return tower;
     }
     
@@ -450,7 +489,7 @@ public class GameState implements GameRenderable {
         damageRewardSystem.remove(id);
         renderNametagSystem.remove(id);
         healthRenderSystem.remove(id);
-
+        healthGrowthSystem.remove(id);
         units.select(u -> u.ID == id).forEach(unit -> units.removeValue(unit, true));
         towers.select(t -> t.ID == id).forEach(tower -> {
             List<BlockSpec> blockSpecs = tower.getLayout();

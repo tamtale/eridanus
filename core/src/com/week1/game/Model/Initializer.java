@@ -31,7 +31,7 @@ public class Initializer {
     public static Model easterEgg;
     public static Model spawner;
     public static Model crystal;
-
+    public static Model unfinished;
     // Used for nametags
     public static BitmapFont.BitmapFontData bmfData;
     public static Pixmap fontPixmap;
@@ -45,7 +45,7 @@ public class Initializer {
         spaceGold = fileBasedModel("gold2.png");
         easterEgg = fileBasedModel("cat_boi.png");
         spawner = fileBasedModel("spawner2.png");
-
+        unfinished = new Model();//TODO:SIMRAN make this a gray model
         bmfData = new BitmapFont().getData();
         fontPixmap = new Pixmap(Gdx.files.internal(bmfData.getImagePath(0)));
         initCrystalModel();
