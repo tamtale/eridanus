@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.Components.RenderComponent;
+import com.week1.game.Model.Components.VisibleComponent;
 import com.week1.game.Renderer.RenderConfig;
 
 /*
@@ -21,14 +22,16 @@ public class RenderSystem implements ISystem {
         ModelBatch modelBatch = config.getModelBatch();
         modelBatch.begin(config.getCam());
         for (RenderNode node: nodes.values()) {
-            node.renderComponent.modelInstance.transform.setTranslation(node.positionComponent.position);
-            modelBatch.render(node.renderComponent.modelInstance, env);
+            if (node.visibleComponent.visible) { // only render if unit should be visible
+                node.renderComponent.modelInstance.transform.setTranslation(node.positionComponent.position);
+                modelBatch.render(node.renderComponent.modelInstance, env);
+            }
         }
         modelBatch.end();
     }
 
-    public void addNode(int id, RenderComponent renderComponent, PositionComponent positionComponent) {
-        nodes.put(id, new RenderNode(renderComponent, positionComponent));
+    public void addNode(int id, RenderComponent renderComponent, PositionComponent positionComponent, VisibleComponent visibleComponent) {
+        nodes.put(id, new RenderNode(renderComponent, positionComponent, visibleComponent));
     }
 
     @Override
@@ -44,9 +47,11 @@ public class RenderSystem implements ISystem {
     static class RenderNode {
         RenderComponent renderComponent;
         PositionComponent positionComponent;
-        public RenderNode(RenderComponent renderComponent, PositionComponent positionComponent) {
+        VisibleComponent visibleComponent;
+        public RenderNode(RenderComponent renderComponent, PositionComponent positionComponent, VisibleComponent visibleComponent) {
             this.renderComponent = renderComponent;
             this.positionComponent = positionComponent;
+            this.visibleComponent = visibleComponent;
         }
     }
 }
