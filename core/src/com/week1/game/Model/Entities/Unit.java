@@ -80,7 +80,7 @@ public class Unit extends Damageable implements Damaging, GameRenderable, Clicka
         this.maxHp = hp;
         this.vel = new Vector3(0, 0, 0);
 //        this.model = modelMap.get(playerID);
-        this.model = UnitModels.MINION;
+        this.model = UnitLoader.FIRE_MINION;
         this.modelInstance = new ModelInstance(model);
         modelInstance.transform.setTranslation(x, y, z);
         this.originalMaterial = model.materials.get(0);
