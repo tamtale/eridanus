@@ -2,14 +2,11 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.model.Node;
@@ -60,13 +57,11 @@ public class Initializer {
         initCrystalModel();
         
         hiddenMaterial = new Material() {{
-            set(ColorAttribute.createDiffuse(Color.BLACK));
-        }};
-        blueMaterial = new Material() {{
             set(ColorAttribute.createDiffuse(Color.BLUE));
         }};
         clearMaterial = new Material() {{
-            set(ColorAttribute.createDiffuse(Color.CLEAR));
+            set(ColorAttribute.createDiffuse(Color.RED));
+            set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.5f));
         }};
         
         initCursor();
