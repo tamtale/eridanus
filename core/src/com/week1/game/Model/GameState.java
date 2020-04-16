@@ -385,7 +385,7 @@ public class GameState implements GameRenderable {
         PathComponent pathComponent = new PathComponent();
         RenderComponent renderComponent = new RenderComponent(new ModelInstance(Unit.modelMap.get(playerID)));
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
-        TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true, TargetingComponent.TargetingStrategy.ENEMY);
+        TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true, TargetingComponent.TargetingStrategy.TEAM);
         HealthComponent healthComponent = new HealthComponent(tempHealth, tempHealth);
         DamagingComponent damagingComponent = new DamagingComponent((float) tempMinionDamage);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(0, 0);

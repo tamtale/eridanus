@@ -265,7 +265,7 @@ public class GameWorld implements GameRenderable {
     public void clearBlock(int i, int j, int k) {
         Block block = Block.TerrainBlock.AIR;
         blocks[i][j][k] = block;
-        Optional<ModelInstance> modelInstance = blocks[i][j][k].modelInstance(i,j,k);
+//        Optional<ModelInstance> modelInstance = blocks[i][j][k].modelInstance(i,j,k);
 //        if (modelInstance.isPresent()) {
 //            setModelInstance(i, j, k, modelInstance.get());
 //            originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
