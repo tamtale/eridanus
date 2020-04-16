@@ -110,20 +110,12 @@ public class GameWorld implements GameRenderable {
         }
         Arrays.fill(shouldRefreshChunk, true);
         
-//        // Fill up the original materials array
-//        originalMaterials = new Material[LENGTH][WIDTH][HEIGHT];
-//        visible = new boolean[LENGTH][WIDTH];
-//        for (int i = 0; i < LENGTH; i++) {
-//            for (int j = 0; j < WIDTH; j++) {
-//                visible[i][j] = false;
-//                for (int k = 0; k < HEIGHT; k++) {
-//                    ModelInstance instance = getModelInstance(i, j, k);
-//                    if (instance != null) {
-//                        originalMaterials[i][j][k] = instance.model.materials.get(0);
-//                    }
-//                }
-//            }
-//        }
+        visible = new boolean[LENGTH][WIDTH];
+        for (int i = 0; i < LENGTH; i++) {
+            for (int j = 0; j < WIDTH; j++) {
+                visible[i][j] = false;
+            }
+        }
     }
 
     private void updateActiveBlocks(int i, int j, int k) {
@@ -212,7 +204,7 @@ public class GameWorld implements GameRenderable {
                 Material mat = modelInstance.materials.get(0);
                 mat.clear();
 
-                mat.set(originalMaterials[i][j][k]);
+                mat.set(modelInstance.model.materials.get(0));
                 shouldRefreshChunk[((i * WIDTH * HEIGHT + j * HEIGHT + k)) / CHUNKSIZE] = true;
             }
 //        }
@@ -253,11 +245,8 @@ public class GameWorld implements GameRenderable {
 
                 setModelInstance(i, j, k, mI);
             }
-            // Either, way record the original material (comes from the model)
-            originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
         } else {
             setModelInstance(i, j, k, null);
-            originalMaterials[i][j][k] = null;
         }
         updateBoundingBox(i,j,k);
         updateActiveBlocks(i,j,k);
@@ -273,10 +262,8 @@ public class GameWorld implements GameRenderable {
         Optional<ModelInstance> modelInstance = blocks[i][j][k].modelInstance(i,j,k);
 //        if (modelInstance.isPresent()) {
 //            setModelInstance(i, j, k, modelInstance.get());
-//            originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
 //        } else {
             setModelInstance(i, j, k, null);
-            originalMaterials[i][j][k] = null;
 //        }
         updateBoundingBox(i,j,k);
         updateActiveBlocks(i,j,k);
@@ -537,7 +524,7 @@ public class GameWorld implements GameRenderable {
                 if (selected) {
                     mat.set(Unit.selectedMaterial);
                 } else {
-                    mat.set(originalMaterials[x][y][z]);
+                    mat.set(closestModelInstance_final.model.materials.get(0));
                 }
                 shouldRefreshChunk[((x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
             }

@@ -57,11 +57,11 @@ public class Initializer {
         initCrystalModel();
         
         hiddenMaterial = new Material() {{
-            set(ColorAttribute.createDiffuse(Color.BLUE));
+            set(ColorAttribute.createDiffuse(Color.BLACK));
         }};
         clearMaterial = new Material() {{
-            set(ColorAttribute.createDiffuse(Color.RED));
-            set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.5f));
+            set(ColorAttribute.createDiffuse(Color.CLEAR));
+            set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.0f));
         }};
         
         initCursor();
