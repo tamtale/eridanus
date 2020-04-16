@@ -200,17 +200,8 @@ public class GameState implements GameRenderable {
     private void initCrystalRespawnSystem() {
         this.crystalRespawnSystem = new CrystalRespawnSystem(
                 (key) -> {
-                    //make sure that there aren't any towers in the way
-                    int tempX = (int) key.position.x;
-                    int tempY = (int) key.position.y;
-                    int tempZ = (int) key.position.z;
-                    if (world.getBlock(tempX, tempY, tempZ) == Block.TerrainBlock.AIR) {
-                        // nothing's in the way, crystal respawns
-                        addCrystal(tempX, tempY, tempZ);
-                        return true;
-                    }
-
-                    return false;
+                    // ignore the position given in the key (dictated by worldBuilder.nextCrystalLocation()
+                    return placeCrystal(worldBuilder.nextCrystalLocation());
                 },
                 (key) -> {
                     // Does the given id 'key' correspond to a crystal?
@@ -313,22 +304,32 @@ public class GameState implements GameRenderable {
     }
 
     private void placeCrystals() {
-        Vector2[] crystalLocs = worldBuilder.crystalLocations();
-
-        for (int crystalNum = 0; crystalNum < crystalLocs.length; crystalNum++) {
-            Vector2 desiredLoc = crystalLocs[crystalNum];
-            // Start at z = 1, since crystals shouldn't be spawned on the base layer of the map
-            for (int z = 1; z < world.getWorldDimensions()[2]; z++) {
-                // Place the crystal in the first available airblock
-                if ((world.getBlock((int)desiredLoc.x, (int)desiredLoc.y, z) == Block.TerrainBlock.AIR) &&
-                        (world.getBlock((int)desiredLoc.x, (int)(desiredLoc.y), z - 1).canSupportTower())){
-                    addCrystal(desiredLoc.x, desiredLoc.y, z);
-                    break;
-                }
+        int numPlaced = 0;
+        while (numPlaced < worldBuilder.getNumCrystals()) { // keep looking for positions until all the crystals have been placed
+            Vector2 desiredLoc = worldBuilder.nextCrystalLocation();
+            if (placeCrystal(desiredLoc)) {
+                numPlaced++;
             }
         }
 
         // If there are no suitable blocks, then maybe the crystal doesn't get placed
+    }
+    
+    /*
+     * Returns true on success, false on failure
+     */
+    private boolean placeCrystal(Vector2 desiredLoc) {
+        // Start at z = 1, since crystals shouldn't be spawned on the base layer of the map
+        for (int z = 1; z < world.getWorldDimensions()[2]; z++) {
+            // Place the crystal in the first available airblock
+            if ((world.getBlock((int)desiredLoc.x, (int)desiredLoc.y, z) == Block.TerrainBlock.AIR) &&
+                    (world.getBlock((int)desiredLoc.x, (int)(desiredLoc.y), z - 1).canSupportTower())) {
+                addCrystal(desiredLoc.x, desiredLoc.y, z);
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     public PlayerEntity getPlayer(int playerNum) {
