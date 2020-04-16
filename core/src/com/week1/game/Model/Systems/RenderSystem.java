@@ -22,8 +22,10 @@ public class RenderSystem implements ISystem {
         ModelBatch modelBatch = config.getModelBatch();
         modelBatch.begin(config.getCam());
         for (RenderNode node: nodes.values()) {
+            // Always update the modelInstance's position (even if not visible)
+            node.renderComponent.modelInstance.transform.setTranslation(node.positionComponent.position);
+            
             if (node.visibleComponent.visible) { // only render if unit should be visible
-                node.renderComponent.modelInstance.transform.setTranslation(node.positionComponent.position);
                 modelBatch.render(node.renderComponent.modelInstance, env);
             }
         }
