@@ -24,18 +24,12 @@ public class CoolWorldBuilder implements IWorldBuilder {
     }};
     
     private static final int NUM_CRYSTALS = 10;
-//    private static Vector2[] crystalLocs = new Vector2[NUM_CRYSTALS];
     
     @Override
     public Block[][][] terrain() {
         // empty block
         blocks = new Block[90][90][15];
         this.random = new Random(seed);
-        
-//        // Set the crystal locations
-//        for (int i = 0; i < NUM_CRYSTALS; i++) {
-//            crystalLocs[i] = new Vector2(random.nextInt(blocks.length), random.nextInt(blocks[0].length));
-//        }
         
         Pair<Material, Material> materials = blockColors.get(random.nextInt(blockColors.size()));
         Block.TerrainBlock.FIREBRICK.model.materials.get(0).clear();
