@@ -11,6 +11,8 @@ import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Pair;
 import com.week1.game.Tuple3;
 
+import static com.week1.game.Model.StatsConfig.ENABLE_FOG;
+
 
 /*
  * System responsible for creating fog of war
@@ -47,12 +49,21 @@ public class FogSystem implements ISystem {
             }
         }
 
+
+        if (!ENABLE_FOG) { // everything should be made visible
+            for (int i = 0; i < x; i++) {
+                for (int j = 0; j < y; j++) {
+                    world.markForUnhide(i, j);
+                }
+            }
+        }
+        
         initialized = true;
     }
 
     @Override
     public void update(float delta) {
-        if (!initialized) {
+        if (!initialized || !ENABLE_FOG) {
             return; // don't try to do anything before initialization, or else null pointers will abound
         }
         newVisible = new boolean[x][y];
@@ -105,7 +116,7 @@ public class FogSystem implements ISystem {
             PositionComponent p = seenNode.value.key;
             VisibleComponent v = seenNode.value.value;
             
-            v.visible = newVisible[(int)p.position.x][(int)p.position.y];
+            v.setVisible(newVisible[(int)p.position.x][(int)p.position.y]);
         });
         
         oldVisible = newVisible;

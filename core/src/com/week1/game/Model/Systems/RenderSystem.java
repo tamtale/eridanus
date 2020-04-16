@@ -25,7 +25,7 @@ public class RenderSystem implements ISystem {
             // Always update the modelInstance's position (even if not visible)
             node.renderComponent.modelInstance.transform.setTranslation(node.positionComponent.position);
             
-            if (node.visibleComponent.visible) { // only render if unit should be visible
+            if (node.visibleComponent.visible()) { // only render if unit should be visible
                 modelBatch.render(node.renderComponent.modelInstance, env);
             }
         }

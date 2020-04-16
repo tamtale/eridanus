@@ -63,7 +63,7 @@ public class HealthRenderSystem implements ISystem {
 
     public void render(RenderConfig config) {
         for (HealthRenderNode node: nodes.values()) {
-            if (node.visible.visible) { // only render the hp bar if it is visible
+            if (node.visible.visible()) { // only render the hp bar if it is visible
                 renderHealthbar(config, node);
             }
         }

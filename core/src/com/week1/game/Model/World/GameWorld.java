@@ -23,6 +23,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static com.week1.game.Model.Initializer.*;
+import static com.week1.game.Model.StatsConfig.ENABLE_FOG;
 
 public class GameWorld implements GameRenderable {
     private Block[][][] blocks;
@@ -243,7 +244,7 @@ public class GameWorld implements GameRenderable {
         blocks[i][j][k] = block;
         Optional<ModelInstance> modelInstance = blocks[i][j][k].modelInstance(i,j,k);
         if (modelInstance.isPresent()) {
-            if (locallyOwned) { // if the tower is locally owned, show the blocks immediately
+            if (locallyOwned || !ENABLE_FOG) { // if the tower is locally owned (or fog disabled), show the blocks immediately
                 setModelInstance(i, j, k, modelInstance.get());
                 originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
             } else { // if the tower is owned by an opponent, only show the blocks once confirmed by fog system
