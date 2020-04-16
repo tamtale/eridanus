@@ -12,19 +12,27 @@ import com.week1.game.TowerBuilder.TowerDetails;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static com.week1.game.Model.StatsConfig.*;
 
 public class Tower implements Clickable {
+
+    /*
+     * Adapter to standard "clickable" methods, since the tower doesn't own references
+     * to the game world blocks or model instances.
+     */
+    public interface TowerAdapter {
+        void hover(boolean shouldHover);
+        void select(boolean shouldSelect);
+        boolean intersects(Ray ray, Vector3 intersection);
+    }
+
     public int ID;
     private static final Random r = new Random(123456789);
     private PositionComponent positionComponent;
     private HealthComponent healthComponent;
-    private DamagingComponent damagingComponent;
     private OwnedComponent ownedComponent;
-    private TargetingComponent targetingComponent;
+    private VisibleComponent visibleComponent;
     protected int towerType;
     protected double dmg;
     protected double range;
@@ -32,32 +40,29 @@ public class Tower implements Clickable {
     private List<BlockSpec> layout;
     private Map<Integer, Integer> spawnerCounts;
     public Vector3 highestBlockLocation;
-    private BiConsumer<Tower, Boolean> selector;
-    private BiConsumer<Tower, Boolean> hoverer;
+    private TowerAdapter adapter;
 
     public Tower(
         PositionComponent positionComponent,
         HealthComponent healthComponent,
-        DamagingComponent damagingComponent,
-        TargetingComponent targetingComponent,
         OwnedComponent ownedComponent,
-        ManaRewardComponent manaRewardComponent,
         VisibleComponent visibleComponent,
         TowerDetails towerDetails,
+        TowerAdapter adapter,
         int towerType,
         int ID
     ) {
         this.positionComponent = positionComponent;
         this.healthComponent = healthComponent;
         this.ownedComponent = ownedComponent;
-        this.targetingComponent = targetingComponent;
-        this.damagingComponent = damagingComponent;
+        this.visibleComponent = visibleComponent;
         this.dmg = towerDetails.getAtk();
         this.cost = towerDetails.getPrice();
         this.range = towerDetails.getRange();
         this.towerType = towerType;
         this.highestBlockLocation = new Vector3(positionComponent.position).add(towerDetails.getHighestBlock().x, towerDetails.getHighestBlock().z, towerDetails.getHighestBlock().y);
         this.layout = towerDetails.getLayout();
+        this.adapter = adapter;
         this.spawnerCounts = towerDetails.getSpawnerCounts();
         this.ID = ID;
     }
@@ -170,26 +175,26 @@ public class Tower implements Clickable {
 
     @Override
     public boolean intersects(Ray ray, Vector3 intersection) {
-        return false;
+        return adapter.intersects(ray, intersection);
     }
 
     @Override
     public void setSelected(boolean selected) {
-        selector.accept(this, selected);
+        adapter.select(selected);
     }
 
     @Override
     public void setHovered(boolean hovered) {
-        hoverer.accept(this, hovered);
+        adapter.hover(hovered);
     }
 
     @Override
     public boolean visible() {
-        return true;
+        return visibleComponent.visible();
     }
 
     @Override
     public <T> T accept(ClickableVisitor<T> clickableVisitor) {
-        return null;
+        return clickableVisitor.acceptTower(this);
     }
 }

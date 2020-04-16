@@ -30,10 +30,10 @@ public class DamageSystem implements ISystem, Subscriber<DamageEvent>, Publisher
             HealthComponent victimHealth = healthComponents.get(damageEvent.victimID);
             DamagingComponent damagingComponent = damagingComponents.get(damageEvent.damagerID);
             
-            Gdx.app.log("DamageSystem", "Dealing Damage to " + damageEvent.victimID + " with current health " + victimHealth.curHealth);
+            Gdx.app.debug("DamageSystem", "Dealing Damage to " + damageEvent.victimID + " with current health " + victimHealth.curHealth);
             if (victimHealth.curHealth <= 0) continue; // Can't be dealt more damage below 0.
             victimHealth.curHealth -=damagingComponent.baseDamage;
-            Gdx.app.log("DamageSystem", "health now " + victimHealth.curHealth);
+            Gdx.app.debug("DamageSystem", "health now " + victimHealth.curHealth);
             if (victimHealth.curHealth <= 0) {
                 // Inform death subscribers that a death has occurred.
                 publish(damageEvent);

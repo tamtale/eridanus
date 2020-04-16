@@ -1,7 +1,10 @@
 package com.week1.game.Model.Entities;
 
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
+import com.week1.game.Model.World.GameWorld;
 
 /*
  * Represents a clickable entity.
@@ -35,10 +38,55 @@ public interface Clickable {
 
   interface ClickableVisitor<T> {
     T acceptUnit(Unit unit);
-    T acceptBlockLocation(Vector3 vector);
+    T acceptBlock(ClickableBlock block);
     T acceptCrystal(Crystal crystal);
+    T acceptTower(Tower t);
     T acceptNull();
   }
+
+  class ClickableBlock implements Clickable {
+
+      Vector3 closestCoords;
+      private BoundingBox boundingBox;
+      public int x;
+      public int y;
+      public int z;
+      GameWorld world; // This is dangerous, but probably fine :^)
+
+      public ClickableBlock(BoundingBox box, Vector3 closestCoords, GameWorld world) {
+          this.boundingBox = new BoundingBox(box);
+          this.closestCoords = closestCoords;
+          this.x = (int) closestCoords.x;
+          this.y = (int) closestCoords.y;
+          this.z = (int) closestCoords.z;
+          this.world = world;
+      }
+
+      @Override
+      public boolean intersects(Ray ray, Vector3 intersection) {
+        return Intersector.intersectRayBounds(ray, boundingBox, intersection);
+      }
+
+      @Override
+      public void setSelected(boolean selected) {
+        world.setBlockSelected(x, y, z, selected);
+      }
+
+      @Override
+      public void setHovered(boolean hovered) {
+        world.setBlockHovered(x, y, z, hovered);
+      }
+
+      @Override
+      public boolean visible() {
+        return true; // For the purposes of the ClickOracle, all blocks will be "visible".
+      }
+
+      @Override
+      public <T> T accept(ClickableVisitor<T> clickableVisitor) {
+        return clickableVisitor.acceptBlock(this);
+      }
+    }
 
   /*
    * Whether or not the given ray intersects the entity in 3D space.

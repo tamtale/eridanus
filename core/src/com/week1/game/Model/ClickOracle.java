@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.GameController;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Crystal;
+import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Model.Events.SelectionEvent;
 import com.week1.game.Model.Systems.Publisher;
@@ -134,12 +135,16 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
     Clickable.ClickableVisitor<Void> cursorVisitor = new Clickable.ClickableVisitor<Void>() {
         @Override
         public Void acceptUnit(Unit unit) {
-            Gdx.graphics.setCursor(Initializer.defaultCursor);
+            if (unit.getPlayerId() == adapter.getPlayerId()) {
+                Gdx.graphics.setCursor(Initializer.defaultCursor);
+            } else {
+                Gdx.graphics.setCursor(Initializer.targetCursor);
+            }
             return null;
         }
 
         @Override
-        public Void acceptBlockLocation(Vector3 vector) {
+        public Void acceptBlock(Clickable.ClickableBlock block) {
             Gdx.graphics.setCursor(Initializer.defaultCursor);
             return null;
         }
@@ -147,6 +152,17 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         @Override
         public Void acceptCrystal(Crystal crystal) {
             Gdx.graphics.setCursor(Initializer.targetCursor);
+            return null;
+        }
+
+        @Override
+        public Void acceptTower(Tower t) {
+            // TODO only change to target on enemy tower
+            if (t.getPlayerId() == adapter.getPlayerId()) {
+                Gdx.graphics.setCursor(Initializer.defaultCursor);
+            } else {
+                Gdx.graphics.setCursor(Initializer.targetCursor);
+            }
             return null;
         }
 
@@ -240,6 +256,37 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
             return true;
         } else { // the player was not dragging, so maybe they clicked directly on something
             Clickable clicked = adapter.selectClickable(screenX, screenY, touchPos);
+            clicked.accept(new Clickable.ClickableVisitor<Void>() {
+                @Override
+                public Void acceptUnit(Unit unit) {
+                    Gdx.app.log("ClickOracle - ttl4", "Got a unit - " + unit);
+                    return null;
+                }
+
+                @Override
+                public Void acceptBlock(Clickable.ClickableBlock block) {
+                    Gdx.app.log("ClickOracle - ttl4", "got a block: (" + block.x + ", " + block.y + ", " + block.z + ")");
+                    return null;
+                }
+
+                @Override
+                public Void acceptCrystal(Crystal crystal) {
+                    Gdx.app.log("ClickOracle - ttl4", "got a crystal!");
+                    return null;
+                }
+
+                @Override
+                public Void acceptTower(Tower t) {
+                    Gdx.app.log("ClickOracle - ttl4", "got a tower!");
+                    return null;
+                }
+
+                @Override
+                public Void acceptNull() {
+                    System.out.println("got null!");
+                    return null;
+                }
+            });
 
             if (button == Input.Buttons.LEFT) {
                 Gdx.app.debug("lji1 - ClickOracle", "Left click.");
@@ -255,17 +302,22 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
                         return null;
                     }
                     @Override
-                    public Void acceptBlockLocation(Vector3 vector) {
+                    public Void acceptBlock(Clickable.ClickableBlock block) {
                         // the player left clicked on a location - move all selected minions to this location
                         if (multiSelected.notEmpty()) {
                             Gdx.app.debug("luke probably", "About to send move message with these minions: " + multiSelected);
-                            adapter.sendMessage(new MoveMinionMessage(vector.x, vector.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+                            adapter.sendMessage(new MoveMinionMessage(block.x, block.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
                         }
                         return null;
                     }
 
                     @Override
                     public Void acceptCrystal(Crystal crystal) {
+                        return null;
+                    }
+
+                    @Override
+                    public Void acceptTower(Tower t) {
                         return null;
                     }
 
@@ -288,21 +340,21 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
                     }
 
                     @Override
-                    public Void acceptBlockLocation(Vector3 vector) {
+                    public Void acceptBlock(Clickable.ClickableBlock block) {
                         // if the player right clicks on a block, spawn something on that block
                         Gdx.app.log("ClickOracle", "Accepting block location.");
                         if (spawnType == SpawnInfo.SpawnType.UNIT) {
                             Gdx.app.debug("pjb3 - ClickOracle", "Spawn unit");
-                            adapter.sendMessage(new CreateMinionMessage(vector.x, vector.y, vector.z + 1, 69, adapter.getPlayerId(), currentGameHash));
+                            adapter.sendMessage(new CreateMinionMessage(block.x, block.y, block.z + 1, 69, adapter.getPlayerId(), currentGameHash));
                         } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
                             Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 1 via state");
-                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 0, adapter.getPlayerId(), currentGameHash));
+                            adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 0, adapter.getPlayerId(), currentGameHash));
                         } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
                             Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 2 via state");
-                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 1, adapter.getPlayerId(), currentGameHash));
+                            adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 1, adapter.getPlayerId(), currentGameHash));
                         } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
                             Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 3 via state");
-                            adapter.sendMessage(new CreateTowerMessage(vector.x, vector.y, vector.z + 1, 2, adapter.getPlayerId(), currentGameHash));
+                            adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 2, adapter.getPlayerId(), currentGameHash));
                         }
                         return null;
                     }
@@ -310,6 +362,12 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
                     @Override
                     public Void acceptCrystal(Crystal crystal) {
                         // TODO attack this crystal
+                        return null;
+                    }
+
+                    @Override
+                    public Void acceptTower(Tower t) {
+                        // TODO attack the tower
                         return null;
                     }
 

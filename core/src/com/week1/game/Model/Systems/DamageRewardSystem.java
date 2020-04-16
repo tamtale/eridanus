@@ -31,7 +31,7 @@ public class DamageRewardSystem implements ISystem, Subscriber<DamageEvent> {
                 manaComponent.mana +=reward;
             }
             
-            Gdx.app.log("DamageRewardSystem - lji1", "Rewarding player: " + event.damagerPlayerID +
+            Gdx.app.debug("DamageRewardSystem - lji1", "Rewarding player: " + event.damagerPlayerID +
                     " with " + reward + " mana for damage done");
         }
         damageEvents.clear();

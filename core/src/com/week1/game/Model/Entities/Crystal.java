@@ -104,7 +104,7 @@ public class Crystal implements Clickable {
 
     @Override
     public boolean visible() {
-        return visibleComponent.visible;
+        return visibleComponent.visible();
     }
 
     @Override

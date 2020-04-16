@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -463,7 +462,8 @@ public class GameWorld implements GameRenderable {
     }
 
     /*
-        Returns the closest block to the camera that intersects with the given ray.
+      * Returns the closest block to the camera that intersects with the given ray.
+      * Should be either a ClickableBlock, or Null clickable.
      */
     public Clickable getBlockOnRay(Ray ray, Vector3 intersection) {
 
@@ -517,37 +517,7 @@ public class GameWorld implements GameRenderable {
                         " k: " + closestCoords.z +
                         " intersection: " + intersection);
 
-        return new Clickable() {
-            private BoundingBox boundingBox = new BoundingBox(closestBox);
-            private int x = (int)closestCoords.x;
-            private int y = (int)closestCoords.y;
-            private int z = (int)closestCoords.z;
-
-            @Override
-            public boolean intersects(Ray ray, Vector3 intersection) {
-                return Intersector.intersectRayBounds(ray, boundingBox, intersection);
-            }
-
-            @Override
-            public void setSelected(boolean selected) {
-                setBlockSelected(x, y, z, selected);
-            }
-
-            @Override
-            public void setHovered(boolean hovered) {
-                setBlockHovered(x, y, z, hovered);
-            }
-
-            @Override
-            public boolean visible() {
-                return true; // For the purposes of the ClickOracle, all blocks will be "visible".
-            }
-
-            @Override
-            public <T> T accept(ClickableVisitor<T> clickableVisitor) {
-                return clickableVisitor.acceptBlockLocation(closestCoords);
-            }
-        };
+        return new Clickable.ClickableBlock(closestBox, closestCoords, this);
     }
 
     public int[] getWorldDimensions() {
@@ -568,6 +538,10 @@ public class GameWorld implements GameRenderable {
 
     public void setBlockHovered(int x, int y, int z, boolean hovered) {
         ModelInstance instance = modelInstances[x * WIDTH * HEIGHT + y * HEIGHT + z];
+        if (instance == null) {
+            Gdx.app.error("GameWorld", String.format("Failed to find model instance at (%d, %d, %d))", x, y, z));
+            return;
+        }
         if (hovered) {
             Material mat = instance.materials.get(0);
             mat.clear();
