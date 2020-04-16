@@ -20,7 +20,7 @@ public class StatsConfig {
     public static final int SECONDARY_CRYSTAL_RESPAWN_INTERVAL = 10;
     public static final int CRYSTAL_HEALTH = 700;
     
-    public static final boolean ENABLE_FOG = false;
+    public static final boolean ENABLE_FOG = true;
     
     
 
