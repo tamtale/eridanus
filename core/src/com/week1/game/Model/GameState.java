@@ -478,7 +478,10 @@ public class GameState implements GameRenderable {
         healthRenderSystem.remove(id);
         fogSystem.remove(id);
 
-        units.select(u -> u.ID == id).forEach(unit -> units.removeValue(unit, true));
+        units.select(u -> u.ID == id).forEach(unit -> {
+            units.removeValue(unit, true);
+            clickables.removeValue(unit, true);
+        });
         towers.select(t -> t.ID == id).forEach(tower -> {
             List<BlockSpec> blockSpecs = tower.getLayout();
             for(int k = 0; k < blockSpecs.size(); k++) {
