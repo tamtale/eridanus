@@ -415,6 +415,9 @@ public class GameWorld implements GameRenderable {
         return heightMap;
     }
 
+    /*
+    * If a block is found, sets closestCoords to be the coordinate of that block.
+    */
     public Pair<ModelInstance, Float> getBlockOnRayByChunk(
             Ray ray,
             float minDistance,
@@ -506,7 +509,6 @@ public class GameWorld implements GameRenderable {
         }
 
 
-        ModelInstance closestModelInstance_final = closestModelInstance;
         intersection.set(closestIntersection);
 
         Gdx.app.debug("GameState.getClickableOnRay",
@@ -528,30 +530,12 @@ public class GameWorld implements GameRenderable {
 
             @Override
             public void setSelected(boolean selected) {
-                Material mat = closestModelInstance_final.materials.get(0);
-                mat.clear();
-                if (selected) {
-                    mat.set(Unit.selectedMaterial);
-                } else {
-                    mat.set(originalMaterials[x][y][z]);
-                }
-                shouldRefreshChunk[((x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
+                setBlockSelected(x, y, z, selected);
             }
 
             @Override
             public void setHovered(boolean hovered) {
-                if (hovered) {
-                    Material mat = closestModelInstance_final.materials.get(0);
-                    mat.clear();
-                    mat.set(Unit.hoveredMaterial);
-                    shouldRefreshChunk[( (x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
-                } else { // these take care of refreshing the chunk in unhide/hide
-                    if (visible[x][y]) {
-                        unhideBlock(x,y,z);
-                    } else {
-                        hideBlock(x,y,z);
-                    }
-                }
+                setBlockHovered(x, y, z, hovered);
             }
 
             @Override
@@ -569,11 +553,40 @@ public class GameWorld implements GameRenderable {
     public int[] getWorldDimensions() {
         return new int[]{blocks.length, blocks[0].length, blocks[0][0].length};
     }
-    
-    
-    
-    
-    
+
+    public void setBlockSelected(int x, int y, int z, boolean selected) {
+        ModelInstance instance = modelInstances[x * WIDTH * HEIGHT + y * HEIGHT + z];
+        Material mat = instance.materials.get(0);
+        mat.clear();
+        if (selected) {
+            mat.set(Unit.selectedMaterial);
+        } else {
+            mat.set(originalMaterials[x][y][z]);
+        }
+        shouldRefreshChunk[((x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
+    }
+
+    public void setBlockHovered(int x, int y, int z, boolean hovered) {
+        ModelInstance instance = modelInstances[x * WIDTH * HEIGHT + y * HEIGHT + z];
+        if (hovered) {
+            Material mat = instance.materials.get(0);
+            mat.clear();
+            mat.set(Unit.hoveredMaterial);
+            shouldRefreshChunk[( (x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
+        } else { // these take care of refreshing the chunk in unhide/hide
+            if (visible[x][y]) {
+                unhideBlock(x,y,z);
+            } else {
+                hideBlock(x,y,z);
+            }
+        }
+    }
+
+
+
+
+
+
     /*
      * Fetches the current state of the given chunk and updates the modelcache for that chunk.
      */

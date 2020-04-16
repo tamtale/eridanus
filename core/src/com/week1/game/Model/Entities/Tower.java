@@ -2,6 +2,7 @@ package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 import com.week1.game.Model.Components.*;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.World.Block;
@@ -11,10 +12,12 @@ import com.week1.game.TowerBuilder.TowerDetails;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static com.week1.game.Model.StatsConfig.*;
 
-public class Tower {
+public class Tower implements Clickable {
     public int ID;
     private static final Random r = new Random(123456789);
     private PositionComponent positionComponent;
@@ -29,7 +32,9 @@ public class Tower {
     private List<BlockSpec> layout;
     private Map<Integer, Integer> spawnerCounts;
     public Vector3 highestBlockLocation;
-    
+    private BiConsumer<Tower, Boolean> selector;
+    private BiConsumer<Tower, Boolean> hoverer;
+
     public Tower(
         PositionComponent positionComponent,
         HealthComponent healthComponent,
@@ -161,5 +166,30 @@ public class Tower {
     
     public PositionComponent getPositionComponent() {
         return positionComponent;
+    }
+
+    @Override
+    public boolean intersects(Ray ray, Vector3 intersection) {
+        return false;
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+        selector.accept(this, selected);
+    }
+
+    @Override
+    public void setHovered(boolean hovered) {
+        hoverer.accept(this, hovered);
+    }
+
+    @Override
+    public boolean visible() {
+        return true;
+    }
+
+    @Override
+    public <T> T accept(ClickableVisitor<T> clickableVisitor) {
+        return null;
     }
 }
