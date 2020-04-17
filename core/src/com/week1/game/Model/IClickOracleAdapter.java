@@ -8,6 +8,8 @@ import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Renderer.RenderConfig;
 
+import java.util.Optional;
+
 /*
  * Adapter for the click oracle to interact with the rest of the system.
  */

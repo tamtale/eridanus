@@ -20,6 +20,7 @@ public class Crystal implements Clickable {
     private HealthComponent healthComponent;
     private ManaRewardComponent manaRewardComponent;
     private RenderComponent renderComponent;
+    private VisibleComponent visibleComponent;
     private boolean selected;
 
     /*
@@ -44,6 +45,7 @@ public class Crystal implements Clickable {
         this.healthComponent = healthComponent;
         this.manaRewardComponent = manaRewardComponent;
         this.renderComponent = renderComponent;
+        this.visibleComponent = visibleComponent;
         this.ID = ID;
     }
 
@@ -98,6 +100,11 @@ public class Crystal implements Clickable {
     public void setHovered(boolean hovered) {
         if (this.selected) return;
         setMaterial(hoveredMaterial, hovered);
+    }
+
+    @Override
+    public boolean visible() {
+        return visibleComponent.visible();
     }
 
     @Override

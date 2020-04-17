@@ -33,6 +33,7 @@ public class Initializer {
     public static Model crystal;
     public static Cursor defaultCursor;
     public static Cursor targetCursor;
+    public static Texture targetX;
 
     // Used for nametags
     public static BitmapFont.BitmapFontData bmfData;
@@ -65,9 +66,10 @@ public class Initializer {
         }};
         
         initCursor();
+        initTargetX();
     }
 
-    public static void initCrystalModel() {
+    private static void initCrystalModel() {
         {
             String crystalName = "crystals/blueCrystal.g3db";
             Initializer.assetManager.load(crystalName, Model.class);
@@ -92,6 +94,10 @@ public class Initializer {
         Pixmap targetPm = new Pixmap(Gdx.files.internal("pointer_target.png"));
         targetCursor = Gdx.graphics.newCursor(targetPm, 15, 15);
         targetPm.dispose();
+    }
+
+    private static void initTargetX() {
+        targetX = new Texture("target_x.png");
     }
 
     private static Model fileBasedModel(String fileName) {

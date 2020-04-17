@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.week1.game.Model.Initializer.clearMaterial;
 import static com.week1.game.Model.Initializer.hiddenMaterial;
 
 public class GameWorld implements GameRenderable {
@@ -406,6 +407,9 @@ public class GameWorld implements GameRenderable {
         return heightMap;
     }
 
+    /*
+    * If a block is found, sets closestCoords to be the coordinate of that block.
+    */
     public Pair<ModelInstance, Float> getBlockOnRayByChunk(
             Ray ray,
             float minDistance,
@@ -451,7 +455,8 @@ public class GameWorld implements GameRenderable {
     }
 
     /*
-        Returns the closest block to the camera that intersects with the given ray.
+      * Returns the closest block to the camera that intersects with the given ray.
+      * Should be either a ClickableBlock, or Null clickable.
      */
     public Clickable getBlockOnRay(Ray ray, Vector3 intersection) {
 
@@ -497,7 +502,6 @@ public class GameWorld implements GameRenderable {
         }
 
 
-        ModelInstance closestModelInstance_final = closestModelInstance;
         intersection.set(closestIntersection);
 
         Gdx.app.debug("GameState.getClickableOnRay",
@@ -506,60 +510,50 @@ public class GameWorld implements GameRenderable {
                         " k: " + closestCoords.z +
                         " intersection: " + intersection);
 
-        return new Clickable() {
-            private BoundingBox boundingBox = new BoundingBox(closestBox);
-            private int x = (int)closestCoords.x;
-            private int y = (int)closestCoords.y;
-            private int z = (int)closestCoords.z;
-
-            @Override
-            public boolean intersects(Ray ray, Vector3 intersection) {
-                return Intersector.intersectRayBounds(ray, boundingBox, intersection);
-            }
-
-            @Override
-            public void setSelected(boolean selected) {
-                Material mat = closestModelInstance_final.materials.get(0);
-                mat.clear();
-                if (selected) {
-                    mat.set(Unit.selectedMaterial);
-                } else {
-                    mat.set(closestModelInstance_final.model.materials.get(0));
-                }
-                shouldRefreshChunk[((x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
-            }
-
-            @Override
-            public void setHovered(boolean hovered) {
-                if (hovered) {
-                    Material mat = closestModelInstance_final.materials.get(0);
-                    mat.clear();
-                    mat.set(Unit.hoveredMaterial);
-                    shouldRefreshChunk[( (x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
-                } else { // these take care of refreshing the chunk in unhide/hide
-                    if (visible[x][y]) {
-                        unhideBlock(x,y,z);
-                    } else {
-                        hideBlock(x,y,z);
-                    }
-                }
-            }
-
-            @Override
-            public <T> T accept(ClickableVisitor<T> clickableVisitor) {
-                return clickableVisitor.acceptBlockLocation(closestCoords);
-            }
-        };
+        return new Clickable.ClickableBlock(closestBox, closestCoords, this);
     }
 
     public int[] getWorldDimensions() {
         return new int[]{blocks.length, blocks[0].length, blocks[0][0].length};
     }
-    
-    
-    
-    
-    
+
+    public void setBlockSelected(int x, int y, int z, boolean selected) {
+        ModelInstance instance = modelInstances[x * WIDTH * HEIGHT + y * HEIGHT + z];
+        Material mat = instance.materials.get(0);
+        mat.clear();
+        if (selected) {
+            mat.set(Unit.selectedMaterial);
+        } else {
+            mat.set(instance.materials.get(0));
+        }
+        shouldRefreshChunk[((x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
+    }
+
+    public void setBlockHovered(int x, int y, int z, boolean hovered) {
+        ModelInstance instance = modelInstances[x * WIDTH * HEIGHT + y * HEIGHT + z];
+        if (instance == null) {
+            Gdx.app.error("GameWorld", String.format("Failed to find model instance at (%d, %d, %d))", x, y, z));
+            return;
+        }
+        if (hovered) {
+            Material mat = instance.materials.get(0);
+            mat.clear();
+            mat.set(Unit.hoveredMaterial);
+            shouldRefreshChunk[( (x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
+        } else { // these take care of refreshing the chunk in unhide/hide
+            if (visible[x][y]) {
+                unhideBlock(x,y,z);
+            } else {
+                hideBlock(x,y,z);
+            }
+        }
+    }
+
+
+
+
+
+
     /*
      * Fetches the current state of the given chunk and updates the modelcache for that chunk.
      */

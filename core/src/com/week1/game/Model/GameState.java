@@ -11,11 +11,9 @@ import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.AIMovement.AStar;
 import com.week1.game.Model.Components.*;
 import com.week1.game.Model.Entities.*;
+import com.week1.game.Model.Events.SelectionEvent;
 import com.week1.game.Model.Systems.*;
-import com.week1.game.Model.World.Block;
-import com.week1.game.Model.World.GameGraph;
-import com.week1.game.Model.World.GameWorld;
-import com.week1.game.Model.World.IWorldBuilder;
+import com.week1.game.Model.World.*;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
@@ -40,6 +38,7 @@ public class GameState implements GameRenderable {
     private RenderSystem renderSystem = new RenderSystem();
     private RenderNametagSystem renderNametagSystem = new RenderNametagSystem();
     private TargetingSystem targetingSystem;
+    private TargetingSystem.RenderTargetingSystem renderTargetingSystem;
     private InterpolatorSystem interpolatorSystem = new InterpolatorSystem();
     private DeathSystem deathSystem;
     private CrystalRespawnSystem crystalRespawnSystem;
@@ -195,6 +194,7 @@ public class GameState implements GameRenderable {
                 return result;
             }
         });
+        this.renderTargetingSystem = targetingSystem.new RenderTargetingSystem();
     }
 
     private void initCrystalRespawnSystem() {
@@ -260,6 +260,9 @@ public class GameState implements GameRenderable {
         // Needs to happen in initializeGame, so that the host can send the mapSeed,
         // needs to happen in postRunnable because initializeGame is not called on the right thread
         Gdx.app.postRunnable(() -> {
+            if (mapSeed == 0) {
+                worldBuilder = SmallWorldBuilder.ONLY;
+            }
             worldBuilder.addSeed(mapSeed);
             world = new GameWorld(worldBuilder);
             world.getHeightMap();
@@ -390,7 +393,7 @@ public class GameState implements GameRenderable {
         DamagingComponent damagingComponent = new DamagingComponent((float) tempMinionDamage);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(0, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID); // if built locally, show the hp right away
-        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, targetingComponent, healthComponent, damagingComponent, manaRewardComponent, visibleComponent);
+        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, healthComponent, visibleComponent);
         u.ID = entityManager.newID();
         units.add(u);
         movementSystem.addNode(u.ID, positionComponent, velocityComponent);
@@ -422,7 +425,32 @@ public class GameState implements GameRenderable {
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID); // if built locally, show the hp right away
-        Tower tower = new Tower(positionComponent, healthComponent, damagingComponent, targetingComponent, ownedComponent, manaRewardComponent, visibleComponent, towerDetails, towerType, entityManager.newID());
+        Tower.TowerAdapter adapter = new Tower.TowerAdapter() {
+            @Override
+            public void hover(boolean shouldHover) {
+                for (BlockSpec b: towerDetails.getLayout()) {
+                    // Note: we switch getZ() and getY() because the BlockSpec coordinates are Y-up.
+                    world.setBlockHovered(x + b.getX(), y + b.getZ(), z + b.getY(), shouldHover);
+                }
+            }
+
+            @Override
+            public void select(boolean shouldSelect) {
+                for (BlockSpec b: towerDetails.getLayout()) {
+                    // Note: we switch getZ() and getY() because the BlockSpec coordinates are Y-up.
+                    world.setBlockSelected(x + b.getX(), y + b.getZ(), z + b.getY(), shouldSelect);
+                }
+            }
+
+            @Override
+            public boolean intersects(Ray ray, Vector3 intersection) {
+                // For now, we don't actually need this to do anything,
+                // we use an optimized version of tower detection in the ClickOracle.
+                return false;
+            }
+        };
+        Tower tower = new Tower(positionComponent, healthComponent, ownedComponent, visibleComponent,
+            towerDetails, adapter, towerType, entityManager.newID());
         targetingSystem.addNode(tower.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(tower.ID, healthComponent);
         damageSystem.addDamage(tower.ID, damagingComponent);
@@ -633,6 +661,7 @@ public class GameState implements GameRenderable {
         renderSystem.render(config);
         healthRenderSystem.render(config); // need to be rendered before nametags, or they get covered
         renderNametagSystem.render(config);
+        renderTargetingSystem.render(config);
     }
 
 
@@ -703,14 +732,57 @@ public class GameState implements GameRenderable {
 
         // Look through all the standard clickables
         for (Clickable clickable: clickables) {
-            if (clickable.intersects(ray, intersection)) {
+            if (clickable.intersects(ray, intersection) && clickable.visible()) {
                 return clickable;
             }
         }
 
         // Look through all the blocks
         Clickable clickedBlock = world.getBlockOnRay(ray, intersection);
+        return clickedBlock.accept(new Clickable.ClickableVisitor<Clickable>() {
+            @Override
+            public Clickable acceptUnit(Unit unit) {
+                return Clickable.NULL;
+            }
 
-        return clickedBlock;
+            @Override
+            public Clickable acceptBlock(Clickable.ClickableBlock block) {
+                // If it's a tower block, return the tower clickable.
+                for (int i = 0; i < towers.size; i++) {
+                        Tower t = towers.get(i);
+                        if (t.visible()) {
+                            List<BlockSpec> blocks = t.getLayout();
+                            for (BlockSpec spec: blocks) {
+                                if ((int) (spec.getX() + t.getX()) == block.x &&
+                                    (int) (spec.getZ() + t.getY()) == block.y &&
+                                    (int) (spec.getY() + t.getZ()) == block.z) {
+                                    return t;
+                                }
+                            }
+                        }
+                    }
+                return block;
+            }
+
+            @Override
+            public Clickable acceptCrystal(Crystal crystal) {
+                return Clickable.NULL;
+            }
+
+            @Override
+            public Clickable acceptTower(Tower t) {
+                return Clickable.NULL;
+            }
+
+            @Override
+            public Clickable acceptNull() {
+                return Clickable.NULL;
+            }
+        });
+    }
+
+    /* Give the world a subscriber of selection events.*/
+    public Subscriber<SelectionEvent> getSelectionSubscriber() {
+        return renderTargetingSystem;
     }
 }
