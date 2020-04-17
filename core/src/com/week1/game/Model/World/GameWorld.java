@@ -40,7 +40,6 @@ public class GameWorld implements GameRenderable {
     private BoundingBox[][][] chunkBoundingBoxes;
     private int[][][] activeBlocksPerChunk;
     
-    private Material[][][] originalMaterials;
     private boolean[][] visible;
 
     public static final float blockOffset = 0.5f;
@@ -112,18 +111,10 @@ public class GameWorld implements GameRenderable {
         }
         Arrays.fill(shouldRefreshChunk, true);
         
-        // Fill up the original materials array
-        originalMaterials = new Material[LENGTH][WIDTH][HEIGHT];
         visible = new boolean[LENGTH][WIDTH];
         for (int i = 0; i < LENGTH; i++) {
             for (int j = 0; j < WIDTH; j++) {
                 visible[i][j] = false;
-                for (int k = 0; k < HEIGHT; k++) {
-                    ModelInstance instance = getModelInstance(i, j, k);
-                    if (instance != null) {
-                        originalMaterials[i][j][k] = instance.model.materials.get(0);
-                    }
-                }
             }
         }
     }
@@ -186,12 +177,11 @@ public class GameWorld implements GameRenderable {
 
         if (modelInstance != null) {
 
+            Material mat = modelInstance.materials.get(0);
+            mat.clear();
             if (blocks[i][j][k] instanceof Block.TowerBlock) { // hide towers completely
-                setModelInstance(i, j, k, null);
+                mat.set(clearMaterial);
             } else { // just turn Terrain Blocks black
-                Material mat = modelInstance.materials.get(0);
-                mat.clear();
-
                 mat.set(hiddenMaterial);
             }
             shouldRefreshChunk[((i * WIDTH * HEIGHT + j * HEIGHT + k)) / CHUNKSIZE] = true;
@@ -207,18 +197,18 @@ public class GameWorld implements GameRenderable {
     
     public void unhideBlock(int i, int j, int k) {
         // Don't need to unhide air
-        if (blocks[i][j][k] instanceof Block.TowerBlock) {
-            setModelInstance(i,j,k,blocks[i][j][k].modelInstance(i,j,k).orElse(null));
-        } else {
+//        if (blocks[i][j][k] instanceof Block.TowerBlock) {
+//            setModelInstance(i,j,k,blocks[i][j][k].modelInstance(i,j,k).orElse(null));
+//        } else {
             ModelInstance modelInstance = getModelInstance(i, j, k);
             if (modelInstance != null) {
                 Material mat = modelInstance.materials.get(0);
                 mat.clear();
 
-                mat.set(originalMaterials[i][j][k]);
+                mat.set(modelInstance.model.materials.get(0));
+                shouldRefreshChunk[((i * WIDTH * HEIGHT + j * HEIGHT + k)) / CHUNKSIZE] = true;
             }
-        }
-        shouldRefreshChunk[((i * WIDTH * HEIGHT + j * HEIGHT + k)) / CHUNKSIZE] = true;
+//        }
     }
 
     /*
@@ -246,14 +236,18 @@ public class GameWorld implements GameRenderable {
         if (modelInstance.isPresent()) {
             if (locallyOwned || !ENABLE_FOG) { // if the tower is locally owned (or fog disabled), show the blocks immediately
                 setModelInstance(i, j, k, modelInstance.get());
-                originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
             } else { // if the tower is owned by an opponent, only show the blocks once confirmed by fog system
-                setModelInstance(i, j, k, null);
-                originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
+                ModelInstance mI = modelInstance.get();
+
+                // Change the material on the model instance so that it is clear
+                Material mat = mI.materials.get(0);
+                mat.clear();
+                mat.set(clearMaterial);
+
+                setModelInstance(i, j, k, mI);
             }
         } else {
             setModelInstance(i, j, k, null);
-            originalMaterials[i][j][k] = null;
         }
         updateBoundingBox(i,j,k);
         updateActiveBlocks(i,j,k);
@@ -269,10 +263,8 @@ public class GameWorld implements GameRenderable {
         Optional<ModelInstance> modelInstance = blocks[i][j][k].modelInstance(i,j,k);
 //        if (modelInstance.isPresent()) {
 //            setModelInstance(i, j, k, modelInstance.get());
-//            originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
 //        } else {
             setModelInstance(i, j, k, null);
-            originalMaterials[i][j][k] = null;
 //        }
         updateBoundingBox(i,j,k);
         updateActiveBlocks(i,j,k);
@@ -533,7 +525,7 @@ public class GameWorld implements GameRenderable {
                 if (selected) {
                     mat.set(Unit.selectedMaterial);
                 } else {
-                    mat.set(originalMaterials[x][y][z]);
+                    mat.set(closestModelInstance_final.model.materials.get(0));
                 }
                 shouldRefreshChunk[((x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
             }
