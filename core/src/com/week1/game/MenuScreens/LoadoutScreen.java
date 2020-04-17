@@ -136,7 +136,7 @@ public class LoadoutScreen implements Screen {
             mapSeedField.setPosition(GameController.VIRTUAL_WIDTH / 2, mapSeedLabel.getY());
             loadoutStage.addActor(mapSeedField);
 
-            fogcheckbox = new CheckBox("Enable Fog of War (reccommended)", new Skin(Gdx.files.internal("uiskin.json")));
+            fogcheckbox = new CheckBox("Enable Fog of War (recommended)", new Skin(Gdx.files.internal("uiskin.json")));
             fogcheckbox.setSize(250, 64);
             fogcheckbox.setPosition(GameController.VIRTUAL_WIDTH / 2 - fogcheckbox.getWidth()/2, GameController.VIRTUAL_HEIGHT / 2 + 80);
             fogcheckbox.setChecked(true);
