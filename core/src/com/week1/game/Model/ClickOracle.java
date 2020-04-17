@@ -3,6 +3,7 @@ package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -410,7 +411,6 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
     public Collection<Subscriber<SelectionEvent>> getSubscribers() {
         return selectionSubscribers;
     }
-
     /* Register the given CommandPair with the bindings for keydown and keyup. */
     private void registerPair(int key, CommandPair pair) {
         keyDownCommands.put(key, pair.down);

@@ -78,6 +78,8 @@ public class MessageFormatter {
                 return g.fromJson(jsonString, RetractLoadoutMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.SUBMITPLAYERINFO) {
                 return g.fromJson(jsonString, SubmitPlayerInfo.class);
+            } else if (parsedMsg.messageTypeID == MessageType.SUBMITCOLOR) {
+                return g.fromJson(jsonString, SubmitFactionMessage.class);
             }
         }
 

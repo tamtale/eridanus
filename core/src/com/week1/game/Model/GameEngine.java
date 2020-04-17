@@ -2,12 +2,10 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.InfoUtil;
 import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.World.CoolWorldBuilder;
-import com.week1.game.Model.World.SmallWorldBuilder;
 import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.Game.TaggedMessage;
@@ -19,10 +17,6 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Queue;
-
-import static com.badlogic.gdx.Preferences.*;
-
-import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
 
 public class GameEngine implements GameRenderable {
 
