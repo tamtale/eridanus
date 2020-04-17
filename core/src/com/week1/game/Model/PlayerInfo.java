@@ -10,7 +10,7 @@ import com.week1.game.Model.Entities.UnitModel;
  */
 public class PlayerInfo {
     private String playerName;
-    private String faction;
+    private String faction = "Factionless";
     //    private UnitModel faction = UnitLoader.EMPTY_FACTIONLESS; //this needs to be set by selectbox
 
     public PlayerInfo(String playerName) {

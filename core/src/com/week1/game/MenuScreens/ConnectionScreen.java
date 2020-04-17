@@ -17,12 +17,15 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.sun.tools.javac.util.ArrayUtils;
 import com.week1.game.GameController;
 import com.week1.game.GameControllerSetScreenAdapter;
 import com.week1.game.Model.Entities.UnitLoader;
 import com.week1.game.Model.PlayerInfo;
 import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Networking.NetworkObjects.NetworkUtils;
+
+import java.util.Arrays;
 
 import static com.week1.game.MenuScreens.MenuStyles.blueStyle;
 import static com.week1.game.MenuScreens.MenuStyles.disabledStyle;
@@ -32,6 +35,7 @@ import static com.week1.game.MenuScreens.MenuStyles.disabledStyle;
  * It is preceded by the MainMenu and followed by the LoadOut Screen.
  */
 public class ConnectionScreen implements Screen {
+    private String selectFaction = "Select A Faction";
     private Stage connectionStage;
     private Client networkClient;
     private GameControllerSetScreenAdapter gameAdapter;
@@ -141,8 +145,9 @@ public class ConnectionScreen implements Screen {
         connectionStage.addActor(label1);
 
 
-        colorSelectBox = new SelectBox<String>(uiskin);
-        colorSelectBox.setItems(new Array(UnitLoader.NAMES_TO_FACTIONS.keySet().toArray()));
+        colorSelectBox = new SelectBox<>(uiskin);
+        colorSelectBox.setItems( UnitLoader.FACTIONS);
+
         colorSelectBox.setSize(450,64);
         colorSelectBox.setSelectedIndex(0);
         colorSelectBox.setPosition(GameController.VIRTUAL_WIDTH/2 - colorSelectBox.getWidth()/2,GameController.VIRTUAL_HEIGHT  *2 / 3 + 80);
@@ -286,12 +291,12 @@ public class ConnectionScreen implements Screen {
      * This is when a player makes a change in their faction, it will send this along to the host to be processed.
      */
     private void submitColor(String factionName) {
-//        if (factionName.equals("Select A Faction")) {
-//            // Do not display the faction as "Select new faction" in the joined players area
-//            networkClient.sendFactionSelection(UnitLoader.EMPTY_FACTIONLESS);
-//        } else {
+        if (factionName.equals(selectFaction)) {
+            // Do not display the faction as "Select new faction" in the joined players area
+            networkClient.sendFactionSelection("Factionless");
+        } else {
             networkClient.sendFactionSelection(factionName);
-//        }
+        }
     }
 
     /*

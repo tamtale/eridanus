@@ -3,31 +3,31 @@ package com.week1.game.Model.Entities;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.model.Node;
+import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Initializer;
 import com.week1.game.Util3D;
+import org.graalvm.compiler.hotspot.replacements.arraycopy.ArrayCopyWithSlowPathNode;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UnitLoader {
 
     public static Map<String, UnitModel> NAMES_TO_FACTIONS = new HashMap<>();
     public static Map<String, Color> NAMES_TO_COLORS = new HashMap<>();
+    public static Array<String> FACTIONS = new Array<>();
 
-    public static UnitModel EARTH_MINION = loadMinion("earth_minion", "Earth faction", Color.GREEN);
-    public static UnitModel FIRE_MINION = loadMinion("fire_minion", "Fire faction", Color.RED);
-    public static UnitModel WATER_MINION = loadMinion("water_minion", "Water faction", new Color(0, 0, 0.545f, 1f));
-    public static UnitModel AIR_MINION =loadMinion("air_minion", "Air faction", new Color( 0.678f, 0.847f, 0.902f, 1f));
+    static{
+        FACTIONS.add("Select A Faction");
 
-    //These are the defaults for people's factions
-    private static Model box = Util3D.ONLY.createBox(1, 1, 1, Color.GRAY);;
-    public static UnitModel EMPTY_FACTIONLESS = new UnitModel(box, "Factionless", Color.GRAY);
-    public static UnitModel EMPTY_SELECTFACTION = new UnitModel(box, "Select a Faction", Color.GRAY);
+        loadMinion("earth_minion", "Earth faction", Color.GREEN);
+        loadMinion("fire_minion", "Fire faction", Color.RED);
+        loadMinion("water_minion", "Water faction", new Color(0, 0, 0.545f, 1f));
+        loadMinion("air_minion", "Air faction", new Color( 0.678f, 0.847f, 0.902f, 1f));
+    }
 
-//    static {
-//        unitTypes.put("Factionless", EMPTY_FACTIONLESS);
-//        unitTypes.put("Select a Faction", EMPTY_SELECTFACTION);
-//    }
 
     private static UnitModel loadMinion(String folder_name, String faction_name, Color color) {
         String minion_name = "minion/" + folder_name + "/minion_with_weird_face.g3db";
@@ -42,6 +42,7 @@ public class UnitLoader {
         }
         minion.getModel().calculateTransforms();
 
+        FACTIONS.add(faction_name);
         NAMES_TO_FACTIONS.put(faction_name, minion);
         NAMES_TO_COLORS.put(faction_name, color);
 
