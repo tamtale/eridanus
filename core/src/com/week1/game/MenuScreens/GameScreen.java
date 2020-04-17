@@ -14,6 +14,8 @@ import com.week1.game.InfoUtil;
 import com.week1.game.Model.*;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
+import com.week1.game.Model.Events.SelectionEvent;
+import com.week1.game.Model.Systems.Subscriber;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
@@ -84,6 +86,11 @@ public class GameScreen implements Screen {
 			@Override
 			public List<PlayerInfo> getPlayerInfo() {
 				return networkClient.getInfoList();
+			}
+
+			@Override
+			public void subscribeSelection(Subscriber<SelectionEvent> subscriber) {
+				clickOracle.addSubscriber(subscriber);
 			}
 
 			@Override
@@ -192,7 +199,7 @@ public class GameScreen implements Screen {
 					public int getPlayerId() {
 						return networkClient.getPlayerId();
 					}
-				}, renderer.getRenderConfig(), GameController.getSettings());
+				}, renderer.getRenderConfig());
 		
 		renderer.create();
 

@@ -1,10 +1,9 @@
 package com.week1.game.Model;
 
-import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.math.Vector3;
-import com.week1.game.Model.Entities.Unit;
+import com.week1.game.Model.Events.SelectionEvent;
+import com.week1.game.Model.Systems.Subscriber;
 import com.week1.game.Networking.Messages.AMessage;
-import com.week1.game.Renderer.RenderConfig;
 
 import java.util.List;
 
@@ -24,4 +23,7 @@ public interface IEngineAdapter {
     void zoom(float amount);
     
     List<PlayerInfo> getPlayerInfo();
+
+    /* Given an internal subscriber of selection events, register to any external publishers (i.e. ClickOracle.) */
+    void subscribeSelection(Subscriber<SelectionEvent> subscriber);
 }

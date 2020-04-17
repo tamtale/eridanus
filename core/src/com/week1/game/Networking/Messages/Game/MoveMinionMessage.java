@@ -36,7 +36,7 @@ public class MoveMinionMessage extends GameMessage {
                 m++;
             }
         }
-        Gdx.app.log("wab2 - MoveMinionMessage", "number of goodMinions " + goodMinions.length);
+        Gdx.app.debug("wab2 - MoveMinionMessage", "number of goodMinions " + goodMinions.length);
         if (goodMinions.length > 0) {
             int k = 0;
             int worldXSize = inputState.getWorld().getWorldDimensions()[0];

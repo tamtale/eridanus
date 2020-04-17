@@ -1,15 +1,21 @@
 package com.week1.game.Model.Systems;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Components.OwnedComponent;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.Components.TargetingComponent;
 import com.week1.game.Model.Events.DamageEvent;
+import com.week1.game.Model.Events.SelectionEvent;
+import com.week1.game.Model.Initializer;
 import com.week1.game.Pair;
+import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Tuple3;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /*
  * System responsible for updating targets and dispatching events.
@@ -43,7 +49,9 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
 
     @Override
     public void remove(int entID) {
-        nodes.remove(entID);
+        TargetingNode removedNode = nodes.remove(entID);
+        // Set the targeting component to invalid, so that other systems (i.e. targeting renderer) don't keep using.
+        if (removedNode != null) removedNode.targetingComponent.targetID = -1;
         // fix any targeting nodes.
         for (IntMap.Entry<TargetingNode> entry: nodes.entries()) {
             TargetingNode node = entry.value;
@@ -81,9 +89,7 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
         if (node.targetingComponent.targetID == -1) return;
         Gdx.app.debug("TargetingSystem", "creating damageevent by " + id + " against " + node.targetingComponent.targetID);
         DamageEvent damageEvent = new DamageEvent(node.ownedComponent.playerID, id, node.targetingComponent.targetID);
-        for (Subscriber<DamageEvent> subscriber: damageEventSubscribers) {
-            subscriber.process(damageEvent);
-        }
+        publish(damageEvent);
     }
 
     public void addNode(int id, OwnedComponent ownedComponent, TargetingComponent targetingComponent, PositionComponent positionComponent) {
@@ -93,6 +99,11 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
     @Override
     public void addSubscriber(Subscriber<DamageEvent> subscriber) {
         damageEventSubscribers.add(subscriber);
+    }
+
+    @Override
+    public Collection<Subscriber<DamageEvent>> getSubscribers() {
+        return damageEventSubscribers;
     }
 
     static class TargetingNode {
@@ -109,6 +120,40 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
             this.targetingComponent = targetingComponent;
             this.positionComponent = positionComponent;
             this.targetPositionComponent = targetPositionComponent;
+        }
+    }
+
+    /*
+     * System to render targets for currently selected units.
+     */
+    public class RenderTargetingSystem implements Subscriber<SelectionEvent> {
+
+        ArrayList<TargetingNode> selected = new ArrayList<>();
+
+        @Override
+        public void process(SelectionEvent selectionEvent) {
+            selected.clear();
+            for (int id: selectionEvent.unitIDs) {
+                TargetingNode node = nodes.get(id);
+                if (node == null) {
+                    Gdx.app.error("RenderTargetingSystem", "Unable to find TargetingNode for id: " + id);
+                    continue;
+                }
+                selected.add(node);
+            }
+        }
+
+        private Vector3 renderVec = new Vector3();
+        public void render(RenderConfig config) {
+            Batch batch = config.getBatch();
+            batch.begin();
+            for (TargetingNode selectedNode: selected) {
+                if (selectedNode.targetingComponent.targetID == -1) continue;
+                renderVec.set(selectedNode.targetPositionComponent.position);
+                config.getCam().project(renderVec);
+                batch.draw(Initializer.targetX, renderVec.x - 16, renderVec.y - 16, 32, 32);
+            }
+            batch.end();
         }
     }
 }

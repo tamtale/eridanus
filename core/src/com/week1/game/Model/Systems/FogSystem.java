@@ -3,13 +3,11 @@ package com.week1.game.Model.Systems;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
-import com.week1.game.Model.Components.OwnedComponent;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.Components.TargetingComponent;
 import com.week1.game.Model.Components.VisibleComponent;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Pair;
-import com.week1.game.Tuple3;
 
 
 /*
@@ -19,6 +17,8 @@ public class FogSystem implements ISystem {
     
     private IntMap<Pair<PositionComponent, TargetingComponent>> seeingNodes = new IntMap<>();
     private IntMap<Pair<PositionComponent, VisibleComponent>> seenNodes = new IntMap<>();
+
+    private static boolean fogEnabled = true;
 
     private boolean initialized = false;
     private GameWorld world;
@@ -47,12 +47,21 @@ public class FogSystem implements ISystem {
             }
         }
 
+
+        if (!fogEnabled()) { // everything should be made visible
+            for (int i = 0; i < x; i++) {
+                for (int j = 0; j < y; j++) {
+                    world.markForUnhide(i, j);
+                }
+            }
+        }
+        
         initialized = true;
     }
 
     @Override
     public void update(float delta) {
-        if (!initialized) {
+        if (!initialized || !fogEnabled()) {
             return; // don't try to do anything before initialization, or else null pointers will abound
         }
         newVisible = new boolean[x][y];
@@ -105,7 +114,7 @@ public class FogSystem implements ISystem {
             PositionComponent p = seenNode.value.key;
             VisibleComponent v = seenNode.value.value;
             
-            v.visible = newVisible[(int)p.position.x][(int)p.position.y];
+            v.setVisible(newVisible[(int)p.position.x][(int)p.position.y]);
         });
         
         oldVisible = newVisible;
@@ -130,5 +139,12 @@ public class FogSystem implements ISystem {
         seeingNodes.remove(entID);
         seenNodes.remove(entID);
     }
-    
+
+    public static boolean fogEnabled() {
+        return fogEnabled;
+    }
+
+    public static void setFog(boolean newFogEnabled) {
+        fogEnabled = newFogEnabled;
+    }
 }
