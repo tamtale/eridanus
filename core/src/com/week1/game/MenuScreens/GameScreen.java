@@ -167,6 +167,11 @@ public class GameScreen implements Screen {
 					}
 
 					@Override
+					public void setSpawnType(SpawnInfo.SpawnType type) {
+						renderer.getGameButtonsStage().selectSpawnType(type);
+					}
+
+					@Override
 					public Clickable selectClickable(float screenX, float screenY, Vector3 intersection) {
                       return engine.getGameState().getClickableOnRay(renderer.getCam().getPickRay(screenX, screenY), intersection);
 					}

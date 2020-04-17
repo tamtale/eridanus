@@ -61,12 +61,12 @@ public class GameButtonsStage {
         configureWidgets();
         setListeners();
 
-        adapter.setSelectedSpawnState(new SpawnInfo(SpawnType.UNIT));
+        adapter.setSelectedSpawnState(new SpawnInfo(SpawnType.NONE));
     }
 
     private void setWidgets() {
         unitButton   = new TextButton("Spawn Unit\nCost: " + adapter.getUnitCost(),   new Skin(Gdx.files.internal("uiskin.json")));
-        unitButton.setStyle(pressedStyle);
+        unitButton.setStyle(normalStyle);
         previouslySelected = unitButton;
 
         tower1Button = new TextButton("TEMP 1", new Skin(Gdx.files.internal("uiskin.json")));
@@ -101,10 +101,10 @@ public class GameButtonsStage {
         showAttackRadiusCheckBox.setSize(124, 50);
         restartGame.setSize(128, 48);
 
-        unitButton.setPosition(34,  20);
-        tower1Button.setPosition(172, 20);
-        tower2Button.setPosition(310, 20);
-        tower3Button.setPosition(448, 20);
+        tower1Button.setPosition(34,  20);
+        tower2Button.setPosition(172, 20);
+        tower3Button.setPosition(310, 20);
+        unitButton.setPosition(448, 20);
         manaLabel.setPosition(586, 20);
         winLabel.setPosition(250, 100);
         restartGame.setPosition(300, 75);
@@ -207,6 +207,28 @@ public class GameButtonsStage {
         }
     }
 
+    /* Force the stage to select the button corresponding to this spawn type. */
+    public void selectSpawnType(SpawnType type) {
+        switch (type) {
+            case NONE:
+                unselectAndReselect(previouslySelected, null);
+                break;
+            case UNIT:
+                unselectAndReselect(previouslySelected, unitButton);
+                break;
+            case TOWER1:
+                unselectAndReselect(previouslySelected, tower1Button);
+                break;
+            case TOWER2:
+                unselectAndReselect(previouslySelected, tower2Button);
+                break;
+            case TOWER3:
+                unselectAndReselect(previouslySelected, tower3Button);
+                break;
+        }
+
+    }
+
     /**
      * This deals with changing the button styles as new buttons are pressed
      * @param oldButton the old button to change back to normal style
@@ -214,8 +236,10 @@ public class GameButtonsStage {
      */
     public void unselectAndReselect(Button oldButton, Button newButton) {
         oldButton.setStyle(normalStyle);
-        newButton.setStyle(pressedStyle);
-        previouslySelected = newButton;
+        if (newButton != null) {
+            newButton.setStyle(pressedStyle);
+            previouslySelected = newButton;
+        }
     }
 
     /**

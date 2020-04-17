@@ -180,6 +180,10 @@ public class Renderer {
         util.drawMessages(batch);
     }
 
+    public GameButtonsStage getGameButtonsStage() {
+        return gameButtonsStage;
+    }
+
     public InputProcessor getButtonStage() {
         return gameButtonsStage.stage;
     }
