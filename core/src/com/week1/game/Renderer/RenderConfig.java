@@ -2,7 +2,6 @@ package com.week1.game.Renderer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -15,6 +14,7 @@ import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
  */
 public class RenderConfig {
     private boolean showAttackRadius, showSpawnRadius;
+    public boolean ENABLE_FOG = true;
     private float delta;
     /* Batch used to draw health bar and other HUD stuff.*/
     private SpriteBatch batch = new SpriteBatch();

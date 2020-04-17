@@ -35,13 +35,14 @@ import static com.week1.game.MenuScreens.MenuStyles.*;
 public class LoadoutScreen implements Screen {
     private Stage loadoutStage;
     private Client networkClient;
-    private boolean sentTowers = false, isHostingClient;
+    private boolean isHostingClient;
     private SelectBox<TowerDetails> tower1, tower2, tower3;
     private Array<TowerDetails> allTowerOptions;
     TextButton loadoutSelector;
 
     private TextButton startButton, returnToSpashButton;
     private TextField mapSeedField;
+    private CheckBox fogcheckbox;
 
 
 
@@ -51,7 +52,7 @@ public class LoadoutScreen implements Screen {
             Color.WHITE, new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-select", Color.valueOf("9e8196")),
             scrollStyle, listStyle);
 
-    public LoadoutScreen(Client client, boolean isHostingClient) {
+    public LoadoutScreen(Client client) {
         this.networkClient = client;
         this.isHostingClient = client.getScreenManager().getIsHost();
         this.loadoutStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
@@ -135,6 +136,14 @@ public class LoadoutScreen implements Screen {
             mapSeedField.setPosition(GameController.VIRTUAL_WIDTH / 2, GameController.VIRTUAL_HEIGHT / 2);
             loadoutStage.addActor(mapSeedField);
 
+            fogcheckbox = new CheckBox("Enable Fog of War (reccommended)", new Skin(Gdx.files.internal("uiskin.json")));
+            fogcheckbox.setSize(250, 64);
+            fogcheckbox.setPosition(GameController.VIRTUAL_WIDTH / 2 - fogcheckbox.getWidth()/2, GameController.VIRTUAL_HEIGHT / 2 + 80);
+            fogcheckbox.setChecked(true);
+            fogcheckbox.getLabel().setFontScale(2);
+            fogcheckbox.getCells().get(0).size(40,40);
+            loadoutStage.addActor(fogcheckbox);
+
             startButton = new TextButton("Waiting for all players to chose loadouts...", disabledStyle);
             startButton.getLabel().setFontScale(2);
             startButton.setTouchable(Touchable.disabled);
@@ -150,7 +159,7 @@ public class LoadoutScreen implements Screen {
                     Gdx.app.debug("pjb3 LoadoutScreen", "About to send start message.");
                     long enteredSeed = parseMapSeed(mapSeedField.getText());
                     Gdx.app.log("lji1 LoadoutScreen", "Using seed: " + enteredSeed);
-                    networkClient.sendGoToGame(enteredSeed);
+                    networkClient.sendGoToGame(enteredSeed, fogcheckbox.isChecked());
                 }
             });
 
