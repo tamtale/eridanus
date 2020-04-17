@@ -750,12 +750,14 @@ public class GameState implements GameRenderable {
                 // If it's a tower block, return the tower clickable.
                 for (int i = 0; i < towers.size; i++) {
                         Tower t = towers.get(i);
-                        List<BlockSpec> blocks = t.getLayout();
-                        for (BlockSpec spec: blocks) {
-                            if ((int) (spec.getX() + t.getX()) == block.x &&
-                                (int) (spec.getZ() + t.getY()) == block.y &&
-                                (int) (spec.getY() + t.getZ()) == block.z) {
-                               return t;
+                        if (t.visible()) {
+                            List<BlockSpec> blocks = t.getLayout();
+                            for (BlockSpec spec: blocks) {
+                                if ((int) (spec.getX() + t.getX()) == block.x &&
+                                    (int) (spec.getZ() + t.getY()) == block.y &&
+                                    (int) (spec.getY() + t.getZ()) == block.z) {
+                                    return t;
+                                }
                             }
                         }
                     }
