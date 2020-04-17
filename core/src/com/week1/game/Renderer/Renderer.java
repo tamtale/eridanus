@@ -33,9 +33,6 @@ public class Renderer {
     private float deltaRotation = 0f;
     private float totalRotation = 0f;
     private static float PAN_SCALE = 1.5f;
-
-
-
     private Map<Direction, Vector3> directionToVector;
     {
         directionToVector = new HashMap<Direction, Vector3>() {{
@@ -60,9 +57,6 @@ public class Renderer {
         env.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         renderConfig = new RenderConfig(false, false, 0, cam, env);
-    }
-
-    public static void setFogVisibility(boolean enableFog) {
     }
 
     public PerspectiveCamera getCam() {

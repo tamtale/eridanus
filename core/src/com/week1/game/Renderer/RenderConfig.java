@@ -14,7 +14,6 @@ import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
  */
 public class RenderConfig {
     private boolean showAttackRadius, showSpawnRadius;
-    public boolean ENABLE_FOG = true;
     private float delta;
     /* Batch used to draw health bar and other HUD stuff.*/
     private SpriteBatch batch = new SpriteBatch();
