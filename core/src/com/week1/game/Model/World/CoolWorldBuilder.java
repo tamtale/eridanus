@@ -23,7 +23,7 @@ public class CoolWorldBuilder implements IWorldBuilder {
         this.add(new Pair<>(new Material(ColorAttribute.createDiffuse(new Color(0x660000))), new Material(ColorAttribute.createDiffuse(Color.LIME))));
     }};
     
-    private static final int NUM_CRYSTALS = 10;
+    private static final int NUM_CRYSTALS = 16;
     private static Vector2[] crystalLocs = new Vector2[NUM_CRYSTALS];
     
     @Override
