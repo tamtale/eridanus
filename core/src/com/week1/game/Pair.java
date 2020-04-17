@@ -15,11 +15,16 @@ public class Pair<K,V> {
         this.key = key;
         this.value = value;
     }
+    
+    @Override
+    public String toString() {
+        return "Pair(" + this.key.toString() + ", " + this.value.toString() + ")";
+    }
 
-    public static class ColorPair extends Pair<String, Color>{
+    public static class FactionPair extends Pair<String, Color>{
 
-        public ColorPair(String key, Color value) {
-            super(key, value);
+        public FactionPair(String name, Color color) {
+            super(name, color);
         }
 
         @Override
@@ -27,7 +32,20 @@ public class Pair<K,V> {
             return key;
         }
     }
-
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof Pair)) return false;
+        Pair p = (Pair)o;
+        return this.key.equals(p.key) && this.value.equals(p.value);
+                
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.key.hashCode() + this.value.hashCode();
+    }
 }
 
 

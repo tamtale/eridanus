@@ -86,39 +86,6 @@ public interface Block {
             }
         };
         
-        public static TerrainBlock CRYSTAL = new TerrainBlock(Color.BLACK, 1f) {
-            {
-                String crystalName = "crystals/blueCrystal.g3db";
-                Initializer.assetManager.load(crystalName, Model.class);
-                Initializer.assetManager.finishLoading();
-                this.model = Initializer.assetManager.get(crystalName, Model.class);
-                
-                // Adjust the model to fit nicely into the blocky world
-                for (Node node : this.model.nodes) {
-                    node.scale.set(0.25f,0.25f,0.25f);                   
-                    node.translation.set(0f, 0f, -0.5f);
-                }
-                this.model.calculateTransforms();
-            }
-            
-            @Override
-            public Optional<ModelInstance> modelInstance(float x, float y, float z) {
-                ModelInstance instance = new ModelInstance(model);
-                instance.transform.setToTranslation(x, y, z);
-                return Optional.of(instance);
-            }
-           
-            @Override
-            public boolean canSupportTower() {
-                return false;
-            }
-
-            @Override
-            public boolean allowMinionToSpawnOn() {
-                return false;
-            }
-        };
-
     }
 
 

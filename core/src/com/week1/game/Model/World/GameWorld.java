@@ -7,14 +7,23 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static com.week1.game.Model.Initializer.*;
+import static com.week1.game.Model.StatsConfig.ENABLE_FOG;
 
 public class GameWorld implements GameRenderable {
     private Block[][][] blocks;
@@ -30,11 +39,16 @@ public class GameWorld implements GameRenderable {
 
     private BoundingBox[][][] chunkBoundingBoxes;
     private int[][][] activeBlocksPerChunk;
+    
+    private Material[][][] originalMaterials;
+    private boolean[][] visible;
 
     public static final float blockOffset = 0.5f;
 
     private int chunkSide;
     private int chunkHeight;
+    
+    private Array<Pair<Integer, Integer>> recentlyChangedLocations = new Array<>();
 
     public GameWorld(IWorldBuilder worldBuilder) {
         blocks = worldBuilder.terrain();
@@ -97,6 +111,21 @@ public class GameWorld implements GameRenderable {
             chunkedModelCaches[i] = new ModelCache();
         }
         Arrays.fill(shouldRefreshChunk, true);
+        
+        // Fill up the original materials array
+        originalMaterials = new Material[LENGTH][WIDTH][HEIGHT];
+        visible = new boolean[LENGTH][WIDTH];
+        for (int i = 0; i < LENGTH; i++) {
+            for (int j = 0; j < WIDTH; j++) {
+                visible[i][j] = false;
+                for (int k = 0; k < HEIGHT; k++) {
+                    ModelInstance instance = getModelInstance(i, j, k);
+                    if (instance != null) {
+                        originalMaterials[i][j][k] = instance.model.materials.get(0);
+                    }
+                }
+            }
+        }
     }
 
     private void updateActiveBlocks(int i, int j, int k) {
@@ -130,18 +159,121 @@ public class GameWorld implements GameRenderable {
         }
     }
 
+    private Lock hidesLock = new ReentrantLock();
+    private List<Pair<Integer,Integer>> hides = new ArrayList<>();
+    public void markForHide(int i, int j) {
+        hidesLock.lock();
+        hides.add(new Pair<>(i, j));
+        hidesLock.unlock();
+    }
+    private Lock unhidesLock = new ReentrantLock();
+    private List<Pair<Integer,Integer>> unhides = new ArrayList<>();
+    public void markForUnhide(int i, int j) {
+        unhidesLock.lock();
+        unhides.add(new Pair<>(i, j));
+        unhidesLock.unlock();
+    }
+    
+    
+    public void hideColumn(int i, int j) {
+        visible[i][j] = false;
+        for (int k = 0; k < HEIGHT; k++) {
+            hideBlock(i,j,k);
+        }
+    }
+    private void hideBlock(int i, int j, int k) {
+        ModelInstance modelInstance = getModelInstance(i, j, k);
 
+        if (modelInstance != null) {
+
+            if (blocks[i][j][k] instanceof Block.TowerBlock) { // hide towers completely
+                setModelInstance(i, j, k, null);
+            } else { // just turn Terrain Blocks black
+                Material mat = modelInstance.materials.get(0);
+                mat.clear();
+
+                mat.set(hiddenMaterial);
+            }
+            shouldRefreshChunk[((i * WIDTH * HEIGHT + j * HEIGHT + k)) / CHUNKSIZE] = true;
+        }
+    }
+
+    public void unhideColumn(int i, int j) {
+        visible[i][j] = true;
+        for (int k = 0; k < HEIGHT; k++) {
+            unhideBlock(i, j, k);
+        }
+    }
+    
+    public void unhideBlock(int i, int j, int k) {
+        // Don't need to unhide air
+        if (blocks[i][j][k] instanceof Block.TowerBlock) {
+            setModelInstance(i,j,k,blocks[i][j][k].modelInstance(i,j,k).orElse(null));
+        } else {
+            ModelInstance modelInstance = getModelInstance(i, j, k);
+            if (modelInstance != null) {
+                Material mat = modelInstance.materials.get(0);
+                mat.clear();
+
+                mat.set(originalMaterials[i][j][k]);
+            }
+        }
+        shouldRefreshChunk[((i * WIDTH * HEIGHT + j * HEIGHT + k)) / CHUNKSIZE] = true;
+    }
+
+    /*
+     * Clears the locations after checking
+     */
+    public Array<Pair<Integer, Integer>> pollRecentlyChangedLocations() {
+        Array<Pair<Integer, Integer>> ret = this.recentlyChangedLocations;
+        this.recentlyChangedLocations = new Array<>();
+        return ret;
+    }
+    
     public Block getBlock(int i, int j, int k) {
         return blocks[i][j][k];
     }
-    public void setBlock(int i, int j, int k, Block block) {
+    
+    public void addTowerBlock(int i, int j, int k, Block.TowerBlock block, boolean locallyOwned) {
+        // Keep track of recently updated blocks, so that the fog system can appropriately hide/show
+        Pair<Integer, Integer> newLoc = new Pair<>(i, j);
+        if (!recentlyChangedLocations.contains(newLoc, false)) {
+            recentlyChangedLocations.add(newLoc);
+        }
+
         blocks[i][j][k] = block;
         Optional<ModelInstance> modelInstance = blocks[i][j][k].modelInstance(i,j,k);
         if (modelInstance.isPresent()) {
-            setModelInstance(i, j, k, modelInstance.get());
+            if (locallyOwned || !ENABLE_FOG) { // if the tower is locally owned (or fog disabled), show the blocks immediately
+                setModelInstance(i, j, k, modelInstance.get());
+                originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
+            } else { // if the tower is owned by an opponent, only show the blocks once confirmed by fog system
+                setModelInstance(i, j, k, null);
+                originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
+            }
         } else {
             setModelInstance(i, j, k, null);
+            originalMaterials[i][j][k] = null;
         }
+        updateBoundingBox(i,j,k);
+        updateActiveBlocks(i,j,k);
+        updateGraph(i, j, block);
+        refreshHeight = true;
+        shouldRefreshChunk[(i * WIDTH * HEIGHT +  j * HEIGHT + k) / CHUNKSIZE] = true;
+
+    }
+    
+    public void clearBlock(int i, int j, int k) {
+        Block block = Block.TerrainBlock.AIR;
+        blocks[i][j][k] = block;
+        Optional<ModelInstance> modelInstance = blocks[i][j][k].modelInstance(i,j,k);
+//        if (modelInstance.isPresent()) {
+//            setModelInstance(i, j, k, modelInstance.get());
+//            originalMaterials[i][j][k] = modelInstance.get().model.materials.get(0);
+//        } else {
+            setModelInstance(i, j, k, null);
+            originalMaterials[i][j][k] = null;
+//        }
         updateBoundingBox(i,j,k);
         updateActiveBlocks(i,j,k);
         updateGraph(i, j, block);
@@ -385,7 +517,9 @@ public class GameWorld implements GameRenderable {
 
         return new Clickable() {
             private BoundingBox boundingBox = new BoundingBox(closestBox);
-            private Material originalMaterial = closestModelInstance_final.model.materials.get(0);
+            private int x = (int)closestCoords.x;
+            private int y = (int)closestCoords.y;
+            private int z = (int)closestCoords.z;
 
             @Override
             public boolean intersects(Ray ray, Vector3 intersection) {
@@ -399,21 +533,25 @@ public class GameWorld implements GameRenderable {
                 if (selected) {
                     mat.set(Unit.selectedMaterial);
                 } else {
-                    mat.set(originalMaterial);
+                    mat.set(originalMaterials[x][y][z]);
                 }
-                shouldRefreshChunk[((int) (closestCoords.x * WIDTH * HEIGHT + closestCoords.y * HEIGHT + closestCoords.z)) / CHUNKSIZE] = true;
+                shouldRefreshChunk[((x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
             }
 
             @Override
             public void setHovered(boolean hovered) {
-                Material mat = closestModelInstance_final.materials.get(0);
-                mat.clear();
                 if (hovered) {
+                    Material mat = closestModelInstance_final.materials.get(0);
+                    mat.clear();
                     mat.set(Unit.hoveredMaterial);
-                } else {
-                    mat.set(originalMaterial);
+                    shouldRefreshChunk[( (x * WIDTH * HEIGHT + y * HEIGHT + z)) / CHUNKSIZE] = true;
+                } else { // these take care of refreshing the chunk in unhide/hide
+                    if (visible[x][y]) {
+                        unhideBlock(x,y,z);
+                    } else {
+                        hideBlock(x,y,z);
+                    }
                 }
-                shouldRefreshChunk[((int) (closestCoords.x * WIDTH * HEIGHT + closestCoords.y * HEIGHT + closestCoords.z)) / CHUNKSIZE] = true;
             }
 
             @Override
@@ -426,7 +564,11 @@ public class GameWorld implements GameRenderable {
     public int[] getWorldDimensions() {
         return new int[]{blocks.length, blocks[0].length, blocks[0][0].length};
     }
-
+    
+    
+    
+    
+    
     /*
      * Fetches the current state of the given chunk and updates the modelcache for that chunk.
      */
@@ -442,6 +584,20 @@ public class GameWorld implements GameRenderable {
 
     @Override
     public void render(RenderConfig config) {
+        // change stuff
+        hidesLock.lock();
+        hides.forEach((hidePair) -> hideColumn(hidePair.key, hidePair.value));
+        hides = new ArrayList<>();
+        hidesLock.unlock();
+        
+        unhidesLock.lock();
+        unhides.forEach((unhidePair) -> unhideColumn(unhidePair.key, unhidePair.value));
+        unhides = new ArrayList<>();
+        unhidesLock.unlock();
+        
+        
+        
+        // update
         for (int i = 0; i < chunkedModelCaches.length; i++) {
             if (shouldRefreshChunk[i]) {
                 refreshChunkModelCache(i);
@@ -449,14 +605,16 @@ public class GameWorld implements GameRenderable {
             }
         }
 
+        
+        // render
         ModelBatch batch = config.getModelBatch();
         Environment env = config.getEnv();
         batch.begin(config.getCam());
         for (int i = 0; i < chunkedModelCaches.length; i++) {
             batch.render(chunkedModelCaches[i], env);
         }
-        batch.end();
 
+        batch.end();
     }
 
     public int getHeight(int i, int j) {

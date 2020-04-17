@@ -2,6 +2,7 @@ package com.week1.game.Model.World;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.week1.game.TowerBuilder.BlockType;
 
 /**
  * Tiny world for testing.
@@ -21,6 +22,7 @@ public class TinyWorldBuilder implements IWorldBuilder {
                 }
             }
         }
+        
         return blocks;
     }
 
@@ -33,10 +35,15 @@ public class TinyWorldBuilder implements IWorldBuilder {
     }
 
     @Override
-    public Vector2[] crystalLocations() {
-        return new Vector2[0];
+    public int getNumCrystals() {
+        return 0;
     }
-
+    
+    @Override
+    public Vector2 nextCrystalLocation() {
+        return null;
+    }
+    
     @Override
     public void addSeed(long mapSeed) {
 

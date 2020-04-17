@@ -2,6 +2,7 @@ package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.MenuScreens.ScreenManager;
+import com.week1.game.Model.Entities.UnitModel;
 import com.week1.game.Model.PlayerInfo;
 import com.week1.game.Model.TowerLite;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
@@ -9,6 +10,7 @@ import com.week1.game.Networking.Messages.Control.ClientControl.ClientControlMes
 import com.week1.game.Networking.Messages.Control.HostControl.*;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
+import com.week1.game.Pair;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -72,7 +74,7 @@ public class Client {
                     // try parsing as a control message first
                     ClientControlMessage controlMsg = MessageFormatter.parseClientControlMessage(messages);
                     if (controlMsg != null) {
-                        Gdx.app.log(TAG, "Received control message: " + controlMsg);
+                        Gdx.app.debug(TAG, "Received control message: " + controlMsg);
                         controlMsg.updateClient(this);
                         continue; // don't need to try parsing as game messages if already successfully parsed as control message
                     }
@@ -124,6 +126,11 @@ public class Client {
     public void sendRestartRequest() {
         sendStringMessage(MessageFormatter.packageMessage(new RequestRestartMessage(playerId)));
     }
+
+    public void sendFactionSelection(String selected) {
+        sendStringMessage(MessageFormatter.packageMessage(new SubmitFactionMessage(playerId, selected)));
+    }
+
     /**
      * This is needed because I don't want to add the adapter during creation because connection
      * should ha[pen before the game is created
@@ -163,4 +170,6 @@ public class Client {
         sendStringMessage(MessageFormatter.packageMessage(new RetractLoadoutMessage(playerId)));
 
     }
+
+
 }

@@ -3,7 +3,6 @@ package com.week1.game.Networking.Messages.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.InfoUtil;
-import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
@@ -37,9 +36,9 @@ public class CreateTowerMessage extends GameMessage {
         towerCost = towerDetails.getPrice();
 
         // Does the player have enough mana
-        if (towerCost > inputState.getPlayerStats(playerID).getMana()) {
+        if (towerCost > inputState.getPlayer(playerID).getMana()) {
             // Do not have enough mana!
-            util.log("pjb3 - CreateTowerMessage", "Not enough mana to create tower. Need " + towerCost);
+            util.log(playerID, "pjb3 - CreateTowerMessage", "Not enough mana to create tower. Need " + towerCost);
             return false; // indicate it was NOT placed
         }
 
@@ -53,17 +52,16 @@ public class CreateTowerMessage extends GameMessage {
 
         // The tower can't be too far from an existing friendly structure
         if (!inputState.findNearbyStructure(x, y, z, playerID)) {
-            util.log("pjb3 - CreateTowerMessage", "Not close enough to an existing tower or home base");
+            util.log(playerID, "pjb3 - CreateTowerMessage", "Not close enough to an existing tower or home base");
             return false;
         }
 
         // Deduct the mana cost from the creating player
-        util.log("pjb3 - CreateTowerMessage", "Used " + towerCost + " mana to create tower.");
-        inputState.getPlayerStats(playerID).useMana(towerCost);
+        util.log(playerID, "pjb3 - CreateTowerMessage", "Used " + towerCost + " mana to create tower.");
+        inputState.getPlayer(playerID).useMana(towerCost);
 
         // Only create the tower once we're sure it's safe to do so
-        Tower tower = new Tower((int) x, (int) y, (int) z, towerDetails, playerID, towerType);
-        inputState.addTower(tower, playerID);
+        inputState.addTower((int) x, (int) y, (int) z, towerDetails, playerID, towerType);
 
         return true;
     }
@@ -99,16 +97,16 @@ public class CreateTowerMessage extends GameMessage {
             if (!((0 <= tempX && tempX < maxX) &&
                     (0 <= tempY && tempY < maxY) &&
                     (0 <= tempZ && tempZ < maxZ))) {
-                util.log("lji1 - CreateTowerMessage", "Can't build tower off the map.");
+                util.log(playerID, "lji1 - CreateTowerMessage", "Can't build tower off the map.");
                 return false;
             }
             if (inputState.getWorld().getBlock(tempX, tempY, tempZ) != Block.TerrainBlock.AIR) {
-                util.log("lji1 - CreateTowerMessage", "Can't build a tower overlapping with existing blocks");
+                util.log(playerID, "lji1 - CreateTowerMessage", "Can't build a tower overlapping with existing blocks");
                 return false;
             }
 
             if (bs.getY() == 0 && !(inputState.getWorld().getBlock(tempX, tempY, tempZ - 1).canSupportTower())) {
-                util.log("lji1 - CreateTowerMessage", "Tower not fully supported by terrain");
+                util.log(playerID, "lji1 - CreateTowerMessage", "Tower not fully supported by terrain");
                 return false;
             }
 
@@ -116,7 +114,7 @@ public class CreateTowerMessage extends GameMessage {
                 Unit minion = minions.get(u);
                 if ((((int)minion.getX() == tempX) || ((int)minion.getX() + 1 == tempX)) &&
                         (((int)minion.getY() == tempY) || ((int)minion.getY() + 1 == tempY))) {
-                    util.log("lji1 - CreateTowerMessage", "Tower overlaps with minion.");
+                    util.log(playerID, "lji1 - CreateTowerMessage", "Tower overlaps with minion.");
                     return false;
                 }
             }

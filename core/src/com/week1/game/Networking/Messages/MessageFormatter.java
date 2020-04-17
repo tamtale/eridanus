@@ -78,6 +78,8 @@ public class MessageFormatter {
                 return g.fromJson(jsonString, RetractLoadoutMessage.class);
             } else if (parsedMsg.messageTypeID == MessageType.SUBMITPLAYERINFO) {
                 return g.fromJson(jsonString, SubmitPlayerInfo.class);
+            } else if (parsedMsg.messageTypeID == MessageType.SUBMITCOLOR) {
+                return g.fromJson(jsonString, SubmitFactionMessage.class);
             }
         }
 
@@ -87,7 +89,7 @@ public class MessageFormatter {
 
     public static ClientControlMessage parseClientControlMessage(String jsonString) {
         
-        Gdx.app.log(TAG, "About to parse as ClientControlMessage: " + jsonString);
+        Gdx.app.debug(TAG, "About to parse as ClientControlMessage: " + jsonString);
         
         AMessage parsedMsg = g.fromJson(jsonString, PrototypeMessage.class);
         if (parsedMsg != null) {

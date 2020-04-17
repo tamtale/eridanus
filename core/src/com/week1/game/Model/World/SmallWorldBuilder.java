@@ -2,6 +2,7 @@ package com.week1.game.Model.World;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.week1.game.TowerBuilder.BlockType;
 
 /**
  * World builder for a basic 4-player game.
@@ -11,13 +12,9 @@ public class SmallWorldBuilder implements IWorldBuilder {
 
     public static SmallWorldBuilder ONLY = new SmallWorldBuilder();
     
-    private static Vector2[] crystalLocs = new Vector2[] {
-            new Vector2(10, 5)
-    };
-
     @Override
     public Block[][][] terrain() {
-        Block[][][] blocks = new Block[90][30][15];
+        Block[][][] blocks = new Block[40][30][15];
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks[0].length; j++) {
                 blocks[i][j][0] = Block.TerrainBlock.STONE;
@@ -27,6 +24,9 @@ public class SmallWorldBuilder implements IWorldBuilder {
             }
         }
         makePlateau(blocks, 0, 5, 0, 5);
+
+
+        blocks[30][15][1] = Block.TowerBlock.towerBlockMap.get(BlockType.EARTH);
         
         return blocks;
     }
@@ -46,11 +46,17 @@ public class SmallWorldBuilder implements IWorldBuilder {
                 new Vector3(35, 10, 1),
         };
     }
+    
+    @Override
+    public Vector2 nextCrystalLocation() {
+        return new Vector2(10, 5);
+    }
 
     @Override
-    public Vector2[] crystalLocations() {
-        return crystalLocs;
+    public int getNumCrystals() {
+        return 1;
     }
+    
 
     @Override
     public void addSeed(long mapSeed) {

@@ -14,6 +14,7 @@ import com.week1.game.InfoUtil;
 import com.week1.game.Model.*;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
+import com.week1.game.Model.Entities.UnitModel;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
@@ -47,9 +48,10 @@ public class GameScreen implements Screen {
 	public GameScreen(Client givenNetworkClient) {
 		Initializer.init();
 		gameStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
-		util = new InfoUtil(true);
 		// Finish setting up the client.
 		this.networkClient = givenNetworkClient;
+
+		util = new InfoUtil(networkClient.getPlayerId(), true);
 
 		setColorMapping(givenNetworkClient.getInfoList());
 
@@ -106,7 +108,7 @@ public class GameScreen implements Screen {
 			}
 
 			public double getPlayerMana(int playerId) {
-				return engine.getGameState().getPlayerStats(playerId).getMana();
+				return engine.getGameState().getPlayer(playerId).getMana();
 			}
 
             @Override
@@ -198,9 +200,9 @@ public class GameScreen implements Screen {
 	}
 
 	public static void setColorMapping(List<PlayerInfo> infoList) {
-		Map<Integer, Color> colorMap = new HashMap<>();
+		Map<Integer, String> colorMap = new HashMap<>();
 		for (int i = 0; i < infoList.size(); i++) {
-			colorMap.put(i, infoList.get(i).getColor());
+			colorMap.put(i, infoList.get(i).getFaction());
 		}
 		Unit.setColorMapping(colorMap);
 	}
