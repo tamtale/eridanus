@@ -29,7 +29,7 @@ public class CoolWorldBuilder implements IWorldBuilder {
     @Override
     public Block[][][] terrain() {
         // empty block
-        blocks = new Block[90][90][15];
+        blocks = new Block[150][150][15];
         this.random = new Random(seed);
         
         // Set the crystal locations
@@ -206,9 +206,9 @@ public class CoolWorldBuilder implements IWorldBuilder {
     public Vector3[] startLocations() {
         return new Vector3[] {
                 new Vector3(10, 10, 1),
-                new Vector3(80, 80, 1),
-                new Vector3(80, 10, 1),
-                new Vector3(10, 80, 1)
+                new Vector3(blocks.length - 10, blocks[0].length - 10, 1),
+                new Vector3(blocks.length - 10, 10, 1),
+                new Vector3(10, blocks[0].length - 10, 1)
         };
     }
 
