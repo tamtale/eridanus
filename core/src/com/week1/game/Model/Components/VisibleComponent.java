@@ -1,7 +1,7 @@
 package com.week1.game.Model.Components;
 
 
-import static com.week1.game.Model.StatsConfig.ENABLE_FOG;
+import com.week1.game.Model.Systems.FogSystem;
 
 public class VisibleComponent extends AComponent {
     private boolean visible;
@@ -10,7 +10,7 @@ public class VisibleComponent extends AComponent {
     }
     
     public boolean visible() {
-        return this.visible || !ENABLE_FOG;
+        return this.visible || !FogSystem.fogEnabled();
     }
     
     public void setVisible(boolean visible) {

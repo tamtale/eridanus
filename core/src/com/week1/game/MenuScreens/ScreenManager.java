@@ -49,11 +49,11 @@ public class ScreenManager {
 
     public void createNewLoadoutScreen(Client client) {
         // Set the Screen to the Loadout screen when the render thread is ready
-        Gdx.app.postRunnable(() -> gameControllerSetScreenAdapter.setScreen(new LoadoutScreen(client, isHostScreenManager)));
+        Gdx.app.postRunnable(() -> gameControllerSetScreenAdapter.setScreen(new LoadoutScreen(client)));
     }
 
     public void restartGame(Client c) {
-        Gdx.app.postRunnable(()-> setScreen(new LoadoutScreen(c, getIsHost())));
+        Gdx.app.postRunnable(()-> setScreen(new LoadoutScreen(c)));
     }
 
     public void setReadyToStart() {
