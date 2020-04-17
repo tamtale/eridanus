@@ -157,7 +157,6 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
 
         @Override
         public Void acceptTower(Tower t) {
-            // TODO only change to target on enemy tower
             if (t.getPlayerId() == adapter.getPlayerId()) {
                 Gdx.graphics.setCursor(Initializer.defaultCursor);
             } else {
@@ -256,37 +255,6 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
             return true;
         } else { // the player was not dragging, so maybe they clicked directly on something
             Clickable clicked = adapter.selectClickable(screenX, screenY, touchPos);
-            clicked.accept(new Clickable.ClickableVisitor<Void>() {
-                @Override
-                public Void acceptUnit(Unit unit) {
-                    Gdx.app.log("ClickOracle - ttl4", "Got a unit - " + unit);
-                    return null;
-                }
-
-                @Override
-                public Void acceptBlock(Clickable.ClickableBlock block) {
-                    Gdx.app.log("ClickOracle - ttl4", "got a block: (" + block.x + ", " + block.y + ", " + block.z + ")");
-                    return null;
-                }
-
-                @Override
-                public Void acceptCrystal(Crystal crystal) {
-                    Gdx.app.log("ClickOracle - ttl4", "got a crystal!");
-                    return null;
-                }
-
-                @Override
-                public Void acceptTower(Tower t) {
-                    Gdx.app.log("ClickOracle - ttl4", "got a tower!");
-                    return null;
-                }
-
-                @Override
-                public Void acceptNull() {
-                    System.out.println("got null!");
-                    return null;
-                }
-            });
 
             if (button == Input.Buttons.LEFT) {
                 Gdx.app.debug("lji1 - ClickOracle", "Left click.");
