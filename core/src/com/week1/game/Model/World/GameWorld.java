@@ -571,12 +571,18 @@ public class GameWorld implements GameRenderable {
     public void render(RenderConfig config) {
         // change stuff
         hidesLock.lock();
-        hides.forEach((hidePair) -> hideColumn(hidePair.key, hidePair.value));
+        for (int i = 0; i < hides.size(); i++) {
+            Pair<Integer, Integer> hidePair = hides.get(i);
+            hideColumn(hidePair.key, hidePair.value);
+        }
         hides = new ArrayList<>();
         hidesLock.unlock();
         
         unhidesLock.lock();
-        unhides.forEach((unhidePair) -> unhideColumn(unhidePair.key, unhidePair.value));
+        for (int i = 0; i < unhides.size(); i++) {
+            Pair<Integer, Integer> unhidePair = unhides.get(i);
+            unhideColumn(unhidePair.key, unhidePair.value);
+        }
         unhides = new ArrayList<>();
         unhidesLock.unlock();
         
