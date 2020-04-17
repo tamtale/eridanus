@@ -21,10 +21,12 @@ public class RequestGoToGameMessage extends HostControlMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.REQUESTGOTOGAME;
     private final static String TAG = "StartMessage";
     private long mapSeed;
+    private boolean enableFog;
     
-    public RequestGoToGameMessage(long mapSeed, int playerID) {
+    public RequestGoToGameMessage(long mapSeed, boolean enableFog, int playerID) {
         super(playerID, MESSAGE_TYPE);
         this.mapSeed = mapSeed;
+        this.enableFog = enableFog;
     }
 
     @Override 
@@ -50,7 +52,7 @@ public class RequestGoToGameMessage extends HostControlMessage {
         h.broadcastToRegisteredPlayers(MessageFormatter.packageMessage(
                 new Update(Arrays.asList(
                     MessageFormatter.packageMessage(new TowerDetailsMessage(-1, h.towerDetails, 0)),
-                    MessageFormatter.packageMessage(new InitMessage(mapSeed, h.registry.size(), -1, 0))
+                    MessageFormatter.packageMessage(new InitMessage(mapSeed, enableFog, h.registry.size(), -1, 0))
                 ))
         ));
         

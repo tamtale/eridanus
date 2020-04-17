@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Entities.Clickable;
 import com.week1.game.Model.Entities.Unit;
+import com.week1.game.Model.Systems.FogSystem;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
@@ -18,12 +19,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.week1.game.Model.Initializer.*;
-import static com.week1.game.Model.StatsConfig.ENABLE_FOG;
+import static com.week1.game.Model.Initializer.hiddenMaterial;
 
 public class GameWorld implements GameRenderable {
     private Block[][][] blocks;
@@ -234,7 +233,7 @@ public class GameWorld implements GameRenderable {
         blocks[i][j][k] = block;
         Optional<ModelInstance> modelInstance = blocks[i][j][k].modelInstance(i,j,k);
         if (modelInstance.isPresent()) {
-            if (locallyOwned || !ENABLE_FOG) { // if the tower is locally owned (or fog disabled), show the blocks immediately
+            if (locallyOwned || !FogSystem.fogEnabled()) { // if the tower is locally owned (or fog disabled), show the blocks immediately
                 setModelInstance(i, j, k, modelInstance.get());
             } else { // if the tower is owned by an opponent, only show the blocks once confirmed by fog system
                 ModelInstance mI = modelInstance.get();

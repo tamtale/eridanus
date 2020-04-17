@@ -35,13 +35,14 @@ import static com.week1.game.MenuScreens.MenuStyles.*;
 public class LoadoutScreen implements Screen {
     private Stage loadoutStage;
     private Client networkClient;
-    private boolean sentTowers = false, isHostingClient;
+    private boolean isHostingClient;
     private SelectBox<TowerDetails> tower1, tower2, tower3;
     private Array<TowerDetails> allTowerOptions;
-    TextButton loadoutSelector;
+    TextButton confirmLoadout;
 
     private TextButton startButton, returnToSpashButton;
     private TextField mapSeedField;
+    private CheckBox fogcheckbox;
 
 
 
@@ -51,7 +52,7 @@ public class LoadoutScreen implements Screen {
             Color.WHITE, new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-select", Color.valueOf("9e8196")),
             scrollStyle, listStyle);
 
-    public LoadoutScreen(Client client, boolean isHostingClient) {
+    public LoadoutScreen(Client client) {
         this.networkClient = client;
         this.isHostingClient = client.getScreenManager().getIsHost();
         this.loadoutStage = new Stage(new FitViewport(GameController.VIRTUAL_WIDTH, GameController.VIRTUAL_HEIGHT));
@@ -78,18 +79,18 @@ public class LoadoutScreen implements Screen {
         loadoutStage.addActor(new Image(reg));
 
 
-        loadoutSelector = new TextButton("Confirm Your Loadout!", new Skin(Gdx.files.internal("uiskin.json")));
-        loadoutSelector.getLabel().setFontScale(2);
-        loadoutSelector.setSize(375,64);
-        loadoutSelector.setPosition(
-                GameController.VIRTUAL_WIDTH / 2 - loadoutSelector.getWidth()/2,
-                GameController.VIRTUAL_HEIGHT / 2 - loadoutSelector.getHeight());
+        confirmLoadout = new TextButton("Confirm Your Loadout!", new Skin(Gdx.files.internal("uiskin.json")));
+        confirmLoadout.getLabel().setFontScale(2);
+        confirmLoadout.setSize(425,64);
+        confirmLoadout.setPosition(
+                GameController.VIRTUAL_WIDTH / 2 - confirmLoadout.getWidth()/2,
+                GameController.VIRTUAL_HEIGHT / 2 - confirmLoadout.getHeight());
 
-        loadoutStage.addActor(loadoutSelector);
+        loadoutStage.addActor(confirmLoadout);
         createLoadoutDropdowns();
 
         // Set the initial listener for the selector
-        loadoutSelector.addListener(acceptLoadoutHandler);
+        confirmLoadout.addListener(acceptLoadoutHandler);
 
         // Make the font for the title
         Label.LabelStyle label1Style = new Label.LabelStyle();
@@ -122,7 +123,7 @@ public class LoadoutScreen implements Screen {
             Label mapSeedLabel = new Label("Enter a map seed:  ", label1Style);
             mapSeedLabel.setFontScale(2);
             mapSeedLabel.setSize(200, 64);
-            mapSeedLabel.setPosition(GameController.VIRTUAL_WIDTH / 2 - mapSeedLabel.getWidth(),GameController.VIRTUAL_HEIGHT / 2);
+            mapSeedLabel.setPosition(GameController.VIRTUAL_WIDTH / 2 - mapSeedLabel.getWidth(),GameController.VIRTUAL_HEIGHT / 2 + 10);
             mapSeedLabel.setAlignment(Align.right);
             loadoutStage.addActor(mapSeedLabel);
             
@@ -132,8 +133,19 @@ public class LoadoutScreen implements Screen {
             textFieldStyle.font.getData().scale(ConnectionScreen.INPUTSCALE);
             mapSeedField = new TextField(mapSeedPlaceholderText, textFieldStyle);
             mapSeedField.setSize(250, 64);
-            mapSeedField.setPosition(GameController.VIRTUAL_WIDTH / 2, GameController.VIRTUAL_HEIGHT / 2);
+            mapSeedField.setPosition(GameController.VIRTUAL_WIDTH / 2, mapSeedLabel.getY());
             loadoutStage.addActor(mapSeedField);
+
+            fogcheckbox = new CheckBox("Enable Fog of War (recommended)", new Skin(Gdx.files.internal("uiskin.json")));
+            fogcheckbox.setSize(250, 64);
+            fogcheckbox.setPosition(GameController.VIRTUAL_WIDTH / 2 - fogcheckbox.getWidth()/2, GameController.VIRTUAL_HEIGHT / 2 + 80);
+            fogcheckbox.setChecked(true);
+            fogcheckbox.getLabel().setFontScale(2);
+            fogcheckbox.getCells().get(0).size(40,40);
+            loadoutStage.addActor(fogcheckbox);
+
+            // Shift the confirmation button down a bit since this is on the host to make room for the other options
+            confirmLoadout.setPosition(confirmLoadout.getX(), confirmLoadout.getY() - 100);
 
             startButton = new TextButton("Waiting for all players to chose loadouts...", disabledStyle);
             startButton.getLabel().setFontScale(2);
@@ -142,7 +154,8 @@ public class LoadoutScreen implements Screen {
             startButton.setSize(600, 64);
             startButton.setPosition(
                     GameController.VIRTUAL_WIDTH / 2 - startButton.getWidth()/2,
-                    GameController.VIRTUAL_HEIGHT / 2 - 80 - startButton.getHeight());loadoutStage.addActor(startButton);
+                    GameController.VIRTUAL_HEIGHT / 2 - 180 - startButton.getHeight());
+            loadoutStage.addActor(startButton);
 
             startButton.addListener(new ClickListener() {
                 @Override
@@ -150,7 +163,7 @@ public class LoadoutScreen implements Screen {
                     Gdx.app.debug("pjb3 LoadoutScreen", "About to send start message.");
                     long enteredSeed = parseMapSeed(mapSeedField.getText());
                     Gdx.app.log("lji1 LoadoutScreen", "Using seed: " + enteredSeed);
-                    networkClient.sendGoToGame(enteredSeed);
+                    networkClient.sendGoToGame(enteredSeed, fogcheckbox.isChecked());
                 }
             });
 
@@ -182,11 +195,11 @@ public class LoadoutScreen implements Screen {
     private ClickListener acceptLoadoutHandler =  new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-        loadoutSelector.removeListener(acceptLoadoutHandler);
-        loadoutSelector.addListener(retractLoadoutHandler);
+        confirmLoadout.removeListener(acceptLoadoutHandler);
+        confirmLoadout.addListener(retractLoadoutHandler);
 
-        loadoutSelector.setStyle(pressedStyle);
-        loadoutSelector.setText("Loadout confirmed. Click to undo");
+        confirmLoadout.setStyle(pressedStyle);
+        confirmLoadout.setText("Loadout confirmed. Click to undo");
         sendLoadout(Arrays.asList(
                 tower1.getSelected().getTowerLite(),
                 tower2.getSelected().getTowerLite(),
@@ -203,12 +216,12 @@ public class LoadoutScreen implements Screen {
     private ClickListener retractLoadoutHandler =  new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-        loadoutSelector.removeListener(retractLoadoutHandler);
-        loadoutSelector.addListener(acceptLoadoutHandler);
+        confirmLoadout.removeListener(retractLoadoutHandler);
+        confirmLoadout.addListener(acceptLoadoutHandler);
 
-        loadoutSelector.setStyle(normalStyle);
-        loadoutSelector.setText("Press to confirm loadout.");
-        loadoutSelector.setTouchable(Touchable.enabled);
+        confirmLoadout.setStyle(normalStyle);
+        confirmLoadout.setText("Press to confirm loadout.");
+        confirmLoadout.setTouchable(Touchable.enabled);
         retractLoadout();
         tower1.setTouchable(Touchable.enabled);
         tower2.setTouchable(Touchable.enabled);
