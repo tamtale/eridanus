@@ -84,6 +84,7 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
     // Command to reset the clickoracle.
     private ClickOracleCommand reset = () -> {
         spawnNone.execute();
+        deMultiSelect();
     };
     private IntMap<ClickOracleCommand> keyDownCommands = new IntMap<ClickOracleCommand>();
     private IntMap<ClickOracleCommand> keyUpCommands = new IntMap<ClickOracleCommand>();
