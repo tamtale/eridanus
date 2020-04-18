@@ -58,9 +58,9 @@ public class CrystalRespawnSystem implements ISystem, Subscriber<DeathEvent> {
     }
 
     @Override
-    public void process(DeathEvent damageEvent) {
+    public void process(DeathEvent deathEvent) {
         // Only keep the deaths of crystals
-        PositionComponent pC = crystalService.query(damageEvent.victimID);
+        PositionComponent pC = crystalService.query(deathEvent.victimID);
         if (pC != null) {
             crystalsWaitingForRespawn.add(new Pair<>(CRYSTAL_RESPAWN_INTERVAL, pC));
         }
