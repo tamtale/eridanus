@@ -51,6 +51,8 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
     private List<Subscriber<SelectionEvent>> selectionSubscribers = new ArrayList<>();
 
     private ClickOracleCommand nullCommand = () -> {};
+    /* Toggle edge panning. */
+    private ClickOracleCommand lockCamera = () -> {edgePan = !edgePan;};
     private ClickOracleCommand panStop = () -> adapter.setTranslationDirection(Direction.NONE);
     private CommandPair panUp = new CommandPair(() -> adapter.setTranslationDirection(Direction.UP), panStop);
     private CommandPair panDown = new CommandPair(() -> adapter.setTranslationDirection(Direction.DOWN), panStop);
@@ -97,6 +99,7 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         registerPair(Input.Keys.NUM_3, setSpawn3);
         registerPair(Input.Keys.NUM_4, setSpawnUnit);
         keyUpCommands.put(Input.Keys.ESCAPE, reset);
+        keyUpCommands.put(Input.Keys.Y, lockCamera);
     }
 
     private SpawnInfo.SpawnType spawnType;
