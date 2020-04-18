@@ -423,7 +423,7 @@ public class GameState implements GameRenderable {
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
             TargetingComponent.TargetingStrategy.ENEMY);
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
-        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
+        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(towerType == -1 ? 600 : 100, 0); // give a big bonus for killing a base
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID); // if built locally, show the hp right away
         Tower.TowerAdapter adapter = new Tower.TowerAdapter() {
             @Override
