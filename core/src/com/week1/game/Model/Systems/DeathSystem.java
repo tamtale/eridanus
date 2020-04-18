@@ -4,17 +4,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Components.ManaRewardComponent;
 import com.week1.game.Model.Events.DamageEvent;
+import com.week1.game.Model.Events.DeathEvent;
 import com.week1.game.Pair;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class DeathSystem implements ISystem, Subscriber<DamageEvent> {
+public class DeathSystem implements ISystem, Subscriber<DeathEvent> {
 
     /* Service to remove an entity from the GameState, given its ID.*/
     IService<Integer, Void> deleteService;
     
-    Queue<DamageEvent> deaths = new ConcurrentLinkedQueue<>();
+    Queue<DeathEvent> deaths = new ConcurrentLinkedQueue<>();
 
     public DeathSystem(IService<Integer, Void> deleteService) {
         this.deleteService = deleteService;
@@ -34,8 +35,8 @@ public class DeathSystem implements ISystem, Subscriber<DamageEvent> {
     }
 
     @Override
-    public void process(DamageEvent damageEvent) {
-        deaths.add(damageEvent);
+    public void process(DeathEvent deathEvent) {
+        deaths.add(deathEvent);
     }
 
 }

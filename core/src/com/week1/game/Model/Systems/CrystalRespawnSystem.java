@@ -6,6 +6,7 @@ import com.week1.game.Model.Components.HealthComponent;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.Entities.Crystal;
 import com.week1.game.Model.Events.DamageEvent;
+import com.week1.game.Model.Events.DeathEvent;
 import com.week1.game.Model.World.Block;
 import com.week1.game.Pair;
 
@@ -17,7 +18,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import static com.week1.game.Model.StatsConfig.CRYSTAL_RESPAWN_INTERVAL;
 import static com.week1.game.Model.StatsConfig.SECONDARY_CRYSTAL_RESPAWN_INTERVAL;
 
-public class CrystalRespawnSystem implements ISystem, Subscriber<DamageEvent> {
+public class CrystalRespawnSystem implements ISystem, Subscriber<DeathEvent> {
 
     IService<Integer, PositionComponent> crystalService; // service to check if an id corresponds to a crystal entity
     IService<PositionComponent, Boolean> respawnService; // service to respawn a crystal returns true on successful respawn
@@ -57,12 +58,11 @@ public class CrystalRespawnSystem implements ISystem, Subscriber<DamageEvent> {
     }
 
     @Override
-    public void process(DamageEvent damageEvent) {
+    public void process(DeathEvent damageEvent) {
         // Only keep the deaths of crystals
         PositionComponent pC = crystalService.query(damageEvent.victimID);
         if (pC != null) {
             crystalsWaitingForRespawn.add(new Pair<>(CRYSTAL_RESPAWN_INTERVAL, pC));
-        } else {
         }
     }
 
