@@ -212,23 +212,7 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         }
         @Override
         public Void acceptBlock(Clickable.ClickableBlock block) {
-            int currentGameHash = adapter.getGameStateHash();
-            // the player left clicked on a location - if currently in spawn mode, spawn an entity accordingly.
-            if (spawnType == SpawnInfo.SpawnType.UNIT) {
-                Gdx.app.debug("pjb3 - ClickOracle", "Spawn unit");
-                adapter.sendMessage(new CreateMinionMessage(block.x, block.y, block.z + 1, 69, adapter.getPlayerId(), currentGameHash));
-            } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
-                Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 1 via state");
-                adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 0, adapter.getPlayerId(), currentGameHash));
-            } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
-                Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 2 via state");
-                adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 1, adapter.getPlayerId(), currentGameHash));
-            } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
-                Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 3 via state");
-                adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 2, adapter.getPlayerId(), currentGameHash));
-            } else {
-                deMultiSelect();
-            }
+            deMultiSelect();
             return null;
         }
 
@@ -353,9 +337,27 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
                     @Override
                     public Void acceptBlock(Clickable.ClickableBlock block) {
                         // if the player right clicks on a block, spawn something on that block
-                        if (multiSelected.notEmpty()) {
+                        if ((spawnType == SpawnInfo.SpawnType.NONE) && multiSelected.notEmpty()) {
                             Gdx.app.debug("luke probably", "About to send move message with these minions: " + multiSelected);
                             adapter.sendMessage(new MoveMinionMessage(block.x, block.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+                            return null;
+                        }
+
+                        int currentGameHash = adapter.getGameStateHash();
+                        if (spawnType == SpawnInfo.SpawnType.UNIT) {
+                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn unit");
+                            adapter.sendMessage(new CreateMinionMessage(block.x, block.y, block.z + 1, 69, adapter.getPlayerId(), currentGameHash));
+                        } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
+                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 1 via state");
+                            adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 0, adapter.getPlayerId(), currentGameHash));
+                        } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
+                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 2 via state");
+                            adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 1, adapter.getPlayerId(), currentGameHash));
+                        } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
+                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 3 via state");
+                            adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 2, adapter.getPlayerId(), currentGameHash));
+                        } else {
+                            deMultiSelect();
                         }
                         return null;
                     }

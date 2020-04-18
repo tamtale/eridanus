@@ -29,7 +29,7 @@ public class GameButtonsStage {
     private Label manaLabel;
     private Label winLabel;
 
-    private Button previouslySelected;
+    private Button selectedButton; // The currently pressed spawn button.
     private boolean showAttack;
     private boolean showSpawn;
     private boolean firstTimeRender = true;
@@ -67,7 +67,7 @@ public class GameButtonsStage {
     private void setWidgets() {
         unitButton   = new TextButton("Spawn Unit\nCost: " + adapter.getUnitCost(),   new Skin(Gdx.files.internal("uiskin.json")));
         unitButton.setStyle(normalStyle);
-        previouslySelected = unitButton;
+        selectedButton = unitButton;
 
         tower1Button = new TextButton("TEMP 1", new Skin(Gdx.files.internal("uiskin.json")));
         tower1Button.setStyle(normalStyle);
@@ -122,43 +122,26 @@ public class GameButtonsStage {
 //        stage.addActor(showSpawnRadiusCheckBox); TODO add this back in if we get functionality
     }
 
+    private ClickListener createSpawnListener(String buttonName, Button button, SpawnType type) {
+        return new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.debug("pjb3 - GameButtonsStage", "Clicked the " + buttonName + " button.");
+                if (selectedButton == button) {
+                    unselectAndReselect(selectedButton, null);
+                    return;
+                }
+                adapter.setSelectedSpawnState(new SpawnInfo(type));
+                unselectAndReselect(selectedButton, button);
+            }
+        };
+    }
+
     public void setListeners() {
-        unitButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.debug("pjb3 - GameButtonsStage", "Clicked the Unit button");
-                adapter.setSelectedSpawnState(new SpawnInfo(SpawnType.UNIT));
-                unselectAndReselect(previouslySelected, unitButton);
-            }
-        });
-
-        tower1Button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.debug("pjb3 - GameButtonsStage", "Clicked the Tower 1 button");
-                adapter.setSelectedSpawnState(new SpawnInfo(SpawnType.TOWER1));
-                unselectAndReselect(previouslySelected, tower1Button);
-            }
-        });
-
-        tower2Button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.debug("pjb3 - GameButtonsStage", "Clicked the Tower 2 button");
-                adapter.setSelectedSpawnState(new SpawnInfo(SpawnType.TOWER2));
-                unselectAndReselect(previouslySelected, tower2Button);
-            }
-        });
-
-        tower3Button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.debug("pjb3 - GameButtonsStage", "Clicked the Tower 3 button");
-                adapter.setSelectedSpawnState(new SpawnInfo(SpawnType.TOWER3));
-                unselectAndReselect(previouslySelected, tower3Button);
-            }
-        });
-
+        unitButton.addListener(createSpawnListener("Unit", unitButton, SpawnType.UNIT));
+        tower1Button.addListener(createSpawnListener("Tower 1", tower1Button, SpawnType.TOWER1));
+        tower2Button.addListener(createSpawnListener("Tower 2", tower2Button, SpawnType.TOWER2));
+        tower3Button.addListener(createSpawnListener("Tower 3", tower3Button, SpawnType.TOWER3));
         showAttackRadiusCheckBox.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -211,19 +194,19 @@ public class GameButtonsStage {
     public void selectSpawnType(SpawnType type) {
         switch (type) {
             case NONE:
-                unselectAndReselect(previouslySelected, null);
+                unselectAndReselect(selectedButton, null);
                 break;
             case UNIT:
-                unselectAndReselect(previouslySelected, unitButton);
+                unselectAndReselect(selectedButton, unitButton);
                 break;
             case TOWER1:
-                unselectAndReselect(previouslySelected, tower1Button);
+                unselectAndReselect(selectedButton, tower1Button);
                 break;
             case TOWER2:
-                unselectAndReselect(previouslySelected, tower2Button);
+                unselectAndReselect(selectedButton, tower2Button);
                 break;
             case TOWER3:
-                unselectAndReselect(previouslySelected, tower3Button);
+                unselectAndReselect(selectedButton, tower3Button);
                 break;
         }
 
@@ -235,11 +218,13 @@ public class GameButtonsStage {
      * @param newButton the new button to apply a 'selected' style of some sort
      */
     public void unselectAndReselect(Button oldButton, Button newButton) {
-        oldButton.setStyle(normalStyle);
+        if (oldButton != null) {
+            oldButton.setStyle(normalStyle);
+        }
         if (newButton != null) {
             newButton.setStyle(pressedStyle);
-            previouslySelected = newButton;
         }
+        selectedButton = newButton;
     }
 
     /**
