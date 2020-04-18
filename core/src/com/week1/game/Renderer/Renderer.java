@@ -194,6 +194,7 @@ public class Renderer {
 
     public void setCameraToDefaultPosition() {
         cam.position.set(defaultPosition);
+        zoom(-20);
     }
 
     public boolean getShowAttackRadius() {

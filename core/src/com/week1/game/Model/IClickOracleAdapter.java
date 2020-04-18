@@ -32,4 +32,6 @@ public interface IClickOracleAdapter {
     Camera getCamera();
     /* Inform the world (i.e. the stage) that a spawn type has been selected via hotkey. */
     void setSpawnType(SpawnInfo.SpawnType type);
+    /* Move the camera to the base. */
+    void goToBase();
 }

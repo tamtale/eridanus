@@ -52,7 +52,8 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
 
     private ClickOracleCommand nullCommand = () -> {};
     /* Toggle edge panning. */
-    private ClickOracleCommand lockCamera = () -> {edgePan = !edgePan;};
+    private ClickOracleCommand lockCamera = () -> edgePan = !edgePan;
+    private ClickOracleCommand goHome = () -> adapter.goToBase();
     private ClickOracleCommand panStop = () -> adapter.setTranslationDirection(Direction.NONE);
     private CommandPair panUp = new CommandPair(() -> adapter.setTranslationDirection(Direction.UP), panStop);
     private CommandPair panDown = new CommandPair(() -> adapter.setTranslationDirection(Direction.DOWN), panStop);
@@ -101,6 +102,7 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         registerPair(Input.Keys.NUM_4, setSpawnUnit);
         keyUpCommands.put(Input.Keys.ESCAPE, reset);
         keyUpCommands.put(Input.Keys.Y, lockCamera);
+        keyUpCommands.put(Input.Keys.B, goHome);
     }
 
     private SpawnInfo.SpawnType spawnType;
@@ -137,8 +139,6 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
     @Override
     public boolean touchDragged (int screenX, int screenY, int pointer) {
         if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) return false;
-        // If trying to spawn something, don't register dragging.
-        if (spawnType != SpawnInfo.SpawnType.NONE) return false;
 
         // The player must be alive to be able to register any clicks
         if (!adapter.isPlayerAlive()) {
