@@ -1,12 +1,11 @@
 package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.InfoUtil;
 import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.World.CoolWorldBuilder;
-import com.week1.game.Model.World.SmallWorldBuilder;
 import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.Game.TaggedMessage;
@@ -19,8 +18,6 @@ import java.nio.channels.FileChannel;
 import java.util.List;
 import java.util.Queue;
 
-import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
-
 public class GameEngine implements GameRenderable {
 
     private GameState gameState;
@@ -31,12 +28,14 @@ public class GameEngine implements GameRenderable {
     private boolean sentWinLoss = false, sentGameOver = false;
     private Queue<TaggedMessage> replayQueue;
     private boolean isStarted = false;
+    private static Preferences PREFS;
     BufferedWriter writer;
 
     public GameEngine(IEngineAdapter adapter, int playerId, Queue<TaggedMessage> replayQueue, InfoUtil util) {
         this.adapter = adapter;
         this.enginePlayerId = playerId;
         this.replayQueue = replayQueue;
+        this.PREFS = Gdx.app.getPreferences("eridanusSavedContent");
         gameState = new GameState(
                 CoolWorldBuilder.ONLY,
 //                SmallWorldBuilder.ONLY,
@@ -45,11 +44,18 @@ public class GameEngine implements GameRenderable {
                     Tower myBase = gameState.getPlayerBase(this.enginePlayerId);
                     position.set(myBase.getX(), myBase.getY(), 0);
                     adapter.setDefaultLocation(position);
-                    adapter.zoom(-20); // 20 is arbitrary, but feels reasonable for initial camera zoom
-
                     // Give the system the center of the map for camera rotation.
                     int[] dimensions = getGameState().getWorld().getWorldDimensions();
                     adapter.setCenter(new Vector3(dimensions[0] / 2f, dimensions[1] / 2f, dimensions[2] / 2f));
+
+                    // For development only: change this in the preferences file to 'true' to use target visualization.
+                    if (!PREFS.contains("visualTargeting")) {
+                        PREFS.putBoolean("visualTargeting", false);
+                        PREFS.flush();
+                    }
+                    if (PREFS.getBoolean("visualTargeting")) {
+                        adapter.subscribeSelection(gameState.getSelectionSubscriber());
+                    }
                 },
                 adapter.getPlayerInfo(),
                 playerId);
@@ -177,5 +183,9 @@ public class GameEngine implements GameRenderable {
 
     public int getTowerCost(int playerId, int slot) {
         return gameState.getTowerDetails(playerId, slot).getPrice();
+    }
+
+    public void setFog(boolean enabled) {
+        gameState.setFog(enabled);
     }
 }

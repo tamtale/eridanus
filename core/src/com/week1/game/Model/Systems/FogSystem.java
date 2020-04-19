@@ -3,15 +3,11 @@ package com.week1.game.Model.Systems;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
-import com.week1.game.Model.Components.OwnedComponent;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.Components.TargetingComponent;
 import com.week1.game.Model.Components.VisibleComponent;
 import com.week1.game.Model.World.GameWorld;
 import com.week1.game.Pair;
-import com.week1.game.Tuple3;
-
-import static com.week1.game.Model.StatsConfig.ENABLE_FOG;
 
 
 /*
@@ -21,6 +17,8 @@ public class FogSystem implements ISystem {
     
     private IntMap<Pair<PositionComponent, TargetingComponent>> seeingNodes = new IntMap<>();
     private IntMap<Pair<PositionComponent, VisibleComponent>> seenNodes = new IntMap<>();
+
+    private static boolean fogEnabled = true;
 
     private boolean initialized = false;
     private GameWorld world;
@@ -50,20 +48,24 @@ public class FogSystem implements ISystem {
         }
 
 
-        if (!ENABLE_FOG) { // everything should be made visible
-            for (int i = 0; i < x; i++) {
-                for (int j = 0; j < y; j++) {
-                    world.markForUnhide(i, j);
-                }
-            }
+        if (!fogEnabled()) { // everything should be made visible
+            showWorld();
         }
         
         initialized = true;
     }
 
+    private void showWorld() {
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < y; j++) {
+                world.markForUnhide(i, j);
+            }
+        }
+    }
+
     @Override
     public void update(float delta) {
-        if (!initialized || !ENABLE_FOG) {
+        if (!initialized || !fogEnabled()) {
             return; // don't try to do anything before initialization, or else null pointers will abound
         }
         newVisible = new boolean[x][y];
@@ -141,5 +143,15 @@ public class FogSystem implements ISystem {
         seeingNodes.remove(entID);
         seenNodes.remove(entID);
     }
-    
+
+    public static boolean fogEnabled() {
+        return fogEnabled;
+    }
+
+    public void setFog(boolean newFogEnabled) {
+        fogEnabled = newFogEnabled;
+        if (!fogEnabled) {
+            showWorld();
+        }
+    }
 }

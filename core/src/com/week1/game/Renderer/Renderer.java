@@ -120,7 +120,7 @@ public class Renderer {
 
     public void endGame(int winOrLoss) {
         winState = winOrLoss;
-
+        adapter.setFog(false);
         gameButtonsStage.endGame(winState);
     }
 
@@ -180,6 +180,10 @@ public class Renderer {
         util.drawMessages(batch);
     }
 
+    public GameButtonsStage getGameButtonsStage() {
+        return gameButtonsStage;
+    }
+
     public InputProcessor getButtonStage() {
         return gameButtonsStage.stage;
     }
@@ -190,6 +194,7 @@ public class Renderer {
 
     public void setCameraToDefaultPosition() {
         cam.position.set(defaultPosition);
+        zoom(-20);
     }
 
     public boolean getShowAttackRadius() {

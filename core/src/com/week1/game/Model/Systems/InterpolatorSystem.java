@@ -27,11 +27,13 @@ public class InterpolatorSystem implements ISystem {
     public void render(RenderConfig config) {
         updateDelta += config.getDelta();
         for (InterpolNode node: nodes.values()) {
-            Vector3 position = node.positionComponent.position;
-            Vector3 velocity = node.velocityComponent.velocity;
-            Vector3 interpolated = node.interpolatedComponent.position;
-            interpolated.set(position);
-            interpolated.mulAdd(velocity, updateDelta);
+            if (node != null) { // nodes may be removed asynchronously
+                Vector3 position = node.positionComponent.position;
+                Vector3 velocity = node.velocityComponent.velocity;
+                Vector3 interpolated = node.interpolatedComponent.position;
+                interpolated.set(position);
+                interpolated.mulAdd(velocity, updateDelta);
+            }
         }
     }
 

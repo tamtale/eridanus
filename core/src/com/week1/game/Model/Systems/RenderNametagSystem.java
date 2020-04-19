@@ -24,24 +24,25 @@ public class RenderNametagSystem implements ISystem {
     public void render(RenderConfig config) {
         DecalBatch decalBatch = config.getDecalBatch();
         for (RenderNametagNode node: nametagNodes.values()) {
+            if (node != null) { // nodes may be removed asynchronously
+                Vector3 loc = node.positionComponent.position;
+                Decal nameTag = node.renderComponent.nametag();
 
-            Vector3 loc = node.positionComponent.position;
-            Decal nameTag = node.renderComponent.nametag();
-            
-            // Orient the decal
-            Plane p = config.getCam().frustum.planes[0];
-            Intersector.intersectLinePlane(
-                    loc.x, loc.y, loc.z,
-                    loc.x + p.normal.x, loc.y + p.normal.y, loc.z + p.normal.z,
-                    p, lookAt);
-            nameTag.lookAt(lookAt, config.getCam().up);
+                // Orient the decal
+                Plane p = config.getCam().frustum.planes[0];
+                Intersector.intersectLinePlane(
+                        loc.x, loc.y, loc.z,
+                        loc.x + p.normal.x, loc.y + p.normal.y, loc.z + p.normal.z,
+                        p, lookAt);
+                nameTag.lookAt(lookAt, config.getCam().up);
 
-            // Set the position of the nametag
-            tempPos.set(loc);
-            tempPos.add(0,0,5f);
-            nameTag.setPosition((tempPos));
-            
-            decalBatch.add(nameTag);
+                // Set the position of the nametag
+                tempPos.set(loc);
+                tempPos.add(0, 0, 5f);
+                nameTag.setPosition((tempPos));
+
+                decalBatch.add(nameTag);
+            }
         }
         
         decalBatch.flush();

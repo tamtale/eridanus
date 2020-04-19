@@ -8,6 +8,8 @@ import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Renderer.RenderConfig;
 
+import java.util.Optional;
+
 /*
  * Adapter for the click oracle to interact with the rest of the system.
  */
@@ -28,4 +30,8 @@ public interface IClickOracleAdapter {
     /* Inform the world camera to rotate according to the given direction. */
     void setRotationDirection(RotationDirection direction);
     Camera getCamera();
+    /* Inform the world (i.e. the stage) that a spawn type has been selected via hotkey. */
+    void setSpawnType(SpawnInfo.SpawnType type);
+    /* Move the camera to the base. */
+    void goToBase();
 }

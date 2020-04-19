@@ -25,18 +25,19 @@ public class RenderSystem implements ISystem {
         ModelBatch modelBatch = config.getModelBatch();
         modelBatch.begin(config.getCam());
         for (RenderNode node: nodes.values()) {
-            // Always update the modelInstance's position (even if not visible)
-            node.renderComponent.modelInstance.transform.setTranslation(node.positionComponent.position);
+            if (node != null) { // nodes may be removed asynchronously
+                // Always update the modelInstance's position (even if not visible)
+                node.renderComponent.modelInstance.transform.setTranslation(node.positionComponent.position);
 
-            //Rotate any moving entities to look where they are going
+                //Rotate any moving entities to look where they are going
 //            if (!node.velocityComponent.velocity.equals(VelocityComponent.ZERO)) {
 //                node.renderComponent.modelInstance.transform.rotate(Vector3.Z, MathUtils.atan2(node.velocityComponent.velocity.x,
 //                        node.velocityComponent.velocity.y) * MathUtils.radiansToDegrees);
 //            }
 
-
-            if (node.visibleComponent.visible()) { // only render if unit should be visible
-                modelBatch.render(node.renderComponent.modelInstance, env);
+                if (node.visibleComponent.visible()) { // only render if unit should be visible
+                    modelBatch.render(node.renderComponent.modelInstance, env);
+                }
             }
         }
         modelBatch.end();

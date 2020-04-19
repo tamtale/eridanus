@@ -4,6 +4,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.TowerBuilder.BlockType;
 
+import java.util.Queue;
+import java.util.Stack;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 /**
  * World builder for a basic 4-player game.
  * 200x200, with plateaus in the middle.
@@ -11,7 +15,13 @@ import com.week1.game.TowerBuilder.BlockType;
 public class SmallWorldBuilder implements IWorldBuilder {
 
     public static SmallWorldBuilder ONLY = new SmallWorldBuilder();
-    
+    private Queue<Vector2> crystalLocs = new ConcurrentLinkedQueue<>();
+
+    public SmallWorldBuilder() {
+        crystalLocs.add(new Vector2(10, 5));
+        crystalLocs.add(new Vector2(13, 5));
+    }
+
     @Override
     public Block[][][] terrain() {
         Block[][][] blocks = new Block[40][30][15];
@@ -46,15 +56,17 @@ public class SmallWorldBuilder implements IWorldBuilder {
                 new Vector3(35, 10, 1),
         };
     }
-    
+
     @Override
     public Vector2 nextCrystalLocation() {
-        return new Vector2(10, 5);
+        Vector2 res = crystalLocs.remove();
+        crystalLocs.add(res);
+        return res;
     }
 
     @Override
     public int getNumCrystals() {
-        return 1;
+        return 2;
     }
     
 
