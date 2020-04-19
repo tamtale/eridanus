@@ -17,6 +17,9 @@ import com.week1.game.Model.Entities.HealthBar;
 import com.week1.game.Model.Entities.Unit;
 import com.week1.game.Renderer.RenderConfig;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.week1.game.Model.Entities.HealthBar.healthBarHigh;
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
@@ -63,7 +66,7 @@ public class HealthRenderSystem implements ISystem {
 
     public void render(RenderConfig config) {
         for (HealthRenderNode node: nodes.values()) {
-            if (node.visible.visible()) { // only render the hp bar if it is visible
+            if (node != null && node.visible.visible()) { // only render the hp bar if it is visible
                 renderHealthbar(config, node);
             }
         }

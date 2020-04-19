@@ -3,6 +3,7 @@ package com.week1.game.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.utils.Collections;
 import com.week1.game.GameController;
 import org.apache.commons.cli.*;
 
@@ -10,6 +11,7 @@ public class DesktopLauncher {
 
 
 	public static void main (String[] args) {
+		Collections.allocateIterators = true; // Requires more memory, but should avoid nested iterator exceptions
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.title = "RTS";
 		config.width = 800;

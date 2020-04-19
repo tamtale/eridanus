@@ -148,10 +148,12 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
             Batch batch = config.getBatch();
             batch.begin();
             for (TargetingNode selectedNode: selected) {
-                if (selectedNode.targetingComponent.targetID == -1) continue;
-                renderVec.set(selectedNode.targetPositionComponent.position);
-                config.getCam().project(renderVec);
-                batch.draw(Initializer.targetX, renderVec.x - 16, renderVec.y - 16, 32, 32);
+                if (selectedNode != null) { // nodes may be removed asynchronously
+                    if (selectedNode.targetingComponent.targetID == -1) continue;
+                    renderVec.set(selectedNode.targetPositionComponent.position);
+                    config.getCam().project(renderVec);
+                    batch.draw(Initializer.targetX, renderVec.x - 16, renderVec.y - 16, 32, 32);
+                }
             }
             batch.end();
         }
