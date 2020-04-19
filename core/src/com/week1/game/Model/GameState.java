@@ -99,6 +99,7 @@ public class GameState implements GameRenderable {
         targetingSystem.addSubscriber(damageSystem);
         targetingSystem.addSubscriber(damageRewardSystem);
         damageSystem.addSubscriber(deathSystem);
+        damageSystem.addSubscriber(towerSpawnSystem);
         damageSystem.addSubscriber(deathRewardSystem);
         damageSystem.addSubscriber(crystalRespawnSystem);
         this.postInit = postInit;

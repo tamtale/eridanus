@@ -4,13 +4,14 @@ import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.IntSet;
 import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.Events.DamageEvent;
+import com.week1.game.Model.Events.DeathEvent;
 import javafx.util.Pair;
 
 import javax.xml.crypto.dsig.keyinfo.KeyValue;
 
 import static com.week1.game.Model.StatsConfig.buildDelay;
 
-public class TowerSpawnSystem implements ISystem, Subscriber<DamageEvent> {
+public class TowerSpawnSystem implements ISystem, Subscriber<DeathEvent> {
     private IntMap<TowerSpawnNode> nodeMap = new IntMap<>();
 
     private IntSet deadUnfinishedTowers = new IntSet();
@@ -46,8 +47,8 @@ public class TowerSpawnSystem implements ISystem, Subscriber<DamageEvent> {
     }
 
     @Override
-    public void process(DamageEvent damageEvent) {
-        deadUnfinishedTowers.add(damageEvent.victimID);
+    public void process(DeathEvent deathEvent) {
+        deadUnfinishedTowers.add(deathEvent.victimID);
     }
 
     static class TowerSpawnNode{
