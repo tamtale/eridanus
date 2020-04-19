@@ -27,13 +27,13 @@ public class RenderSystem implements ISystem {
         for (RenderNode node: nodes.values()) {
             if (node != null) { // nodes may be removed asynchronously
                 // Always update the modelInstance's position (even if not visible)
-                node.renderComponent.modelInstance.transform.setTranslation(node.positionComponent.position);
+                node.renderComponent.modelInstance.transform.setToTranslation(node.positionComponent.position);
 
-                //Rotate any moving entities to look where they are going
-//            if (!node.velocityComponent.velocity.equals(VelocityComponent.ZERO)) {
-//                node.renderComponent.modelInstance.transform.rotate(Vector3.Z, MathUtils.atan2(node.velocityComponent.velocity.x,
-//                        node.velocityComponent.velocity.y) * MathUtils.radiansToDegrees);
-//            }
+//                Rotate any moving entities to look where they are going
+                if (!node.velocityComponent.velocity.equals(VelocityComponent.ZERO.velocity)) {
+                    node.renderComponent.modelInstance.transform.rotate(Vector3.Z, MathUtils.atan2(node.velocityComponent.velocity.x,
+                            node.velocityComponent.velocity.y) * MathUtils.radiansToDegrees);
+                }
 
                 if (node.visibleComponent.visible()) { // only render if unit should be visible
                     modelBatch.render(node.renderComponent.modelInstance, env);
