@@ -15,7 +15,7 @@ public interface IWorldBuilder {
     /**
      * Viable starting locations for player bases.
      */
-    Vector3[] startLocations();
+    Vector3[] startLocations(int numPlayers);
 
     /**
      * Locations of crystals on the map.

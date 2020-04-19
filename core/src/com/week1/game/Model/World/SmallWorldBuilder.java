@@ -50,7 +50,7 @@ public class SmallWorldBuilder implements IWorldBuilder {
     }
 
     @Override
-    public Vector3[] startLocations() {
+    public Vector3[] startLocations(int numPlayers) {
         return new Vector3[] {
                 new Vector3(10, 10, 1),
                 new Vector3(35, 10, 1),
