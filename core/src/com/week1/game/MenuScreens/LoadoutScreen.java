@@ -261,18 +261,21 @@ public class LoadoutScreen implements Screen {
     public void createLoadoutDropdowns() {
         tower1 =new SelectBox(normalSelectBox);
         tower1.setItems(allTowerOptions);
+        tower1.setSelectedIndex(0);
         tower1.setSize(200, 64);
         tower1.setPosition(GameController.VIRTUAL_WIDTH / 8,GameController.VIRTUAL_HEIGHT * 5 / 6 );
         loadoutStage.addActor(tower1);
 
         tower2 =new SelectBox(normalSelectBox);
         tower2.setItems(allTowerOptions);
+        tower2.setSelectedIndex(1);
         tower2.setSize(200, 64);
         tower2.setPosition(GameController.VIRTUAL_WIDTH * 3.0f / 8,GameController.VIRTUAL_HEIGHT * 5 / 6 );
         loadoutStage.addActor(tower2);
 
         tower3 =new SelectBox(normalSelectBox);
         tower3.setItems(allTowerOptions);
+        tower3.setSelectedIndex(2);
         tower3.setSize(200, 64);
         tower3.setPosition(GameController.VIRTUAL_WIDTH * 5.0f / 8,GameController.VIRTUAL_HEIGHT * 5 / 6 );
         loadoutStage.addActor(tower3);
