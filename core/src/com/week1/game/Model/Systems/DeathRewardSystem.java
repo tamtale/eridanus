@@ -5,14 +5,15 @@ import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Components.ManaComponent;
 import com.week1.game.Model.Components.ManaRewardComponent;
 import com.week1.game.Model.Events.DamageEvent;
+import com.week1.game.Model.Events.DeathEvent;
 import com.week1.game.Pair;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class DeathRewardSystem implements ISystem, Subscriber<DamageEvent> {
+public class DeathRewardSystem implements ISystem, Subscriber<DeathEvent> {
 
-    Queue<DamageEvent> deaths = new ConcurrentLinkedQueue<>();
+    Queue<DeathEvent> deaths = new ConcurrentLinkedQueue<>();
     
     private IntMap<ManaComponent> manaComponents = new IntMap<>(); // maps playerID to manaComponent
     private IntMap<ManaRewardComponent> manaRewardComponents = new IntMap<>(); // maps entityID to rewardComponent
@@ -22,7 +23,7 @@ public class DeathRewardSystem implements ISystem, Subscriber<DamageEvent> {
 
     @Override
     public void update(float delta) {
-        for (DamageEvent event: deaths) {
+        for (DeathEvent event: deaths) {
             int reward = manaRewardComponents.get(event.victimID).deathReward;
             ManaComponent manaComponent = manaComponents.get(event.damagerPlayerID);
             if (manaComponent != null) {
@@ -45,8 +46,8 @@ public class DeathRewardSystem implements ISystem, Subscriber<DamageEvent> {
     }
 
     @Override
-    public void process(DamageEvent damageEvent) {
-        deaths.add(damageEvent);
+    public void process(DeathEvent deathEvent) {
+        deaths.add(deathEvent);
     }
 
     public void addManaReward(int entID, ManaRewardComponent manaRewardComponent) {
