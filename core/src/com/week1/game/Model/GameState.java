@@ -249,10 +249,10 @@ public class GameState implements GameRenderable {
                     removeEntity(key);
                     return null;
                 }
-            }, new IService<Tower, Void>() {
+            }, new IService<javafx.util.Pair<Tower, Integer>, Void>() {
                 @Override
-                public Void query(Tower key) {
-                    addFinishedTower(key);
+                public Void query(javafx.util.Pair<Tower, Integer> key) {
+                    addFinishedTower(key.getKey(), key.getValue());
                     return null;
                 }
             }
@@ -474,7 +474,8 @@ public class GameState implements GameRenderable {
         return tower;
     }
 
-    public void addFinishedTower(Tower tower) {
+    public void addFinishedTower(Tower tower, int dummyID) {
+        removeEntity(dummyID);
         OwnedComponent ownedComponent = tower.getOwnedComponent();
         TargetingComponent targetingComponent = tower.getTargetingComponent();
         HealthComponent healthComponent = tower.getHealthComponent();
@@ -495,6 +496,7 @@ public class GameState implements GameRenderable {
         fogSystem.addSeen(tower.ID, positionComponent, visibleComponent);
         towers.add(tower);
         addBuilding(tower, ownedComponent.playerID);
+
     }
     public void addBase(Tower pb, int playerID) {
         String playerName = players.get(playerID).getName();
