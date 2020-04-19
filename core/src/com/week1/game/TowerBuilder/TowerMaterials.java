@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class TowerMaterials {
 
-    static float BLOCKLENGTH = 5f;
+    public static float BLOCKLENGTH = 5f;
 
     static ModelBuilder modelBuilder = new ModelBuilder();
 

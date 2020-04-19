@@ -1,6 +1,5 @@
 package com.week1.game.Model.Systems;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.decals.Decal;
@@ -13,14 +12,10 @@ import com.week1.game.Model.Components.HealthComponent;
 import com.week1.game.Model.Components.OwnedComponent;
 import com.week1.game.Model.Components.PositionComponent;
 import com.week1.game.Model.Components.VisibleComponent;
-import com.week1.game.Model.Entities.HealthBar;
 import com.week1.game.Model.Entities.Unit;
+import com.week1.game.Model.Entities.UnitLoader;
 import com.week1.game.Renderer.RenderConfig;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.week1.game.Model.Entities.HealthBar.healthBarHigh;
 import static com.week1.game.Renderer.TextureUtils.makeTexture;
 
 /*
@@ -75,7 +70,7 @@ public class HealthRenderSystem implements ISystem {
 
     private TextureRegion getTextureRegion(int playerID) {
         if (healthBarRegions.get(playerID) == null) {
-            healthBarRegions.put(playerID, new TextureRegion(makeTexture(1, 1, Unit.colorMap.get(playerID))));
+            healthBarRegions.put(playerID, new TextureRegion(makeTexture(1, 1, UnitLoader.NAMES_TO_COLORS.get(Unit.factionMap.get(playerID)))));
         }
         return healthBarRegions.get(playerID);
     }

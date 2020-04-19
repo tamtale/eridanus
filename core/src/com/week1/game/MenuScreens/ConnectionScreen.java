@@ -15,30 +15,34 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.sun.tools.javac.util.ArrayUtils;
 import com.week1.game.GameController;
 import com.week1.game.GameControllerSetScreenAdapter;
+import com.week1.game.Model.Entities.UnitLoader;
 import com.week1.game.Model.PlayerInfo;
 import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Networking.NetworkObjects.NetworkUtils;
-import com.week1.game.Pair;
+
+import java.util.Arrays;
 
 import static com.week1.game.MenuScreens.MenuStyles.blueStyle;
 import static com.week1.game.MenuScreens.MenuStyles.disabledStyle;
-import static com.week1.game.Model.PlayerInfo.defaultColor;
 
 /**
  * This is the Screen where people chose to host or to join someone who is already hosting.
  * It is preceded by the MainMenu and followed by the LoadOut Screen.
  */
 public class ConnectionScreen implements Screen {
+    private String selectFaction = "Select A Faction";
     private Stage connectionStage;
     private Client networkClient;
     private GameControllerSetScreenAdapter gameAdapter;
     private boolean hosting;
 
     TextButton hostGameButton, joinGameButton, launchGameButton, returnToSpashButton;
-    SelectBox<Pair.FactionPair> colorSelectBox;
+    SelectBox<String> colorSelectBox;
     TextField nameField;
     Label joinedPlayersLabel, waitJoinMsg;
     TextField ipField;
@@ -141,13 +145,9 @@ public class ConnectionScreen implements Screen {
         connectionStage.addActor(label1);
 
 
-        colorSelectBox = new SelectBox<Pair.FactionPair>(uiskin);
-        colorSelectBox.setItems(new Pair.FactionPair("Select Faction!", defaultColor),
-                new Pair.FactionPair("Fire", Color.RED),
-                new Pair.FactionPair("Water", new Color(0, 0, 0.545f, 1f)),
-                new Pair.FactionPair("Earth", Color.GREEN),
-                new Pair.FactionPair("Air", new Color( 0.678f, 0.847f, 0.902f, 1f))
-        );
+        colorSelectBox = new SelectBox<>(uiskin);
+        colorSelectBox.setItems( UnitLoader.FACTIONS);
+
         colorSelectBox.setSize(450,64);
         colorSelectBox.setSelectedIndex(0);
         colorSelectBox.setPosition(GameController.VIRTUAL_WIDTH/2 - colorSelectBox.getWidth()/2,GameController.VIRTUAL_HEIGHT  *2 / 3 + 80);
@@ -290,12 +290,12 @@ public class ConnectionScreen implements Screen {
     /*
      * This is when a player makes a change in their faction, it will send this along to the host to be processed.
      */
-    private void submitColor(Pair.FactionPair pair) {
-        if (pair.value.equals(defaultColor)) {
+    private void submitColor(String factionName) {
+        if (factionName.equals(selectFaction)) {
             // Do not display the faction as "Select new faction" in the joined players area
-            networkClient.sendFactionSelection(new Pair.FactionPair("Factionless", defaultColor));
+            networkClient.sendFactionSelection("Factionless");
         } else {
-            networkClient.sendFactionSelection(pair);
+            networkClient.sendFactionSelection(factionName);
         }
     }
 

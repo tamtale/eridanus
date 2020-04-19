@@ -73,7 +73,7 @@ public class GameState implements GameRenderable {
         // Create player entities
         for (int playerId = 0; playerId < playerInfo.size(); playerId++) {
             PlayerInfo info = playerInfo.get(playerId);
-            addPlayer(playerId, info.getPlayerName(), info.getColor());
+            addPlayer(playerId, info.getPlayerName(), info.getFaction());
         }
         this.worldBuilder = worldBuilder;
         this.u2s = new Unit2StateAdapter() {
@@ -343,11 +343,11 @@ public class GameState implements GameRenderable {
         }
     }
 
-    public void addPlayer(int playerID, String name, Color color) {
+    public void addPlayer(int playerID, String name, String faction) {
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaComponent manaComponent = new ManaComponent(startingMana);
         NameComponent nameComponent = new NameComponent(name);
-        ColorComponent colorComponent = new ColorComponent(color);
+        ColorComponent colorComponent = new ColorComponent(UnitLoader.NAMES_TO_COLORS.get(faction));
         
         PlayerEntity player = new PlayerEntity(ownedComponent, manaComponent, nameComponent, colorComponent);
         players.add(player);
@@ -378,7 +378,7 @@ public class GameState implements GameRenderable {
         // Register with death reward system, so rewards are given for killing this crystal
         deathRewardSystem.addManaReward(c.ID, manaRewardComponent);
         healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn, visibleComponent);
-        renderSystem.addNode(c.ID, renderComponent, positionComponent, visibleComponent);
+        renderSystem.addNode(c.ID, renderComponent, positionComponent, visibleComponent, VelocityComponent.ZERO);
         fogSystem.addSeen(c.ID, positionComponent, visibleComponent);
     }
 
@@ -400,7 +400,7 @@ public class GameState implements GameRenderable {
         pathfindingSystem.addNode(u.ID, positionComponent, velocityComponent, pathComponent);
         PositionComponent interpolated = new PositionComponent(positionComponent.position);
         interpolatorSystem.addNode(u.ID, positionComponent, interpolated, velocityComponent);
-        renderSystem.addNode(u.ID, renderComponent, interpolated, visibleComponent);
+        renderSystem.addNode(u.ID, renderComponent, interpolated, visibleComponent, velocityComponent);
         targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(u.ID, healthComponent);
         damageSystem.addDamage(u.ID, damagingComponent);

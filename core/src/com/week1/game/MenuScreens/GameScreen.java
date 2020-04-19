@@ -220,9 +220,9 @@ public class GameScreen implements Screen {
 	}
 
 	public static void setColorMapping(List<PlayerInfo> infoList) {
-		Map<Integer, Color> colorMap = new HashMap<>();
+		Map<Integer, String> colorMap = new HashMap<>();
 		for (int i = 0; i < infoList.size(); i++) {
-			colorMap.put(i, infoList.get(i).getColor());
+			colorMap.put(i, infoList.get(i).getFaction());
 		}
 		Unit.setColorMapping(colorMap);
 	}
