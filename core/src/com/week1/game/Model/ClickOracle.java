@@ -337,7 +337,7 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
                     @Override
                     public Void acceptBlock(Clickable.ClickableBlock block) {
                         // if the player right clicks on a block, spawn something on that block
-                        if ((spawnType == SpawnInfo.SpawnType.NONE) && multiSelected.notEmpty()) {
+                        if (multiSelected.notEmpty()) {
                             Gdx.app.debug("luke probably", "About to send move message with these minions: " + multiSelected);
                             adapter.sendMessage(new MoveMinionMessage(block.x, block.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
                             return null;

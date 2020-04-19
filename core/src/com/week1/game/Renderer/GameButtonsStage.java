@@ -129,6 +129,7 @@ public class GameButtonsStage {
                 Gdx.app.debug("pjb3 - GameButtonsStage", "Clicked the " + buttonName + " button.");
                 if (selectedButton == button) {
                     unselectAndReselect(selectedButton, null);
+                    adapter.setSelectedSpawnState(new SpawnInfo(SpawnType.NONE));
                     return;
                 }
                 adapter.setSelectedSpawnState(new SpawnInfo(type));
