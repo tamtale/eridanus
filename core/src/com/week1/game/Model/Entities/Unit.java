@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.week1.game.Model.Components.*;
 import com.week1.game.Model.OutputPath;
-import com.week1.game.Util3D;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +44,7 @@ public class Unit implements Clickable {
 
     private Material originalMaterial;
 
-    public static Map<Integer, Color> colorMap;
+    public static Map<Integer, String> factionMap;
     public static Map<Integer, Model> modelMap;
 
     public Unit(
@@ -68,13 +67,14 @@ public class Unit implements Clickable {
         this.visibleComponent = visibleComponent;
     }
 
-    public static void setColorMapping(Map<Integer, Color> colorMapping) {
-        colorMap = colorMapping;
+    public static void setColorMapping(Map<Integer, String> colorMapping) {
+        factionMap = colorMapping;
 
         modelMap = new HashMap<Integer, Model>() {
             {
-                colorMap.keySet().forEach(i ->
-                        put(i, Util3D.ONLY.createBox(1, 1, 1, colorMap.get(i)))
+                //TODO -- is this ok???
+                factionMap.keySet().forEach(i ->
+                        put(i, UnitLoader.NAMES_TO_FACTIONS.get(colorMapping.get(i)).getModel())
                 );
             }
         };
