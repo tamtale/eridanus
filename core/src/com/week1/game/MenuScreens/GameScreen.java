@@ -29,7 +29,6 @@ import com.week1.game.Renderer.Renderer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * This is the Screen that holds the actual game that is being played.
@@ -97,7 +96,7 @@ public class GameScreen implements Screen {
 			public void sendMessage(AMessage msg) {
 				networkClient.sendStringMessage(MessageFormatter.packageMessage(msg));
 			}
-		}, networkClient.getPlayerId(), new ConcurrentLinkedQueue<>(), util);
+		}, networkClient.getPlayerId(), util);
 
 		networkClient.addAdapter( new INetworkClientToEngineAdapter() {
 			@Override
@@ -169,6 +168,16 @@ public class GameScreen implements Screen {
 
 					public Camera getCamera() {
 						return renderer.getCamera();
+					}
+
+					@Override
+					public void setSpawnType(SpawnInfo.SpawnType type) {
+						renderer.getGameButtonsStage().selectSpawnType(type);
+					}
+
+					@Override
+					public void goToBase() {
+					    renderer.setCameraToDefaultPosition();
 					}
 
 					@Override

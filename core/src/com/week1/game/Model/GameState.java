@@ -314,7 +314,7 @@ public class GameState implements GameRenderable {
         Gdx.app.log("GameState -pjb3", "The number of players received is " +  numPlayers);
 
         // Create the correct amount of actual players
-        Vector3[] startLocs = worldBuilder.startLocations();
+        Vector3[] startLocs = worldBuilder.startLocations(numPlayers);
         for (int i = 0; i < numPlayers; i++) {
             // Create and add a base for each player
             Tower newBase = addBase((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z,

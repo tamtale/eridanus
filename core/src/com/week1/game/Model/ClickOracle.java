@@ -51,31 +51,58 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
     private List<Subscriber<SelectionEvent>> selectionSubscribers = new ArrayList<>();
 
     private ClickOracleCommand nullCommand = () -> {};
-    private ClickOracleCommand panUp = () -> adapter.setTranslationDirection(Direction.UP);
-    private ClickOracleCommand panDown = () -> adapter.setTranslationDirection(Direction.DOWN);
-    private ClickOracleCommand panLeft = () -> adapter.setTranslationDirection(Direction.LEFT);
-    private ClickOracleCommand panRight = () -> adapter.setTranslationDirection(Direction.RIGHT);
+    /* Toggle edge panning. */
+    private ClickOracleCommand lockCamera = () -> edgePan = !edgePan;
+    private ClickOracleCommand goHome = () -> adapter.goToBase();
     private ClickOracleCommand panStop = () -> adapter.setTranslationDirection(Direction.NONE);
-    private ClickOracleCommand rotateClockwise = () -> adapter.setRotationDirection(RotationDirection.CLOCKWISE);
-    private ClickOracleCommand rotateCounterclockwise = () -> adapter.setRotationDirection(RotationDirection.COUNTERCLOCKWISE);
+    private CommandPair panUp = new CommandPair(() -> adapter.setTranslationDirection(Direction.UP), panStop);
+    private CommandPair panDown = new CommandPair(() -> adapter.setTranslationDirection(Direction.DOWN), panStop);
+    private CommandPair panLeft = new CommandPair(() -> adapter.setTranslationDirection(Direction.LEFT), panStop);
+    private CommandPair panRight = new CommandPair(() -> adapter.setTranslationDirection(Direction.RIGHT), panStop);
     private ClickOracleCommand rotateStop = () -> adapter.setRotationDirection(RotationDirection.NONE);
+    private CommandPair rotateClockwise = new CommandPair(() -> adapter.setRotationDirection(RotationDirection.CLOCKWISE), rotateStop);
+    private CommandPair rotateCounterclockwise = new CommandPair(() -> adapter.setRotationDirection(RotationDirection.COUNTERCLOCKWISE), rotateStop);
+    private ClickOracleCommand spawnNone = () -> {
+        setSpawnType(SpawnInfo.SpawnType.NONE);
+        adapter.setSpawnType(SpawnInfo.SpawnType.NONE);
+    };
+    private CommandPair setSpawn1 = new CommandPair(() -> {
+        setSpawnType(SpawnInfo.SpawnType.TOWER1);
+        adapter.setSpawnType(SpawnInfo.SpawnType.TOWER1);
+    }, spawnNone);
+    private CommandPair setSpawn2 = new CommandPair(() -> {
+        setSpawnType(SpawnInfo.SpawnType.TOWER2);
+        adapter.setSpawnType(SpawnInfo.SpawnType.TOWER2);
+    }, spawnNone);
+    private CommandPair setSpawn3 = new CommandPair(() -> {
+        setSpawnType(SpawnInfo.SpawnType.TOWER3);
+        adapter.setSpawnType(SpawnInfo.SpawnType.TOWER3);
+    }, spawnNone);
+    private CommandPair setSpawnUnit = new CommandPair(() -> {
+        setSpawnType(SpawnInfo.SpawnType.UNIT);
+        adapter.setSpawnType(SpawnInfo.SpawnType.UNIT);
+    }, spawnNone);
+    // Command to reset the clickoracle.
+    private ClickOracleCommand reset = () -> {
+        spawnNone.execute();
+        deMultiSelect();
+    };
     private IntMap<ClickOracleCommand> keyDownCommands = new IntMap<ClickOracleCommand>();
-    {
-        keyDownCommands.put(Input.Keys.W, panUp);
-        keyDownCommands.put(Input.Keys.A, panLeft);
-        keyDownCommands.put(Input.Keys.S, panDown);
-        keyDownCommands.put(Input.Keys.D, panRight);
-        keyDownCommands.put(Input.Keys.E, rotateClockwise);
-        keyDownCommands.put(Input.Keys.Q, rotateCounterclockwise);
-    }
     private IntMap<ClickOracleCommand> keyUpCommands = new IntMap<ClickOracleCommand>();
     {
-        keyUpCommands.put(Input.Keys.W, panStop);
-        keyUpCommands.put(Input.Keys.A, panStop);
-        keyUpCommands.put(Input.Keys.S, panStop);
-        keyUpCommands.put(Input.Keys.D, panStop);
-        keyUpCommands.put(Input.Keys.E, rotateStop);
-        keyUpCommands.put(Input.Keys.Q, rotateStop);
+        registerPair(Input.Keys.W, panUp);
+        registerPair(Input.Keys.A, panLeft);
+        registerPair(Input.Keys.S, panDown);
+        registerPair(Input.Keys.D, panRight);
+        registerPair(Input.Keys.E, rotateClockwise);
+        registerPair(Input.Keys.Q, rotateCounterclockwise);
+        registerPair(Input.Keys.NUM_1, setSpawn1);
+        registerPair(Input.Keys.NUM_2, setSpawn2);
+        registerPair(Input.Keys.NUM_3, setSpawn3);
+        registerPair(Input.Keys.NUM_4, setSpawnUnit);
+        keyUpCommands.put(Input.Keys.ESCAPE, reset);
+        keyUpCommands.put(Input.Keys.Y, lockCamera);
+        keyUpCommands.put(Input.Keys.B, goHome);
     }
 
     private SpawnInfo.SpawnType spawnType;
@@ -172,6 +199,43 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         }
     };
 
+    /* Visitor to select a clickable (should be left click). */
+    Clickable.ClickableVisitor<Void> selectionVisitor = new Clickable.ClickableVisitor<Void>() {
+        @Override
+        public Void acceptUnit(Unit unit) {
+            // if the player left clicks on a friendly unit, that single unit becomes the selected unit
+            if (unit.getPlayerId() == adapter.getPlayerId()) {
+                deMultiSelect();
+                addToMultiselected(unit);
+            }
+            return null;
+        }
+        @Override
+        public Void acceptBlock(Clickable.ClickableBlock block) {
+            deMultiSelect();
+            return null;
+        }
+
+        @Override
+        public Void acceptCrystal(Crystal crystal) {
+            deMultiSelect();
+            return null;
+        }
+
+        @Override
+        public Void acceptTower(Tower t) {
+            deMultiSelect();
+            return null;
+        }
+
+        @Override
+        public Void acceptNull() {
+            // if the player clicks on nothing, empty the selection
+            deMultiSelect();
+            return null;
+        }
+    };
+
     private static int SCREEN_THRESHOLD = 30;
     private boolean edgePanning = false; // Panning due to mouse on edge.
     @Override
@@ -192,16 +256,16 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         if (edgePan) {
             if (screenX < SCREEN_THRESHOLD) {
                 edgePanning = true;
-                panLeft.execute();
+                panLeft.down.execute();
             } else if (screenX > Gdx.graphics.getWidth() - SCREEN_THRESHOLD) {
                 edgePanning = true;
-                panRight.execute();
+                panRight.down.execute();
             } else if (screenY < SCREEN_THRESHOLD) {
                 edgePanning = true;
-                panUp.execute();
+                panUp.down.execute();
             } else if (screenY > Gdx.graphics.getHeight() - SCREEN_THRESHOLD) {
                 edgePanning = true;
-                panDown.execute();
+                panDown.down.execute();
             } else if (edgePanning) {
                 edgePanning = false;
                 panStop.execute();
@@ -252,50 +316,15 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
             }
             publish(new SelectionEvent(selectedIDs));
             dragging = false;
+            spawnType = SpawnInfo.SpawnType.NONE;
+            adapter.setSpawnType(SpawnInfo.SpawnType.NONE);
             return true;
         } else { // the player was not dragging, so maybe they clicked directly on something
             Clickable clicked = adapter.selectClickable(screenX, screenY, touchPos);
 
             if (button == Input.Buttons.LEFT) {
                 Gdx.app.debug("lji1 - ClickOracle", "Left click.");
-
-                clicked.accept(new Clickable.ClickableVisitor<Void>() {
-                    @Override
-                    public Void acceptUnit(Unit unit) {
-                        // if the player left clicks on a friendly unit, that single unit becomes the selected unit
-                        if (unit.getPlayerId() == adapter.getPlayerId()) {
-                            deMultiSelect();
-                            addToMultiselected(unit);
-                        }
-                        return null;
-                    }
-                    @Override
-                    public Void acceptBlock(Clickable.ClickableBlock block) {
-                        // the player left clicked on a location - move all selected minions to this location
-                        if (multiSelected.notEmpty()) {
-                            Gdx.app.debug("luke probably", "About to send move message with these minions: " + multiSelected);
-                            adapter.sendMessage(new MoveMinionMessage(block.x, block.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public Void acceptCrystal(Crystal crystal) {
-                        return null;
-                    }
-
-                    @Override
-                    public Void acceptTower(Tower t) {
-                        return null;
-                    }
-
-                    @Override
-                    public Void acceptNull() {
-                        // if the player clicks on nothing, empty the selection
-                        deMultiSelect();
-                        return null;
-                    }
-                });
+                clicked.accept(selectionVisitor);
                 return false;
             }
             // Right click
@@ -310,7 +339,13 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
                     @Override
                     public Void acceptBlock(Clickable.ClickableBlock block) {
                         // if the player right clicks on a block, spawn something on that block
-                        Gdx.app.log("ClickOracle", "Accepting block location.");
+                        if (multiSelected.notEmpty()) {
+                            Gdx.app.debug("luke probably", "About to send move message with these minions: " + multiSelected);
+                            adapter.sendMessage(new MoveMinionMessage(block.x, block.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+                            return null;
+                        }
+
+                        int currentGameHash = adapter.getGameStateHash();
                         if (spawnType == SpawnInfo.SpawnType.UNIT) {
                             Gdx.app.debug("pjb3 - ClickOracle", "Spawn unit");
                             adapter.sendMessage(new CreateMinionMessage(block.x, block.y, block.z + 1, 69, adapter.getPlayerId(), currentGameHash));
@@ -323,6 +358,8 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
                         } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
                             Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 3 via state");
                             adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 2, adapter.getPlayerId(), currentGameHash));
+                        } else {
+                            deMultiSelect();
                         }
                         return null;
                     }
@@ -356,7 +393,14 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
     }
 
     public void setSpawnType(SpawnInfo newInfo) {
-        spawnType = newInfo.getType();
+        setSpawnType(newInfo.getType());
+    }
+
+    private void setSpawnType(SpawnInfo.SpawnType type) {
+        spawnType = type;
+        if (spawnType != SpawnInfo.SpawnType.NONE) {
+            deMultiSelect();
+        }
     }
 
     public void render() {
@@ -390,6 +434,11 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
     public Collection<Subscriber<SelectionEvent>> getSubscribers() {
         return selectionSubscribers;
     }
+    /* Register the given CommandPair with the bindings for keydown and keyup. */
+    private void registerPair(int key, CommandPair pair) {
+        keyDownCommands.put(key, pair.down);
+        keyUpCommands.put(key, pair.up);
+    }
 }
 
 @FunctionalInterface
@@ -400,3 +449,13 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
 interface ClickOracleCommand {
     void execute();
 }
+/* Utility class to organize commands that should go with each other (i.e. on keyUp/keyDown) */
+class CommandPair {
+    public ClickOracleCommand down;
+    public ClickOracleCommand up;
+    public CommandPair(ClickOracleCommand down, ClickOracleCommand up) {
+        this.down = down;
+        this.up = up;
+    }
+}
+

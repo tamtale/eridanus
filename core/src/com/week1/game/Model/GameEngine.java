@@ -8,7 +8,6 @@ import com.week1.game.Model.Entities.Tower;
 import com.week1.game.Model.World.CoolWorldBuilder;
 import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
-import com.week1.game.Networking.Messages.Game.TaggedMessage;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
@@ -16,7 +15,6 @@ import com.week1.game.Renderer.RenderConfig;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.List;
-import java.util.Queue;
 
 public class GameEngine implements GameRenderable {
 
@@ -26,15 +24,13 @@ public class GameEngine implements GameRenderable {
     private int enginePlayerId = -1; // Not part of the game state exactly, but used to determine if the game is over for this user
     private InfoUtil util;
     private boolean sentWinLoss = false, sentGameOver = false;
-    private Queue<TaggedMessage> replayQueue;
     private boolean isStarted = false;
     private static Preferences PREFS;
     BufferedWriter writer;
 
-    public GameEngine(IEngineAdapter adapter, int playerId, Queue<TaggedMessage> replayQueue, InfoUtil util) {
+    public GameEngine(IEngineAdapter adapter, int playerId, InfoUtil util) {
         this.adapter = adapter;
         this.enginePlayerId = playerId;
-        this.replayQueue = replayQueue;
         this.PREFS = Gdx.app.getPreferences("eridanusSavedContent");
         gameState = new GameState(
                 CoolWorldBuilder.ONLY,
@@ -44,8 +40,6 @@ public class GameEngine implements GameRenderable {
                     Tower myBase = gameState.getPlayerBase(this.enginePlayerId);
                     position.set(myBase.getX(), myBase.getY(), 0);
                     adapter.setDefaultLocation(position);
-                    adapter.zoom(-20); // 20 is arbitrary, but feels reasonable for initial camera zoom
-
                     // Give the system the center of the map for camera rotation.
                     int[] dimensions = getGameState().getWorld().getWorldDimensions();
                     adapter.setCenter(new Vector3(dimensions[0] / 2f, dimensions[1] / 2f, dimensions[2] / 2f));
@@ -82,17 +76,6 @@ public class GameEngine implements GameRenderable {
 
     public void receiveMessages(List<? extends GameMessage> messages) {
         communicationTurn += 1;
-        // Modify things like mana, deal damage, moving units, and checking if the game ends
-        synchronousUpdateState();
-        // Process the messages that come in, if there are any
-        for (int m = 0; m < messages.size(); m++) {
-            messages.get(m).process(this, gameState, util);
-        }
-        // Process any messages in the replay queue.
-        for (TaggedMessage message = replayQueue.peek(); message != null && message.turn == communicationTurn; message = replayQueue.peek()) {
-            replayQueue.poll();
-            message.gameMessage.process(this, gameState, util);
-        }
         if (communicationTurn % 10 == 0) {
             // Time to sync up!
             adapter.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash(), communicationTurn));
@@ -108,6 +91,15 @@ public class GameEngine implements GameRenderable {
                 }
             }
         }
+
+        // Modify things like mana, deal damage, moving units, and checking if the game ends
+        synchronousUpdateState();
+        // Process the messages that come in, if there are any
+        for (int m = 0; m < messages.size(); m++) {
+            messages.get(m).process(this, gameState, util);
+        }
+
+
     }
 
     public void synchronousUpdateState() {
