@@ -49,14 +49,18 @@ public class FogSystem implements ISystem {
 
 
         if (!fogEnabled()) { // everything should be made visible
-            for (int i = 0; i < x; i++) {
-                for (int j = 0; j < y; j++) {
-                    world.markForUnhide(i, j);
-                }
-            }
+            showWorld();
         }
         
         initialized = true;
+    }
+
+    private void showWorld() {
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < y; j++) {
+                world.markForUnhide(i, j);
+            }
+        }
     }
 
     @Override
@@ -144,7 +148,10 @@ public class FogSystem implements ISystem {
         return fogEnabled;
     }
 
-    public static void setFog(boolean newFogEnabled) {
+    public void setFog(boolean newFogEnabled) {
         fogEnabled = newFogEnabled;
+        if (!fogEnabled) {
+            showWorld();
+        }
     }
 }

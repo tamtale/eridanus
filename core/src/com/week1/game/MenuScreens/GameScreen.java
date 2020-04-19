@@ -147,6 +147,11 @@ public class GameScreen implements Screen {
 				networkClient.sendRestartRequest();
 				dispose();
 			}
+
+			@Override
+			public void setFog(boolean enabled) {
+				engine.setFog(enabled);
+			}
 		}, util);
 		
 		clickOracle = new ClickOracle(
