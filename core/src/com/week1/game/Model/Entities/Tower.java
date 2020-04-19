@@ -162,4 +162,12 @@ public class Tower {
     public PositionComponent getPositionComponent() {
         return positionComponent;
     }
+    public HealthComponent getHealthComponent() {return healthComponent;}
+    public OwnedComponent getOwnedComponent(){return ownedComponent;}
+    public TargetingComponent getTargetingComponent() {
+        return targetingComponent;
+    }
+    public DamagingComponent getDamagingComponent() {
+        return damagingComponent;
+    }
 }

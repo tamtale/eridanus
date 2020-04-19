@@ -53,6 +53,7 @@ public class GameState implements GameRenderable {
     private HealthRenderSystem healthRenderSystem = new HealthRenderSystem();
     private HealthGrowthSystem healthGrowthSystem = new HealthGrowthSystem();
     private FogSystem fogSystem = new FogSystem();
+    private TowerSpawnSystem towerSpawnSystem;
 
     private Array<Crystal> crystals = new Array<>();
     private Array<Unit> units = new Array<>();
@@ -95,6 +96,7 @@ public class GameState implements GameRenderable {
         initTargetingSystem();
         initDeathSystem();
         initCrystalRespawnSystem();
+        initTowerSpawnSystem();
         targetingSystem.addSubscriber(damageSystem);
         targetingSystem.addSubscriber(damageRewardSystem);
         damageSystem.addSubscriber(deathSystem);
@@ -239,6 +241,24 @@ public class GameState implements GameRenderable {
         );
     }
 
+    private void initTowerSpawnSystem() {
+        this.towerSpawnSystem = new TowerSpawnSystem(
+            new IService<Integer, Void>() {
+                @Override
+                public Void query(Integer key) {
+                    removeEntity(key);
+                    return null;
+                }
+            }, new IService<Tower, Void>() {
+                @Override
+                public Void query(Tower key) {
+                    addFinishedTower(key);
+                    return null;
+                }
+            }
+        );
+    }
+
     public void synchronousUpdateState(int communicationTurn) {
         fogSystem.update(THRESHOLD);
         manaRegenSystem.update(THRESHOLD);
@@ -254,6 +274,7 @@ public class GameState implements GameRenderable {
         deathRewardSystem.update(THRESHOLD);
         deathSystem.update(THRESHOLD);
         healthGrowthSystem.update(THRESHOLD);
+        towerSpawnSystem.update(THRESHOLD);
         doTowerSpecialAbilities(communicationTurn);
     }
 
@@ -448,38 +469,33 @@ public class GameState implements GameRenderable {
         fogSystem.addSeen(unfinishedTower.ID, positionComponent, visibleComponent);
         towers.add(unfinishedTower);
         addBuilding(unfinishedTower, playerID);
-        Timer timer = new Timer();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(time);
-        cal.add(Calendar.SECOND, buildDelay);
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (unfinishedTower.getPositionComponent() != null) {
-                    Gdx.app.log("wab2 - Tower", "Tower finished building");
-                    removeEntity(unfinishedTower.ID);
-                    towers.removeValue(unfinishedTower, true);
-                    targetingSystem.addNode(tower.ID, ownedComponent, targetingComponent, positionComponent);
-                    damageSystem.addHealth(tower.ID, healthComponent);
-                    damageSystem.addDamage(tower.ID, damagingComponent);
-                    damageRewardSystem.addManaReward(tower.ID, manaRewardComponent);
-                    damageRewardSystem.addDamage(tower.ID, damagingComponent);
-                    deathRewardSystem.addManaReward(tower.ID, manaRewardComponent);
-                    healthRenderSystem.addNode(tower.ID, new PositionComponent(tower.highestBlockLocation), healthComponent, ownedComponent, visibleComponent);
-                    if (ownedComponent.playerID == localPlayerID) { // only locally owned seers should be added
-                        fogSystem.addSeer(tower.ID, positionComponent, targetingComponent);
-                    }
-                    fogSystem.addSeen(tower.ID, positionComponent, visibleComponent);
-                    towers.add(tower);
-                    addBuilding(tower, playerID);
-                }
-            }
-        }, cal.getTime());
-
+        towerSpawnSystem.addNode(tower.ID, tower, unfinishedTower.ID);
 
         return tower;
     }
-    
+
+    public void addFinishedTower(Tower tower) {
+        OwnedComponent ownedComponent = tower.getOwnedComponent();
+        TargetingComponent targetingComponent = tower.getTargetingComponent();
+        HealthComponent healthComponent = tower.getHealthComponent();
+        PositionComponent positionComponent = tower.getPositionComponent();
+        DamagingComponent damagingComponent = tower.getDamagingComponent();
+        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
+        VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == tower.getPlayerId());
+        targetingSystem.addNode(tower.ID, ownedComponent, targetingComponent, positionComponent);
+        damageSystem.addHealth(tower.ID, healthComponent);
+        damageSystem.addDamage(tower.ID, damagingComponent);
+        damageRewardSystem.addManaReward(tower.ID, manaRewardComponent);
+        damageRewardSystem.addDamage(tower.ID, damagingComponent);
+        deathRewardSystem.addManaReward(tower.ID, manaRewardComponent);
+        healthRenderSystem.addNode(tower.ID, new PositionComponent(tower.highestBlockLocation), healthComponent, ownedComponent, visibleComponent);
+        if (ownedComponent.playerID == localPlayerID) { // only locally owned seers should be added
+            fogSystem.addSeer(tower.ID, positionComponent, targetingComponent);
+        }
+        fogSystem.addSeen(tower.ID, positionComponent, visibleComponent);
+        towers.add(tower);
+        addBuilding(tower, ownedComponent.playerID);
+    }
     public void addBase(Tower pb, int playerID) {
         String playerName = players.get(playerID).getName();
         Color playerColor = players.get(playerID).getColor();
@@ -517,6 +533,7 @@ public class GameState implements GameRenderable {
         damageRewardSystem.remove(id);
         renderNametagSystem.remove(id);
         healthRenderSystem.remove(id);
+        towerSpawnSystem.remove(id);
         fogSystem.remove(id);
 
         healthGrowthSystem.remove(id);
