@@ -3,6 +3,7 @@ package com.week1.game.Model;
 public class SpawnInfo {
 
     public enum SpawnType {
+        NONE,
         UNIT,
         TOWER1,
         TOWER2,
