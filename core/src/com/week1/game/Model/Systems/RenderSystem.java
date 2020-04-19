@@ -29,10 +29,12 @@ public class RenderSystem implements ISystem {
             node.renderComponent.modelInstance.transform.setTranslation(node.positionComponent.position);
 
             //Rotate any moving entities to look where they are going
-            System.out.println(node.velocityComponent.velocity);
-            node.renderComponent.modelInstance.transform.rotate(Vector3.Z, MathUtils.atan2(node.velocityComponent.velocity.x,
-                    node.velocityComponent.velocity.y) * MathUtils.radiansToDegrees);
-            
+//            if (!node.velocityComponent.velocity.equals(VelocityComponent.ZERO)) {
+//                node.renderComponent.modelInstance.transform.rotate(Vector3.Z, MathUtils.atan2(node.velocityComponent.velocity.x,
+//                        node.velocityComponent.velocity.y) * MathUtils.radiansToDegrees);
+//            }
+
+
             if (node.visibleComponent.visible()) { // only render if unit should be visible
                 modelBatch.render(node.renderComponent.modelInstance, env);
             }
