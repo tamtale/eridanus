@@ -120,7 +120,7 @@ public class Renderer {
 
     public void endGame(int winOrLoss) {
         winState = winOrLoss;
-
+        adapter.setFog(false);
         gameButtonsStage.endGame(winState);
     }
 

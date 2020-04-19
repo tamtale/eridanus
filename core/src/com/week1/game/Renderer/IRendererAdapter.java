@@ -17,6 +17,8 @@ public interface IRendererAdapter {
 
     void restartGame();
 
+    void setFog(boolean enabled);
+
     int getPlayerId();
 
     String getTowerName(int slotNum);

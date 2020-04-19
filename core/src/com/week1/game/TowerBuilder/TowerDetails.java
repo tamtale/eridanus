@@ -211,7 +211,7 @@ public class TowerDetails {
 
     private void calcFinalStats() {
         //Tower base cost
-        price = (int) (rawPrice + 150);
+        price = (int) (rawPrice + 100);
 
         atk = rawAtk * 0.2;
         range = rawHeight * 2;
