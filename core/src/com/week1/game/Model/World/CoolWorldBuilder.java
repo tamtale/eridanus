@@ -208,9 +208,9 @@ public class CoolWorldBuilder implements IWorldBuilder {
             };
         } else if (numPlayers == 3) {
             return new Vector3[]{
-                    new Vector3(10, 20, 1),
+                    new Vector3(10, 30, 1),
                     new Vector3(45, 80, 1),
-                    new Vector3(80, 20, 1)
+                    new Vector3(80, 30, 1)
             };
         } else if (numPlayers == 4) {
             return new Vector3[] {
