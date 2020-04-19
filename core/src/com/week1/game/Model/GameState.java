@@ -664,6 +664,10 @@ public class GameState implements GameRenderable {
         renderTargetingSystem.render(config);
     }
 
+    public void setFog(boolean fog) {
+        fogSystem.setFog(fog);
+    }
+
 
     /**
      * This inner class maintains the wrapper information for creating the wrapped version of the gamestate
