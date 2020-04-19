@@ -3,7 +3,6 @@ package com.week1.game.Networking.NetworkObjects;
 import com.badlogic.gdx.Gdx;
 import com.week1.game.Model.PlayerInfo;
 import com.week1.game.Model.TowerLite;
-import com.week1.game.Networking.Messages.Control.ClientControl.JoinedPlayersMessage;
 import com.week1.game.Networking.Messages.Control.ClientControl.PlayerIdMessage;
 import com.week1.game.Networking.Messages.Control.HostControl.HostControlMessage;
 import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
@@ -33,11 +32,9 @@ public class Host {
     private static final int UPDATE_INTERVAL = 200;
     private int port;
     public ServerSocket serverSocket;
-    private int nextPlayerId = 0;
     private boolean magicBoolean = false; // When threads are asleep and woken, they are not interrupted so they can
                                           // check this variable to see if they have been stopped by a disconnect action
 
-    List<String> joinedPlayers = Collections.synchronizedList(new ArrayList<>());
     public Map<Integer, List<TowerLite>> towerDetails = new HashMap<>(); // first index is implicitly the player id
     public Map<InetAddress, Player> registry = new HashMap<>();
 
@@ -224,20 +221,18 @@ public class Host {
         }
     }
 
-    public int getNextPlayerId() {
-        return nextPlayerId;
-    }
-
     public void setPlayerInfo(InetAddress address, PlayerInfo info) {
         this.registry.get(address).setPlayerInfo(info);
-        int id = this.registry.get(address).playerId;
-        // Tell everyone that someone has joined the game
+    }
 
-        joinedPlayers.clear();
-        registry.forEach((addr, plyr) -> joinedPlayers.add(plyr.playerId + ": " + plyr.getName()));
-        java.util.Collections.sort(joinedPlayers);
-        Gdx.app.debug("pjb3", "broadcasting" + joinedPlayers);
-        broadcastToRegisteredPlayers(MessageFormatter.packageMessage(new JoinedPlayersMessage(-1, joinedPlayers)));
+    /**
+     * Returns a list of strings to display for each player on clients
+     */
+    public List<String> getJoinedPlayers() {
+        List<String> joinedPlayers = Collections.synchronizedList(new ArrayList<>());;
+        registry.forEach((addr, plyr) -> joinedPlayers.add(plyr.getName() + ": " + plyr.getFactionName()));
+        return joinedPlayers;
+
     }
 
     public List<PlayerInfo> getPlayerInfoList() {

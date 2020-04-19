@@ -7,6 +7,7 @@ import com.week1.game.Model.Components.HealthComponent;
 import com.week1.game.Model.Events.DamageEvent;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -29,15 +30,13 @@ public class DamageSystem implements ISystem, Subscriber<DamageEvent>, Publisher
             HealthComponent victimHealth = healthComponents.get(damageEvent.victimID);
             DamagingComponent damagingComponent = damagingComponents.get(damageEvent.damagerID);
             
-            Gdx.app.log("DamageSystem", "Dealing Damage to " + damageEvent.victimID + " with current health " + victimHealth.curHealth);
+            Gdx.app.debug("DamageSystem", "Dealing Damage to " + damageEvent.victimID + " with current health " + victimHealth.curHealth);
             if (victimHealth.curHealth <= 0) continue; // Can't be dealt more damage below 0.
             victimHealth.curHealth -=damagingComponent.baseDamage;
-            Gdx.app.log("DamageSystem", "health now " + victimHealth.curHealth);
+            Gdx.app.debug("DamageSystem", "health now " + victimHealth.curHealth);
             if (victimHealth.curHealth <= 0) {
                 // Inform death subscribers that a death has occurred.
-                for (Subscriber<DamageEvent> deathEventSubscriber: deathSubscribers) {
-                    deathEventSubscriber.process(damageEvent);
-                }
+                publish(damageEvent);
             }
         }
         damageEvents.clear();
@@ -65,6 +64,11 @@ public class DamageSystem implements ISystem, Subscriber<DamageEvent>, Publisher
     @Override
     public void addSubscriber(Subscriber<DamageEvent> subscriber) {
         deathSubscribers.add(subscriber);
+    }
+
+    @Override
+    public Collection<Subscriber<DamageEvent>> getSubscribers() {
+        return deathSubscribers;
     }
 
 }

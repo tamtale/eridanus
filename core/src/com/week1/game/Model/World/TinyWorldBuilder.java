@@ -35,10 +35,15 @@ public class TinyWorldBuilder implements IWorldBuilder {
     }
 
     @Override
-    public Vector2[] crystalLocations() {
-        return new Vector2[0];
+    public int getNumCrystals() {
+        return 0;
     }
-
+    
+    @Override
+    public Vector2 nextCrystalLocation() {
+        return null;
+    }
+    
     @Override
     public void addSeed(long mapSeed) {
 

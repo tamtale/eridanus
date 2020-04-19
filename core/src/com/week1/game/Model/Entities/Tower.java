@@ -2,6 +2,7 @@ package com.week1.game.Model.Entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.Ray;
 import com.week1.game.Model.Components.*;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.World.Block;
@@ -14,14 +15,24 @@ import java.util.Random;
 
 import static com.week1.game.Model.StatsConfig.*;
 
-public class Tower {
+public class Tower implements Clickable {
+
+    /*
+     * Adapter to standard "clickable" methods, since the tower doesn't own references
+     * to the game world blocks or model instances.
+     */
+    public interface TowerAdapter {
+        void hover(boolean shouldHover);
+        void select(boolean shouldSelect);
+        boolean intersects(Ray ray, Vector3 intersection);
+    }
+
     public int ID;
     private static final Random r = new Random(123456789);
     private PositionComponent positionComponent;
     private HealthComponent healthComponent;
-    private DamagingComponent damagingComponent;
     private OwnedComponent ownedComponent;
-    private TargetingComponent targetingComponent;
+    private VisibleComponent visibleComponent;
     protected int towerType;
     protected double dmg;
     protected double range;
@@ -29,30 +40,29 @@ public class Tower {
     private List<BlockSpec> layout;
     private Map<Integer, Integer> spawnerCounts;
     public Vector3 highestBlockLocation;
-    
+    private TowerAdapter adapter;
+
     public Tower(
         PositionComponent positionComponent,
         HealthComponent healthComponent,
-        DamagingComponent damagingComponent,
-        TargetingComponent targetingComponent,
         OwnedComponent ownedComponent,
-        ManaRewardComponent manaRewardComponent,
         VisibleComponent visibleComponent,
         TowerDetails towerDetails,
+        TowerAdapter adapter,
         int towerType,
         int ID
     ) {
         this.positionComponent = positionComponent;
         this.healthComponent = healthComponent;
         this.ownedComponent = ownedComponent;
-        this.targetingComponent = targetingComponent;
-        this.damagingComponent = damagingComponent;
+        this.visibleComponent = visibleComponent;
         this.dmg = towerDetails.getAtk();
         this.cost = towerDetails.getPrice();
         this.range = towerDetails.getRange();
         this.towerType = towerType;
         this.highestBlockLocation = new Vector3(positionComponent.position).add(towerDetails.getHighestBlock().x, towerDetails.getHighestBlock().z, towerDetails.getHighestBlock().y);
         this.layout = towerDetails.getLayout();
+        this.adapter = adapter;
         this.spawnerCounts = towerDetails.getSpawnerCounts();
         this.ID = ID;
     }
@@ -161,6 +171,31 @@ public class Tower {
     
     public PositionComponent getPositionComponent() {
         return positionComponent;
+    }
+
+    @Override
+    public boolean intersects(Ray ray, Vector3 intersection) {
+        return adapter.intersects(ray, intersection);
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+        adapter.select(selected);
+    }
+
+    @Override
+    public void setHovered(boolean hovered) {
+        adapter.hover(hovered);
+    }
+
+    @Override
+    public boolean visible() {
+        return visibleComponent.visible();
+    }
+
+    @Override
+    public <T> T accept(ClickableVisitor<T> clickableVisitor) {
+        return clickableVisitor.acceptTower(this);
     }
     public HealthComponent getHealthComponent() {return healthComponent;}
     public OwnedComponent getOwnedComponent(){return ownedComponent;}

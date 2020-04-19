@@ -12,10 +12,6 @@ public class SmallWorldBuilder implements IWorldBuilder {
 
     public static SmallWorldBuilder ONLY = new SmallWorldBuilder();
     
-    private static Vector2[] crystalLocs = new Vector2[] {
-            new Vector2(10, 5)
-    };
-
     @Override
     public Block[][][] terrain() {
         Block[][][] blocks = new Block[40][30][15];
@@ -50,11 +46,17 @@ public class SmallWorldBuilder implements IWorldBuilder {
                 new Vector3(35, 10, 1),
         };
     }
+    
+    @Override
+    public Vector2 nextCrystalLocation() {
+        return new Vector2(10, 5);
+    }
 
     @Override
-    public Vector2[] crystalLocations() {
-        return crystalLocs;
+    public int getNumCrystals() {
+        return 1;
     }
+    
 
     @Override
     public void addSeed(long mapSeed) {

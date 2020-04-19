@@ -9,6 +9,7 @@ import com.week1.game.Networking.Messages.Control.ClientControl.ClientControlMes
 import com.week1.game.Networking.Messages.Control.HostControl.*;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
+import com.week1.game.Pair;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -103,9 +104,9 @@ public class Client {
         return this.playerId;
     }
     
-    public void sendGoToGame(long mapSeed) {
+    public void sendGoToGame(long mapSeed, boolean enableFog) {
         // the client doesn't know its player id until later, so just use -1
-        this.sendStringMessage(MessageFormatter.packageMessage(new RequestGoToGameMessage(mapSeed, -1)));
+        this.sendStringMessage(MessageFormatter.packageMessage(new RequestGoToGameMessage(mapSeed, enableFog,-1)));
     }
 
     public void sendLoadout(List<TowerLite> details) {
@@ -124,6 +125,11 @@ public class Client {
     public void sendRestartRequest() {
         sendStringMessage(MessageFormatter.packageMessage(new RequestRestartMessage(playerId)));
     }
+
+    public void sendFactionSelection(Pair.FactionPair selected) {
+        sendStringMessage(MessageFormatter.packageMessage(new SubmitFactionMessage(playerId, selected)));
+    }
+
     /**
      * This is needed because I don't want to add the adapter during creation because connection
      * should ha[pen before the game is created
@@ -163,4 +169,6 @@ public class Client {
         sendStringMessage(MessageFormatter.packageMessage(new RetractLoadoutMessage(playerId)));
 
     }
+
+
 }
