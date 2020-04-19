@@ -7,19 +7,12 @@ public class UnitModel {
     private Model model;
     private String factionName;
 
-    //Used for Hp bars
-    private Color associatedColor;
 
-    public UnitModel(Model model, String factionName, Color color) {
+    public UnitModel(Model model, String factionName) {
         this.model = model;
         this.factionName = factionName;
-        this.associatedColor = color;
     }
 
-
-    public Color getColor() {
-        return associatedColor;
-    }
 
     public Model getModel() {
         return model;
@@ -29,17 +22,6 @@ public class UnitModel {
     public String toString() {
         return factionName;
     }
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (o.getClass() == UnitModel.class) {
-//            if (o.toString().equals(this.toString())) {
-////            if (((UnitModel) o).getModel() == this.model && o.toString().equals(this.toString())) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 
 
 }

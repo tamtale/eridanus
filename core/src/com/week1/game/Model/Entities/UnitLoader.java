@@ -22,10 +22,10 @@ public class UnitLoader {
     static{
         FACTIONS.add("Select A Faction");
 
-        loadMinion("earth_minion", "Earth faction", Color.GREEN);
-        loadMinion("fire_minion", "Fire faction", Color.RED);
-        loadMinion("water_minion", "Water faction", new Color(0, 0, 0.545f, 1f));
-        loadMinion("air_minion", "Air faction", new Color( 0.678f, 0.847f, 0.902f, 1f));
+        loadMinion("earth_minion", "Earth", Color.GREEN);
+        loadMinion("fire_minion", "Fire", Color.RED);
+        loadMinion("water_minion", "Water", new Color(0, 0, 0.545f, 1f));
+        loadMinion("air_minion", "Air", new Color( 0.678f, 0.847f, 0.902f, 1f));
     }
 
 
@@ -33,7 +33,7 @@ public class UnitLoader {
         String minion_name = "minion/" + folder_name + "/minion_with_weird_face.g3db";
         Initializer.assetManager.load(minion_name, Model.class);
         Initializer.assetManager.finishLoading();
-        UnitModel minion = new UnitModel(Initializer.assetManager.get(minion_name, Model.class), faction_name, color);
+        UnitModel minion = new UnitModel(Initializer.assetManager.get(minion_name, Model.class), faction_name);
 
         // Adjust the model to fit nicely into the blocky world
         for (Node node : minion.getModel().nodes) {
