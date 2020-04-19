@@ -2,27 +2,26 @@ package com.week1.game.Networking.Messages.Control.HostControl;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.week1.game.Model.Entities.UnitModel;
 import com.week1.game.Networking.Messages.Control.ClientControl.JoinedPlayersMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Networking.NetworkObjects.Host;
 import com.week1.game.Networking.NetworkObjects.Player;
-import com.week1.game.Pair;
 
 import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.week1.game.Model.PlayerInfo.defaultColor;
 
 /*
  * This is when a player selects their Faction/Color combo on the second part of the connection screen
  */
 public class SubmitFactionMessage extends HostControlMessage  {
     private final static MessageType MESSAGE_TYPE = MessageType.SUBMITCOLOR;
-    private Pair<String, Color> faction;
+    private String faction;
 
-    public SubmitFactionMessage(int playerID, Pair<String, Color> faction) {
+    public SubmitFactionMessage(int playerID, String faction) {
         super(playerID, MESSAGE_TYPE);
         this.faction = faction;
     }
@@ -37,14 +36,14 @@ public class SubmitFactionMessage extends HostControlMessage  {
         }
 
 
-        Set<Color> selectedColors = new HashSet<>();
+        Set<String> selectedColors = new HashSet<>();
         for (Player p : h.registry.values()) {
-           if( p.getColor().equals(defaultColor)) {
+           if( p.getFaction().equals("Factionless")) {
                sendNewColors(h, false);
                return;
            }
-           Gdx.app.debug("SubmitFactionMessage", "Color is " + p.getColor() + " vs " + defaultColor);
-           selectedColors.add(p.getColor());
+           Gdx.app.debug("SubmitFactionMessage", "Color is " + p.getFaction() + " vs null");
+           selectedColors.add(p.getFaction());
         }
         if (selectedColors.size() != h.registry.size()) {
             // Not enough different factions. Send not ready because of duplicate colors.

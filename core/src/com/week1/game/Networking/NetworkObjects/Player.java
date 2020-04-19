@@ -1,6 +1,7 @@
 package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.graphics.Color;
+import com.week1.game.Model.Entities.UnitModel;
 import com.week1.game.Model.PlayerInfo;
 import com.week1.game.Pair;
 
@@ -30,13 +31,13 @@ public class Player {
         this.info = info;
     }
 
-    public Color getColor() {
-        return info.getColor();
+    public String getFaction() {
+        return info.getFaction();
     }
 
-    public String getFactionName() {
-        return info.getFactionName();
-    }
+//    public String getFactionName() {
+//        return info.getFactionName();
+//    }
 
     public String getName() {
         return info.getPlayerName();
@@ -46,7 +47,7 @@ public class Player {
         return this.info;
     }
 
-    public void setFaction(Pair<String, Color> faction) {
+    public void setFaction(String faction) {
         info.setFaction(faction);
     }
 }

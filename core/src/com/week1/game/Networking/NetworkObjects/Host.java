@@ -230,7 +230,7 @@ public class Host {
      */
     public List<String> getJoinedPlayers() {
         List<String> joinedPlayers = Collections.synchronizedList(new ArrayList<>());;
-        registry.forEach((addr, plyr) -> joinedPlayers.add(plyr.getName() + ": " + plyr.getFactionName()));
+        registry.forEach((addr, plyr) -> joinedPlayers.add(plyr.getName() + ": " + plyr.getFaction()));
         return joinedPlayers;
 
     }

@@ -2,6 +2,7 @@ package com.week1.game.Networking.NetworkObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.week1.game.MenuScreens.ScreenManager;
+import com.week1.game.Model.Entities.UnitModel;
 import com.week1.game.Model.PlayerInfo;
 import com.week1.game.Model.TowerLite;
 import com.week1.game.Networking.INetworkClientToEngineAdapter;
@@ -126,7 +127,7 @@ public class Client {
         sendStringMessage(MessageFormatter.packageMessage(new RequestRestartMessage(playerId)));
     }
 
-    public void sendFactionSelection(Pair.FactionPair selected) {
+    public void sendFactionSelection(String selected) {
         sendStringMessage(MessageFormatter.packageMessage(new SubmitFactionMessage(playerId, selected)));
     }
 
