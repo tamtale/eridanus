@@ -375,7 +375,7 @@ public class GameState implements GameRenderable {
         // Register with death reward system, so rewards are given for killing this crystal
         deathRewardSystem.addManaReward(c.ID, manaRewardComponent);
         healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn, visibleComponent);
-        renderSystem.addNode(c.ID, renderComponent, positionComponent, visibleComponent);
+        renderSystem.addNode(c.ID, renderComponent, positionComponent, visibleComponent, VelocityComponent.ZERO);
         fogSystem.addSeen(c.ID, positionComponent, visibleComponent);
     }
 
@@ -397,7 +397,7 @@ public class GameState implements GameRenderable {
         pathfindingSystem.addNode(u.ID, positionComponent, velocityComponent, pathComponent);
         PositionComponent interpolated = new PositionComponent(positionComponent.position);
         interpolatorSystem.addNode(u.ID, positionComponent, interpolated, velocityComponent);
-        renderSystem.addNode(u.ID, renderComponent, interpolated, visibleComponent);
+        renderSystem.addNode(u.ID, renderComponent, interpolated, visibleComponent, velocityComponent);
         targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(u.ID, healthComponent);
         damageSystem.addDamage(u.ID, damagingComponent);
