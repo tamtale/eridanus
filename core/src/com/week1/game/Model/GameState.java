@@ -317,7 +317,7 @@ public class GameState implements GameRenderable {
         Vector3[] startLocs = worldBuilder.startLocations();
         for (int i = 0; i < numPlayers; i++) {
             // Create and add a base for each player
-            Tower newBase = addTower((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z,
+            Tower newBase = addBase((int) startLocs[i].x, (int) startLocs[i].y, (int) startLocs[i].z,
                     towerLoadouts.getTowerDetails(i,-1), i, -1);
             addBase(newBase, i);
         }
@@ -482,9 +482,10 @@ public class GameState implements GameRenderable {
                 return false;
             }
         };
-        Tower tower = new Tower(positionComponent, healthComponent, ownedComponent, visibleComponent,
+        Tower tower = new Tower(positionComponent, healthComponent, ownedComponent, visibleComponent, targetingComponent, damagingComponent,
                 towerDetails, adapter, towerType, entityManager.newID());
-        Tower unfinishedTower = new Tower(positionComponent, unfinishedHealthComponent, damagingComponent, targetingComponent, ownedComponent, manaRewardComponent, visibleComponent, unfinishedTowerDetails, adapter, towerType, entityManager.newID());
+        Tower unfinishedTower = new Tower(positionComponent, unfinishedHealthComponent, ownedComponent,
+                visibleComponent, targetingComponent, damagingComponent, unfinishedTowerDetails, adapter, towerType, entityManager.newID());
         damageSystem.addHealth(unfinishedTower.ID, unfinishedHealthComponent);
         damageSystem.addDamage(unfinishedTower.ID, damagingComponent);
         damageRewardSystem.addManaReward(unfinishedTower.ID, manaRewardComponent);
@@ -492,9 +493,6 @@ public class GameState implements GameRenderable {
         deathRewardSystem.addManaReward(unfinishedTower.ID, manaRewardComponent);
         healthRenderSystem.addNode(unfinishedTower.ID, new PositionComponent(unfinishedTower.highestBlockLocation), unfinishedHealthComponent, ownedComponent, visibleComponent);
         healthGrowthSystem.addHealthGrowth(unfinishedTower.ID, unfinishedHealthComponent);
-        if (ownedComponent.playerID == localPlayerID) { // only locally owned seers should be added
-            fogSystem.addSeer(unfinishedTower.ID, positionComponent, targetingComponent);
-        }
         fogSystem.addSeen(unfinishedTower.ID, positionComponent, visibleComponent);
         towers.add(unfinishedTower);
         addBuilding(unfinishedTower, playerID);
@@ -503,6 +501,56 @@ public class GameState implements GameRenderable {
         return tower;
     }
 
+    public Tower addBase(int x, int y, int z, TowerDetails towerDetails, int playerID, int towerType) {
+        PositionComponent positionComponent = new PositionComponent((float) x, (float) y, (float) z);
+        HealthComponent healthComponent = new HealthComponent((float) towerDetails.getHp(), (float) towerDetails.getHp());
+        DamagingComponent damagingComponent = new DamagingComponent((float) towerDetails.getAtk());
+        TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
+                TargetingComponent.TargetingStrategy.ENEMY);
+        OwnedComponent ownedComponent = new OwnedComponent(playerID);
+        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
+        VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID);
+        Tower.TowerAdapter adapter = new Tower.TowerAdapter() {
+            @Override
+            public void hover(boolean shouldHover) {
+                for (BlockSpec b: towerDetails.getLayout()) {
+                    // Note: we switch getZ() and getY() because the BlockSpec coordinates are Y-up.
+                    world.setBlockHovered(x + b.getX(), y + b.getZ(), z + b.getY(), shouldHover);
+                }
+            }
+
+            @Override
+            public void select(boolean shouldSelect) {
+                for (BlockSpec b: towerDetails.getLayout()) {
+                    // Note: we switch getZ() and getY() because the BlockSpec coordinates are Y-up.
+                    world.setBlockSelected(x + b.getX(), y + b.getZ(), z + b.getY(), shouldSelect);
+                }
+            }
+
+            @Override
+            public boolean intersects(Ray ray, Vector3 intersection) {
+                // For now, we don't actually need this to do anything,
+                // we use an optimized version of tower detection in the ClickOracle.
+                return false;
+            }
+        };
+        Tower base = new Tower(positionComponent, healthComponent, ownedComponent, visibleComponent, targetingComponent, damagingComponent,
+                towerDetails, adapter, towerType, entityManager.newID());
+        damageSystem.addHealth(base.ID, healthComponent);
+        damageSystem.addDamage(base.ID, damagingComponent);
+        damageRewardSystem.addManaReward(base.ID, manaRewardComponent);
+        damageRewardSystem.addDamage(base.ID, damagingComponent);
+        deathRewardSystem.addManaReward(base.ID, manaRewardComponent);
+        healthRenderSystem.addNode(base.ID, new PositionComponent(base.highestBlockLocation), healthComponent, ownedComponent, visibleComponent);
+        healthGrowthSystem.addHealthGrowth(base.ID, healthComponent);
+        if (ownedComponent.playerID == localPlayerID) { // only locally owned seers should be added
+            fogSystem.addSeer(base.ID, positionComponent, targetingComponent);
+        }
+        fogSystem.addSeen(base.ID, positionComponent, visibleComponent);
+        towers.add(base);
+        addBuilding(base, playerID);
+        return base;
+    }
     public void addFinishedTower(Tower tower, int dummyID) {
         removeEntity(dummyID);
         OwnedComponent ownedComponent = tower.getOwnedComponent();

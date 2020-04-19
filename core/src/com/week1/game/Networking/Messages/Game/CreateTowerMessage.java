@@ -22,7 +22,7 @@ public class CreateTowerMessage extends GameMessage {
     private Date time;
 
 
-    public CreateTowerMessage(float x, float y, float z, int towerType, int playerID, int intHash, Date time) {
+    public CreateTowerMessage(float x, float y, float z, int towerType, int playerID, int intHash) {
         super(playerID, MESSAGE_TYPE, intHash);
         this.x = x;
         this.y = y;
@@ -65,7 +65,7 @@ public class CreateTowerMessage extends GameMessage {
         inputState.getPlayer(playerID).useMana(towerCost);
 
         // Only create the tower once we're sure it's safe to do so
-        inputState.addTower((int) x, (int) y, (int) z, towerDetails, playerID, towerType, time);
+        inputState.addTower((int) x, (int) y, (int) z, towerDetails, playerID, towerType);
 
         return true;
     }
