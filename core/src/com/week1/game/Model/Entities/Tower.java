@@ -33,6 +33,8 @@ public class Tower implements Clickable {
     private HealthComponent healthComponent;
     private OwnedComponent ownedComponent;
     private VisibleComponent visibleComponent;
+    private DamagingComponent damagingComponent;
+    private TargetingComponent targetingComponent;
     protected int towerType;
     protected double dmg;
     protected double range;
@@ -47,6 +49,8 @@ public class Tower implements Clickable {
         HealthComponent healthComponent,
         OwnedComponent ownedComponent,
         VisibleComponent visibleComponent,
+        TargetingComponent targetingComponent,
+        DamagingComponent damagingComponent,
         TowerDetails towerDetails,
         TowerAdapter adapter,
         int towerType,
@@ -56,6 +60,8 @@ public class Tower implements Clickable {
         this.healthComponent = healthComponent;
         this.ownedComponent = ownedComponent;
         this.visibleComponent = visibleComponent;
+        this.damagingComponent = damagingComponent;
+        this.targetingComponent = targetingComponent;
         this.dmg = towerDetails.getAtk();
         this.cost = towerDetails.getPrice();
         this.range = towerDetails.getRange();
@@ -196,5 +202,13 @@ public class Tower implements Clickable {
     @Override
     public <T> T accept(ClickableVisitor<T> clickableVisitor) {
         return clickableVisitor.acceptTower(this);
+    }
+    public HealthComponent getHealthComponent() {return healthComponent;}
+    public OwnedComponent getOwnedComponent(){return ownedComponent;}
+    public TargetingComponent getTargetingComponent() {
+        return targetingComponent;
+    }
+    public DamagingComponent getDamagingComponent() {
+        return damagingComponent;
     }
 }

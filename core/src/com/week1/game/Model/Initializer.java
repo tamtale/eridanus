@@ -31,6 +31,7 @@ public class Initializer {
     public static Model easterEgg;
     public static Model spawner;
     public static Model crystal;
+    public static Model unfinished;
     public static Cursor defaultCursor;
     public static Cursor targetCursor;
     public static Texture targetX;
@@ -42,7 +43,7 @@ public class Initializer {
     public static Material hiddenMaterial;
     public static Material blueMaterial;
     public static Material clearMaterial;
-    
+
     public static void init() {
         waterBlock = fileBasedModel("water2.png");
         earthBlock = fileBasedModel("earth3.png");
@@ -52,11 +53,11 @@ public class Initializer {
         spaceGold = fileBasedModel("gold2.png");
         easterEgg = fileBasedModel("cat_boi.png");
         spawner = fileBasedModel("spawner2.png");
-
+        unfinished = transparentFileBasedModel("ground_highlight.png");//TODO:SIMRAN make this a gray model
         bmfData = new BitmapFont().getData();
         fontPixmap = new Pixmap(Gdx.files.internal(bmfData.getImagePath(0)));
         initCrystalModel();
-        
+
         hiddenMaterial = new Material() {{
             set(ColorAttribute.createDiffuse(Color.BLACK));
         }};
@@ -64,7 +65,7 @@ public class Initializer {
             set(ColorAttribute.createDiffuse(Color.CLEAR));
             set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.0f));
         }};
-        
+
         initCursor();
         initTargetX();
     }
@@ -103,7 +104,14 @@ public class Initializer {
     private static Model fileBasedModel(String fileName) {
         return BUILDER.createBox(1f, 1f, 1f,
                 new Material(
-                        TextureAttribute.createDiffuse(new Texture(fileName))), 
+                        TextureAttribute.createDiffuse(new Texture(fileName))),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
+    }
+
+    private static Model transparentFileBasedModel(String fileName){
+        Material mat = new Material(TextureAttribute.createDiffuse(new Texture(fileName)));
+        mat.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.5f));
+        return BUILDER.createBox(1f, 1f, 1f,
+                mat, VertexAttributes.Usage.Position | VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
     }
 }
