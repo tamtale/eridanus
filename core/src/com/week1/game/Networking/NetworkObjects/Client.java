@@ -15,7 +15,10 @@ import com.week1.game.Pair;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.List;
+
+import static com.week1.game.Networking.NetworkObjects.Host.EXCEPTION_LIMIT;
 
 
 /**
@@ -68,6 +71,7 @@ public class Client {
     
     public void awaitUpdates() {
         updateThread = new Thread(() -> {
+            int exceptionCount = 0;
             while (true) {
                 try {
                     String messages = this.in.readLine();
@@ -81,7 +85,17 @@ public class Client {
                     
                     Gdx.app.debug(TAG, "Received update: " + messages);
                     List<GameMessage> msgList = MessageFormatter.parseMessages(messages);
-                    adapter.deliverUpdate(msgList); 
+                    adapter.deliverUpdate(msgList);
+                    
+                } catch (SocketException socketException) {
+                    exceptionCount++;
+                    if (exceptionCount < EXCEPTION_LIMIT) { // don't spam the console
+                        socketException.printStackTrace();
+                    } else if (exceptionCount == EXCEPTION_LIMIT) {
+                        Gdx.app.log(TAG, "****\n To avoid console spam, further exceptions will not be printed. \n ****");
+                    } else {
+                        // do nothing
+                    }
 
                 } catch (IOException e) {
                     if(updateThread.isInterrupted()) {
