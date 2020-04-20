@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.week1.game.Model.Initializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -75,6 +76,13 @@ public class TowerMaterials {
     blockHp.put(BlockType.GROUND_HIGHLIGHT, 0);
     blockAtk.put(BlockType.GROUND_HIGHLIGHT, 0);
     blockPrice.put(BlockType.GROUND_HIGHLIGHT, 0);
+
+    //This is to make the unfinished block work
+    blockHp.put(BlockType.UNFINISHED, 0);
+    blockAtk.put(BlockType.UNFINISHED, 0);
+    blockPrice.put(BlockType.UNFINISHED, 0);
+    modelMap.put(BlockType.UNFINISHED, highlighted2);
+
 
     }
 

@@ -455,7 +455,7 @@ public class GameState implements GameRenderable {
         List<BlockSpec> unfinishedBlockSpecs = new ArrayList<BlockSpec>();
         for(int i = 0; i < towerDetails.getLayout().size(); i++){
             BlockSpec spec = towerDetails.getLayout().get(i);
-            BlockSpec newSpec = new BlockSpec(BlockType.ETHERITE, spec.getX(), spec.getY(), spec.getZ());//TODO:switch to unfinished
+            BlockSpec newSpec = new BlockSpec(BlockType.UNFINISHED, spec.getX(), spec.getY(), spec.getZ());//TODO:switch to unfinished
             unfinishedBlockSpecs.add(newSpec);
         }
         TowerDetails unfinishedTowerDetails = new TowerDetails(unfinishedBlockSpecs, "unfinished " + towerDetails.getName());
