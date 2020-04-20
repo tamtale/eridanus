@@ -3,6 +3,7 @@ package com.week1.game.Model.Entities;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.model.Node;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.week1.game.Model.Initializer;
 
@@ -20,23 +21,26 @@ public class UnitLoader {
     static{
         FACTIONS.add("Select A Faction");
 
-        loadMinion("earth_minion", "Earth", Color.GREEN);
-        loadMinion("fire_minion", "Fire", Color.RED);
-        loadMinion("water_minion", "Water", new Color(0, 0, 0.545f, 1f));
-        loadMinion("air_minion", "Air", new Color( 0.678f, 0.847f, 0.902f, 1f));
+
+        loadMinion("greenCube/cube_minion.g3db", "Green", Color.GREEN);
+        loadMinion("redCube/cube_minion.g3db", "Red", Color.RED);
+        loadMinion("blueCube/cube_minion.g3db", "Blue", new Color(0, 0, 0.545f, 1f));
+        loadMinion("whiteCube/cube_minion.g3db", "White", new Color( 0.678f, 0.847f, 0.902f, 1f));
     }
 
 
-    private static UnitModel loadMinion(String folder_name, String faction_name, Color color) {
-        String minion_name = "minion/" + folder_name + "/minion_with_weird_face.g3db";
+    private static UnitModel loadMinion(String filepath, String faction_name, Color color) {
+        String minion_name = "cube_minion/" + filepath;
         Initializer.assetManager.load(minion_name, Model.class);
         Initializer.assetManager.finishLoading();
         UnitModel minion = new UnitModel(Initializer.assetManager.get(minion_name, Model.class), faction_name);
 
         // Adjust the model to fit nicely into the blocky world
         for (Node node : minion.getModel().nodes) {
-            node.scale.set(0.5f,0.5f,0.5f);
-            node.rotation.set(0,0,0.25f, 0);
+//            node.scale.set(0.5f,0.5f,0.5f);
+            node.scale.set(0.40f, 0.40f, 0.40f);
+            node.rotation.set(Vector3.Z, (float) Math.toRadians(90.0));
+//            node.rotation.set(0,0f,0f, 0);
         }
         minion.getModel().calculateTransforms();
 
