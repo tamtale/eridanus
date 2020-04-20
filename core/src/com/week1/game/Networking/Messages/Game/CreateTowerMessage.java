@@ -11,12 +11,15 @@ import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
 
+import java.util.Date;
+
 
 public class CreateTowerMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.CREATETOWER;
 
     private float x, y, z; // The coordinates of the center of the tower (the core block is the center)
     private int towerType;
+    private Date time;
 
 
     public CreateTowerMessage(float x, float y, float z, int towerType, int playerID, int intHash) {
@@ -25,6 +28,7 @@ public class CreateTowerMessage extends GameMessage {
         this.y = y;
         this.z = z;
         this.towerType = towerType;
+        this.time = time;
     }
 
     @Override

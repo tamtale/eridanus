@@ -63,23 +63,23 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
     private CommandPair rotateClockwise = new CommandPair(() -> adapter.setRotationDirection(RotationDirection.CLOCKWISE), rotateStop);
     private CommandPair rotateCounterclockwise = new CommandPair(() -> adapter.setRotationDirection(RotationDirection.COUNTERCLOCKWISE), rotateStop);
     private ClickOracleCommand spawnNone = () -> {
-        this.spawnType = SpawnInfo.SpawnType.NONE;
+        setSpawnType(SpawnInfo.SpawnType.NONE);
         adapter.setSpawnType(SpawnInfo.SpawnType.NONE);
     };
     private CommandPair setSpawn1 = new CommandPair(() -> {
-        this.spawnType = SpawnInfo.SpawnType.TOWER1;
+        setSpawnType(SpawnInfo.SpawnType.TOWER1);
         adapter.setSpawnType(SpawnInfo.SpawnType.TOWER1);
     }, spawnNone);
     private CommandPair setSpawn2 = new CommandPair(() -> {
-        this.spawnType = SpawnInfo.SpawnType.TOWER2;
+        setSpawnType(SpawnInfo.SpawnType.TOWER2);
         adapter.setSpawnType(SpawnInfo.SpawnType.TOWER2);
     }, spawnNone);
     private CommandPair setSpawn3 = new CommandPair(() -> {
-        this.spawnType = SpawnInfo.SpawnType.TOWER3;
+        setSpawnType(SpawnInfo.SpawnType.TOWER3);
         adapter.setSpawnType(SpawnInfo.SpawnType.TOWER3);
     }, spawnNone);
     private CommandPair setSpawnUnit = new CommandPair(() -> {
-        this.spawnType = SpawnInfo.SpawnType.UNIT;
+        setSpawnType(SpawnInfo.SpawnType.UNIT);
         adapter.setSpawnType(SpawnInfo.SpawnType.UNIT);
     }, spawnNone);
     // Command to reset the clickoracle.
@@ -316,6 +316,8 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
             }
             publish(new SelectionEvent(selectedIDs));
             dragging = false;
+            spawnType = SpawnInfo.SpawnType.NONE;
+            adapter.setSpawnType(SpawnInfo.SpawnType.NONE);
             return true;
         } else { // the player was not dragging, so maybe they clicked directly on something
             Clickable clicked = adapter.selectClickable(screenX, screenY, touchPos);
@@ -391,7 +393,14 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
     }
 
     public void setSpawnType(SpawnInfo newInfo) {
-        spawnType = newInfo.getType();
+        setSpawnType(newInfo.getType());
+    }
+
+    private void setSpawnType(SpawnInfo.SpawnType type) {
+        spawnType = type;
+        if (spawnType != SpawnInfo.SpawnType.NONE) {
+            deMultiSelect();
+        }
     }
 
     public void render() {

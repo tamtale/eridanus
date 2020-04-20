@@ -74,8 +74,7 @@ public class FogSystem implements ISystem {
         seeingNodes.values().forEach((node) -> {
 
             Vector3 position = node.key.position;
-//            float range = node._2.range; // TODO: range based on actual range?
-            int range = 10;
+            int range = (int)node.value.range; 
 
             for (int i = (int)position.x - range; i < position.x + range; i++) {
                 for (int j = (int)position.y - range; j < position.y + range; j++) {

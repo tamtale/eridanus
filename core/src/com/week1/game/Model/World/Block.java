@@ -128,6 +128,7 @@ public interface Block {
             put(BlockType.FIRE, new TowerBlock(Initializer.fireBlock));
             put(BlockType.SPAWNER, new TowerBlock(Initializer.spawner));
             put(BlockType.EASTEREGG, new TowerBlock(Initializer.easterEgg));
+            put(BlockType.UNFINISHED, new TowerBlock(Initializer.unfinished));//TODO: switch to unfinished
         }};
     }
 }
