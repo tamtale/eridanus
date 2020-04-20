@@ -213,7 +213,7 @@ public class TowerDetails {
         //Tower base cost
         price = (int) (rawPrice + 100);
 
-        atk = rawAtk * 0.4;
+        atk = rawAtk * 0.3;
         range = rawHeight * 2;
 
         //Multipliers --- Fine tuning the stats
