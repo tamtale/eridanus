@@ -42,6 +42,10 @@ public class PathfindingSystem implements ISystem {
         PositionComponent positionComponent = node.positionComponent;
         if (velocityComponent.distTraveled >= pathComponent.distanceToNext) {
             if ((pathComponent.path == null) || (pathComponent.path.getCount() <= 0)) {
+                if (positionComponent.position != null && pathComponent.lastBlock != null) {
+                    positionComponent.position.x = pathComponent.lastBlock.x;
+                    positionComponent.position.y = pathComponent.lastBlock.y;
+                }
                 pathComponent.path = null;
                 velocityComponent.velocity.x = 0;
                 velocityComponent.velocity.y = 0;

@@ -141,13 +141,17 @@ public class AStar<N> implements PathFinder<N> {
      */
     protected void generateNodePath(N startNode, GraphPath<N> outPath) {
         RouteNode<N> node = endNode;
-        do {
+        if (node == null){
+            return;
+        }
+        while (node.previous != null){
+
             outPath.add(node.node);
             node = allNodes.get(node.previous);
             if (node == null){
                 break;
             }
-        }while (node.previous != null);
+        }
         outPath.add(startNode);
         outPath.reverse();
     }
