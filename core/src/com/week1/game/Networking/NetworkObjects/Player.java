@@ -14,6 +14,7 @@ public class Player {
     public int port;
     public boolean checkedIn;
     private PlayerInfo info = new PlayerInfo("defaultName");
+    public int exceptionCount = 0;
 
     public BufferedReader in;
     public BufferedWriter out;
