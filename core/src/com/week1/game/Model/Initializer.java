@@ -53,7 +53,7 @@ public class Initializer {
         spaceGold = fileBasedModel("gold2.png");
         easterEgg = fileBasedModel("cat_boi.png");
         spawner = fileBasedModel("spawner2.png");
-        unfinished = new Model();//TODO:SIMRAN make this a gray model
+        unfinished = transparentFileBasedModel("ground_highlight.png");//TODO:SIMRAN make this a gray model
         bmfData = new BitmapFont().getData();
         fontPixmap = new Pixmap(Gdx.files.internal(bmfData.getImagePath(0)));
         initCrystalModel();
@@ -106,5 +106,12 @@ public class Initializer {
                 new Material(
                         TextureAttribute.createDiffuse(new Texture(fileName))),
                 VertexAttributes.Usage.Position | VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
+    }
+
+    private static Model transparentFileBasedModel(String fileName){
+        Material mat = new Material(TextureAttribute.createDiffuse(new Texture(fileName)));
+        mat.set(new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA, 0.5f));
+        return BUILDER.createBox(1f, 1f, 1f,
+                mat, VertexAttributes.Usage.Position | VertexAttributes.Usage.TextureCoordinates | VertexAttributes.Usage.Normal);
     }
 }
