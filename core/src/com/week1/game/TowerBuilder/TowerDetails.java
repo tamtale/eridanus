@@ -253,13 +253,13 @@ public class TowerDetails {
         if (rawHeight > 4) {
 //            Note: this if statement is required because the height of the ground in the tower editor is 0
             if (rawHeight == 5){
-                atk = Math.round(atk * 4/5.0);
+                atk = Math.round(atk * 4/5.0 * 10)/10.0;
             } else if (rawHeight == 6) {
-                atk = Math.round(atk * 4/6.0);
+                atk = Math.round(atk * 4/6.0 * 10)/10.0;
             } else if (rawHeight == 7) {
-                atk = Math.round(atk * 5.0/8);
+                atk = Math.round(atk * 5.0/8 * 10)/10.0;
             } else if (rawHeight == 8) {
-                atk = Math.round(atk * 5.0/8);
+                atk = Math.round(atk * 5.0/8 * 10)/10.0;
             }
         }
 
