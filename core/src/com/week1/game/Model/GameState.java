@@ -123,10 +123,13 @@ public class GameState implements GameRenderable {
                 OwnedComponent ownedComponent = key._1;
                 TargetingComponent targetingComponent = key._2;
                 PositionComponent positionComponent = key._3;
+                int permission = targetingComponent.permission;
 
                 PositionComponent otherPositionComponent;
                 minDist = targetingComponent.range; // Any target must be within range.
                 float dist;
+
+                if (permission < TargetingComponent.P_MINIONS) return result;
                 // Check through all units to determine closet suitable target
                 for (int i = 0; i < units.size; i++) {
                     Unit unit = units.get(i);
@@ -153,6 +156,7 @@ public class GameState implements GameRenderable {
                     }
                 }
 
+                if (permission < TargetingComponent.P_MINIONS_TOWERS) return result;
                 // Are there any towers that might be closer suitable targets?
                 for (Tower tower: towers) {
                     int towerOwner = tower.getPlayerId();
@@ -176,7 +180,8 @@ public class GameState implements GameRenderable {
                         result.value = tower.getPositionComponent();
                     }
                 }
-                
+
+                if (permission < TargetingComponent.P_MINIONS_TOWERS_CRYSTALS) return result;
                 // Any crystals that are closer suitable targets?
                 for (int c = 0; c < crystals.size; c++) {
                     Crystal crystal = crystals.get(c);
@@ -416,7 +421,7 @@ public class GameState implements GameRenderable {
         PathComponent pathComponent = new PathComponent();
         RenderComponent renderComponent = new RenderComponent(new ModelInstance(Unit.modelMap.get(playerID)));
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
-        TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true, TargetingComponent.TargetingStrategy.ENEMY);
+        TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true, TargetingComponent.TargetingStrategy.ENEMY, TargetingComponent.P_MINIONS_TOWERS_CRYSTALS);
         HealthComponent healthComponent = new HealthComponent(tempHealth, tempHealth);
         DamagingComponent damagingComponent = new DamagingComponent((float) tempMinionDamage);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(0, 0);
@@ -450,7 +455,7 @@ public class GameState implements GameRenderable {
         HealthComponent unfinishedHealthComponent = new HealthComponent((float) towerDetails.getHp(),1f, (float) towerDetails.getHp()/buildDelay);
         DamagingComponent damagingComponent = new DamagingComponent((float) towerDetails.getAtk());
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
-            TargetingComponent.TargetingStrategy.ENEMY);
+            TargetingComponent.TargetingStrategy.ENEMY, TargetingComponent.P_MINIONS);
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID);
@@ -510,7 +515,7 @@ public class GameState implements GameRenderable {
         HealthComponent healthComponent = new HealthComponent((float) towerDetails.getHp(), (float) towerDetails.getHp());
         DamagingComponent damagingComponent = new DamagingComponent((float) towerDetails.getAtk());
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
-                TargetingComponent.TargetingStrategy.ENEMY);
+                TargetingComponent.TargetingStrategy.ENEMY, TargetingComponent.P_MINIONS);
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID);
