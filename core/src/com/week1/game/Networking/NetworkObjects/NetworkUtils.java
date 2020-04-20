@@ -12,7 +12,7 @@ import java.util.Enumeration;
 
 public class NetworkUtils {
     private static final String TAG = "NetworkUtils - lji1";
-    private static String addr = "123";
+    private static String addr;
     public static String getLocalHostAddr() {
 //        https://stackoverflow.com/questions/40912417/java-getting-ipv4-address?fbclid=IwAR0JQ8qEf4V2bM42m-X0ATML0zf5zEyJ_gEWs9I7PskAHCmW_TNNj5cWp6I
 //        https://stackoverflow.com/questions/8462498/how-to-determine-internet-network-interface-in-java
