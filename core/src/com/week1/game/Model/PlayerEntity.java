@@ -10,21 +10,26 @@ public class PlayerEntity {
             new ManaComponent(0),
             new NameComponent("blank"),
             new ColorComponent(Color.WHITE),
-            new CrystalCounterComponent()
+            new CrystalCounterComponent(),
+            new PlayerStatsComponent()
     );
     
     private OwnedComponent ownedComponent;
     private ManaComponent manaComponent;
     private NameComponent nameComponent;
     private ColorComponent colorComponent;
+    private PlayerStatsComponent playerStatsComponent;
     private CrystalCounterComponent crystalCounterComponent;
     
-    public PlayerEntity(OwnedComponent ownedComponent, ManaComponent manaComponent, NameComponent nameComponent, ColorComponent colorComponent, CrystalCounterComponent crystalCounterComponent) {
+    public PlayerEntity(OwnedComponent ownedComponent, ManaComponent manaComponent, NameComponent nameComponent,
+                        ColorComponent colorComponent, CrystalCounterComponent crystalCounterComponent,
+                        PlayerStatsComponent playerStatsComponent) {
         this.ownedComponent = ownedComponent;
         this.manaComponent = manaComponent;
         this.nameComponent = nameComponent;
         this.colorComponent = colorComponent;
         this.crystalCounterComponent = crystalCounterComponent;
+        this.playerStatsComponent = playerStatsComponent;
     }
     
     public int getPlayerID() {
@@ -58,5 +63,12 @@ public class PlayerEntity {
                 "mana=" + manaComponent.mana +
                 '}';
     }
-    
+
+    public double getMinionDamage() {
+        return playerStatsComponent.minionDamage;
+    }
+
+    public Object getMinionHealth() {
+        return playerStatsComponent.minionHealth;
+    }
 }

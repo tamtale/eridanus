@@ -73,6 +73,13 @@ public class GameState implements GameRenderable {
         return null;
     };
 
+    private IService<Integer, Float> unitDmgService = new IService<Integer, Float>() {
+        @Override
+        public Float query(Integer key) {
+            return getUnitDamage(key);
+        }
+    };
+
     // need to determine which units should push back the fog of war
     private int localPlayerID;
 
@@ -377,9 +384,10 @@ public class GameState implements GameRenderable {
         ManaComponent manaComponent = new ManaComponent(startingMana);
         NameComponent nameComponent = new NameComponent(name);
         CrystalCounterComponent crystalCounterComponent = new CrystalCounterComponent();
+        PlayerStatsComponent playerStatsComponent = new PlayerStatsComponent();
         ColorComponent colorComponent = new ColorComponent(UnitLoader.NAMES_TO_COLORS.get(faction));
         
-        PlayerEntity player = new PlayerEntity(ownedComponent, manaComponent, nameComponent, colorComponent, crystalCounterComponent);
+        PlayerEntity player = new PlayerEntity(ownedComponent, manaComponent, nameComponent, colorComponent, crystalCounterComponent, playerStatsComponent);
         players.add(player);
         
         // Register with manaRegenSystem so that the player's mana will regenerate over time.
@@ -389,6 +397,7 @@ public class GameState implements GameRenderable {
         damageRewardSystem.addMana(player.getPlayerID(), manaComponent);
         deathRewardSystem.addMana(player.getPlayerID(), manaComponent);
         deathRewardSystem.addCrystalCounters(player.getPlayerID(), crystalCounterComponent);
+        deathRewardSystem.addPlayerStats(player.getPlayerID(), playerStatsComponent);
     }
 
     public void addCrystal(float x, float y, float z) {
@@ -421,7 +430,7 @@ public class GameState implements GameRenderable {
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true, TargetingComponent.TargetingStrategy.ENEMY);
         HealthComponent healthComponent = new HealthComponent(tempHealth, tempHealth);
-        DamagingComponent damagingComponent = new DamagingComponent((float) tempMinionDamage);
+        DamagingComponent damagingComponent = new DamagingComponent((float) players.get(playerID).getMinionDamage());
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(0, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID); // if built locally, show the hp right away
         Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, healthComponent, visibleComponent);
@@ -489,9 +498,10 @@ public class GameState implements GameRenderable {
             }
         };
         Tower tower = new Tower(positionComponent, healthComponent, ownedComponent, visibleComponent, targetingComponent, damagingComponent,
-                towerDetails, adapter, towerType, entityManager.newID());
+                unitDmgService, towerDetails, adapter, towerType, entityManager.newID());
         Tower unfinishedTower = new Tower(positionComponent, unfinishedHealthComponent, ownedComponent,
-                visibleComponent, targetingComponent, damagingComponent, unfinishedTowerDetails, adapter, towerType, entityManager.newID());
+                visibleComponent, targetingComponent, damagingComponent,
+                unitDmgService, unfinishedTowerDetails, adapter, towerType, entityManager.newID());
         damageSystem.addHealth(unfinishedTower.ID, unfinishedHealthComponent);
         damageSystem.addDamage(unfinishedTower.ID, damagingComponent);
         damageRewardSystem.addManaReward(unfinishedTower.ID, manaRewardComponent);
@@ -542,7 +552,7 @@ public class GameState implements GameRenderable {
             }
         };
         Tower base = new Tower(positionComponent, healthComponent, ownedComponent, visibleComponent, targetingComponent, damagingComponent,
-                towerDetails, adapter, towerType, entityManager.newID());
+                unitDmgService, towerDetails, adapter, towerType, entityManager.newID());
         damageSystem.addHealth(base.ID, healthComponent);
         damageSystem.addDamage(base.ID, damagingComponent);
         damageRewardSystem.addManaReward(base.ID, manaRewardComponent);
@@ -906,5 +916,13 @@ public class GameState implements GameRenderable {
     /* Give the world a subscriber of selection events.*/
     public Subscriber<SelectionEvent> getSelectionSubscriber() {
         return renderTargetingSystem;
+    }
+
+    public float getUnitDamage(int playerId) {
+        return (float) players.get(playerId).getMinionDamage();
+    }
+
+    public float getUnitHealth(int playerId) {
+        return (float) players.get(playerId).getMinionHealth();
     }
 }

@@ -7,7 +7,6 @@ import com.week1.game.Model.World.Block;
 import com.week1.game.Networking.Messages.MessageType;
 
 import static com.week1.game.Model.StatsConfig.tempMinion1Cost;
-import static com.week1.game.Model.StatsConfig.tempMinion1Health;
 
 public class CreateMinionMessage extends GameMessage {
     private final static MessageType MESSAGE_TYPE = MessageType.CREATEMINION;
@@ -55,7 +54,7 @@ public class CreateMinionMessage extends GameMessage {
         inputState.getPlayer(playerID).useMana(tempMinion1Cost);
 
         util.log(playerID, "pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
-        inputState.addUnit(x, y, z, (float) tempMinion1Health, playerID);
+        inputState.addUnit(x, y, z, inputState.getUnitHealth(playerID), playerID);
         return true;
     }
 

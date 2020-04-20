@@ -2,10 +2,7 @@ package com.week1.game.Model.Systems;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.IntMap;
-import com.week1.game.Model.Components.CrystalCounterComponent;
-import com.week1.game.Model.Components.ManaComponent;
-import com.week1.game.Model.Components.ManaRewardComponent;
-import com.week1.game.Model.Components.PositionComponent;
+import com.week1.game.Model.Components.*;
 import com.week1.game.Model.Events.DeathEvent;
 
 import java.util.Queue;
@@ -15,9 +12,11 @@ public class DeathRewardSystem implements ISystem, Subscriber<DeathEvent> {
 
     Queue<DeathEvent> deaths = new ConcurrentLinkedQueue<>();
 
-    private IntMap<CrystalCounterComponent> crystalCounterComponents = new IntMap<>();
+    private IntMap<CrystalCounterComponent> crystalCounterComponents = new IntMap<>(); // maps playerID to number of crystals they have destroyed
+    private IntMap<PlayerStatsComponent> playerStatsComponents = new IntMap<>();
     private IntMap<ManaComponent> manaComponents = new IntMap<>(); // maps playerID to manaComponent
     private IntMap<ManaRewardComponent> manaRewardComponents = new IntMap<>(); // maps entityID to rewardComponent
+
 
     private IService<Integer, PositionComponent> crystalService;
 
@@ -39,6 +38,13 @@ public class DeathRewardSystem implements ISystem, Subscriber<DeathEvent> {
             PositionComponent pC = crystalService.query(event.victimID);
             if (pC != null) {
                 CrystalCounterComponent crystalCounterComponent = crystalCounterComponents.get(event.damagerPlayerID);
+                crystalCounterComponent.crystalsDestroyed++;
+                if (crystalCounterComponent.crystalsDestroyed % 5 == 0) {
+                    // Time for a bonus!
+                    PlayerStatsComponent playerStatsComponent = playerStatsComponents.get(event.damagerPlayerID);
+                    playerStatsComponent.minionDamage *= 1.4;
+                    playerStatsComponent.minionHealth *= 1.2;
+                }
 
             }
         }
@@ -73,5 +79,9 @@ public class DeathRewardSystem implements ISystem, Subscriber<DeathEvent> {
 
     public void addCrystalService(IService<Integer, PositionComponent> crystalService) {
         this.crystalService = crystalService;
+    }
+
+    public void addPlayerStats(int playerID, PlayerStatsComponent playerStatsComponent) {
+        this.playerStatsComponents.put(playerID, playerStatsComponent);
     }
 }
