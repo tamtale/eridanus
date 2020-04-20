@@ -460,6 +460,10 @@ public class TowerDetails {
         return name;
     }
 
+    public void setRange(double range) {
+        this.range = range;
+    }
+
 
     public TowerLite getTowerLite() {
         return new TowerLite(name, layout);
