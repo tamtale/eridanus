@@ -1,6 +1,5 @@
 package com.week1.game.Model;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -24,7 +23,8 @@ import com.week1.game.TowerBuilder.BlockType;
 import com.week1.game.TowerBuilder.TowerDetails;
 import com.week1.game.Tuple3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
 import static com.week1.game.Model.StatsConfig.*;
@@ -64,6 +64,15 @@ public class GameState implements GameRenderable {
     private OwnedComponent noOwn = new OwnedComponent(-1);
     private TowerLoadouts towerLoadouts;
 
+    private IService<Integer, PositionComponent> crystalService = (key) -> {
+        for (int i = 0; i < crystals.size; i++) {
+            if (crystals.get(i).ID == key) {
+                return crystals.get(i).getPositionComponent();
+            }
+        }
+        return null;
+    };
+
     // need to determine which units should push back the fog of war
     private int localPlayerID;
 
@@ -95,8 +104,8 @@ public class GameState implements GameRenderable {
         };
         this.pathfindingSystem = new PathfindingSystem(u2s);
         initTargetingSystem();
-        initDeathSystem();
         initCrystalRespawnSystem();
+        initDeathSystem(); // this MUST be done after the respawn system since it uses the crystal service
         initTowerSpawnSystem();
         targetingSystem.addSubscriber(damageSystem);
         targetingSystem.addSubscriber(damageRewardSystem);
@@ -210,16 +219,7 @@ public class GameState implements GameRenderable {
                 (key) -> {
                     // ignore the position given in the key (dictated by worldBuilder.nextCrystalLocation()
                     return placeCrystal(worldBuilder.nextCrystalLocation());
-                },
-                (key) -> {
-                    // Does the given id 'key' correspond to a crystal?
-                    for (int i = 0; i < crystals.size; i++) {
-                        if (crystals.get(i).ID == key) {
-                            return crystals.get(i).getPositionComponent();
-                        }
-                    }
-                    return null;
-                });
+                }, this.crystalService);
     }
 
     
@@ -233,6 +233,7 @@ public class GameState implements GameRenderable {
                     }
                 }
         );
+        this.deathRewardSystem.addCrystalService(this.crystalService);
     }
 
     private void initTowerSpawnSystem() {
@@ -243,10 +244,10 @@ public class GameState implements GameRenderable {
                     removeEntity(key);
                     return null;
                 }
-            }, new IService<javafx.util.Pair<Tower, Integer>, Void>() {
+            }, new IService<Pair<Tower, Integer>, Void>() {
                 @Override
-                public Void query(javafx.util.Pair<Tower, Integer> key) {
-                    addFinishedTower(key.getKey(), key.getValue());
+                public Void query(Pair<Tower, Integer> key) {
+                    addFinishedTower(key.key, key.value);
                     return null;
                 }
             }
@@ -375,9 +376,10 @@ public class GameState implements GameRenderable {
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaComponent manaComponent = new ManaComponent(startingMana);
         NameComponent nameComponent = new NameComponent(name);
+        CrystalCounterComponent crystalCounterComponent = new CrystalCounterComponent();
         ColorComponent colorComponent = new ColorComponent(UnitLoader.NAMES_TO_COLORS.get(faction));
         
-        PlayerEntity player = new PlayerEntity(ownedComponent, manaComponent, nameComponent, colorComponent);
+        PlayerEntity player = new PlayerEntity(ownedComponent, manaComponent, nameComponent, colorComponent, crystalCounterComponent);
         players.add(player);
         
         // Register with manaRegenSystem so that the player's mana will regenerate over time.
@@ -386,6 +388,7 @@ public class GameState implements GameRenderable {
         // Register with reward systems, so the player can be rewarded for kills and damage
         damageRewardSystem.addMana(player.getPlayerID(), manaComponent);
         deathRewardSystem.addMana(player.getPlayerID(), manaComponent);
+        deathRewardSystem.addCrystalCounters(player.getPlayerID(), crystalCounterComponent);
     }
 
     public void addCrystal(float x, float y, float z) {
@@ -640,6 +643,7 @@ public class GameState implements GameRenderable {
             }
         });
         crystals.select(c -> c.ID == id).forEach(crystal -> {
+
             crystals.removeValue(crystal, true);
             clickables.removeValue(crystal, true);
         });
