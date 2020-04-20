@@ -55,6 +55,10 @@ public class GameState implements GameRenderable {
     private FogSystem fogSystem = new FogSystem();
     private TowerSpawnSystem towerSpawnSystem;
 
+    private IService<Integer, Float> unitDmgService;
+    private IService<Integer, PositionComponent> crystalService;
+    private IService<Tuple3<Integer, Float, Float>, Void> buffPlayerMinionsService;
+
     private Array<Crystal> crystals = new Array<>();
     private Array<Unit> units = new Array<>();
     private Array<Tower> towers = new Array<>();
@@ -64,21 +68,7 @@ public class GameState implements GameRenderable {
     private OwnedComponent noOwn = new OwnedComponent(-1);
     private TowerLoadouts towerLoadouts;
 
-    private IService<Integer, PositionComponent> crystalService = (key) -> {
-        for (int i = 0; i < crystals.size; i++) {
-            if (crystals.get(i).ID == key) {
-                return crystals.get(i).getPositionComponent();
-            }
-        }
-        return null;
-    };
 
-    private IService<Integer, Float> unitDmgService = new IService<Integer, Float>() {
-        @Override
-        public Float query(Integer key) {
-            return getUnitDamage(key);
-        }
-    };
 
     // need to determine which units should push back the fog of war
     private int localPlayerID;
@@ -112,8 +102,9 @@ public class GameState implements GameRenderable {
         this.pathfindingSystem = new PathfindingSystem(u2s);
         initTargetingSystem();
         initCrystalRespawnSystem();
-        initDeathSystem(); // this MUST be done after the respawn system since it uses the crystal service
+        initDeathSystem();
         initTowerSpawnSystem();
+        initAndSetServices();
         targetingSystem.addSubscriber(damageSystem);
         targetingSystem.addSubscriber(damageRewardSystem);
         damageSystem.addSubscriber(deathSystem);
@@ -226,7 +217,7 @@ public class GameState implements GameRenderable {
                 (key) -> {
                     // ignore the position given in the key (dictated by worldBuilder.nextCrystalLocation()
                     return placeCrystal(worldBuilder.nextCrystalLocation());
-                }, this.crystalService);
+                });
     }
 
     
@@ -240,7 +231,45 @@ public class GameState implements GameRenderable {
                     }
                 }
         );
+    }
+
+    /**
+     * Initialize the services that are reused in the application
+     */
+    private void initAndSetServices() {
+        crystalService = (key) -> {
+            for (int i = 0; i < crystals.size; i++) {
+                if (crystals.get(i).ID == key) {
+                    return crystals.get(i).getPositionComponent();
+                }
+            }
+            return null;
+        };
+
+        unitDmgService = new IService<Integer, Float>() {
+            @Override
+            public Float query(Integer key) {
+                return getUnitDamage(key);
+            }
+        };
+
+        buffPlayerMinionsService = (tuple) -> {
+            int playerId = tuple._1;
+            float newDmg = tuple._2, newHealth = tuple._3;
+            Unit u;
+            for (int i = 0; i < units.size; i++) {
+                u = units.get(i);
+                if (u.getPlayerId() == playerId) {
+                    u.setDamage(newDmg);
+                    u.setHealth(newHealth);
+                }
+            }
+            return null;
+        };
+
+        this.crystalRespawnSystem.addCrystalService(this.crystalService);
         this.deathRewardSystem.addCrystalService(this.crystalService);
+        this.deathRewardSystem.addBuffMinionsService(this.buffPlayerMinionsService);
     }
 
     private void initTowerSpawnSystem() {
@@ -433,7 +462,7 @@ public class GameState implements GameRenderable {
         DamagingComponent damagingComponent = new DamagingComponent((float) players.get(playerID).getMinionDamage());
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(0, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID); // if built locally, show the hp right away
-        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, healthComponent, visibleComponent);
+        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, healthComponent, visibleComponent, damagingComponent);
         u.ID = entityManager.newID();
         units.add(u);
         movementSystem.addNode(u.ID, positionComponent, velocityComponent);

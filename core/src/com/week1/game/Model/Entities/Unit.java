@@ -21,6 +21,7 @@ public class Unit implements Clickable {
     private OwnedComponent ownedComponent;
     private HealthComponent healthComponent;
     private VisibleComponent visibleComponent;
+    private DamagingComponent damagingComponent;
 
     private boolean selected;
     private int turn = 0;
@@ -54,7 +55,8 @@ public class Unit implements Clickable {
         RenderComponent renderComponent,
         OwnedComponent ownedComponent,
         HealthComponent healthComponent,
-        VisibleComponent visibleComponent
+        VisibleComponent visibleComponent,
+        DamagingComponent damagingComponent // The unit needs to be able to modify its own damage
     ) {
         this.positionComponent = positionComponent;
         this.velocityComponent = velocityComponent;
@@ -65,6 +67,7 @@ public class Unit implements Clickable {
         this.model = modelMap.get(ownedComponent.playerID);
         this.originalMaterial = model.materials.get(0);
         this.visibleComponent = visibleComponent;
+        this.damagingComponent = damagingComponent;
     }
 
     public static void setColorMapping(Map<Integer, String> colorMapping) {
@@ -177,4 +180,16 @@ public class Unit implements Clickable {
         return clickableVisitor.acceptUnit(this);
     }
 
+
+    public void setHealth(float newHealth) {
+        float healthDiff = newHealth - healthComponent.maxHealth;
+        healthComponent.curHealth += healthDiff;
+        healthComponent.maxHealth = newHealth;
+//        Gdx.app.log("pjb3- Unit", "New max " + healthComponent.maxHealth + " cur health max " + healthComponent.curHealth);
+    }
+
+    public void setDamage(float newDmg) {
+//        Gdx.app.log("pjb3- Unit", "New damage"  + newDmg);
+        damagingComponent.baseDamage = newDmg;
+    }
 }

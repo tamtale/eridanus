@@ -1,5 +1,6 @@
 package com.week1.game.Networking.Messages.Game;
 
+import com.badlogic.gdx.Gdx;
 import com.week1.game.InfoUtil;
 import com.week1.game.Model.GameEngine;
 import com.week1.game.Model.GameState;
@@ -54,6 +55,7 @@ public class CreateMinionMessage extends GameMessage {
         inputState.getPlayer(playerID).useMana(tempMinion1Cost);
 
         util.log(playerID, "pjb3 - CreateMinionMessage", "Used " + tempMinion1Cost + " mana to create minion.");
+        Gdx.app.log("pjb3 CreateMinion Message", "New unit health is " +inputState.getUnitHealth(playerID));
         inputState.addUnit(x, y, z, inputState.getUnitHealth(playerID), playerID);
         return true;
     }
