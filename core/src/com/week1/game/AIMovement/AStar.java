@@ -76,7 +76,7 @@ public class AStar<N> implements PathFinder<N> {
                 Connection<N> connection = connections.get(i);
                 RouteNode<N> nextNode = allNodes.getOrDefault(connection.getToNode(), new RouteNode<N>(connection.getToNode()));
                 allNodes.put(connection.getToNode(), nextNode);
-                double newScore = next.costSoFar + heuristic.estimate(next.node, connection.getToNode());
+                double newScore = next.costSoFar + connection.getCost();
                 if (newScore < nextNode.costSoFar){
                     nextNode.previous = next.node;
                     nextNode.costSoFar = newScore;

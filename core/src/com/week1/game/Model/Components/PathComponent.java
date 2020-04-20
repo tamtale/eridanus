@@ -1,5 +1,6 @@
 package com.week1.game.Model.Components;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.Model.OutputPath;
 
@@ -10,4 +11,5 @@ public class PathComponent extends AComponent {
     public Vector3 goal = new Vector3();
     public OutputPath path;
     public float distanceToNext;
+    public Vector2 lastBlock;
 }
