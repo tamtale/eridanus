@@ -17,7 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.sun.tools.javac.util.ArrayUtils;
 import com.week1.game.GameController;
 import com.week1.game.GameControllerSetScreenAdapter;
 import com.week1.game.Model.Entities.UnitLoader;
