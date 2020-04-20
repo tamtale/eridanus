@@ -82,10 +82,8 @@ public class GameGraph implements IndexedGraph<Vector2> {
         } catch(Exception e) {
             e.printStackTrace();
         }
-        if (success){
-            return path;
-        }
-        return null;
+        return path;
+
     }
 
     public PathFinder<Vector2> getPathFinder() {

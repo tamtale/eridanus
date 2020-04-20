@@ -17,6 +17,8 @@ public class AStar<N> implements PathFinder<N> {
     Map<N, RouteNode<N>> allNodes = new HashMap<>();
     private int searchId;
     private RouteNode<N> endNode;
+    private RouteNode<N> closestNode;
+    private double closestCost = Float.POSITIVE_INFINITY;
 
     public AStar(IndexedGraph<N> graph) {
         this.graph = graph;
@@ -38,6 +40,9 @@ public class AStar<N> implements PathFinder<N> {
         boolean found = this.search(startNode, endNode, heuristic);
         Gdx.app.debug("wab2 - AStar", "found? " + found);
         if (found) {
+            this.generateNodePath(startNode, outPath);
+        } else {
+            this.endNode = closestNode;
             this.generateNodePath(startNode, outPath);
         }
 
@@ -80,7 +85,12 @@ public class AStar<N> implements PathFinder<N> {
                 if (newScore < nextNode.costSoFar){
                     nextNode.previous = next.node;
                     nextNode.costSoFar = newScore;
-                    nextNode.estimatedScore = (newScore + heuristic.estimate(connection.getToNode(), endNode));
+                    double distance = heuristic.estimate(connection.getToNode(), endNode);
+                    nextNode.estimatedScore = (newScore + distance);
+                    if (distance < closestCost){
+                        closestCost = distance;
+                        closestNode = nextNode;
+                    }
                     openList.add(nextNode);
                 }
             }
@@ -114,6 +124,7 @@ public class AStar<N> implements PathFinder<N> {
         }
         openList.clear();
         allNodes.clear();
+        closestNode = null;
         RouteNode<N> start = new RouteNode<>(startNode, null, 0d, heuristic.estimate(startNode, endNode));
         openList.add(start);
         allNodes.put(startNode, start);
