@@ -455,7 +455,7 @@ public class GameState implements GameRenderable {
         HealthComponent unfinishedHealthComponent = new HealthComponent((float) towerDetails.getHp(),1f, (float) towerDetails.getHp()/buildDelay);
         DamagingComponent damagingComponent = new DamagingComponent((float) towerDetails.getAtk());
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
-            TargetingComponent.TargetingStrategy.ENEMY, TargetingComponent.P_MINIONS);
+            TargetingComponent.TargetingStrategy.ENEMY, TargetingComponent.P_MINIONS_TOWERS);
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID);
