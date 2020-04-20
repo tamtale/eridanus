@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
+import com.badlogic.gdx.utils.IntSet;
 import com.week1.game.AIMovement.AStar;
 import com.week1.game.Model.Components.*;
 import com.week1.game.Model.Entities.*;
@@ -57,6 +58,7 @@ public class GameState implements GameRenderable {
     private Array<Crystal> crystals = new Array<>();
     private Array<Unit> units = new Array<>();
     private Array<Tower> towers = new Array<>();
+    private IntSet unfinishedTowerSet = new IntSet();
     private IntMap<Tower> playerBases = new IntMap<>();
     private Array<PlayerEntity> players = new Array<>();
     private OwnedComponent noOwn = new OwnedComponent(-1);
@@ -496,6 +498,7 @@ public class GameState implements GameRenderable {
         healthGrowthSystem.addHealthGrowth(unfinishedTower.ID, unfinishedHealthComponent);
         fogSystem.addSeen(unfinishedTower.ID, positionComponent, visibleComponent);
         towers.add(unfinishedTower);
+        unfinishedTowerSet.add(unfinishedTower.ID);
         addBuilding(unfinishedTower, playerID);
         towerSpawnSystem.addNode(tower.ID, tower, unfinishedTower.ID);
 
@@ -710,7 +713,7 @@ public class GameState implements GameRenderable {
 
         // Check if it is near any of your towers
         for (Tower t : towers) {
-            if (t.getPlayerId() == playerId) {
+            if (t.getPlayerId() == playerId && !unfinishedTowerSet.contains(t.ID)) {
                 if (Math.sqrt(Math.pow(x - t.getX(), 2) + Math.pow(y - t.getY(), 2) + Math.pow(z - t.getZ(), 2)) < placementRange){
                     return true;
                 }
