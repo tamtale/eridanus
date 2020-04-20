@@ -37,7 +37,7 @@ public class Host {
                                           // check this variable to see if they have been stopped by a disconnect action
 
     public static final int EXCEPTION_LIMIT = 4;
-    int exceptionCount = 0;
+//    int exceptionCount = 0;
     
     public Map<Integer, List<TowerLite>> towerDetails = new HashMap<>(); // first index is implicitly the player id
     public Map<InetAddress, Player> registry = new HashMap<>();
@@ -100,13 +100,13 @@ public class Host {
                                 processMessage(msg, player.address, player.port);
 
                             } catch (SocketException socketException) {
-                                exceptionCount++;
-                                if (exceptionCount < EXCEPTION_LIMIT) { // don't spam the console
+                                player.exceptionCount++;
+                                if (player.exceptionCount < EXCEPTION_LIMIT) { // don't spam the console
                                     socketException.printStackTrace();
-                                } else if (exceptionCount == EXCEPTION_LIMIT) {
-                                    Gdx.app.log(TAG, "****\n To avoid console spam, further exceptions will not be printed. \n ****");
                                 } else {
-                                    // do nothing
+                                    Gdx.app.log(TAG, "****\n To avoid console spam, further exceptions will not be printed. \n ****");
+                                    this.registry.remove(player.address); // remove player from registry
+                                    break; // end the listening thread
                                 }
                              
                             } catch (IOException e) {
@@ -232,15 +232,14 @@ public class Host {
             player.out.flush();
             
         } catch (SocketException socketException) {
-            exceptionCount++;
-            if (exceptionCount < EXCEPTION_LIMIT) { // don't spam the console
+            player.exceptionCount++;
+            if (player.exceptionCount < EXCEPTION_LIMIT) { // don't spam the console
                 socketException.printStackTrace();
-            } else if (exceptionCount == EXCEPTION_LIMIT) {
-                Gdx.app.log(TAG, "****\n To avoid console spam, further exceptions will not be printed. \n ****");
             } else {
-                // do nothing
+                Gdx.app.log(TAG, "****\n To avoid console spam, further exceptions will not be printed. \n ****");
+                this.registry.remove(player.address); // remove player from registry
             }
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         }
