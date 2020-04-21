@@ -99,12 +99,8 @@ public class ConnectionScreen implements Screen {
         joinGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                String name = nameField.getText();
-                if (name == "") {
-                   name = "Empty String";
-                }
-                name = name.substring(0, 15);
-                joinGame(ipField.getText(), new PlayerInfo(name));
+
+                joinGame(ipField.getText(), new PlayerInfo(cleanName(nameField.getText())));
             }
         });
 
@@ -178,6 +174,14 @@ public class ConnectionScreen implements Screen {
         Gdx.input.setInputProcessor(connectionStage);
     }
 
+    private String cleanName(String input) {
+        String name = input;
+        if (name == "") {
+            name = "Empty String";
+        }
+        return name.substring(0, Math.min(15, name.length()));
+    }
+
     private void getNewReturnToSpashButton() {
         returnToSpashButton = new TextButton("Back to Home", new Skin(Gdx.files.internal("uiskin.json")));
         returnToSpashButton.getLabel().setFontScale(TEXTSCALE);
@@ -246,7 +250,7 @@ public class ConnectionScreen implements Screen {
         addPlayerList();
 
         networkClient = NetworkUtils.initNetworkObjects(true, null, 42069,
-                gameAdapter, this, new PlayerInfo(name));
+                gameAdapter, this, new PlayerInfo(cleanName(name)));
 
         connectionStage.addActor(launchGameButton);
         connectionStage.addActor(returnToSpashButton);

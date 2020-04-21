@@ -1,6 +1,5 @@
 package com.week1.game.Renderer;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -82,7 +81,6 @@ public class CrystalDisplayWidget extends Actor {
     public void updateText(List<Tuple3<String, Integer, Color>> crystalCount) {
         StringBuilder newText = new StringBuilder();
         newText.append("Crystal Tracker\n");
-        Gdx.app.log("", "" + crystalCount + " " + crystalCount.size());
         for (int i = 0; i < crystalCount.size(); i++ ) {
             newText.append("[#00FF00FF]").append("[#" + crystalCount.get(i)._3.toString() + "]").append(crystalCount.get(i)._1).append(": ").append("[#FFFFFFFF]").append(crystalCount.get(i)._2);
             if (i != crystalCount.size() - 1) {
