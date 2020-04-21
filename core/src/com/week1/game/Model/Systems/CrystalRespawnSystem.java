@@ -1,19 +1,11 @@
 package com.week1.game.Model.Systems;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Array;
-import com.week1.game.Model.Components.HealthComponent;
 import com.week1.game.Model.Components.PositionComponent;
-import com.week1.game.Model.Entities.Crystal;
-import com.week1.game.Model.Events.DamageEvent;
 import com.week1.game.Model.Events.DeathEvent;
-import com.week1.game.Model.World.Block;
 import com.week1.game.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.week1.game.Model.StatsConfig.CRYSTAL_RESPAWN_INTERVAL;
 import static com.week1.game.Model.StatsConfig.SECONDARY_CRYSTAL_RESPAWN_INTERVAL;
@@ -24,9 +16,8 @@ public class CrystalRespawnSystem implements ISystem, Subscriber<DeathEvent> {
     IService<PositionComponent, Boolean> respawnService; // service to respawn a crystal returns true on successful respawn
     List<Pair<Integer, PositionComponent>> crystalsWaitingForRespawn = new ArrayList<>(); // TODO: doesn't need to be threadsafe, afaik
 
-    public CrystalRespawnSystem(IService<PositionComponent, Boolean> respawnService, IService<Integer, PositionComponent> crystalService) {
+    public CrystalRespawnSystem(IService<PositionComponent, Boolean> respawnService) {
         this.respawnService = respawnService;
-        this.crystalService = crystalService;
     }
 
     @Override
@@ -66,4 +57,7 @@ public class CrystalRespawnSystem implements ISystem, Subscriber<DeathEvent> {
         }
     }
 
+    public void addCrystalService(IService<Integer, PositionComponent> crystalService) {
+        this.crystalService = crystalService;
+    }
 }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.week1.game.Model.Components.*;
 import com.week1.game.Model.GameState;
+import com.week1.game.Model.Systems.IService;
 import com.week1.game.Model.World.Block;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
@@ -12,8 +13,6 @@ import com.week1.game.TowerBuilder.TowerDetails;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import static com.week1.game.Model.StatsConfig.*;
 
 public class Tower implements Clickable {
 
@@ -43,6 +42,7 @@ public class Tower implements Clickable {
     private Map<Integer, Integer> spawnerCounts;
     public Vector3 highestBlockLocation;
     private TowerAdapter adapter;
+    private IService<Integer, Float> unitDamageService;
 
     public Tower(
         PositionComponent positionComponent,
@@ -51,6 +51,7 @@ public class Tower implements Clickable {
         VisibleComponent visibleComponent,
         TargetingComponent targetingComponent,
         DamagingComponent damagingComponent,
+        IService<Integer, Float> unitDamageService,
         TowerDetails towerDetails,
         TowerAdapter adapter,
         int towerType,
@@ -70,6 +71,7 @@ public class Tower implements Clickable {
         this.layout = towerDetails.getLayout();
         this.adapter = adapter;
         this.spawnerCounts = towerDetails.getSpawnerCounts();
+        this.unitDamageService = unitDamageService;
         this.ID = ID;
     }
 
@@ -153,7 +155,7 @@ public class Tower implements Clickable {
                     final float finalMoveX = moveX;
                     final float finalMoveY = moveY;
 
-                    Unit unit = state.addUnit(finalMinionX, finalMinionY, finalMinionZ, (float) tempMinion1Health, ownedComponent.playerID);
+                    Unit unit = state.addUnit(finalMinionX, finalMinionY, finalMinionZ, unitDamageService.query(ownedComponent.playerID), ownedComponent.playerID);
                     state.moveMinion(finalMoveX,finalMoveY, unit);
                 }
             }
