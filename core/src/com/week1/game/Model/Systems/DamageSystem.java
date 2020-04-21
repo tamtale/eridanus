@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.IntMap;
 import com.week1.game.Model.Components.DamagingComponent;
 import com.week1.game.Model.Components.HealthComponent;
+import com.week1.game.Model.Components.UpgradeComponent;
 import com.week1.game.Model.Events.DamageEvent;
 import com.week1.game.Model.Events.DeathEvent;
 
@@ -24,16 +25,22 @@ public class DamageSystem implements ISystem, Subscriber<DamageEvent>, Publisher
     private Queue<DamageEvent> damageEvents = new ConcurrentLinkedQueue<>();
     private IntMap<HealthComponent> healthComponents = new IntMap<>();
     private IntMap<DamagingComponent> damagingComponents = new IntMap<>();
+    private IntMap<UpgradeComponent> upgradeComponents = new IntMap<>();
+    IService<Integer, Boolean> isCrystalService;
 
     @Override
     public void update(float delta) {
         for (DamageEvent damageEvent: damageEvents) {
             HealthComponent victimHealth = healthComponents.get(damageEvent.victimID);
             DamagingComponent damagingComponent = damagingComponents.get(damageEvent.damagerID);
-            
+            UpgradeComponent upgradeComponent = upgradeComponents.get(damageEvent.damagerPlayerID);
+
             Gdx.app.debug("DamageSystem", "Dealing Damage to " + damageEvent.victimID + " with current health " + victimHealth.curHealth);
             if (victimHealth.curHealth <= 0) continue; // Can't be dealt more damage below 0.
-            victimHealth.curHealth -=damagingComponent.baseDamage;
+            victimHealth.curHealth -= damagingComponent.baseDamage;
+            if (!isCrystalService.query(damageEvent.victimID)){
+                upgradeComponent.damageDealt += damagingComponent.baseDamage;
+            }
             Gdx.app.debug("DamageSystem", "health now " + victimHealth.curHealth);
             if (victimHealth.curHealth <= 0) {
                 // Inform death subscribers that a death has occurred.
@@ -57,6 +64,8 @@ public class DamageSystem implements ISystem, Subscriber<DamageEvent>, Publisher
         damagingComponents.put(entID, damagingComponent);
     }
 
+    public void addUpgrade(int playerID){upgradeComponents.put(playerID, new UpgradeComponent());}
+
     @Override
     public void process(DamageEvent damageEvent) {
         damageEvents.add(damageEvent);
@@ -72,4 +81,7 @@ public class DamageSystem implements ISystem, Subscriber<DamageEvent>, Publisher
         return deathSubscribers;
     }
 
+    public void setIsCrystalService(IService<Integer, Boolean> isCrystalService) {
+        this.isCrystalService = isCrystalService;
+    }
 }

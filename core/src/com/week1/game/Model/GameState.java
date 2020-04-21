@@ -59,6 +59,7 @@ public class GameState implements GameRenderable {
     private Array<Unit> units = new Array<>();
     private Array<Tower> towers = new Array<>();
     private IntSet unfinishedTowerSet = new IntSet();
+    private IntSet crystalIDs = new IntSet();
     private IntMap<Tower> playerBases = new IntMap<>();
     private Array<PlayerEntity> players = new Array<>();
     private OwnedComponent noOwn = new OwnedComponent(-1);
@@ -98,6 +99,7 @@ public class GameState implements GameRenderable {
         initDeathSystem();
         initCrystalRespawnSystem();
         initTowerSpawnSystem();
+        initDamageSystem();
         targetingSystem.addSubscriber(damageSystem);
         targetingSystem.addSubscriber(damageRewardSystem);
         damageSystem.addSubscriber(deathSystem);
@@ -258,6 +260,14 @@ public class GameState implements GameRenderable {
         );
     }
 
+    private void initDamageSystem(){
+        damageSystem.setIsCrystalService(new IService<Integer, Boolean>() {
+            @Override
+            public Boolean query(Integer key) {
+                return crystalIDs.contains(key);
+            }
+        });
+    }
     public void synchronousUpdateState(int communicationTurn) {
         fogSystem.update(THRESHOLD);
         manaRegenSystem.update(THRESHOLD);
@@ -380,6 +390,7 @@ public class GameState implements GameRenderable {
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaComponent manaComponent = new ManaComponent(startingMana);
         NameComponent nameComponent = new NameComponent(name);
+        damageSystem.addUpgrade(playerID);
         ColorComponent colorComponent = new ColorComponent(UnitLoader.NAMES_TO_COLORS.get(faction));
         
         PlayerEntity player = new PlayerEntity(ownedComponent, manaComponent, nameComponent, colorComponent);
@@ -413,6 +424,7 @@ public class GameState implements GameRenderable {
         healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn, visibleComponent);
         renderSystem.addNode(c.ID, renderComponent, positionComponent, visibleComponent, VelocityComponent.ZERO);
         fogSystem.addSeen(c.ID, positionComponent, visibleComponent);
+        crystalIDs.add(c.ID);
     }
 
     public Unit addUnit(float x, float y, float z, float tempHealth, int playerID){
@@ -437,6 +449,7 @@ public class GameState implements GameRenderable {
         targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(u.ID, healthComponent);
         damageSystem.addDamage(u.ID, damagingComponent);
+
         damageRewardSystem.addManaReward(u.ID, manaRewardComponent);
         damageRewardSystem.addDamage(u.ID, damagingComponent);
         deathRewardSystem.addManaReward(u.ID, manaRewardComponent);
