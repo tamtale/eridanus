@@ -26,10 +26,6 @@ public class StatsWidget extends Actor {
 
     }
 
-    @Override
-    public void act(float delta) {
-//        label.act(delta);
-    }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
