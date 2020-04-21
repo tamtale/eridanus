@@ -262,8 +262,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void resize(int width, int height) {
 		renderer.resize(width, height);
-		if (!engine.started()) {
-			gameStage.getViewport().apply();
+		if (engine.started()) {
 			gameStage.getViewport().update(width, height);
 		}
 	}

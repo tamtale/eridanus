@@ -1,6 +1,5 @@
 package com.week1.game.Renderer;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -13,7 +12,7 @@ import com.week1.game.Pair;
 import java.util.List;
 
 public class CrystalDisplayWidget extends Actor {
-    private float width_p, height_p;
+//    private float width_p, height_p;
 
     private Label label;
 
@@ -44,20 +43,21 @@ public class CrystalDisplayWidget extends Actor {
         label.setPosition(x, y);
     }
 
-    public void setProportion(float width_p, float height_p) {
-        this.width_p = width_p;
-        this.height_p = height_p;
-        super.setSize(Gdx.graphics.getWidth() * width_p, Gdx.graphics.getWidth() * height_p);
-        label.setSize(Gdx.graphics.getWidth()* width_p, Gdx.graphics.getWidth() * height_p);
-    }
+//    public void setProportion(float width_p, float height_p) {
+//        this.width_p = width_p;
+//        this.height_p = height_p;
+//        super.setSize(Gdx.graphics.getWidth() * width_p, Gdx.graphics.getWidth() * height_p);
+//        label.setSize(Gdx.graphics.getWidth()* width_p, Gdx.graphics.getWidth() * height_p);
+//    }
 
     public void setLblTxt(String statsStr) {
         this.label.setText(statsStr);
     }
 
-    public void resetPosition(int width, int height) {
-        setPosition(width - getWidth(), height - getHeight());
-//        Gdx.app.log("pjb3", "" + (Gdx.graphics.getWidth() - getWidth()) + " " + (Gdx.graphics.getHeight() - getHeight()) + " and the width p is " + width_p);
+    public void resetPosition(float x, float y) {
+        setPosition(x, y);
+//        setPosition(0,0);
+
 
     }
 
@@ -76,8 +76,16 @@ public class CrystalDisplayWidget extends Actor {
     public void updateText(List<Pair<String, Integer>> crystalCount) {
         String newText = "";
         for (int i = 0; i < crystalCount.size(); i++ ) {
-            newText = crystalCount.get(i).key + ": " + crystalCount.get(i).value + "\n";
+            newText = crystalCount.get(i).key + ": " + crystalCount.get(i).value;
+            if (i != crystalCount.size() - 1) {
+                newText += "\n";
+            }
         }
         setLblTxt(newText);
     }
+
+//    public void setSize(int x, int y) {
+//        super.setSize(x, y);
+//        label.setSize(x, y);
+//    }
 }
