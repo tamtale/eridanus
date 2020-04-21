@@ -28,7 +28,6 @@ public class GameButtonsStage {
     private TextButton restartGame;
     private Label manaLabel;
     private Label winLabel;
-    private CrystalDisplayWidget crystalWidget;
 
     private Button selectedButton; // The currently pressed spawn button.
     private boolean showAttack;
@@ -104,7 +103,6 @@ public class GameButtonsStage {
         restartGame.setSize(128, 48);
 
 
-        Gdx.app.log("pjb3", "" + crystalWidget.getX() + " " + crystalWidget.getY());
         tower1Button.setPosition(34,  20);
         tower2Button.setPosition(172, 20);
         tower3Button.setPosition(310, 20);
@@ -122,7 +120,6 @@ public class GameButtonsStage {
         stage.addActor(tower2Button);
         stage.addActor(tower3Button);
         stage.addActor(manaLabel);
-        stage.addActor(crystalWidget);
 //        stage.addActor(showAttackRadiusCheckBox); TODO add this back in if we get functionality
 //        stage.addActor(showSpawnRadiusCheckBox); TODO add this back in if we get functionality
     }
@@ -259,10 +256,6 @@ public class GameButtonsStage {
     }
 
     public void resize(int width, int height) {
-        Gdx.app.log("pjb3 - GameButtonsStage", "resizing the window!!" + width + " " + height);
-        Gdx.app.log("pjb3 - GameButtonsStage", "size by graphics is " + Gdx.graphics.getWidth() + " " + Gdx.graphics.getHeight());
-        crystalWidget.resetPosition(width, height);
-
         stage.getViewport().apply();
         stage.getViewport().update(width, height);
 

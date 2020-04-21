@@ -1,6 +1,9 @@
 package com.week1.game.Renderer;
 
 import com.week1.game.Model.SpawnInfo;
+import com.week1.game.Pair;
+
+import java.util.List;
 
 /*
  * Adapter from the renderer to the system.
@@ -26,4 +29,6 @@ public interface IRendererAdapter {
     int getTowerCost(int slotNum);
 
     int getUnitCost();
+
+    List<Pair<String, Integer>> getCrystalCount();
 }

@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -21,6 +20,7 @@ import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkObjects.Client;
+import com.week1.game.Pair;
 import com.week1.game.Renderer.GameCameraController;
 import com.week1.game.Renderer.IRendererAdapter;
 import com.week1.game.Renderer.RenderConfig;
@@ -134,6 +134,11 @@ public class GameScreen implements Screen {
 			@Override
 			public int getUnitCost() {
 				return (int)StatsConfig.tempMinion1Cost;
+			}
+
+			@Override
+			public List<Pair<String, Integer>> getCrystalCount() {
+				return engine.getCrystalCounts();
 			}
 
 			@Override

@@ -825,6 +825,15 @@ public class GameState implements GameRenderable {
         fogSystem.setFog(fog);
     }
 
+    public List<Pair<String, Integer>> getCrystalCounts() {
+        List<Pair<String, Integer>> ret = new ArrayList<>();
+        for (int i = 0; i < players.size; i ++) {
+            PlayerEntity p = players.get(i);
+            ret.add(new Pair(p.getName(), p.getCrystalCount()));
+        }
+        return ret;
+    }
+
 
     /**
      * This inner class maintains the wrapper information for creating the wrapped version of the gamestate

@@ -9,6 +9,7 @@ import com.week1.game.Model.World.CoolWorldBuilder;
 import com.week1.game.Networking.Messages.Game.CheckSyncMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageType;
+import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
 
@@ -181,5 +182,9 @@ public class GameEngine implements GameRenderable {
 
     public void setFog(boolean enabled) {
         gameState.setFog(enabled);
+    }
+
+    public List<Pair<String, Integer>> getCrystalCounts() {
+        return gameState.getCrystalCounts();
     }
 }

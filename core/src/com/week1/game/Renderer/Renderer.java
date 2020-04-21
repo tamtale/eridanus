@@ -22,6 +22,7 @@ public class Renderer {
     public Model model;
     private PerspectiveCamera cam;
     private GameButtonsStage gameButtonsStage;
+    private CrystalStage crystalStage;
     private Environment env;
     private Vector3 defaultPosition = new Vector3(50, 50, 0);
     private IRendererAdapter adapter;
@@ -73,6 +74,7 @@ public class Renderer {
         cam.far = 500f;
         cam.update();
         gameButtonsStage = new GameButtonsStage(adapter);
+        crystalStage = new CrystalStage();
         cam.update();
     }
 
@@ -111,6 +113,7 @@ public class Renderer {
         cam.update();
         renderConfig.update();
         gameButtonsStage.resize(x, y);
+        crystalStage.resizeWidget(x, y);
 
     }
 
@@ -126,6 +129,7 @@ public class Renderer {
 
     public void drawPlayerUI() {
         startBatch();
+        crystalStage.renderUI(adapter.getCrystalCount());
         gameButtonsStage.renderUI((int) adapter.getPlayerMana(adapter.getPlayerId()));
         endBatch();
     }
