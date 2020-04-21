@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 public class TargetingComponent extends AComponent {
     public int permission;
     public int targetID; // -1 if no current target.
+    public int intentID = -1; // ID that the entity intends to target when possible. -1 if none.
     public float range; // Targeting range.
     public boolean switchTargets; // Whether or not to switch targets when out of range.
     public TargetingStrategy strategy;

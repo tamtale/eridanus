@@ -1,6 +1,5 @@
 package com.week1.game.Model;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -16,6 +15,7 @@ import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.Events.SelectionEvent;
 import com.week1.game.Model.Systems.*;
 import com.week1.game.Model.World.*;
+import com.week1.game.Networking.Messages.Game.TargetMessage;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
@@ -413,6 +413,7 @@ public class GameState implements GameRenderable {
         healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn, visibleComponent);
         renderSystem.addNode(c.ID, renderComponent, positionComponent, visibleComponent, VelocityComponent.ZERO);
         fogSystem.addSeen(c.ID, positionComponent, visibleComponent);
+        targetingSystem.addPosition(c.ID, positionComponent);
     }
 
     public Unit addUnit(float x, float y, float z, float tempHealth, int playerID){
@@ -435,6 +436,7 @@ public class GameState implements GameRenderable {
         interpolatorSystem.addNode(u.ID, positionComponent, interpolated, velocityComponent);
         renderSystem.addNode(u.ID, renderComponent, interpolated, visibleComponent, velocityComponent);
         targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
+        targetingSystem.addPosition(u.ID, positionComponent);
         damageSystem.addHealth(u.ID, healthComponent);
         damageSystem.addDamage(u.ID, damagingComponent);
         damageRewardSystem.addManaReward(u.ID, manaRewardComponent);
@@ -504,8 +506,9 @@ public class GameState implements GameRenderable {
         fogSystem.addSeen(unfinishedTower.ID, positionComponent, visibleComponent);
         towers.add(unfinishedTower);
         unfinishedTowerSet.add(unfinishedTower.ID);
-        addBuilding(unfinishedTower, playerID);
+        addBuildingToWorld(unfinishedTower, playerID);
         towerSpawnSystem.addNode(tower.ID, tower, unfinishedTower.ID);
+        targetingSystem.addPosition(tower.ID, positionComponent);
 
         return tower;
     }
@@ -552,12 +555,13 @@ public class GameState implements GameRenderable {
         deathRewardSystem.addManaReward(base.ID, manaRewardComponent);
         healthRenderSystem.addNode(base.ID, new PositionComponent(base.highestBlockLocation), healthComponent, ownedComponent, visibleComponent);
         healthGrowthSystem.addHealthGrowth(base.ID, healthComponent);
+        targetingSystem.addPosition(base.ID, positionComponent);
         if (ownedComponent.playerID == localPlayerID) { // only locally owned seers should be added
             fogSystem.addSeer(base.ID, positionComponent, targetingComponent);
         }
         fogSystem.addSeen(base.ID, positionComponent, visibleComponent);
         towers.add(base);
-        addBuilding(base, playerID);
+        addBuildingToWorld(base, playerID);
         return base;
     }
     public void addFinishedTower(Tower tower, int dummyID) {
@@ -570,6 +574,7 @@ public class GameState implements GameRenderable {
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == tower.getPlayerId());
         targetingSystem.addNode(tower.ID, ownedComponent, targetingComponent, positionComponent);
+        targetingSystem.addPosition(tower.ID, positionComponent);
         damageSystem.addHealth(tower.ID, healthComponent);
         damageSystem.addDamage(tower.ID, damagingComponent);
         damageRewardSystem.addManaReward(tower.ID, manaRewardComponent);
@@ -581,7 +586,7 @@ public class GameState implements GameRenderable {
         }
         fogSystem.addSeen(tower.ID, positionComponent, visibleComponent);
         towers.add(tower);
-        addBuilding(tower, ownedComponent.playerID);
+        addBuildingToWorld(tower, ownedComponent.playerID);
 
     }
     public void addBase(Tower pb, int playerID) {
@@ -590,10 +595,10 @@ public class GameState implements GameRenderable {
         
         renderNametagSystem.addNode(pb.ID, new RenderNametagComponent(playerName), pb.getPositionComponent());
         playerBases.put(playerID, pb);
-        addBuilding(pb, playerID);
+        addBuildingToWorld(pb, playerID);
     }
 
-    public void addBuilding(Tower t, int playerID) {
+    public void addBuildingToWorld(Tower t, int playerID) {
         List<BlockSpec> blockSpecs = t.getLayout();
         for (int k = 0; k < blockSpecs.size(); k++) {
             BlockSpec bs = blockSpecs.get(k);
@@ -708,6 +713,10 @@ public class GameState implements GameRenderable {
         // If the minion is already there, do nothing.
         if (u.getX() == x && u.getY() == y) return;
         updateGoal(u, new Vector3(x, y, 0));
+    }
+
+    public void changeTarget(TargetMessage message) {
+        targetingSystem.process(message);
     }
 
     public void doTowerSpecialAbilities(int communicationTurn) {

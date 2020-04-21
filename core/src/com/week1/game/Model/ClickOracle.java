@@ -20,6 +20,7 @@ import com.week1.game.Model.Systems.Subscriber;
 import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.CreateTowerMessage;
 import com.week1.game.Networking.Messages.Game.MoveMinionMessage;
+import com.week1.game.Networking.Messages.Game.TargetMessage;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Renderer.TextureUtils;
 
@@ -285,32 +286,45 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         selectedIDs.add(u.ID);
     }
 
+    /* Convenience method to send a move minion message on the current multiselected units to the given location. */
+    private void moveMultiselected(float x, float y) {
+        adapter.sendMessage(new MoveMinionMessage(x, y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+    }
+
+    /* Convenience method to send a target message on the current multiselected units */
+    private void targetMultiselected(int targetID) {
+        adapter.sendMessage(new TargetMessage(multiSelected, targetID, adapter.getPlayerId(), adapter.getGameStateHash()));
+    }
+
     /* Visitor for when the player intends to execute a unit action (i.e. right mouse click, units selected) */
     private Clickable.ClickableVisitor<Void> unitActionVisitor = new Clickable.ClickableVisitor<Void>() {
         @Override
         public Void acceptUnit(Unit unit) {
-            adapter.sendMessage(new MoveMinionMessage(unit.getX(), unit.getY(), adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
-            // TODO if it's an enemy minion, target it.
+            if (unit.getPlayerId() != adapter.getPlayerId()) {
+                targetMultiselected(unit.ID);
+            }
             return null;
         }
 
         @Override
         public Void acceptBlock(Clickable.ClickableBlock block) {
             Gdx.app.log("luke probably", "About to send move message with these minions: " + multiSelected);
-            adapter.sendMessage(new MoveMinionMessage(block.x, block.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+            moveMultiselected(block.x, block.y);
             return null;
         }
 
         @Override
         public Void acceptCrystal(Crystal crystal) {
             // TODO attack this crystal
-            adapter.sendMessage(new MoveMinionMessage((int) crystal.getX(), (int) crystal.getY(), adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+            targetMultiselected(crystal.ID);
             return null;
         }
 
         @Override
         public Void acceptTower(Tower t) {
-            adapter.sendMessage(new MoveMinionMessage(t.getX(), t.getY(), adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+            if (t.getPlayerId() != adapter.getPlayerId()) {
+                targetMultiselected(t.ID);
+            }
             return null;
         }
 
