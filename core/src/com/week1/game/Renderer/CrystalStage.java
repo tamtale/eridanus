@@ -11,17 +11,20 @@ import java.util.List;
 public class CrystalStage {
     Stage stage;
     CrystalDisplayWidget crystalWidget;
-    int oldWidth, oldHeight;
+    int oldWindowWidth, oldWindowHeight;
+    int oldWidgetWidth, oldWidgetHeight;
 
     public CrystalStage() {
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-        oldWidth = Gdx.graphics.getWidth();
-        oldHeight = Gdx.graphics.getHeight();
+        oldWindowWidth = Gdx.graphics.getWidth();
+        oldWindowHeight = Gdx.graphics.getHeight();
+        oldWidgetWidth = 256;
+        oldWidgetHeight = 160;
 
         crystalWidget = new CrystalDisplayWidget();
         crystalWidget.setLblTxt("This is a test");
         Gdx.app.log("pjb3 - GameButtonsStage", "" + (Gdx.graphics.getWidth() * 256/800f) + " " + (Gdx.graphics.getWidth() * 256/800f));
-        crystalWidget.setSize(Gdx.graphics.getWidth()/800f * 256,  Gdx.graphics.getHeight()/800f *160);
+        crystalWidget.setSize(Gdx.graphics.getWidth()/800f * oldWidgetWidth,  Gdx.graphics.getHeight()/800f * oldWidgetHeight);
         Gdx.app.log("pjb3 - GameButtonsStage", "AND " + crystalWidget.getWidth() + " "+  crystalWidget.getHeight());
 //        crystalWidget.setProportion(256/ GameController.VIRTUAL_WIDTH, 128 / GameController.VIRTUAL_WIDTH);
 //        crystalWidget.setPosition( GameController.VIRTUAL_WIDTH - crystalWidget.getWidth(), GameController.VIRTUAL_HEIGHT - crystalWidget.getHeight());
@@ -31,10 +34,21 @@ public class CrystalStage {
     }
     public void resizeWidget(int width, int height) {
 //        stage.getViewport().update(width, height);
-        Gdx.app.log("pjb3 - GameButtonsStage", "resizing the window!!" + width + " " + height + " AND " + crystalWidget.getWidth() + " "+  crystalWidget.getHeight());
+        Gdx.app.log("pjb3 - GameButtonsStage", "resizing the window!!" + width + " " +
+                (Gdx.graphics.getWidth()/800f * oldWidgetWidth * oldWindowWidth * 1.0f / width) + " " +
+                        oldWidgetWidth * 1.0f / width + " addsf " +
+                height + " AND " + crystalWidget.getWidth() + " "+  crystalWidget.getHeight());
 
-        crystalWidget.resetPosition((width - crystalWidget.getWidth()) - (width - oldWidth),
-                (height - crystalWidget.getHeight()) - (height - oldHeight));
+//        if (width * 1.0/height > 1) {
+//            Gdx.app.log("pjb3 - GameButtonsStage", "UPP");
+//                    crystalWidget.setSize(Gdx.graphics.getWidth()/800f * oldWidgetWidth * oldWindowWidth * 1.0f / width,  Gdx.graphics.getHeight()/800f * oldWidgetHeight);
+//        } else {
+//            Gdx.app.log("pjb3 - GameButtonsStage", "downnnn");
+//            crystalWidget.setSize(Gdx.graphics.getWidth()/800f * oldWidgetWidth,  Gdx.graphics.getHeight()/800f * (oldWidgetHeight * oldWindowHeight * 1.0f / height));
+//        }
+
+        crystalWidget.resetPosition((width - crystalWidget.getWidth()) - (width - oldWindowWidth),
+                (height - crystalWidget.getHeight()) - (height - oldWindowHeight));
     }
 
     public void renderUI(List<Tuple3<String, Integer, Color>> crystalCount) {
