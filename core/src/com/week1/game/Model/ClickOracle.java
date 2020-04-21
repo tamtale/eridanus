@@ -3,7 +3,6 @@ package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -286,6 +285,86 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         selectedIDs.add(u.ID);
     }
 
+    /* Visitor for when the player intends to execute a unit action (i.e. right mouse click, units selected) */
+    private Clickable.ClickableVisitor<Void> unitActionVisitor = new Clickable.ClickableVisitor<Void>() {
+        @Override
+        public Void acceptUnit(Unit unit) {
+            adapter.sendMessage(new MoveMinionMessage(unit.getX(), unit.getY(), adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+            // TODO if it's an enemy minion, target it.
+            return null;
+        }
+
+        @Override
+        public Void acceptBlock(Clickable.ClickableBlock block) {
+            Gdx.app.log("luke probably", "About to send move message with these minions: " + multiSelected);
+            adapter.sendMessage(new MoveMinionMessage(block.x, block.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+            return null;
+        }
+
+        @Override
+        public Void acceptCrystal(Crystal crystal) {
+            // TODO attack this crystal
+            adapter.sendMessage(new MoveMinionMessage((int) crystal.getX(), (int) crystal.getY(), adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+            return null;
+        }
+
+        @Override
+        public Void acceptTower(Tower t) {
+            adapter.sendMessage(new MoveMinionMessage(t.getX(), t.getY(), adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
+            return null;
+        }
+
+        @Override
+        public Void acceptNull() {
+            return null;
+        }
+    };
+
+    /* Visitor for when the player intends to execute a spawn action.*/
+    private Clickable.ClickableVisitor<Void> spawnActionVisitor = new Clickable.ClickableVisitor<Void>(){
+
+        @Override
+        public Void acceptUnit(Unit unit) {
+            return null;
+        }
+
+        @Override
+        public Void acceptBlock(Clickable.ClickableBlock block) {
+            int currentGameHash = adapter.getGameStateHash();
+            if (spawnType == SpawnInfo.SpawnType.UNIT) {
+                Gdx.app.debug("pjb3 - ClickOracle", "Spawn unit");
+                adapter.sendMessage(new CreateMinionMessage(block.x, block.y, block.z + 1, 69, adapter.getPlayerId(), currentGameHash));
+            } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
+                Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 1 via state");
+                adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 0, adapter.getPlayerId(), currentGameHash));
+            } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
+                Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 2 via state");
+                adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 1, adapter.getPlayerId(), currentGameHash));
+            } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
+                Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 3 via state");
+                adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 2, adapter.getPlayerId(), currentGameHash));
+            } else {
+                deMultiSelect();
+            }
+            return null;
+        }
+
+        @Override
+        public Void acceptCrystal(Crystal crystal) {
+            return null;
+        }
+
+        @Override
+        public Void acceptTower(Tower t) {
+            return null;
+        }
+
+        @Override
+        public Void acceptNull() {
+            return null;
+        }
+    };
+
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         Gdx.app.debug("lji1 - ClickOracle", "Click registered, dragging: " + dragging);
@@ -297,10 +376,6 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         }
 
         touchPos.set(screenX, screenY, 0);
-        // for 3D, get the ray that the click represents.
-
-        int currentGameHash = adapter.getGameStateHash();
-
 
         // If the player was dragging, the friendly units in the drag box are selected
         if (dragging) {
@@ -329,58 +404,11 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
             }
             // Right click
             if (button == Input.Buttons.RIGHT) {
-                clicked.accept(new Clickable.ClickableVisitor<Void>() {
-                    @Override
-                    public Void acceptUnit(Unit unit) {
-                        // TODO attack a different unit
-                        return null;
-                    }
-
-                    @Override
-                    public Void acceptBlock(Clickable.ClickableBlock block) {
-                        // if the player right clicks on a block, spawn something on that block
-                        if (multiSelected.notEmpty()) {
-                            Gdx.app.debug("luke probably", "About to send move message with these minions: " + multiSelected);
-                            adapter.sendMessage(new MoveMinionMessage(block.x, block.y, adapter.getPlayerId(), multiSelected, adapter.getGameStateHash()));
-                            return null;
-                        }
-
-                        int currentGameHash = adapter.getGameStateHash();
-                        if (spawnType == SpawnInfo.SpawnType.UNIT) {
-                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn unit");
-                            adapter.sendMessage(new CreateMinionMessage(block.x, block.y, block.z + 1, 69, adapter.getPlayerId(), currentGameHash));
-                        } else if (spawnType == SpawnInfo.SpawnType.TOWER1) {
-                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 1 via state");
-                            adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 0, adapter.getPlayerId(), currentGameHash));
-                        } else if (spawnType == SpawnInfo.SpawnType.TOWER2) {
-                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 2 via state");
-                            adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 1, adapter.getPlayerId(), currentGameHash));
-                        } else if (spawnType == SpawnInfo.SpawnType.TOWER3) {
-                            Gdx.app.debug("pjb3 - ClickOracle", "Spawn tower 3 via state");
-                            adapter.sendMessage(new CreateTowerMessage(block.x, block.y, block.z + 1, 2, adapter.getPlayerId(), currentGameHash));
-                        } else {
-                            deMultiSelect();
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    public Void acceptCrystal(Crystal crystal) {
-                        // TODO attack this crystal
-                        return null;
-                    }
-
-                    @Override
-                    public Void acceptTower(Tower t) {
-                        // TODO attack the tower
-                        return null;
-                    }
-
-                    @Override
-                    public Void acceptNull() {
-                        return null;
-                    }
-                });
+                if (multiSelected.notEmpty()) {
+                    clicked.accept(unitActionVisitor);
+                } else {
+                    clicked.accept(spawnActionVisitor);
+                }
             }
         }
         return false;

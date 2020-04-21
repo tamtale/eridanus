@@ -703,7 +703,10 @@ public class GameState implements GameRenderable {
 
         return null;
     }
+
     public void moveMinion(float x, float y, Unit u) {
+        // If the minion is already there, do nothing.
+        if (u.getX() == x && u.getY() == y) return;
         updateGoal(u, new Vector3(x, y, 0));
     }
 
