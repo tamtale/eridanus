@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
@@ -20,11 +21,11 @@ import com.week1.game.Networking.Messages.AMessage;
 import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageFormatter;
 import com.week1.game.Networking.NetworkObjects.Client;
-import com.week1.game.Pair;
 import com.week1.game.Renderer.GameCameraController;
 import com.week1.game.Renderer.IRendererAdapter;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Renderer.Renderer;
+import com.week1.game.Tuple3;
 
 import java.util.HashMap;
 import java.util.List;
@@ -137,7 +138,7 @@ public class GameScreen implements Screen {
 			}
 
 			@Override
-			public List<Pair<String, Integer>> getCrystalCount() {
+			public List<Tuple3<String, Integer, Color>> getCrystalCount() {
 				return engine.getCrystalCounts();
 			}
 

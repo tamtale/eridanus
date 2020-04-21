@@ -24,7 +24,7 @@ public class CrystalDisplayWidget extends Actor {
         Label.LabelStyle panelstyle = new Label.LabelStyle(font, null);
         TextureRegionDrawable td2 = new TextureRegionDrawable(new Texture("stats_panel.png"));
         panelstyle.background = td2;
-        panelstyle.font = new BitmapFont();
+        panelstyle.font = font;
 
         label = new Label("INIT",
                 panelstyle);
@@ -81,10 +81,10 @@ public class CrystalDisplayWidget extends Actor {
 
     public void updateText(List<Tuple3<String, Integer, Color>> crystalCount) {
         StringBuilder newText = new StringBuilder();
-        newText.append("Crystal Tracker");
+        newText.append("Crystal Tracker\n");
         Gdx.app.log("", "" + crystalCount + " " + crystalCount.size());
         for (int i = 0; i < crystalCount.size(); i++ ) {
-            newText.append("[" + crystalCount.get(i)._3.toString() + "]").append(crystalCount.get(i)._1).append(": ").append("[#000000]").append(crystalCount.get(i)._2);
+            newText.append("[#00FF00FF]").append("[#" + crystalCount.get(i)._3.toString() + "]").append(crystalCount.get(i)._1).append(": ").append("[#FFFFFFFF]").append(crystalCount.get(i)._2);
             if (i != crystalCount.size() - 1) {
                 newText.append("\n");
             }
