@@ -1,5 +1,7 @@
 package com.week1.game.Renderer;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -7,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.week1.game.Pair;
+import com.week1.game.Tuple3;
 
 import java.util.List;
 
@@ -17,14 +19,18 @@ public class CrystalDisplayWidget extends Actor {
     private Label label;
 
     public CrystalDisplayWidget() {
-        Label.LabelStyle panelstyle = new Label.LabelStyle();
+        BitmapFont font = new BitmapFont();
+        font.getData().markupEnabled = true;
+        Label.LabelStyle panelstyle = new Label.LabelStyle(font, null);
         TextureRegionDrawable td2 = new TextureRegionDrawable(new Texture("stats_panel.png"));
         panelstyle.background = td2;
         panelstyle.font = new BitmapFont();
 
-        label = new Label("TETOMG",
+        label = new Label("INIT",
                 panelstyle);
         label.setAlignment(Align.center);
+        label.setFontScale(1.3f);
+        font.getData().markupEnabled = true;
     }
 
     @Override
@@ -73,19 +79,21 @@ public class CrystalDisplayWidget extends Actor {
         return label.getHeight();
     }
 
-    public void updateText(List<Pair<String, Integer>> crystalCount) {
-        String newText = "";
+    public void updateText(List<Tuple3<String, Integer, Color>> crystalCount) {
+        StringBuilder newText = new StringBuilder();
+        newText.append("Crystal Tracker");
+        Gdx.app.log("", "" + crystalCount + " " + crystalCount.size());
         for (int i = 0; i < crystalCount.size(); i++ ) {
-            newText = crystalCount.get(i).key + ": " + crystalCount.get(i).value;
+            newText.append("[" + crystalCount.get(i)._3.toString() + "]").append(crystalCount.get(i)._1).append(": ").append("[#000000]").append(crystalCount.get(i)._2);
             if (i != crystalCount.size() - 1) {
-                newText += "\n";
+                newText.append("\n");
             }
         }
-        setLblTxt(newText);
+        setLblTxt(newText.toString());
     }
 
-//    public void setSize(int x, int y) {
-//        super.setSize(x, y);
-//        label.setSize(x, y);
-//    }
+    public void setSize(float x, float y) {
+        super.setSize(x, y);
+        label.setSize(x, y);
+    }
 }

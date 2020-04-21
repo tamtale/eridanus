@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
 import com.week1.game.GameControllerSetScreenAdapter;
@@ -23,8 +22,6 @@ import com.week1.game.Model.Entities.UnitLoader;
 import com.week1.game.Model.PlayerInfo;
 import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Networking.NetworkObjects.NetworkUtils;
-
-import java.util.Arrays;
 
 import static com.week1.game.MenuScreens.MenuStyles.blueStyle;
 import static com.week1.game.MenuScreens.MenuStyles.disabledStyle;
@@ -102,7 +99,12 @@ public class ConnectionScreen implements Screen {
         joinGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                joinGame(ipField.getText(), new PlayerInfo(nameField.getText()));
+                String name = nameField.getText();
+                if (name == "") {
+                   name = "Empty String";
+                }
+                name = name.substring(0, 15);
+                joinGame(ipField.getText(), new PlayerInfo(name));
             }
         });
 
