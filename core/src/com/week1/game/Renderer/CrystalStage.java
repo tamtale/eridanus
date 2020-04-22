@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.week1.game.GameController;
 import com.week1.game.Tuple3;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class CrystalStage {
         Gdx.app.log("pjb3 - GameButtonsStage", "AND " + crystalWidget.getWidth() + " "+  crystalWidget.getHeight());
 //        crystalWidget.setProportion(256/ GameController.VIRTUAL_WIDTH, 128 / GameController.VIRTUAL_WIDTH);
 //        crystalWidget.setPosition( GameController.VIRTUAL_WIDTH - crystalWidget.getWidth(), GameController.VIRTUAL_HEIGHT - crystalWidget.getHeight());
-
+        crystalWidget.resetPosition(GameController.VIRTUAL_HEIGHT/2 - oldWidgetWidth/2, GameController.VIRTUAL_HEIGHT/2 - oldWidgetHeight/2);
         stage.addActor(crystalWidget);
 
     }
@@ -47,8 +48,8 @@ public class CrystalStage {
 //            crystalWidget.setSize(oldWidgetWidth,  Gdx.graphics.getHeight()/800f * (oldWidgetHeight * oldWindowHeight * 1.0f / height));
 //        }
 
-        crystalWidget.resetPosition((width - crystalWidget.getWidth()) - (width - oldWindowWidth),
-                (height - crystalWidget.getHeight()) - (height - oldWindowHeight));
+//        crystalWidget.resetPosition((width - crystalWidget.getWidth()) - (width - oldWindowWidth),
+//                (height - crystalWidget.getHeight()) - (height - oldWindowHeight));
     }
 
     public void renderUI(List<Tuple3<String, Integer, Color>> crystalCount) {

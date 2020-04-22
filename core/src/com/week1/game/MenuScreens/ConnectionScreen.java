@@ -167,7 +167,7 @@ public class ConnectionScreen implements Screen {
         nameField = new TextField("Enter Your Name", textFieldStyle);
         nameField.setSize(joinGameButton.getWidth(),64);
         nameField.setAlignment(Align.center);
-        nameField.setPosition(GameController.VIRTUAL_WIDTH / 2 - nameField.getWidth()/2 ,GameController.VIRTUAL_HEIGHT  *2 / 3);
+        nameField.setPosition(GameController.VIRTUAL_WIDTH / 2 - nameField.getWidth() / 2 ,GameController.VIRTUAL_HEIGHT  * 2 / 3);
         connectionStage.addActor(nameField);
 
 
@@ -175,8 +175,8 @@ public class ConnectionScreen implements Screen {
     }
 
     private String cleanName(String input) {
-        String name = input;
-        if (name == "") {
+        String name = input.trim();
+        if (name.equals("")) {
             name = "Empty String";
         }
         return name.substring(0, Math.min(15, name.length()));

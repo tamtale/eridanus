@@ -187,6 +187,11 @@ public class GameScreen implements Screen {
 					}
 
 					@Override
+					public void setCrystalTracker(boolean display) {
+						renderer.setCrystalTracker(display);
+					}
+
+					@Override
 					public Clickable selectClickable(float screenX, float screenY, Vector3 intersection) {
                       return engine.getGameState().getClickableOnRay(renderer.getCam().getPickRay(screenX, screenY), intersection);
 					}

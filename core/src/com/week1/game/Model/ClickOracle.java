@@ -3,7 +3,6 @@ package com.week1.game.Model;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -82,12 +81,16 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         setSpawnType(SpawnInfo.SpawnType.UNIT);
         adapter.setSpawnType(SpawnInfo.SpawnType.UNIT);
     }, spawnNone);
+    private ClickOracleCommand showCrystalTracker = () -> adapter.setCrystalTracker(true);
+    private ClickOracleCommand hideCrystalTracker = () -> adapter.setCrystalTracker(false);
     // Command to reset the clickoracle.
     private ClickOracleCommand reset = () -> {
         spawnNone.execute();
         deMultiSelect();
     };
-    private IntMap<ClickOracleCommand> keyDownCommands = new IntMap<ClickOracleCommand>();
+    private IntMap<ClickOracleCommand> keyDownCommands = new IntMap<ClickOracleCommand>(); {
+
+    }
     private IntMap<ClickOracleCommand> keyUpCommands = new IntMap<ClickOracleCommand>();
     {
         registerPair(Input.Keys.W, panUp);
@@ -103,6 +106,8 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         keyUpCommands.put(Input.Keys.ESCAPE, reset);
         keyUpCommands.put(Input.Keys.Y, lockCamera);
         keyUpCommands.put(Input.Keys.B, goHome);
+        keyUpCommands.put(Input.Keys.TAB, hideCrystalTracker);
+        keyDownCommands.put(Input.Keys.TAB, showCrystalTracker);
     }
 
     private SpawnInfo.SpawnType spawnType;

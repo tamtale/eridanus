@@ -46,6 +46,7 @@ public class Renderer {
     }
 
     private int winState = -1;
+    private boolean displayCrystalTracker = false;
     private InfoUtil util;
 
     public Renderer(IRendererAdapter rendererAdapter,
@@ -127,9 +128,11 @@ public class Renderer {
         gameButtonsStage.endGame(winState);
     }
 
-    public void drawPlayerUI() {
+    public void drawPlayerUI(boolean displayCrystalTracker) {
         startBatch();
-        crystalStage.renderUI(adapter.getCrystalCount());
+        if (displayCrystalTracker) {
+            crystalStage.renderUI(adapter.getCrystalCount());
+        }
         gameButtonsStage.renderUI((int) adapter.getPlayerMana(adapter.getPlayerId()));
         endBatch();
     }
@@ -180,7 +183,7 @@ public class Renderer {
         updateCamera();
         renderConfig.set(getShowAttackRadius(), getShowSpawnRadius(), deltaTime);
         adapter.renderSystem(renderConfig);
-        drawPlayerUI();
+        drawPlayerUI(displayCrystalTracker);
         util.drawMessages(batch);
     }
 
@@ -215,5 +218,9 @@ public class Renderer {
 
     public void setCenter(Vector3 newCenter) {
         mapCenter.set(newCenter);
+    }
+
+    public void setCrystalTracker(boolean display) {
+        displayCrystalTracker = display;
     }
 }
