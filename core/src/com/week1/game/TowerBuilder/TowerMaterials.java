@@ -37,8 +37,8 @@ public class TowerMaterials {
 
     //Materials
     addBlockType("space_obsidian2.png", "etherite", BlockType.ETHERITE, 50,5,10);
-    addBlockType("moonstone3.png", "kuiperium", BlockType.KUIPERIUM, 25, 15,20);
-    addBlockType("gold2.png", "novacore", BlockType.NOVACORE, 15, 40,40);
+    addBlockType("moonstone3.png", "kuiperium", BlockType.KUIPERIUM, 25, 25,10);
+    addBlockType("gold2.png", "novacore", BlockType.NOVACORE, 5, 50,10);
 
     //Guns
     addBlockType("water2.png", "water", BlockType.WATER, 15,40, 100);
