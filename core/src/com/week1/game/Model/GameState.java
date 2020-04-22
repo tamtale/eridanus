@@ -53,6 +53,7 @@ public class GameState implements GameRenderable {
     private DamageRewardSystem damageRewardSystem = new DamageRewardSystem();
     private HealthRenderSystem healthRenderSystem = new HealthRenderSystem();
     private HealthGrowthSystem healthGrowthSystem = new HealthGrowthSystem();
+    private UpgradeSystem upgradeSystem = new UpgradeSystem();
     private FogSystem fogSystem = new FogSystem();
     private TowerSpawnSystem towerSpawnSystem;
 
@@ -81,6 +82,7 @@ public class GameState implements GameRenderable {
         this.localPlayerID = localPlayerID;
         // TODO tower types in memory after exchange
         // Create player entities
+        initUpgrades();
         for (int playerId = 0; playerId < playerInfo.size(); playerId++) {
             PlayerInfo info = playerInfo.get(playerId);
             addPlayer(playerId, info.getPlayerName(), info.getFaction());
@@ -103,7 +105,7 @@ public class GameState implements GameRenderable {
         initCrystalRespawnSystem();
         initTowerSpawnSystem();
         initDamageSystem();
-        initUpgrades();
+
         targetingSystem.addSubscriber(damageSystem);
         targetingSystem.addSubscriber(damageRewardSystem);
         damageSystem.addSubscriber(deathSystem);
@@ -286,7 +288,7 @@ public class GameState implements GameRenderable {
             return null;
         }));
 
-        upgrades.put("Earth", new UpgradeComponent(2500, 100, new IService<Integer, Void>() {
+        upgrades.put("Earth", new UpgradeComponent(2000, 200, new IService<Integer, Void>() {
 
             @Override
             public Void query(Integer key) {
@@ -341,6 +343,7 @@ public class GameState implements GameRenderable {
         deathSystem.update(THRESHOLD);
         healthGrowthSystem.update(THRESHOLD);
         towerSpawnSystem.update(THRESHOLD);
+        upgradeSystem.update(THRESHOLD);
         doTowerSpecialAbilities(communicationTurn);
     }
 
@@ -447,12 +450,14 @@ public class GameState implements GameRenderable {
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaComponent manaComponent = new ManaComponent(startingMana);
         NameComponent nameComponent = new NameComponent(name);
-
+        System.out.println(faction);
         damageSystem.addUpgrade(playerID, upgrades.get(faction));
         ColorComponent colorComponent = new ColorComponent(UnitLoader.NAMES_TO_COLORS.get(faction));
         
         PlayerEntity player = new PlayerEntity(ownedComponent, manaComponent, nameComponent, colorComponent);
         players.add(player);
+        UpgradeComponent upgradeComponent = upgrades.get(faction);
+        upgradeSystem.addUpgradeComponent(playerID, upgradeComponent);
         
         // Register with manaRegenSystem so that the player's mana will regenerate over time.
         manaRegenSystem.addMana(player.getPlayerID(), manaComponent);

@@ -39,15 +39,13 @@ public class DamageSystem implements ISystem, Subscriber<DamageEvent>, Publisher
             HealthComponent victimHealth = healthComponents.get(damageEvent.victimID);
             DamagingComponent damagingComponent = damagingComponents.get(damageEvent.damagerID);
             UpgradeComponent upgradeComponent = upgradeComponents.get(damageEvent.damagerPlayerID);
-
             Gdx.app.debug("DamageSystem", "Dealing Damage to " + damageEvent.victimID + " with current health " + victimHealth.curHealth);
             if (victimHealth.curHealth <= 0) continue; // Can't be dealt more damage below 0.
             if (!isCrystalService.query(damageEvent.victimID)){
                 upgradeComponent.damageDealt += damagingComponent.baseDamage;
-            }if (isBaseService.query(damageEvent.victimID)){
                 int damageMultiplier = baseDamage.get(damageEvent.damagerPlayerID, 1);
                 victimHealth.curHealth -= damagingComponent.baseDamage * damageMultiplier;
-            } else {
+            }else{
                 victimHealth.curHealth -= damagingComponent.baseDamage;
             }
             Gdx.app.debug("DamageSystem", "health now " + victimHealth.curHealth);
@@ -73,7 +71,9 @@ public class DamageSystem implements ISystem, Subscriber<DamageEvent>, Publisher
         damagingComponents.put(entID, damagingComponent);
     }
 
-    public void addUpgrade(int playerID, UpgradeComponent upgradeComponent){upgradeComponents.put(playerID, upgradeComponent);}
+    public void addUpgrade(int playerID, UpgradeComponent upgradeComponent){
+        Gdx.app.log("upgrade", "player ID " + playerID + " upgradeComponent " + upgradeComponent);
+        upgradeComponents.put(playerID, upgradeComponent);}
 
     @Override
     public void process(DamageEvent damageEvent) {
