@@ -301,6 +301,7 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         @Override
         public Void acceptUnit(Unit unit) {
             if (unit.getPlayerId() != adapter.getPlayerId()) {
+                moveMultiselected((int) unit.getX(), (int) unit.getY());
                 targetMultiselected(unit.ID);
             }
             return null;
@@ -316,12 +317,14 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         @Override
         public Void acceptCrystal(Crystal crystal) {
             // TODO attack this crystal
+            moveMultiselected((int) crystal.getX(), (int) crystal.getY());
             targetMultiselected(crystal.ID);
             return null;
         }
 
         @Override
         public Void acceptTower(Tower t) {
+            moveMultiselected((int) t.getX(), (int) t.getY());
             if (t.getPlayerId() != adapter.getPlayerId()) {
                 targetMultiselected(t.ID);
             }
