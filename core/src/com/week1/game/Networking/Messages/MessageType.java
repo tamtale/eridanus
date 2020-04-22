@@ -10,6 +10,7 @@ public enum MessageType {
     CHECKSYNC,
     SYNCERR,
     TOWERDETAILS,
+    TARGET,
     
     // Client Control Messages
     PLAYERID,
