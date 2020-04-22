@@ -61,9 +61,6 @@ public class CrystalDisplayWidget extends Actor {
 
     public void resetPosition(float x, float y) {
         setPosition(x, y);
-//        setPosition(0,0);
-
-
     }
 
     @Override
@@ -93,5 +90,9 @@ public class CrystalDisplayWidget extends Actor {
     public void setSize(float x, float y) {
         super.setSize(x, y);
         label.setSize(x, y);
+    }
+
+    public void adjustScale(int width, int height) {
+
     }
 }
