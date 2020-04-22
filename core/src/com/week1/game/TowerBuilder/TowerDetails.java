@@ -132,7 +132,7 @@ public class TowerDetails {
             String twrName = filename.substring(("/eridanus/customTowers/").length() + GameController.PREFS.getString("saveDir").length(), filename.length() - 11);
             layout = blocks;
             name = twrName;
-            calcRawStats();
+            calcRawStats(true);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -144,10 +144,31 @@ public class TowerDetails {
         this.name = name;
         
         //generate model and stats
-        calcRawStats();
+        calcRawStats(true);
     }
 
-    private void calcRawStats() {
+    private void resetStats() {
+        //these stats are based off the raw blocks
+         rawHeight = 0;
+          rawHp = 0;
+          rawAtk = 0;
+          rawPrice = 0;
+          numGuns = 0;
+
+        //These stats are based off raw stats and multipliers
+          hp = 0;
+          atk = 0;
+          range = 0;
+          armour = 1;
+          price = 0;
+
+        //For penalizing small bases
+          baseSize = 0;
+    }
+
+    private void calcRawStats(boolean first_run) {
+        resetStats();
+
         this.footprint = new TowerFootprint();
 
         int maxHeight = Integer.MIN_VALUE;
@@ -160,9 +181,12 @@ public class TowerDetails {
             int y = block.getY();
             int z = block.getZ();
 
-            ModelInstance blockInstance = new ModelInstance(TowerMaterials.modelMap.get(code));
-            blockInstance.transform.setToTranslation(x * BLOCKLENGTH, y * BLOCKLENGTH, z * BLOCKLENGTH);
-            this.model.add(blockInstance);
+            if (first_run) {
+                ModelInstance blockInstance = new ModelInstance(TowerMaterials.modelMap.get(code));
+                blockInstance.transform.setToTranslation(x * BLOCKLENGTH, y * BLOCKLENGTH, z * BLOCKLENGTH);
+                this.model.add(blockInstance);
+            }
+
             this.footprint.setFootPrint(x + 2, z + 2, true);
 
             //Generate the tower stats
@@ -214,18 +238,29 @@ public class TowerDetails {
         price = (int) (rawPrice + 100);
 
         atk = rawAtk * 0.3;
-        range = rawHeight * 2;
+        if (rawHeight <= 5) {
+            range = rawHeight + 5;
+        } else {
+            range = rawHeight * 2;
+        }
 
         //Multipliers --- Fine tuning the stats
 
         //penalties up to basesize of 5
         hp = rawHp * Math.min(1, baseSize/5.0);
 
-
 //        atk is inversely prop to range
         if (rawHeight > 4) {
 //            Note: this if statement is required because the height of the ground in the tower editor is 0
-            atk = atk  - rawHeight * 3;
+            if (rawHeight == 5){
+                atk = Math.round(atk * 4/5.0 * 10)/10.0;
+            } else if (rawHeight == 6) {
+                atk = Math.round(atk * 4/6.0 * 10)/10.0;
+            } else if (rawHeight == 7) {
+                atk = Math.round(atk * 5.0/8 * 10)/10.0;
+            } else if (rawHeight == 8) {
+                atk = Math.round(atk * 5.0/8 * 10)/10.0;
+            }
         }
 
         //Negate the atk if there is no gun block
@@ -275,13 +310,7 @@ public class TowerDetails {
         }
 
         //populate the fields
-        this.rawAtk += TowerMaterials.blockAtk.get(code);
-        this.rawHp += TowerMaterials.blockHp.get(code);
-        rawHeight = Math.max(rawHeight, y + 1);
-//        range = rawHeight * 3;
-        this.rawPrice += TowerMaterials.blockPrice.get(code);
-
-        calcFinalStats();
+        calcRawStats(false);
 
     }
 
@@ -369,7 +398,6 @@ public class TowerDetails {
 
         int modelIdx = -1;
         int blockIdx = -1;
-        boolean shrinkFootprint = true;
         int newHt = 0;
 
         for (int i = 0; i < layout.size(); i++) {
@@ -393,10 +421,6 @@ public class TowerDetails {
 
             }
 
-            if (translation.x == x & translation.z == z) {
-                shrinkFootprint = false;
-            }
-
         }
 
         if (!checkRemovalSafety(blockIdx)) {
@@ -406,25 +430,8 @@ public class TowerDetails {
         layout.remove(blockIdx);
         this.model.removeIndex(modelIdx);
 
+        calcRawStats(false);
 
-        //update the fields
-        if (code == BlockType.EARTH || code == BlockType.WATER || code == BlockType.FIRE) {
-            numGuns -= 1;
-        }
-
-        this.rawAtk -= TowerMaterials.blockAtk.get(code);
-        this.rawHp -= TowerMaterials.blockHp.get(code);
-        this.rawPrice -= TowerMaterials.blockPrice.get(code);
-
-        //updating range and footprint
-        if (shrinkFootprint) {
-            baseSize -= 1;
-            this.footprint.setFootPrint(x + 2, z + 2, false);
-        }
-
-        rawHeight = newHt;
-
-        calcFinalStats();
         return true;
 
     }
