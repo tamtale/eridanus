@@ -1,5 +1,6 @@
 package com.week1.game.Renderer;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -16,11 +17,12 @@ public class CrystalDisplayWidget extends Actor {
 //    private float width_p, height_p;
 
     private Label label;
+    private Label.LabelStyle panelstyle;
 
     public CrystalDisplayWidget() {
         BitmapFont font = new BitmapFont();
         font.getData().markupEnabled = true;
-        Label.LabelStyle panelstyle = new Label.LabelStyle(font, null);
+        panelstyle = new Label.LabelStyle(font, null);
         TextureRegionDrawable td2 = new TextureRegionDrawable(new Texture("stats_panel.png"));
         panelstyle.background = td2;
         panelstyle.font = font;
@@ -28,7 +30,6 @@ public class CrystalDisplayWidget extends Actor {
         label = new Label("INIT",
                 panelstyle);
         label.setAlignment(Align.center);
-        label.setFontScale(1.3f);
         font.getData().markupEnabled = true;
     }
 
@@ -47,13 +48,6 @@ public class CrystalDisplayWidget extends Actor {
         super.setPosition(x, y);
         label.setPosition(x, y);
     }
-
-//    public void setProportion(float width_p, float height_p) {
-//        this.width_p = width_p;
-//        this.height_p = height_p;
-//        super.setSize(Gdx.graphics.getWidth() * width_p, Gdx.graphics.getWidth() * height_p);
-//        label.setSize(Gdx.graphics.getWidth()* width_p, Gdx.graphics.getWidth() * height_p);
-//    }
 
     public void setLblTxt(String statsStr) {
         this.label.setText(statsStr);
@@ -90,9 +84,6 @@ public class CrystalDisplayWidget extends Actor {
     public void setSize(float x, float y) {
         super.setSize(x, y);
         label.setSize(x, y);
-    }
-
-    public void adjustScale(int width, int height) {
-
+        label.setFontScale(1.3f * (Gdx.graphics.getHeight()/800f));
     }
 }

@@ -3,7 +3,7 @@ package com.week1.game.Renderer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.week1.game.Tuple3;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public class CrystalStage {
     float oldWidgetWidth, oldWidgetHeight;
 
     public CrystalStage() {
-        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        stage = new Stage(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
         oldWindowWidth = Gdx.graphics.getWidth();
         oldWindowHeight = Gdx.graphics.getHeight();
         oldWidgetWidth = Gdx.graphics.getWidth()/800f * 256;
@@ -33,11 +33,7 @@ public class CrystalStage {
 
     }
     public void resizeWidget(int width, int height) {
-//        Gdx.app.log("pjb3 - GameButtonsStage", "resizing the window!!" + width + " " +
-//                (Gdx.graphics.getWidth()/800f * oldWidgetWidth * oldWindowWidth * 1.0f / width) + " " +
-//                        oldWidgetWidth * 1.0f / width + " addsf " +
-//                height + " AND " + crystalWidget.getWidth() + " "+  crystalWidget.getHeight());
-        crystalWidget.adjustScale(width, height);
+//        crystalWidget.adjustScale(width, height);
 
     }
 
