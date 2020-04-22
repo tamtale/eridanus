@@ -10,6 +10,7 @@ import com.week1.game.Model.Events.DeathEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -26,7 +27,11 @@ public class DamageSystem implements ISystem, Subscriber<DamageEvent>, Publisher
     private IntMap<HealthComponent> healthComponents = new IntMap<>();
     private IntMap<DamagingComponent> damagingComponents = new IntMap<>();
     private IntMap<UpgradeComponent> upgradeComponents = new IntMap<>();
+    private IntMap<Integer> baseDamage = new IntMap<>();
+
+
     IService<Integer, Boolean> isCrystalService;
+    IService<Integer, Boolean> isBaseService;
 
     @Override
     public void update(float delta) {
@@ -37,9 +42,13 @@ public class DamageSystem implements ISystem, Subscriber<DamageEvent>, Publisher
 
             Gdx.app.debug("DamageSystem", "Dealing Damage to " + damageEvent.victimID + " with current health " + victimHealth.curHealth);
             if (victimHealth.curHealth <= 0) continue; // Can't be dealt more damage below 0.
-            victimHealth.curHealth -= damagingComponent.baseDamage;
             if (!isCrystalService.query(damageEvent.victimID)){
                 upgradeComponent.damageDealt += damagingComponent.baseDamage;
+            }if (isBaseService.query(damageEvent.victimID)){
+                int damageMultiplier = baseDamage.get(damageEvent.damagerPlayerID, 1);
+                victimHealth.curHealth -= damagingComponent.baseDamage * damageMultiplier;
+            } else {
+                victimHealth.curHealth -= damagingComponent.baseDamage;
             }
             Gdx.app.debug("DamageSystem", "health now " + victimHealth.curHealth);
             if (victimHealth.curHealth <= 0) {
@@ -64,7 +73,7 @@ public class DamageSystem implements ISystem, Subscriber<DamageEvent>, Publisher
         damagingComponents.put(entID, damagingComponent);
     }
 
-    public void addUpgrade(int playerID){upgradeComponents.put(playerID, new UpgradeComponent());}
+    public void addUpgrade(int playerID, UpgradeComponent upgradeComponent){upgradeComponents.put(playerID, upgradeComponent);}
 
     @Override
     public void process(DamageEvent damageEvent) {
@@ -83,5 +92,17 @@ public class DamageSystem implements ISystem, Subscriber<DamageEvent>, Publisher
 
     public void setIsCrystalService(IService<Integer, Boolean> isCrystalService) {
         this.isCrystalService = isCrystalService;
+    }
+
+    public void setIsBaseService(IService<Integer, Boolean> isBaseService){
+        this.isBaseService = isBaseService;
+    }
+
+    public void baseDamage(Integer key, int i) {
+        baseDamage.put(key, i);
+    }
+
+    public void baseDamage(boolean baseDamage){
+
     }
 }
