@@ -15,8 +15,8 @@ public class MenuStyles {
 
     public static TextButton.TextButtonStyle blueStyle = new TextButton.TextButtonStyle(
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("add8e6")),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("add8e6")),
-            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.valueOf("add8e6")), new BitmapFont());
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("add8e6")),
+            new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round-down", Color.valueOf("add8e6")), new BitmapFont());
 
     public static TextButton.TextButtonStyle redStyle = new TextButton.TextButtonStyle(
             new Skin(Gdx.files.internal("uiskin.json")).newDrawable("default-round", Color.RED),

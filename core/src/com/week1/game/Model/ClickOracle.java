@@ -82,8 +82,14 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         setSpawnType(SpawnInfo.SpawnType.UNIT);
         adapter.setSpawnType(SpawnInfo.SpawnType.UNIT);
     }, spawnNone);
-    private ClickOracleCommand showCrystalTracker = () -> adapter.setCrystalTracker(true);
-    private ClickOracleCommand hideCrystalTracker = () -> adapter.setCrystalTracker(false);
+    // Command to show or hide the crystal tracker display
+    private CommandPair showCrystalTracker = new CommandPair(
+        () -> {
+            adapter.setCrystalTracker(true);
+        },
+        () -> {
+            adapter.setCrystalTracker(false);
+        });
     // Command to reset the clickoracle.
     private ClickOracleCommand reset = () -> {
         spawnNone.execute();
@@ -104,11 +110,10 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         registerPair(Input.Keys.NUM_2, setSpawn2);
         registerPair(Input.Keys.NUM_3, setSpawn3);
         registerPair(Input.Keys.NUM_4, setSpawnUnit);
+        registerPair(Input.Keys.TAB, showCrystalTracker);
         keyUpCommands.put(Input.Keys.ESCAPE, reset);
         keyUpCommands.put(Input.Keys.Y, lockCamera);
         keyUpCommands.put(Input.Keys.B, goHome);
-        keyUpCommands.put(Input.Keys.TAB, hideCrystalTracker);
-        keyDownCommands.put(Input.Keys.TAB, showCrystalTracker);
     }
 
     private SpawnInfo.SpawnType spawnType;
