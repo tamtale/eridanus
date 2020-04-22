@@ -211,4 +211,7 @@ public class Tower implements Clickable {
     public DamagingComponent getDamagingComponent() {
         return damagingComponent;
     }
+    public void setVisibleComponent(VisibleComponent visibleComponent) {
+        this.visibleComponent = visibleComponent;
+    }
 }

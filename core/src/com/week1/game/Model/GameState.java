@@ -569,6 +569,8 @@ public class GameState implements GameRenderable {
         DamagingComponent damagingComponent = tower.getDamagingComponent();
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == tower.getPlayerId());
+        // Must update the tower object's visible component, otherwise calls to visible() will be wrong.
+        tower.setVisibleComponent(visibleComponent);
         targetingSystem.addNode(tower.ID, ownedComponent, targetingComponent, positionComponent);
         damageSystem.addHealth(tower.ID, healthComponent);
         damageSystem.addDamage(tower.ID, damagingComponent);
