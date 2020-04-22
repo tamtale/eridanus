@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -35,6 +36,9 @@ public class Host {
     private boolean magicBoolean = false; // When threads are asleep and woken, they are not interrupted so they can
                                           // check this variable to see if they have been stopped by a disconnect action
 
+    public static final int EXCEPTION_LIMIT = 4;
+//    int exceptionCount = 0;
+    
     public Map<Integer, List<TowerLite>> towerDetails = new HashMap<>(); // first index is implicitly the player id
     public Map<InetAddress, Player> registry = new HashMap<>();
 
@@ -95,11 +99,21 @@ public class Host {
                                 msg = player.in.readLine();
                                 processMessage(msg, player.address, player.port);
 
-
+                            } catch (SocketException socketException) {
+                                player.exceptionCount++;
+                                if (player.exceptionCount < EXCEPTION_LIMIT) { // don't spam the console
+                                    socketException.printStackTrace();
+                                } else {
+                                    Gdx.app.log(TAG, "****\n To avoid console spam, further exceptions will not be printed. \n ****");
+                                    this.registry.remove(player.address); // remove player from registry
+                                    break; // end the listening thread
+                                }
+                             
                             } catch (IOException e) {
                                 if (listeningThread.isInterrupted()) {
                                     return;
                                 }
+
                                 e.printStackTrace();
                             }
                         }
@@ -216,6 +230,16 @@ public class Host {
             }
             player.out.write(msg + "\n");
             player.out.flush();
+            
+        } catch (SocketException socketException) {
+            player.exceptionCount++;
+            if (player.exceptionCount < EXCEPTION_LIMIT) { // don't spam the console
+                socketException.printStackTrace();
+            } else {
+                Gdx.app.log(TAG, "****\n To avoid console spam, further exceptions will not be printed. \n ****");
+                this.registry.remove(player.address); // remove player from registry
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }

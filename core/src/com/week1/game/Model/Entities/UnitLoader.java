@@ -20,10 +20,10 @@ public class UnitLoader {
     static{
         FACTIONS.add("Select A Faction");
 
-        loadMinion("earth_minion", "Earth", Color.GREEN);
-        loadMinion("fire_minion", "Fire", Color.RED);
-        loadMinion("water_minion", "Water", new Color(0, 0, 0.545f, 1f));
-        loadMinion("air_minion", "Air", new Color( 0.678f, 0.847f, 0.902f, 1f));
+        loadMinion("earth_minion", "Green", Color.GREEN);
+        loadMinion("fire_minion", "Red", Color.RED);
+        loadMinion("water_minion", "Blue", new Color(0, 0, 0.545f, 1f));
+        loadMinion("air_minion", "White", new Color( 0.678f, 0.847f, 0.902f, 1f));
     }
 
 

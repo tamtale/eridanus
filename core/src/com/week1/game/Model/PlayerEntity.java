@@ -75,4 +75,5 @@ public class PlayerEntity {
     public int getCrystalCount() {
         return crystalCounterComponent.crystalsDestroyed;
     }
+
 }

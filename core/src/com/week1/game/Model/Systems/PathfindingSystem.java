@@ -42,6 +42,10 @@ public class PathfindingSystem implements ISystem {
         PositionComponent positionComponent = node.positionComponent;
         if (velocityComponent.distTraveled >= pathComponent.distanceToNext) {
             if ((pathComponent.path == null) || (pathComponent.path.getCount() <= 0)) {
+                if (positionComponent.position != null && pathComponent.lastBlock != null) {
+                    positionComponent.position.x = pathComponent.lastBlock.x;
+                    positionComponent.position.y = pathComponent.lastBlock.y;
+                }
                 pathComponent.path = null;
                 velocityComponent.velocity.x = 0;
                 velocityComponent.velocity.y = 0;
@@ -50,9 +54,9 @@ public class PathfindingSystem implements ISystem {
 
             Vector2 nextStep = pathComponent.path.get(0);
             vecToPath.set(nextStep.x - positionComponent.position.x, nextStep.y - positionComponent.position.y);
-            int height = stateAdapter.getHeight((int) positionComponent.position.x, (int) positionComponent.position.y);
+            int height = stateAdapter.getHeight((int) pathComponent.lastBlock.x, (int) pathComponent.lastBlock.y);
             int nxtHeight = stateAdapter.getHeight((int) pathComponent.path.get(0).x, (int) pathComponent.path.get(0).y);
-            float blockSpeed = 1f / stateAdapter.getBlock((int) positionComponent.position.x, (int) positionComponent.position.y,
+            float blockSpeed = 1f / stateAdapter.getBlock((int) pathComponent.lastBlock.x, (int) pathComponent.lastBlock.y,
                     height).getCost();
             positionComponent.position.z = nxtHeight + 1;
             float distanceToNext = (float) Math.sqrt(Math.pow(vecToPath.x, 2f) + Math.pow(vecToPath.y, 2f));
@@ -65,6 +69,7 @@ public class PathfindingSystem implements ISystem {
             }
             velocityComponent.velocity.x = blockSpeed * (float) velocityComponent.baseSpeed * (float) Math.cos(angle);
             velocityComponent.velocity.y = blockSpeed * (float) velocityComponent.baseSpeed * (float) Math.sin(angle);
+            pathComponent.lastBlock = pathComponent.path.get(0);
             pathComponent.path.removeIndex(0);
             velocityComponent.distTraveled = 0;
             // TODO look over/redo the arrival detection mechanism

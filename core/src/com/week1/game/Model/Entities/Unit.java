@@ -115,6 +115,7 @@ public class Unit implements Clickable {
             }
             velocityComponent.velocity.x = (float) speed * (float) Math.cos(angle);
             velocityComponent.velocity.y = (float) speed * (float) Math.sin(angle);
+            pathComponent.lastBlock = pathComponent.path.get(0);
             path.removeIndex(0);
         }
     }

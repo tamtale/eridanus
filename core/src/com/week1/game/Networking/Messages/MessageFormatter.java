@@ -53,6 +53,8 @@ public class MessageFormatter {
             return g.fromJson(msg, CheckSyncMessage.class);
         } else if (prototypeMessage.messageTypeID == MessageType.TOWERDETAILS){
             return g.fromJson(msg, TowerDetailsMessage.class);
+        } else if (prototypeMessage.messageTypeID == MessageType.TARGET){
+            return g.fromJson(msg, TargetMessage.class);
         }
         Gdx.app.debug(TAG, "Failed to parse as game message.");
         return null;

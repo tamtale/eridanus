@@ -67,7 +67,7 @@ public class GameButtonsStage {
     private void setWidgets() {
         unitButton   = new TextButton("Spawn Unit\nCost: " + adapter.getUnitCost(),   new Skin(Gdx.files.internal("uiskin.json")));
         unitButton.setStyle(normalStyle);
-        selectedButton = unitButton;
+        selectedButton = null;
 
         tower1Button = new TextButton("TEMP 1", new Skin(Gdx.files.internal("uiskin.json")));
         tower1Button.setStyle(normalStyle);

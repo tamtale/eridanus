@@ -15,6 +15,7 @@ import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.Events.SelectionEvent;
 import com.week1.game.Model.Systems.*;
 import com.week1.game.Model.World.*;
+import com.week1.game.Networking.Messages.Game.TargetMessage;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
@@ -130,10 +131,13 @@ public class GameState implements GameRenderable {
                 OwnedComponent ownedComponent = key._1;
                 TargetingComponent targetingComponent = key._2;
                 PositionComponent positionComponent = key._3;
+                int permission = targetingComponent.permission;
 
                 PositionComponent otherPositionComponent;
                 minDist = targetingComponent.range; // Any target must be within range.
                 float dist;
+
+                if (permission < TargetingComponent.P_MINIONS) return result;
                 // Check through all units to determine closet suitable target
                 for (int i = 0; i < units.size; i++) {
                     Unit unit = units.get(i);
@@ -160,6 +164,7 @@ public class GameState implements GameRenderable {
                     }
                 }
 
+                if (permission < TargetingComponent.P_MINIONS_TOWERS) return result;
                 // Are there any towers that might be closer suitable targets?
                 for (Tower tower: towers) {
                     int towerOwner = tower.getPlayerId();
@@ -183,7 +188,8 @@ public class GameState implements GameRenderable {
                         result.value = tower.getPositionComponent();
                     }
                 }
-                
+
+                if (permission < TargetingComponent.P_MINIONS_TOWERS_CRYSTALS) return result;
                 // Any crystals that are closer suitable targets?
                 for (int c = 0; c < crystals.size; c++) {
                     Crystal crystal = crystals.get(c);
@@ -449,6 +455,7 @@ public class GameState implements GameRenderable {
         healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn, visibleComponent);
         renderSystem.addNode(c.ID, renderComponent, positionComponent, visibleComponent, VelocityComponent.ZERO);
         fogSystem.addSeen(c.ID, positionComponent, visibleComponent);
+        targetingSystem.addPosition(c.ID, positionComponent);
     }
 
     public Unit addUnit(float x, float y, float z, float tempHealth, int playerID){
@@ -457,7 +464,7 @@ public class GameState implements GameRenderable {
         PathComponent pathComponent = new PathComponent();
         RenderComponent renderComponent = new RenderComponent(new ModelInstance(Unit.modelMap.get(playerID)));
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
-        TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true, TargetingComponent.TargetingStrategy.ENEMY);
+        TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true, TargetingComponent.TargetingStrategy.ENEMY, TargetingComponent.P_MINIONS_TOWERS_CRYSTALS);
         HealthComponent healthComponent = new HealthComponent(tempHealth, tempHealth);
         DamagingComponent damagingComponent = new DamagingComponent((float) players.get(playerID).getMinionDamage());
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(0, 0);
@@ -471,6 +478,7 @@ public class GameState implements GameRenderable {
         interpolatorSystem.addNode(u.ID, positionComponent, interpolated, velocityComponent);
         renderSystem.addNode(u.ID, renderComponent, interpolated, visibleComponent, velocityComponent);
         targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
+        targetingSystem.addPosition(u.ID, positionComponent);
         damageSystem.addHealth(u.ID, healthComponent);
         damageSystem.addDamage(u.ID, damagingComponent);
         damageRewardSystem.addManaReward(u.ID, manaRewardComponent);
@@ -491,7 +499,7 @@ public class GameState implements GameRenderable {
         HealthComponent unfinishedHealthComponent = new HealthComponent((float) towerDetails.getHp(),1f, (float) towerDetails.getHp()/buildDelay);
         DamagingComponent damagingComponent = new DamagingComponent((float) towerDetails.getAtk());
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
-            TargetingComponent.TargetingStrategy.ENEMY);
+            TargetingComponent.TargetingStrategy.ENEMY, TargetingComponent.P_MINIONS_TOWERS);
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID);
@@ -541,8 +549,9 @@ public class GameState implements GameRenderable {
         fogSystem.addSeen(unfinishedTower.ID, positionComponent, visibleComponent);
         towers.add(unfinishedTower);
         unfinishedTowerSet.add(unfinishedTower.ID);
-        addBuilding(unfinishedTower, playerID);
+        addBuildingToWorld(unfinishedTower, playerID);
         towerSpawnSystem.addNode(tower.ID, tower, unfinishedTower.ID);
+        targetingSystem.addPosition(tower.ID, positionComponent);
 
         return tower;
     }
@@ -552,7 +561,7 @@ public class GameState implements GameRenderable {
         HealthComponent healthComponent = new HealthComponent((float) towerDetails.getHp(), (float) towerDetails.getHp());
         DamagingComponent damagingComponent = new DamagingComponent((float) towerDetails.getAtk());
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
-                TargetingComponent.TargetingStrategy.ENEMY);
+                TargetingComponent.TargetingStrategy.ENEMY, TargetingComponent.P_MINIONS);
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID);
@@ -589,12 +598,13 @@ public class GameState implements GameRenderable {
         deathRewardSystem.addManaReward(base.ID, manaRewardComponent);
         healthRenderSystem.addNode(base.ID, new PositionComponent(base.highestBlockLocation), healthComponent, ownedComponent, visibleComponent);
         healthGrowthSystem.addHealthGrowth(base.ID, healthComponent);
+        targetingSystem.addPosition(base.ID, positionComponent);
         if (ownedComponent.playerID == localPlayerID) { // only locally owned seers should be added
             fogSystem.addSeer(base.ID, positionComponent, targetingComponent);
         }
         fogSystem.addSeen(base.ID, positionComponent, visibleComponent);
         towers.add(base);
-        addBuilding(base, playerID);
+        addBuildingToWorld(base, playerID);
         return base;
     }
     public void addFinishedTower(Tower tower, int dummyID) {
@@ -606,7 +616,10 @@ public class GameState implements GameRenderable {
         DamagingComponent damagingComponent = tower.getDamagingComponent();
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == tower.getPlayerId());
+        // Must update the tower object's visible component, otherwise calls to visible() will be wrong.
+        tower.setVisibleComponent(visibleComponent);
         targetingSystem.addNode(tower.ID, ownedComponent, targetingComponent, positionComponent);
+        targetingSystem.addPosition(tower.ID, positionComponent);
         damageSystem.addHealth(tower.ID, healthComponent);
         damageSystem.addDamage(tower.ID, damagingComponent);
         damageRewardSystem.addManaReward(tower.ID, manaRewardComponent);
@@ -618,7 +631,7 @@ public class GameState implements GameRenderable {
         }
         fogSystem.addSeen(tower.ID, positionComponent, visibleComponent);
         towers.add(tower);
-        addBuilding(tower, ownedComponent.playerID);
+        addBuildingToWorld(tower, ownedComponent.playerID);
 
     }
     public void addBase(Tower pb, int playerID) {
@@ -627,10 +640,10 @@ public class GameState implements GameRenderable {
         
         renderNametagSystem.addNode(pb.ID, new RenderNametagComponent(playerName), pb.getPositionComponent());
         playerBases.put(playerID, pb);
-        addBuilding(pb, playerID);
+        addBuildingToWorld(pb, playerID);
     }
 
-    public void addBuilding(Tower t, int playerID) {
+    public void addBuildingToWorld(Tower t, int playerID) {
         List<BlockSpec> blockSpecs = t.getLayout();
         for (int k = 0; k < blockSpecs.size(); k++) {
             BlockSpec bs = blockSpecs.get(k);
@@ -741,8 +754,15 @@ public class GameState implements GameRenderable {
 
         return null;
     }
+
     public void moveMinion(float x, float y, Unit u) {
+        // If the minion is already there, do nothing.
+        if (u.getX() == x && u.getY() == y) return;
         updateGoal(u, new Vector3(x, y, 0));
+    }
+
+    public void changeTarget(TargetMessage message) {
+        targetingSystem.process(message);
     }
 
     public void doTowerSpecialAbilities(int communicationTurn) {
