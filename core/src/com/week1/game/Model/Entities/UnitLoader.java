@@ -22,10 +22,10 @@ public class UnitLoader {
         FACTIONS.add("Select A Faction");
 
 
-        loadMinion("greenCube/cube_minion.g3db", "Green", Color.GREEN);
-        loadMinion("redCube/cube_minion.g3db", "Red", Color.RED);
-        loadMinion("blueCube/cube_minion.g3db", "Blue", new Color(0, 0, 0.545f, 1f));
-        loadMinion("whiteCube/cube_minion.g3db", "White", new Color( 0.678f, 0.847f, 0.902f, 1f));
+        loadMinion("greenCube/new_cube_minion.g3db", "Green", Color.GREEN);
+        loadMinion("redCube/new_cube_minion.g3db", "Red", Color.RED);
+        loadMinion("blueCube/new_cube_minion.g3db", "Blue", new Color(0, 0, 0.545f, 1f));
+        loadMinion("whiteCube/new_cube_minion.g3db", "White", new Color( 0.678f, 0.847f, 0.902f, 1f));
     }
 
 
