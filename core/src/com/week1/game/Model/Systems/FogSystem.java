@@ -55,7 +55,7 @@ public class FogSystem implements ISystem {
         initialized = true;
     }
 
-    private void showWorld() {
+    public void showWorld() {
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < y; j++) {
                 world.markForUnhide(i, j);
@@ -63,6 +63,13 @@ public class FogSystem implements ISystem {
         }
     }
 
+    public void unShowWorld() {
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < y; j++) {
+                world.markForHide(i, j);
+            }
+        }
+    }
     @Override
     public void update(float delta) {
         if (!initialized || !fogEnabled()) {

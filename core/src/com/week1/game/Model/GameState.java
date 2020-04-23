@@ -28,6 +28,7 @@ import com.week1.game.Tuple3;
 import java.util.*;
 
 import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
+import static com.week1.game.Model.Components.TargetingComponent.P_MINIONS;
 import static com.week1.game.Model.StatsConfig.*;
 
 public class GameState implements GameRenderable {
@@ -138,7 +139,7 @@ public class GameState implements GameRenderable {
                 minDist = targetingComponent.range; // Any target must be within range.
                 float dist;
 
-                if (permission < TargetingComponent.P_MINIONS) return result;
+                if (permission < P_MINIONS) return result;
                 // Check through all units to determine closet suitable target
                 for (int i = 0; i < units.size; i++) {
                     Unit unit = units.get(i);
@@ -281,10 +282,12 @@ public class GameState implements GameRenderable {
             @Override
             public Void query(Integer key) {
                 manaRegenSystem.getMana(key).regenRate *= 5;
+
                 return null;
             }
         }, key -> {
             manaRegenSystem.getMana(key).regenRate /= 5;
+
             return null;
         }));
 
@@ -307,12 +310,14 @@ public class GameState implements GameRenderable {
             }
             return null;
         }));
-
+        int fogID = entityManager.newID();
         upgrades.put("Water", new UpgradeComponent(1500, 25, key -> {
-            fogSystem.setFog(false);
+            if (key == localPlayerID) {
+                fogSystem.addSeer(fogID, new PositionComponent(0, 0, 0), new TargetingComponent(0, 200, false, TargetingComponent.TargetingStrategy.ENEMY, P_MINIONS));
+            }
             return null;
         }, key -> {
-            fogSystem.setFog(true);
+            fogSystem.remove(fogID);
             return null;
         }));
 
@@ -450,7 +455,6 @@ public class GameState implements GameRenderable {
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaComponent manaComponent = new ManaComponent(startingMana);
         NameComponent nameComponent = new NameComponent(name);
-        System.out.println(faction);
         damageSystem.addUpgrade(playerID, upgrades.get(faction));
         ColorComponent colorComponent = new ColorComponent(UnitLoader.NAMES_TO_COLORS.get(faction));
         
@@ -591,7 +595,7 @@ public class GameState implements GameRenderable {
         HealthComponent healthComponent = new HealthComponent((float) towerDetails.getHp(), (float) towerDetails.getHp());
         DamagingComponent damagingComponent = new DamagingComponent((float) towerDetails.getAtk());
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
-                TargetingComponent.TargetingStrategy.ENEMY, TargetingComponent.P_MINIONS);
+                TargetingComponent.TargetingStrategy.ENEMY, P_MINIONS);
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID);
