@@ -1,6 +1,5 @@
 package com.week1.game.Model;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -17,6 +16,7 @@ import com.week1.game.Model.Events.SelectionEvent;
 import com.week1.game.Model.Systems.*;
 import com.week1.game.Model.World.*;
 import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
+import com.week1.game.Networking.Messages.Game.TargetMessage;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
@@ -25,7 +25,8 @@ import com.week1.game.TowerBuilder.BlockType;
 import com.week1.game.TowerBuilder.TowerDetails;
 import com.week1.game.Tuple3;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
 import static com.week1.game.Model.Components.TargetingComponent.P_MINIONS;
@@ -58,6 +59,10 @@ public class GameState implements GameRenderable {
     private FogSystem fogSystem = new FogSystem();
     private TowerSpawnSystem towerSpawnSystem;
 
+    private IService<Integer, Float> unitDmgService;
+    private IService<Integer, PositionComponent> crystalService;
+    private IService<Tuple3<Integer, Float, Float>, Void> buffPlayerMinionsService;
+
     private Array<Crystal> crystals = new Array<>();
     private Array<Unit> units = new Array<>();
     private Array<Tower> towers = new Array<>();
@@ -69,6 +74,8 @@ public class GameState implements GameRenderable {
     private Array<PlayerEntity> players = new Array<>();
     private OwnedComponent noOwn = new OwnedComponent(-1);
     private TowerLoadouts towerLoadouts;
+
+
 
     // need to determine which units should push back the fog of war
     private int localPlayerID;
@@ -102,11 +109,12 @@ public class GameState implements GameRenderable {
         };
         this.pathfindingSystem = new PathfindingSystem(u2s);
         initTargetingSystem();
-        initDeathSystem();
         initCrystalRespawnSystem();
+        initDeathSystem();
         initTowerSpawnSystem();
         initDamageSystem();
 
+        initAndSetServices();
         targetingSystem.addSubscriber(damageSystem);
         targetingSystem.addSubscriber(damageRewardSystem);
         damageSystem.addSubscriber(deathSystem);
@@ -139,7 +147,7 @@ public class GameState implements GameRenderable {
                 minDist = targetingComponent.range; // Any target must be within range.
                 float dist;
 
-                if (permission < P_MINIONS) return result;
+                if (permission < TargetingComponent.P_MINIONS) return result;
                 // Check through all units to determine closet suitable target
                 for (int i = 0; i < units.size; i++) {
                     Unit unit = units.get(i);
@@ -225,15 +233,6 @@ public class GameState implements GameRenderable {
                 (key) -> {
                     // ignore the position given in the key (dictated by worldBuilder.nextCrystalLocation()
                     return placeCrystal(worldBuilder.nextCrystalLocation());
-                },
-                (key) -> {
-                    // Does the given id 'key' correspond to a crystal?
-                    for (int i = 0; i < crystals.size; i++) {
-                        if (crystals.get(i).ID == key) {
-                            return crystals.get(i).getPositionComponent();
-                        }
-                    }
-                    return null;
                 });
     }
 
@@ -250,6 +249,45 @@ public class GameState implements GameRenderable {
         );
     }
 
+    /**
+     * Initialize the services that are reused in the application
+     */
+    private void initAndSetServices() {
+        crystalService = (key) -> {
+            for (int i = 0; i < crystals.size; i++) {
+                if (crystals.get(i).ID == key) {
+                    return crystals.get(i).getPositionComponent();
+                }
+            }
+            return null;
+        };
+
+        unitDmgService = new IService<Integer, Float>() {
+            @Override
+            public Float query(Integer key) {
+                return getUnitDamage(key);
+            }
+        };
+
+        buffPlayerMinionsService = (tuple) -> {
+            int playerId = tuple._1;
+            float newDmg = tuple._2, newHealth = tuple._3;
+            Unit u;
+            for (int i = 0; i < units.size; i++) {
+                u = units.get(i);
+                if (u.getPlayerId() == playerId) {
+                    u.setDamage(newDmg);
+                    u.setHealth(newHealth);
+                }
+            }
+            return null;
+        };
+
+        this.crystalRespawnSystem.addCrystalService(this.crystalService);
+        this.deathRewardSystem.addCrystalService(this.crystalService);
+        this.deathRewardSystem.addBuffMinionsService(this.buffPlayerMinionsService);
+    }
+
     private void initTowerSpawnSystem() {
         this.towerSpawnSystem = new TowerSpawnSystem(
             new IService<Integer, Void>() {
@@ -258,10 +296,10 @@ public class GameState implements GameRenderable {
                     removeEntity(key);
                     return null;
                 }
-            }, new IService<javafx.util.Pair<Tower, Integer>, Void>() {
+            }, new IService<Pair<Tower, Integer>, Void>() {
                 @Override
-                public Void query(javafx.util.Pair<Tower, Integer> key) {
-                    addFinishedTower(key.getKey(), key.getValue());
+                public Void query(Pair<Tower, Integer> key) {
+                    addFinishedTower(key.key, key.value);
                     return null;
                 }
             }
@@ -455,20 +493,24 @@ public class GameState implements GameRenderable {
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaComponent manaComponent = new ManaComponent(startingMana);
         NameComponent nameComponent = new NameComponent(name);
+        CrystalCounterComponent crystalCounterComponent = new CrystalCounterComponent();
+        PlayerStatsComponent playerStatsComponent = new PlayerStatsComponent();
         damageSystem.addUpgrade(playerID, upgrades.get(faction));
         ColorComponent colorComponent = new ColorComponent(UnitLoader.NAMES_TO_COLORS.get(faction));
         
-        PlayerEntity player = new PlayerEntity(ownedComponent, manaComponent, nameComponent, colorComponent);
+        PlayerEntity player = new PlayerEntity(ownedComponent, manaComponent, nameComponent, colorComponent, crystalCounterComponent, playerStatsComponent);
         players.add(player);
         UpgradeComponent upgradeComponent = upgrades.get(faction);
         upgradeSystem.addUpgradeComponent(playerID, upgradeComponent);
-        
+
         // Register with manaRegenSystem so that the player's mana will regenerate over time.
         manaRegenSystem.addMana(player.getPlayerID(), manaComponent);
         
         // Register with reward systems, so the player can be rewarded for kills and damage
         damageRewardSystem.addMana(player.getPlayerID(), manaComponent);
         deathRewardSystem.addMana(player.getPlayerID(), manaComponent);
+        deathRewardSystem.addCrystalCounters(player.getPlayerID(), crystalCounterComponent);
+        deathRewardSystem.addPlayerStats(player.getPlayerID(), playerStatsComponent);
     }
 
     public void addCrystal(float x, float y, float z) {
@@ -491,6 +533,7 @@ public class GameState implements GameRenderable {
         healthRenderSystem.addNode(c.ID, positionComponent, healthComponent, noOwn, visibleComponent);
         renderSystem.addNode(c.ID, renderComponent, positionComponent, visibleComponent, VelocityComponent.ZERO);
         fogSystem.addSeen(c.ID, positionComponent, visibleComponent);
+        targetingSystem.addPosition(c.ID, positionComponent);
         crystalIDs.add(c.ID);
     }
 
@@ -502,10 +545,10 @@ public class GameState implements GameRenderable {
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true, TargetingComponent.TargetingStrategy.ENEMY, TargetingComponent.P_MINIONS_TOWERS_CRYSTALS);
         HealthComponent healthComponent = new HealthComponent(tempHealth, tempHealth);
-        DamagingComponent damagingComponent = new DamagingComponent((float) tempMinionDamage);
+        DamagingComponent damagingComponent = new DamagingComponent((float) players.get(playerID).getMinionDamage());
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(0, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID); // if built locally, show the hp right away
-        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, healthComponent, visibleComponent);
+        Unit u = new Unit(positionComponent, velocityComponent, pathComponent, renderComponent, ownedComponent, healthComponent, visibleComponent, damagingComponent);
         u.ID = entityManager.newID();
         units.add(u);
         movementSystem.addNode(u.ID, positionComponent, velocityComponent);
@@ -514,6 +557,7 @@ public class GameState implements GameRenderable {
         interpolatorSystem.addNode(u.ID, positionComponent, interpolated, velocityComponent);
         renderSystem.addNode(u.ID, renderComponent, interpolated, visibleComponent, velocityComponent);
         targetingSystem.addNode(u.ID, ownedComponent, targetingComponent, positionComponent);
+        targetingSystem.addPosition(u.ID, positionComponent);
         damageSystem.addHealth(u.ID, healthComponent);
         damageSystem.addDamage(u.ID, damagingComponent);
 
@@ -571,9 +615,10 @@ public class GameState implements GameRenderable {
             }
         };
         Tower tower = new Tower(positionComponent, healthComponent, ownedComponent, visibleComponent, targetingComponent, damagingComponent,
-                towerDetails, adapter, towerType, entityManager.newID());
+                unitDmgService, towerDetails, adapter, towerType, entityManager.newID());
         Tower unfinishedTower = new Tower(positionComponent, unfinishedHealthComponent, ownedComponent,
-                visibleComponent, targetingComponent, damagingComponent, unfinishedTowerDetails, adapter, towerType, entityManager.newID());
+                visibleComponent, targetingComponent, damagingComponent,
+                unitDmgService, unfinishedTowerDetails, adapter, towerType, entityManager.newID());
         damageSystem.addHealth(unfinishedTower.ID, unfinishedHealthComponent);
         damageSystem.addDamage(unfinishedTower.ID, damagingComponent);
         damageRewardSystem.addManaReward(unfinishedTower.ID, manaRewardComponent);
@@ -584,8 +629,9 @@ public class GameState implements GameRenderable {
         fogSystem.addSeen(unfinishedTower.ID, positionComponent, visibleComponent);
         towers.add(unfinishedTower);
         unfinishedTowerSet.add(unfinishedTower.ID);
-        addBuilding(unfinishedTower, playerID);
+        addBuildingToWorld(unfinishedTower, playerID);
         towerSpawnSystem.addNode(tower.ID, tower, unfinishedTower.ID);
+        targetingSystem.addPosition(tower.ID, positionComponent);
 
         return tower;
     }
@@ -595,7 +641,7 @@ public class GameState implements GameRenderable {
         HealthComponent healthComponent = new HealthComponent((float) towerDetails.getHp(), (float) towerDetails.getHp());
         DamagingComponent damagingComponent = new DamagingComponent((float) towerDetails.getAtk());
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
-                TargetingComponent.TargetingStrategy.ENEMY, P_MINIONS);
+                TargetingComponent.TargetingStrategy.ENEMY, TargetingComponent.P_MINIONS);
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID);
@@ -624,7 +670,7 @@ public class GameState implements GameRenderable {
             }
         };
         Tower base = new Tower(positionComponent, healthComponent, ownedComponent, visibleComponent, targetingComponent, damagingComponent,
-                towerDetails, adapter, towerType, entityManager.newID());
+                unitDmgService, towerDetails, adapter, towerType, entityManager.newID());
         damageSystem.addHealth(base.ID, healthComponent);
         damageSystem.addDamage(base.ID, damagingComponent);
         damageRewardSystem.addManaReward(base.ID, manaRewardComponent);
@@ -632,12 +678,13 @@ public class GameState implements GameRenderable {
         deathRewardSystem.addManaReward(base.ID, manaRewardComponent);
         healthRenderSystem.addNode(base.ID, new PositionComponent(base.highestBlockLocation), healthComponent, ownedComponent, visibleComponent);
         healthGrowthSystem.addHealthGrowth(base.ID, healthComponent);
+        targetingSystem.addPosition(base.ID, positionComponent);
         if (ownedComponent.playerID == localPlayerID) { // only locally owned seers should be added
             fogSystem.addSeer(base.ID, positionComponent, targetingComponent);
         }
         fogSystem.addSeen(base.ID, positionComponent, visibleComponent);
         towers.add(base);
-        addBuilding(base, playerID);
+        addBuildingToWorld(base, playerID);
         return base;
     }
     public void addFinishedTower(Tower tower, int dummyID) {
@@ -649,7 +696,10 @@ public class GameState implements GameRenderable {
         DamagingComponent damagingComponent = tower.getDamagingComponent();
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == tower.getPlayerId());
+        // Must update the tower object's visible component, otherwise calls to visible() will be wrong.
+        tower.setVisibleComponent(visibleComponent);
         targetingSystem.addNode(tower.ID, ownedComponent, targetingComponent, positionComponent);
+        targetingSystem.addPosition(tower.ID, positionComponent);
         damageSystem.addHealth(tower.ID, healthComponent);
         damageSystem.addDamage(tower.ID, damagingComponent);
         damageRewardSystem.addManaReward(tower.ID, manaRewardComponent);
@@ -661,7 +711,7 @@ public class GameState implements GameRenderable {
         }
         fogSystem.addSeen(tower.ID, positionComponent, visibleComponent);
         towers.add(tower);
-        addBuilding(tower, ownedComponent.playerID);
+        addBuildingToWorld(tower, ownedComponent.playerID);
 
     }
     public void addBase(Tower pb, int playerID) {
@@ -670,10 +720,10 @@ public class GameState implements GameRenderable {
         
         renderNametagSystem.addNode(pb.ID, new RenderNametagComponent(playerName), pb.getPositionComponent());
         playerBases.put(playerID, pb);
-        addBuilding(pb, playerID);
+        addBuildingToWorld(pb, playerID);
     }
 
-    public void addBuilding(Tower t, int playerID) {
+    public void addBuildingToWorld(Tower t, int playerID) {
         List<BlockSpec> blockSpecs = t.getLayout();
         for (int k = 0; k < blockSpecs.size(); k++) {
             BlockSpec bs = blockSpecs.get(k);
@@ -725,6 +775,7 @@ public class GameState implements GameRenderable {
             }
         });
         crystals.select(c -> c.ID == id).forEach(crystal -> {
+
             crystals.removeValue(crystal, true);
             clickables.removeValue(crystal, true);
         });
@@ -783,8 +834,15 @@ public class GameState implements GameRenderable {
 
         return null;
     }
+
     public void moveMinion(float x, float y, Unit u) {
+        // If the minion is already there, do nothing.
+        if (u.getX() == x && u.getY() == y) return;
         updateGoal(u, new Vector3(x, y, 0));
+    }
+
+    public void changeTarget(TargetMessage message) {
+        targetingSystem.process(message);
     }
 
     public void doTowerSpecialAbilities(int communicationTurn) {
@@ -987,5 +1045,13 @@ public class GameState implements GameRenderable {
     /* Give the world a subscriber of selection events.*/
     public Subscriber<SelectionEvent> getSelectionSubscriber() {
         return renderTargetingSystem;
+    }
+
+    public float getUnitDamage(int playerId) {
+        return (float) players.get(playerId).getMinionDamage();
+    }
+
+    public float getUnitHealth(int playerId) {
+        return (float) players.get(playerId).getMinionHealth();
     }
 }
