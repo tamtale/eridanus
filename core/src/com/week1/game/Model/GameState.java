@@ -26,6 +26,7 @@ import com.week1.game.TowerBuilder.TowerDetails;
 import com.week1.game.Tuple3;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
@@ -316,7 +317,17 @@ public class GameState implements GameRenderable {
     }
 
     private void initUpgrades() {
-        upgrades.put("Air", new UpgradeComponent(2000, 400, new IService<Integer, Void>() {
+        int fogID = entityManager.newID();
+        UpgradeComponent water =  new UpgradeComponent(1500, 25, key -> {
+            if (key == localPlayerID) {
+                fogSystem.addSeer(fogID, new PositionComponent(0, 0, 0), new TargetingComponent(0, 200, false, TargetingComponent.TargetingStrategy.ENEMY, P_MINIONS));
+            }
+            return null;
+        }, key -> {
+            fogSystem.remove(fogID);
+            return null;
+        });
+        UpgradeComponent air = new UpgradeComponent(2000, 400, new IService<Integer, Void>() {
             @Override
             public Void query(Integer key) {
                 manaRegenSystem.getMana(key).regenRate *= 5;
@@ -327,9 +338,9 @@ public class GameState implements GameRenderable {
             manaRegenSystem.getMana(key).regenRate /= 5;
 
             return null;
-        }));
+        });
 
-        upgrades.put("Earth", new UpgradeComponent(2000, 200, new IService<Integer, Void>() {
+        UpgradeComponent earth = new UpgradeComponent(2000, 200, new IService<Integer, Void>() {
 
             @Override
             public Void query(Integer key) {
@@ -347,19 +358,8 @@ public class GameState implements GameRenderable {
                 }
             }
             return null;
-        }));
-        int fogID = entityManager.newID();
-        upgrades.put("Water", new UpgradeComponent(1500, 25, key -> {
-            if (key == localPlayerID) {
-                fogSystem.addSeer(fogID, new PositionComponent(0, 0, 0), new TargetingComponent(0, 200, false, TargetingComponent.TargetingStrategy.ENEMY, P_MINIONS));
-            }
-            return null;
-        }, key -> {
-            fogSystem.remove(fogID);
-            return null;
-        }));
-
-        upgrades.put("Fire", new UpgradeComponent(3000, 150, new IService<Integer, Void>(){
+        });
+        UpgradeComponent fire = new UpgradeComponent(3000, 150, new IService<Integer, Void>(){
             @Override
             public Void query(Integer key) {
                 damageSystem.baseDamage(key, 3);
@@ -368,7 +368,17 @@ public class GameState implements GameRenderable {
         }, key -> {
             damageSystem.baseDamage(false);
             return null;
-        }));
+        });
+
+        upgrades.put("White", air);
+        upgrades.put("Air", air);
+        upgrades.put("Earth", earth);
+        upgrades.put("Green", earth);
+        upgrades.put("Water", water);
+        upgrades.put("Blue", water);
+        upgrades.put("Fire", fire);
+        upgrades.put("Red", fire);
+
     }
     public void synchronousUpdateState(int communicationTurn) {
         fogSystem.update(THRESHOLD);
