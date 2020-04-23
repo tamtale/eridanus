@@ -3,10 +3,8 @@ package com.week1.game.Model.Systems;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.IntSet;
 import com.week1.game.Model.Entities.Tower;
-import com.week1.game.Model.Events.DamageEvent;
 import com.week1.game.Model.Events.DeathEvent;
-import javafx.util.Pair;
-
+import com.week1.game.Pair;
 
 import static com.week1.game.Model.StatsConfig.buildDelay;
 

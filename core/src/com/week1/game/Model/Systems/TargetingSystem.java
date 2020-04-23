@@ -10,21 +10,26 @@ import com.week1.game.Model.Components.TargetingComponent;
 import com.week1.game.Model.Events.DamageEvent;
 import com.week1.game.Model.Events.SelectionEvent;
 import com.week1.game.Model.Initializer;
+import com.week1.game.Networking.Messages.Game.TargetMessage;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Tuple3;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /*
  * System responsible for updating targets and dispatching events.
  * On update, will refresh targets for any entity whose target is out of range.
  */
-public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
+public class TargetingSystem implements ISystem, Subscriber<TargetMessage>, Publisher<DamageEvent> {
 
     private IntMap<TargetingNode> nodes = new IntMap<>();
+    private IntMap<PositionComponent> positions = new IntMap<>(); // positions of all targetable things.
     private ArrayList<Subscriber<DamageEvent>> damageEventSubscribers = new ArrayList<>();
+    private Queue<TargetMessage> targetMessages = new ConcurrentLinkedQueue<>();
 
     /*
      * Service to find a suitable target given a target component and position.
@@ -41,6 +46,18 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
 
     @Override
     public void update(float delta) {
+        // Switch targets according to whatever's in the queue.
+        for (TargetMessage msg: targetMessages) {
+            for (int id: msg.minionIDs) {
+                TargetingNode node = nodes.get(id);
+                if (node != null && node.targetingComponent != null) {
+                    node.targetingComponent.intentID = msg.targetID;
+                }
+            }
+        }
+        targetMessages.clear();
+
+        // Update all nodes and generate damage.
         for (IntMap.Entry<TargetingNode> entry: nodes.entries()) {
             updateNode(entry.value);
             generateDamage(entry.key, entry.value);
@@ -49,6 +66,7 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
 
     @Override
     public void remove(int entID) {
+        positions.remove(entID);
         TargetingNode removedNode = nodes.remove(entID);
         // Set the targeting component to invalid, so that other systems (i.e. targeting renderer) don't keep using.
         if (removedNode != null) removedNode.targetingComponent.targetID = -1;
@@ -56,8 +74,10 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
         for (IntMap.Entry<TargetingNode> entry: nodes.entries()) {
             TargetingNode node = entry.value;
             if (node.targetingComponent.targetID == entID) {
-                Gdx.app.debug("TargetingSystem", "resetting target for " + entry.key);
                 node.targetingComponent.targetID = -1;
+            }
+            if (node.targetingComponent.intentID == entID) {
+                node.targetingComponent.intentID = -1;
             }
         }
     }
@@ -67,6 +87,17 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
         PositionComponent targetPositionComponent = node.targetPositionComponent;
         PositionComponent positionComponent = node.positionComponent;
         OwnedComponent ownedComponent = node.ownedComponent;
+        // Check if intent is there.
+        if (targetingComponent.intentID != -1) {
+            // If intent is in range, make sure it's targeted.
+            PositionComponent intentPosition = positions.get(targetingComponent.intentID);
+            if ((intentPosition != null) && (intentPosition.position.dst(positionComponent.position) < targetingComponent.range)) {
+                targetingComponent.targetID = targetingComponent.intentID;
+                node.targetPositionComponent = intentPosition;
+                return;
+            }
+        }
+
         // Check if the current target is still in range.
         if ((targetingComponent.targetID != -1)
             && (positionComponent.position.dst(targetPositionComponent.position) < targetingComponent.range)) return;
@@ -96,6 +127,10 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
         nodes.put(id, new TargetingNode(ownedComponent, targetingComponent, positionComponent, null));
     }
 
+    public void addPosition(int id, PositionComponent position) {
+        positions.put(id, position);
+    }
+
     @Override
     public void addSubscriber(Subscriber<DamageEvent> subscriber) {
         damageEventSubscribers.add(subscriber);
@@ -104,6 +139,11 @@ public class TargetingSystem implements ISystem, Publisher<DamageEvent> {
     @Override
     public Collection<Subscriber<DamageEvent>> getSubscribers() {
         return damageEventSubscribers;
+    }
+
+    @Override
+    public void process(TargetMessage targetMessage) {
+        targetMessages.add(targetMessage);
     }
 
     static class TargetingNode {
