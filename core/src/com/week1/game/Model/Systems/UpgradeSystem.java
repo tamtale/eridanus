@@ -13,7 +13,6 @@ public class UpgradeSystem implements ISystem{
         for (IntMap.Entry<UpgradeComponent> upgradeComponent: upgradeComponents){
             int key = upgradeComponent.key;
             UpgradeComponent value = upgradeComponent.value;
-            System.out.println(value.damageDealt);
             if (value.damageDealt > value.damageRequired && !isUpgraded.get(key)) {
                 value.upgrade.query(key);
                 isUpgraded.put(key, true);
