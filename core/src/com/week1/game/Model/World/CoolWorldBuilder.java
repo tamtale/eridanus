@@ -16,11 +16,12 @@ public class CoolWorldBuilder implements IWorldBuilder {
     public static CoolWorldBuilder ONLY = new CoolWorldBuilder();
     private long seed;
     private Random random;
+    //hex for swmap-looking map 93cc49
 
     final static List<Pair<Material, Material>> blockColors = new ArrayList<Pair<Material, Material>> () {{
         this.add(new Pair<>(new Material(ColorAttribute.createDiffuse(Color.PURPLE)), new Material(ColorAttribute.createDiffuse(Color.PINK))));
         this.add(new Pair<>(new Material(ColorAttribute.createDiffuse(Color.FIREBRICK)), new Material(ColorAttribute.createDiffuse(Color.CORAL))));
-        this.add(new Pair<>(new Material(ColorAttribute.createDiffuse(new Color(0x660000))), new Material(ColorAttribute.createDiffuse(Color.LIME))));
+        this.add(new Pair<>(new Material(ColorAttribute.createDiffuse(new Color(0x660000))), new Material(ColorAttribute.createDiffuse(Color.valueOf("93cc49")))));
     }};
     
     private static final int NUM_CRYSTALS = 10;
