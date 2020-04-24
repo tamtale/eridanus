@@ -18,7 +18,7 @@ public class TowerPresets {
             new BlockSpec(BlockType.ETHERITE, -1, 0, 0),
             new BlockSpec(BlockType.ETHERITE, 1, 0, 0),
             new BlockSpec(BlockType.KUIPERIUM, 0, 1, 0),
-            new BlockSpec(BlockType.FIRE, 0, 2, 0)), "Preset 1");
+            new BlockSpec(BlockType.FIRE, 0, 2, 0)), "Basic");
 
     private static TowerDetails towerDetails2 =  new TowerDetails(Arrays.asList(
             new BlockSpec(BlockType.NOVACORE, 0,0,0),
@@ -27,8 +27,9 @@ public class TowerPresets {
             new BlockSpec(BlockType.NOVACORE, 0,3,0),
             new BlockSpec(BlockType.EARTH, 0,4,0),
             new BlockSpec(BlockType.WATER, 0,5,0),
-            new BlockSpec(BlockType.FIRE, 0,6,0)), "Preset 2");
+            new BlockSpec(BlockType.FIRE, 0,6,0)), "Sniper");
 
+    //TODO -
     private static TowerDetails towerDetails3 = new TowerDetails(Arrays.asList(
             new BlockSpec(BlockType.ETHERITE, 0, 0, -1),
             new BlockSpec(BlockType.ETHERITE, 0, 0, 0),
@@ -41,7 +42,7 @@ public class TowerPresets {
             new BlockSpec(BlockType.ETHERITE, 1, 0, 1),
             new BlockSpec(BlockType.ETHERITE, 2, 0, -1),
             new BlockSpec(BlockType.EARTH, 2, 0, 0),
-            new BlockSpec(BlockType.ETHERITE, 2, 0, 1)), "Preset 3");
+            new BlockSpec(BlockType.ETHERITE, 2, 0, 1)), "Spawner");
 
     private static TowerDetails towerDetails4 = new TowerDetails(Arrays.asList(
             new BlockSpec(BlockType.NOVACORE, 0, 2, 0),
@@ -58,7 +59,7 @@ public class TowerPresets {
             new BlockSpec(BlockType.ETHERITE, 1, 0, 1),
             new BlockSpec(BlockType.ETHERITE, -1, 0, -1),
             new BlockSpec(BlockType.KUIPERIUM, 0, 0, -1),
-            new BlockSpec(BlockType.ETHERITE, 1, 0, -1)), "Preset 4");
+            new BlockSpec(BlockType.ETHERITE, 1, 0, -1)), "Fountain");
 
     private static TowerDetails towerDetails5 = new TowerDetails(Arrays.asList(
             new BlockSpec(BlockType.KUIPERIUM, -1, 0, 0),
@@ -73,8 +74,9 @@ public class TowerPresets {
             new BlockSpec(BlockType.NOVACORE, 0, 1, 0),
             new BlockSpec(BlockType.NOVACORE, 0, 2, 0),
             new BlockSpec(BlockType.FIRE, 0, 3, 0),
-            new BlockSpec(BlockType.FIRE, 0, 4, 0)), "Preset 5");
+            new BlockSpec(BlockType.FIRE, 0, 4, 0)), "Balanced boi");
 
+    //TODO - change to be buff
     private static TowerDetails towerDetails6 = new TowerDetails(Arrays.asList(
             new BlockSpec(BlockType.ETHERITE, 0, 0, -1),
             new BlockSpec(BlockType.ETHERITE, -1, 0, -1),
@@ -93,7 +95,7 @@ public class TowerPresets {
             new BlockSpec(BlockType.KUIPERIUM, 0, 2, 0),
             new BlockSpec(BlockType.KUIPERIUM, -1, 2, 0),
             new BlockSpec(BlockType.KUIPERIUM, 0, 2, 1),
-            new BlockSpec(BlockType.KUIPERIUM, -1, 2, 1)), "Preset 6");
+            new BlockSpec(BlockType.KUIPERIUM, -1, 2, 1)), "Tank");
 
 
     public static TowerDetails highlightGround = new TowerDetails(Arrays.asList(new BlockSpec(BlockType.GROUND_HIGHLIGHT, -2, -1, 0),
