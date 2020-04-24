@@ -68,7 +68,12 @@ public class PlayerEntity {
         return playerStatsComponent.minionDamage;
     }
 
-    public Object getMinionHealth() {
+    public float getMinionHealth() {
         return playerStatsComponent.minionHealth;
     }
+
+    public int getCrystalCount() {
+        return crystalCounterComponent.crystalsDestroyed;
+    }
+
 }

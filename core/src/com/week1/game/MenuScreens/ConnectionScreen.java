@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
 import com.week1.game.GameControllerSetScreenAdapter;
@@ -23,8 +22,6 @@ import com.week1.game.Model.Entities.UnitLoader;
 import com.week1.game.Model.PlayerInfo;
 import com.week1.game.Networking.NetworkObjects.Client;
 import com.week1.game.Networking.NetworkObjects.NetworkUtils;
-
-import java.util.Arrays;
 
 import static com.week1.game.MenuScreens.MenuStyles.blueStyle;
 import static com.week1.game.MenuScreens.MenuStyles.disabledStyle;
@@ -102,7 +99,8 @@ public class ConnectionScreen implements Screen {
         joinGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                joinGame(ipField.getText(), new PlayerInfo(nameField.getText()));
+
+                joinGame(ipField.getText(), new PlayerInfo(cleanName(nameField.getText())));
             }
         });
 
@@ -169,11 +167,19 @@ public class ConnectionScreen implements Screen {
         nameField = new TextField("Enter Your Name", textFieldStyle);
         nameField.setSize(joinGameButton.getWidth(),64);
         nameField.setAlignment(Align.center);
-        nameField.setPosition(GameController.VIRTUAL_WIDTH / 2 - nameField.getWidth()/2 ,GameController.VIRTUAL_HEIGHT  *2 / 3);
+        nameField.setPosition(GameController.VIRTUAL_WIDTH / 2 - nameField.getWidth() / 2 ,GameController.VIRTUAL_HEIGHT  * 2 / 3);
         connectionStage.addActor(nameField);
 
 
         Gdx.input.setInputProcessor(connectionStage);
+    }
+
+    private String cleanName(String input) {
+        String name = input.trim();
+        if (name.equals("")) {
+            name = "Empty String";
+        }
+        return name.substring(0, Math.min(15, name.length()));
     }
 
     private void getNewReturnToSpashButton() {
@@ -244,7 +250,7 @@ public class ConnectionScreen implements Screen {
         addPlayerList();
 
         networkClient = NetworkUtils.initNetworkObjects(true, null, 42069,
-                gameAdapter, this, new PlayerInfo(name));
+                gameAdapter, this, new PlayerInfo(cleanName(name)));
 
         connectionStage.addActor(launchGameButton);
         connectionStage.addActor(returnToSpashButton);

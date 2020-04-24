@@ -25,6 +25,7 @@ import com.week1.game.Renderer.GameCameraController;
 import com.week1.game.Renderer.IRendererAdapter;
 import com.week1.game.Renderer.RenderConfig;
 import com.week1.game.Renderer.Renderer;
+import com.week1.game.Tuple3;
 
 import java.util.HashMap;
 import java.util.List;
@@ -137,6 +138,11 @@ public class GameScreen implements Screen {
 			}
 
 			@Override
+			public List<Tuple3<String, Integer, Color>> getCrystalCount() {
+				return engine.getCrystalCounts();
+			}
+
+			@Override
 			public void setSelectedSpawnState(SpawnInfo type) {
 				clickOracle.setSpawnType(type);
 			}
@@ -178,6 +184,11 @@ public class GameScreen implements Screen {
 					@Override
 					public void goToBase() {
 					    renderer.setCameraToDefaultPosition();
+					}
+
+					@Override
+					public void setCrystalTracker(boolean display) {
+						renderer.setCrystalTracker(display);
 					}
 
 					@Override
@@ -257,8 +268,7 @@ public class GameScreen implements Screen {
 	@Override
 	public void resize(int width, int height) {
 		renderer.resize(width, height);
-		if (!engine.started()) {
-			gameStage.getViewport().apply();
+		if (engine.started()) {
 			gameStage.getViewport().update(width, height);
 		}
 	}

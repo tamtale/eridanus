@@ -22,6 +22,7 @@ public class Renderer {
     public Model model;
     private PerspectiveCamera cam;
     private GameButtonsStage gameButtonsStage;
+    private CrystalStage crystalStage;
     private Environment env;
     private Vector3 defaultPosition = new Vector3(50, 50, 0);
     private IRendererAdapter adapter;
@@ -45,6 +46,7 @@ public class Renderer {
     }
 
     private int winState = -1;
+    private boolean displayCrystalTracker = false;
     private InfoUtil util;
 
     public Renderer(IRendererAdapter rendererAdapter,
@@ -73,6 +75,7 @@ public class Renderer {
         cam.far = 500f;
         cam.update();
         gameButtonsStage = new GameButtonsStage(adapter);
+        crystalStage = new CrystalStage();
         cam.update();
     }
 
@@ -110,8 +113,9 @@ public class Renderer {
         cam.viewportHeight = y;
         cam.update();
         renderConfig.update();
-        gameButtonsStage.stage.getViewport().apply();
-        gameButtonsStage.stage.getViewport().update(x, y);
+        gameButtonsStage.resize(x, y);
+        crystalStage.resizeWidget(x, y);
+
     }
 
     public void endBatch() {
@@ -124,8 +128,11 @@ public class Renderer {
         gameButtonsStage.endGame(winState);
     }
 
-    public void drawPlayerUI() {
+    public void drawPlayerUI(boolean displayCrystalTracker) {
         startBatch();
+        if (displayCrystalTracker) {
+            crystalStage.renderUI(adapter.getCrystalCount());
+        }
         gameButtonsStage.renderUI((int) adapter.getPlayerMana(adapter.getPlayerId()));
         endBatch();
     }
@@ -176,7 +183,7 @@ public class Renderer {
         updateCamera();
         renderConfig.set(getShowAttackRadius(), getShowSpawnRadius(), deltaTime);
         adapter.renderSystem(renderConfig);
-        drawPlayerUI();
+        drawPlayerUI(displayCrystalTracker);
         util.drawMessages(batch);
     }
 
@@ -211,5 +218,9 @@ public class Renderer {
 
     public void setCenter(Vector3 newCenter) {
         mapCenter.set(newCenter);
+    }
+
+    public void setCrystalTracker(boolean display) {
+        displayCrystalTracker = display;
     }
 }

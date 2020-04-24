@@ -91,6 +91,7 @@ public class GameButtonsStage {
     }
 
     private void configureWidgets() {
+
         unitButton.setSize(128, 48);
         tower1Button.setSize(128, 48);
         tower2Button.setSize(128, 48);
@@ -100,6 +101,7 @@ public class GameButtonsStage {
         showSpawnRadiusCheckBox.setSize(124, 50);
         showAttackRadiusCheckBox.setSize(124, 50);
         restartGame.setSize(128, 48);
+
 
         tower1Button.setPosition(34,  20);
         tower2Button.setPosition(172, 20);
@@ -252,4 +254,11 @@ public class GameButtonsStage {
     public boolean getShowSpawnRadius() {
         return showSpawn;
     }
+
+    public void resize(int width, int height) {
+        stage.getViewport().apply();
+        stage.getViewport().update(width, height);
+
+    }
+
 }

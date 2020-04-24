@@ -44,8 +44,9 @@ public class DeathRewardSystem implements ISystem, Subscriber<DeathEvent> {
                 if (crystalCounterComponent.crystalsDestroyed % 5 == 0) {
                     // Time for a bonus!
                     PlayerStatsComponent playerStatsComponent = playerStatsComponents.get(event.damagerPlayerID);
-                    playerStatsComponent.minionDamage *= 1.4;
-                    playerStatsComponent.minionHealth *= 1.2;
+                    playerStatsComponent.minionDamage *= 1.2;
+                    playerStatsComponent.minionHealth *= 1.1;
+
                     buffPlayerMinionsService.query(new Tuple3<>(event.damagerPlayerID, playerStatsComponent.minionDamage, playerStatsComponent.minionHealth));
                     Gdx.app.log("pjb3", "BUFFING PLAYER " + event.damagerPlayerID);
                 }

@@ -2,6 +2,7 @@ package com.week1.game.Model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.week1.game.InfoUtil;
 import com.week1.game.Model.Entities.Tower;
@@ -11,6 +12,7 @@ import com.week1.game.Networking.Messages.Game.GameMessage;
 import com.week1.game.Networking.Messages.MessageType;
 import com.week1.game.Renderer.GameRenderable;
 import com.week1.game.Renderer.RenderConfig;
+import com.week1.game.Tuple3;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
@@ -181,5 +183,9 @@ public class GameEngine implements GameRenderable {
 
     public void setFog(boolean enabled) {
         gameState.setFog(enabled);
+    }
+
+    public List<Tuple3<String, Integer, Color>> getCrystalCounts() {
+        return gameState.getCrystalCounts();
     }
 }
