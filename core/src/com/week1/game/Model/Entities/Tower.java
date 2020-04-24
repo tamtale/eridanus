@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static com.week1.game.Model.StatsConfig.spawnerInterval;
+
 public class Tower implements Clickable {
 
     /*
@@ -93,7 +95,6 @@ public class Tower implements Clickable {
         return layout;
     }
     
-    final private int spawnerInterval = 50;
     final private int effectOffset = r.nextInt(spawnerInterval);
     public void doSpecialEffect(int communicationTurn, GameState state) {
         
