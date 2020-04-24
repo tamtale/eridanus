@@ -32,7 +32,7 @@ public class RenderSystem implements ISystem {
 //                Rotate any moving entities to look where they are going
                 if (!node.velocityComponent.velocity.equals(VelocityComponent.ZERO.velocity)) {
                     node.renderComponent.modelInstance.transform.rotate(Vector3.Z, MathUtils.atan2(node.velocityComponent.velocity.x,
-                            node.velocityComponent.velocity.y) * MathUtils.radiansToDegrees);
+                            -node.velocityComponent.velocity.y) * MathUtils.radiansToDegrees);
                 }
 
                 if (node.visibleComponent.visible()) { // only render if unit should be visible
