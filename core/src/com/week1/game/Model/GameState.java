@@ -458,14 +458,14 @@ public class GameState implements GameRenderable {
         targetingSystem.addPosition(c.ID, positionComponent);
     }
 
-    public Unit addUnit(float x, float y, float z, float tempHealth, int playerID){
+    public Unit addUnit(float x, float y, float z, int playerID){
         PositionComponent positionComponent = new PositionComponent(x, y, z);
         VelocityComponent velocityComponent = new VelocityComponent((float) Unit.speed, 0, 0, 0);
         PathComponent pathComponent = new PathComponent();
         RenderComponent renderComponent = new RenderComponent(new ModelInstance(Unit.modelMap.get(playerID)));
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) tempMinionRange, true, TargetingComponent.TargetingStrategy.ENEMY, TargetingComponent.P_MINIONS_TOWERS_CRYSTALS);
-        HealthComponent healthComponent = new HealthComponent(tempHealth, tempHealth);
+        HealthComponent healthComponent = new HealthComponent((float) players.get(playerID).getMinionHealth(), (float) players.get(playerID).getMinionHealth());
         DamagingComponent damagingComponent = new DamagingComponent((float) players.get(playerID).getMinionDamage());
         ManaRewardComponent manaRewardComponent = new ManaRewardComponent(0, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID); // if built locally, show the hp right away

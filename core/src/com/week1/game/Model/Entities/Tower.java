@@ -45,6 +45,7 @@ public class Tower implements Clickable {
     public Vector3 highestBlockLocation;
     private TowerAdapter adapter;
     private IService<Integer, Float> unitDamageService;
+    private IService<Integer, Float> unitHealthService;
 
     public Tower(
         PositionComponent positionComponent,
@@ -156,7 +157,7 @@ public class Tower implements Clickable {
                     final float finalMoveX = moveX;
                     final float finalMoveY = moveY;
 
-                    Unit unit = state.addUnit(finalMinionX, finalMinionY, finalMinionZ, unitDamageService.query(ownedComponent.playerID), ownedComponent.playerID);
+                    Unit unit = state.addUnit(finalMinionX, finalMinionY, finalMinionZ, ownedComponent.playerID);
                     state.moveMinion(finalMoveX,finalMoveY, unit);
                 }
             }
