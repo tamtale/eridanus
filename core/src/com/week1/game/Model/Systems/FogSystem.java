@@ -117,7 +117,10 @@ public class FogSystem implements ISystem {
             PositionComponent p = seenNode.value.key;
             VisibleComponent v = seenNode.value.value;
             
-            v.setVisible(newVisible[(int)p.position.x][(int)p.position.y]);
+            // bandaid to protect us from array out of bounds exceptions.
+            if (0 <= (int)p.position.x && (int)p.position.x < newVisible.length && 0 <= (int)p.position.y && (int)p.position.y < newVisible[0].length) {
+                v.setVisible(newVisible[(int) p.position.x][(int) p.position.y]);
+            }
         });
         
         oldVisible = newVisible;
