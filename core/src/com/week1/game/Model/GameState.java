@@ -639,7 +639,7 @@ public class GameState implements GameRenderable {
         String playerName = players.get(playerID).getName();
         Color playerColor = players.get(playerID).getColor();
         
-        renderNametagSystem.addNode(pb.ID, new RenderNametagComponent(playerName), pb.getPositionComponent());
+        renderNametagSystem.addNode(pb.ID, new RenderNametagComponent(playerName, playerColor), pb.getPositionComponent());
         playerBases.put(playerID, pb);
         addBuildingToWorld(pb, playerID);
     }
