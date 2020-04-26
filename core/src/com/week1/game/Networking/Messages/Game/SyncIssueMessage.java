@@ -11,6 +11,7 @@ import java.nio.channels.FileChannel;
 import java.util.List;
 
 import static com.week1.game.GameController.PREFS;
+import static com.week1.game.Model.StatsConfig.doLog;
 
 public class SyncIssueMessage extends GameMessage {
     List<Integer> allHashes;
@@ -41,7 +42,7 @@ public class SyncIssueMessage extends GameMessage {
         Gdx.app.log("pjb3 - SyncIssueMessage", "SYNCHRONIZATION ISSUE. CHECK STATE");
         util.log("pjb3 - SyncIssueMessage", "SYNCHRONIZATION ISSUE. CHECK STATE");
 
-        if (PREFS.getBoolean("doLog")) {
+        if (doLog) {
             util.log("pjb3 - SyncIssueMessage", gameState.packState(engine.getTurn()).getGameString());
 
             // Create the message to append to the log file

@@ -18,6 +18,8 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
+import static com.week1.game.Model.StatsConfig.doLog;
+
 public class GameEngine implements GameRenderable {
 
     private GameState gameState;
@@ -57,10 +59,13 @@ public class GameEngine implements GameRenderable {
 
                     if (!PREFS.contains("doLog")) {
                         PREFS.putBoolean("doLog", false);
+                        doLog = false;
                         PREFS.flush();
+                    } else {
+                        doLog = true;
                     }
                     // Initialize and truncate the log file for the engine and Error log.
-                    if (PREFS.getBoolean("doLog")) {
+                    if (doLog) {
                         try {
                             File logFile = Gdx.files.local("logs/STATE-ERROR-LOG.txt").file();
                             FileChannel outChan = new FileOutputStream(logFile, true).getChannel();
@@ -89,7 +94,7 @@ public class GameEngine implements GameRenderable {
             adapter.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash(), communicationTurn));
 
             // Log the state to the file
-            if (PREFS.getBoolean("doLog")) {
+            if (doLog) {
                 if (writer != null) {
                     try {
                         String newContent = "Turn: " + communicationTurn + " hash: " + getGameStateHash() + " String: " + getGameStateString() + "\n";
