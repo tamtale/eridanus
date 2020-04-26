@@ -80,7 +80,7 @@ public class TowerPresets {
             new BlockSpec(BlockType.NOVACORE, 0, 1, 0),
             new BlockSpec(BlockType.NOVACORE, 0, 2, 0),
             new BlockSpec(BlockType.FIRE, 0, 3, 0),
-            new BlockSpec(BlockType.FIRE, 0, 4, 0)), "Balanced boi");
+            new BlockSpec(BlockType.FIRE, 0, 4, 0)), "Balanced");
 
     private static TowerDetails towerDetails6 = new TowerDetails(Arrays.asList(
             new BlockSpec(BlockType.SPAWNER, 0, 0, 0),
