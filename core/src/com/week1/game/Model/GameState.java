@@ -573,7 +573,7 @@ public class GameState implements GameRenderable {
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
                 TargetingComponent.TargetingStrategy.ENEMY, TargetingComponent.P_MINIONS);
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
-        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
+        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(1000, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID);
         Tower.TowerAdapter adapter = new Tower.TowerAdapter() {
             @Override
@@ -648,7 +648,7 @@ public class GameState implements GameRenderable {
         String playerName = players.get(playerID).getName();
         Color playerColor = players.get(playerID).getColor();
         
-        renderNametagSystem.addNode(pb.ID, new RenderNametagComponent(playerName), pb.getPositionComponent());
+        renderNametagSystem.addNode(pb.ID, new RenderNametagComponent(playerName, playerColor), pb.getPositionComponent());
         playerBases.put(playerID, pb);
         addBuildingToWorld(pb, playerID);
     }
