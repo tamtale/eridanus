@@ -84,8 +84,8 @@ public class TowerPresets {
 
     private static TowerDetails towerDetails6 = new TowerDetails(Arrays.asList(
             new BlockSpec(BlockType.SPAWNER, 0, 0, 0),
-            new BlockSpec(BlockType.ETHERITE, 0, 1, 0),
-            new BlockSpec(BlockType.WATER, 0, 2, 0)), "Spawner");
+            new BlockSpec(BlockType.ETHERITE, 1, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, 0)), "Spawner");
 
 
     public static TowerDetails highlightGround = new TowerDetails(Arrays.asList(new BlockSpec(BlockType.GROUND_HIGHLIGHT, -2, -1, 0),

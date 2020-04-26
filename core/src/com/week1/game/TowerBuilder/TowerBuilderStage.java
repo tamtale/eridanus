@@ -278,7 +278,7 @@ public class TowerBuilderStage {
         enterNameDialog.getContentTable().add(cancelBtn);
 
 
-        helpBtn = new TextButton("How to Build", normalBtnStyle);
+        helpBtn = new TextButton("Help", normalBtnStyle);
         howToDialog = new Dialog("How to Build", new Skin(Gdx.files.internal("uiskin.json")));
         String help = "";
         try {

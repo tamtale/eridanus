@@ -3,27 +3,27 @@
 ================================================================
 
 1) Materials:
-    Build structure and boost atk of runestones or hp
+    Build structure and boost attack of runestones or health of tower.
     Cost: 10 Mana
-    Novacore - Atk
+    Novacore - ATK
     Kuiperium - Balanced
     Etherite - HP
 
 2) Runestones:
     Provides attack capability to tower
     Cost: 100 Mana
-    High Atk, Low HP
+    High ATK, Low HP
     Fire, Earth, Water
 
 3) Spawner:
     Spawns minions at regular intervals
     Cost: 500 Mana
-    Low Atk, Low HP
+    Low ATK, Low HP
 
 ================================================================
   TOWER STRUCTURE BASED STATS
 ================================================================
 
 1) Base with fewer than 5 blocks => Easier to place on map, HP penalty
-2) Base taller than 4 blocks => Good range, atk penalty
-3) No runestones => 0 atk
+2) Base taller than 4 blocks => Good range, ATK penalty
+3) No runestones => 0 ATK
