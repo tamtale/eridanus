@@ -2,7 +2,7 @@
   BLOCK STATS
 ================================================================
 
-1) Materials:
+1) Buildstones:
     Build structure and boost attack of runestones or health of tower.
     Cost: 10 Mana
     Novacore - ATK
