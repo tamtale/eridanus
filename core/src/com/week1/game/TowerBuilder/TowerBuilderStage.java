@@ -1,5 +1,6 @@
 package com.week1.game.TowerBuilder;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -16,6 +17,11 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.week1.game.GameController;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class TowerBuilderStage {
 
@@ -49,6 +55,10 @@ public class TowerBuilderStage {
     private Dialog enterNameDialog;
     Texture tex;
     private Label blockTypeLbl;
+
+    //Help button
+    private TextButton helpBtn;
+    private Dialog howToDialog;
 
     private int COMPONENTWIDTH = 133;
     private int COMPONENTHEIGHT = 48;
@@ -268,10 +278,28 @@ public class TowerBuilderStage {
         enterNameDialog.getContentTable().add(cancelBtn);
 
 
+        helpBtn = new TextButton("How to Build", normalBtnStyle);
+        howToDialog = new Dialog("How to Build", new Skin(Gdx.files.internal("uiskin.json")));
+        String help = "";
+        try {
+            help = new String(Files.readAllBytes(Paths.get("tower_deitor_help.txt")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        howToDialog.text(help);
+        TextButton helpOkBtn = new TextButton("OK", normalBtnStyle);
+        helpOkBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                howToDialog.hide();
+            }
+        });
+
+        howToDialog.getContentTable().row();
+        howToDialog.getContentTable().add(helpOkBtn);
 
 
-        startGame = new TextButton("Main Menu", new Skin(Gdx.files.internal("uiskin.json")));
-        startGame.setStyle(normalBtnStyle);
+        startGame = new TextButton("Main Menu", normalBtnStyle);
     }
 
     private void configureWidgets() {
@@ -351,10 +379,13 @@ public class TowerBuilderStage {
         stage.addActor(saveTowerBtn);
         saveTowerBtn.setVisible(false);
 
+        helpBtn.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
+        helpBtn.setPosition(64, GameController.VIRTUAL_HEIGHT - 100 - COMPONENTHEIGHT - 20);
+        stage.addActor(helpBtn);
 
         //Start Game button
         startGame.setSize(COMPONENTWIDTH, COMPONENTHEIGHT);
-        startGame.setPosition(64, GameController.VIRTUAL_HEIGHT - 200);
+        startGame.setPosition(64, GameController.VIRTUAL_HEIGHT - 100);
         stage.addActor(startGame);
 
     }
@@ -450,6 +481,13 @@ public class TowerBuilderStage {
                 } else {
                     enterNameDialog.show(dialogStage);
                 }
+            }
+        });
+
+        helpBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                ;     howToDialog.show(dialogStage);
             }
         });
 
