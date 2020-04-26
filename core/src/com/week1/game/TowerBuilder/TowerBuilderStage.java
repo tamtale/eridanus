@@ -280,13 +280,8 @@ public class TowerBuilderStage {
 
         helpBtn = new TextButton("Help", normalBtnStyle);
         howToDialog = new Dialog("How to Build", new Skin(Gdx.files.internal("uiskin.json")));
-        String help = "";
-        try {
-            help = new String(Files.readAllBytes(Paths.get("tower_deitor_help.txt")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        howToDialog.text(help);
+        howToDialog.text(Gdx.files.internal("tower_editor_help.txt").readString());
+
         TextButton helpOkBtn = new TextButton("OK", normalBtnStyle);
         helpOkBtn.addListener(new ClickListener() {
             @Override
