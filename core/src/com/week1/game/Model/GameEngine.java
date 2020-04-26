@@ -59,11 +59,9 @@ public class GameEngine implements GameRenderable {
 
                     if (!PREFS.contains("doLog")) {
                         PREFS.putBoolean("doLog", false);
-                        doLog = false;
                         PREFS.flush();
-                    } else {
-                        doLog = true;
                     }
+                    doLog = PREFS.getBoolean("doLog");
                     // Initialize and truncate the log file for the engine and Error log.
                     if (doLog) {
                         try {
