@@ -503,7 +503,6 @@ public class GameState implements GameRenderable {
     }
 
     public Tower addTower(int x, int y, int z, TowerDetails towerDetails, int playerID, int towerType) {
-        //towerDetails.setRange(towerDetails.getRange() + world.getHeight(x, y));
         PositionComponent positionComponent = new PositionComponent((float) x, (float) y, (float) z);
         HealthComponent healthComponent = new HealthComponent((float) towerDetails.getHp(), (float) towerDetails.getHp());
         HealthComponent unfinishedHealthComponent = new HealthComponent((float) towerDetails.getHp(),1f, (float) towerDetails.getHp()/buildDelay);
