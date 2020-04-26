@@ -156,11 +156,6 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
 
     /* Command to execute when the player drags with left mouse.*/
     private ClickOracleCommand leftDragCommand = () -> {
-        // The player must be alive to be able to register any clicks
-        if (!adapter.isPlayerAlive()) {
-            Gdx.app.debug("pjb3 - ClickOracle", "Player has already died. ignoring touchDragged");
-            return;
-        }
         dragging = true;
         passiveSelected.setHovered(false);
         selectionLocationEnd.set(curX, Gdx.graphics.getHeight() - curY, 0);
