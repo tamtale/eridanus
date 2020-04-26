@@ -10,7 +10,6 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
-import static com.week1.game.GameController.PREFS;
 import static com.week1.game.Model.StatsConfig.doLog;
 
 public class SyncIssueMessage extends GameMessage {
@@ -19,7 +18,7 @@ public class SyncIssueMessage extends GameMessage {
 
     // Create the writer to write to the log file. Only need one persistent writer.
     static {
-        if (PREFS.getBoolean("doLog")) {
+        if (doLog) {
             try {
                 File errorFile = new File("logs/STATE-ERROR-LOG.txt");
                 FileChannel outChan = new FileOutputStream(errorFile, true).getChannel();
