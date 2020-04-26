@@ -564,7 +564,7 @@ public class GameState implements GameRenderable {
         TargetingComponent targetingComponent = new TargetingComponent(-1, (float) towerDetails.getRange(), true,
                 TargetingComponent.TargetingStrategy.ENEMY, TargetingComponent.P_MINIONS);
         OwnedComponent ownedComponent = new OwnedComponent(playerID);
-        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(100, 0);
+        ManaRewardComponent manaRewardComponent = new ManaRewardComponent(1000, 0);
         VisibleComponent visibleComponent = new VisibleComponent(localPlayerID == playerID);
         Tower.TowerAdapter adapter = new Tower.TowerAdapter() {
             @Override
