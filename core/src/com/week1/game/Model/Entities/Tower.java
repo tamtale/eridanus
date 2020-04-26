@@ -7,6 +7,7 @@ import com.week1.game.Model.Components.*;
 import com.week1.game.Model.GameState;
 import com.week1.game.Model.Systems.IService;
 import com.week1.game.Model.World.Block;
+import com.week1.game.Pair;
 import com.week1.game.TowerBuilder.BlockSpec;
 import com.week1.game.TowerBuilder.TowerDetails;
 
@@ -55,6 +56,7 @@ public class Tower implements Clickable {
         TargetingComponent targetingComponent,
         DamagingComponent damagingComponent,
         IService<Integer, Float> unitDamageService,
+        IService<Pair<Integer, Integer>, Integer> heightService,
         TowerDetails towerDetails,
         TowerAdapter adapter,
         int towerType,
@@ -68,7 +70,7 @@ public class Tower implements Clickable {
         this.targetingComponent = targetingComponent;
         this.dmg = towerDetails.getAtk();
         this.cost = towerDetails.getPrice();
-        this.range = towerDetails.getRange();
+        this.range = towerDetails.getRange() + heightService.query(new Pair<Integer, Integer>((int) positionComponent.position.x, (int) positionComponent.position.y));
         this.towerType = towerType;
         this.highestBlockLocation = new Vector3(positionComponent.position).add(towerDetails.getHighestBlock().x, towerDetails.getHighestBlock().z, towerDetails.getHighestBlock().y);
         this.layout = towerDetails.getLayout();
