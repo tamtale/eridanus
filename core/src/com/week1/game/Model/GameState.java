@@ -57,6 +57,7 @@ public class GameState implements GameRenderable {
     private TowerSpawnSystem towerSpawnSystem;
 
     private IService<Integer, Float> unitDmgService;
+    IService<Pair<Integer, Integer>, Integer> heightService;
     private IService<Integer, PositionComponent> crystalService;
     private IService<Tuple3<Integer, Float, Float>, Void> buffPlayerMinionsService;
 
@@ -106,6 +107,14 @@ public class GameState implements GameRenderable {
         initDeathSystem();
         initTowerSpawnSystem();
         initAndSetServices();
+        this.heightService = new IService<Pair<Integer, Integer>, Integer>() {
+            @Override
+            public Integer query(Pair<Integer, Integer> key) {
+                int x = key.key;
+                int y = key.value;
+                return world.getHeight(x, y);
+            }
+        };
         targetingSystem.addSubscriber(damageSystem);
         targetingSystem.addSubscriber(damageRewardSystem);
         damageSystem.addSubscriber(deathSystem);
@@ -494,7 +503,6 @@ public class GameState implements GameRenderable {
     }
 
     public Tower addTower(int x, int y, int z, TowerDetails towerDetails, int playerID, int towerType) {
-        towerDetails.setRange(towerDetails.getRange() + world.getHeight(x, y));
         PositionComponent positionComponent = new PositionComponent((float) x, (float) y, (float) z);
         HealthComponent healthComponent = new HealthComponent((float) towerDetails.getHp(), (float) towerDetails.getHp());
         HealthComponent unfinishedHealthComponent = new HealthComponent((float) towerDetails.getHp(),1f, (float) towerDetails.getHp()/buildDelay);
@@ -535,11 +543,12 @@ public class GameState implements GameRenderable {
                 return false;
             }
         };
+
         Tower tower = new Tower(positionComponent, healthComponent, ownedComponent, visibleComponent, targetingComponent, damagingComponent,
-                unitDmgService, towerDetails, adapter, towerType, entityManager.newID());
+                unitDmgService, heightService, towerDetails, adapter, towerType, entityManager.newID());
         Tower unfinishedTower = new Tower(positionComponent, unfinishedHealthComponent, ownedComponent,
                 visibleComponent, targetingComponent, damagingComponent,
-                unitDmgService, unfinishedTowerDetails, adapter, towerType, entityManager.newID());
+                unitDmgService, heightService, unfinishedTowerDetails, adapter, towerType, entityManager.newID());
         damageSystem.addHealth(unfinishedTower.ID, unfinishedHealthComponent);
         damageSystem.addDamage(unfinishedTower.ID, damagingComponent);
         damageRewardSystem.addManaReward(unfinishedTower.ID, manaRewardComponent);
@@ -591,7 +600,7 @@ public class GameState implements GameRenderable {
             }
         };
         Tower base = new Tower(positionComponent, healthComponent, ownedComponent, visibleComponent, targetingComponent, damagingComponent,
-                unitDmgService, towerDetails, adapter, towerType, entityManager.newID());
+                unitDmgService, heightService, towerDetails, adapter, towerType, entityManager.newID());
         damageSystem.addHealth(base.ID, healthComponent);
         damageSystem.addDamage(base.ID, damagingComponent);
         damageRewardSystem.addManaReward(base.ID, manaRewardComponent);
