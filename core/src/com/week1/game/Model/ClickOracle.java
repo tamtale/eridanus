@@ -47,6 +47,9 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
     private Vector3 selectionLocationStart = new Vector3();
     private Vector3 selectionLocationEnd = new Vector3();
     private boolean dragging = false;
+    /* Current screen coordinates for easy access of closures.*/
+    private int curX;
+    private int curY;
 
     private List<Subscriber<SelectionEvent>> selectionSubscribers = new ArrayList<>();
 
@@ -140,27 +143,36 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
         return true;
     }
 
+    private ClickOracleCommand touchDownCommand = () -> selectionLocationStart.set(curX, Gdx.graphics.getHeight() - curY, 0);
+
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
         if (button != Input.Buttons.LEFT) return false;
-        selectionLocationStart.set(screenX, Gdx.graphics.getHeight() - screenY, 0);
+        curX = screenX;
+        curY = screenY;
+        touchDownCommand.execute();
         return false;
     }
 
-    @Override
-    public boolean touchDragged (int screenX, int screenY, int pointer) {
-        if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) return false;
-
+    /* Command to execute when the player drags with left mouse.*/
+    private ClickOracleCommand leftDragCommand = () -> {
         // The player must be alive to be able to register any clicks
         if (!adapter.isPlayerAlive()) {
             Gdx.app.debug("pjb3 - ClickOracle", "Player has already died. ignoring touchDragged");
-            return false;
+            return;
         }
-
         dragging = true;
-        passiveSelected.setHovered(false); 
-        selectionLocationEnd.set(screenX, Gdx.graphics.getHeight() - screenY, 0);
+        passiveSelected.setHovered(false);
+        selectionLocationEnd.set(curX, Gdx.graphics.getHeight() - curY, 0);
         Gdx.app.debug("ClickOracle - lji1", "Dragged: " + selectionLocationEnd.x + ", " + selectionLocationEnd.y);
+    };
+
+    @Override
+    public boolean touchDragged (int screenX, int screenY, int pointer) {
+        curX = screenX;
+        curY = screenY;
+        if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) return false;
+        leftDragCommand.execute();
         return false;
     }
 
@@ -494,6 +506,14 @@ public class ClickOracle extends InputAdapter implements Publisher<SelectionEven
     private void registerPair(int key, CommandPair pair) {
         keyDownCommands.put(key, pair.down);
         keyUpCommands.put(key, pair.up);
+    }
+
+    /* Disallow any player actions that shouldn't be possible after loss/game over.*/
+    public void stopInput() {
+        leftDragCommand = nullCommand;
+        touchDownCommand = nullCommand;
+        selectionVisitor = Clickable.ClickableVisitor.EMPTY;
+        spawnActionVisitor = Clickable.ClickableVisitor.EMPTY;
     }
 }
 

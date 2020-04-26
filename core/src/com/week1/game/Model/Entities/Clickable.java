@@ -42,6 +42,33 @@ public interface Clickable {
     T acceptCrystal(Crystal crystal);
     T acceptTower(Tower t);
     T acceptNull();
+    // A Visitor that does nothing.
+    ClickableVisitor<Void> EMPTY = new ClickableVisitor() {
+        @Override
+        public Void acceptUnit(Unit unit) {
+            return null;
+        }
+
+        @Override
+        public Void acceptBlock(ClickableBlock block) {
+            return null;
+        }
+
+        @Override
+        public Void acceptCrystal(Crystal crystal) {
+            return null;
+        }
+
+        @Override
+        public Void acceptTower(Tower t) {
+            return null;
+        }
+
+        @Override
+        public Void acceptNull() {
+            return null;
+        }
+    };
   }
 
   class ClickableBlock implements Clickable {
