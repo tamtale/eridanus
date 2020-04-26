@@ -8,9 +8,6 @@ import java.util.List;
 
 public class TowerPresets {
 
-//    private static TowerMaterials twrMat = new TowerMaterials();
-
-
     private static TowerDetails towerDetails1 = new TowerDetails(Arrays.asList(
             new BlockSpec(BlockType.ETHERITE, 0,0,0),
             new BlockSpec(BlockType.ETHERITE, 0, 0, 1),
@@ -29,20 +26,29 @@ public class TowerPresets {
             new BlockSpec(BlockType.WATER, 0,5,0),
             new BlockSpec(BlockType.FIRE, 0,6,0)), "Sniper");
 
-    //TODO -
     private static TowerDetails towerDetails3 = new TowerDetails(Arrays.asList(
             new BlockSpec(BlockType.ETHERITE, 0, 0, -1),
             new BlockSpec(BlockType.ETHERITE, 0, 0, 0),
-            new BlockSpec(BlockType.EARTH, 0, 0, 1),
-            new BlockSpec(BlockType.ETHERITE, -1, 0, -1),
-            new BlockSpec(BlockType.EARTH, -1, 0, 0),
-            new BlockSpec(BlockType.ETHERITE, -1, 0, 1),
-            new BlockSpec(BlockType.EARTH, 1, 0, -1),
+            new BlockSpec(BlockType.ETHERITE, 0, 0, 1),
+            new BlockSpec(BlockType.ETHERITE, 1, 0, -1),
             new BlockSpec(BlockType.ETHERITE, 1, 0, 0),
             new BlockSpec(BlockType.ETHERITE, 1, 0, 1),
-            new BlockSpec(BlockType.ETHERITE, 2, 0, -1),
-            new BlockSpec(BlockType.EARTH, 2, 0, 0),
-            new BlockSpec(BlockType.ETHERITE, 2, 0, 1)), "Spawner");
+            new BlockSpec(BlockType.ETHERITE, -1, 0, -1),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, -1, 0, 1),
+            new BlockSpec(BlockType.ETHERITE, 0, 1, -1),
+            new BlockSpec(BlockType.ETHERITE, 0, 1, 0),
+            new BlockSpec(BlockType.ETHERITE, 0, 1, 1),
+            new BlockSpec(BlockType.ETHERITE, 1, 1, -1),
+            new BlockSpec(BlockType.ETHERITE, 1, 1, 0),
+            new BlockSpec(BlockType.ETHERITE, 1, 1, 1),
+            new BlockSpec(BlockType.ETHERITE, -1, 1, -1),
+            new BlockSpec(BlockType.ETHERITE, -1, 1, 0),
+            new BlockSpec(BlockType.ETHERITE, -1, 1, 1),
+            new BlockSpec(BlockType.EARTH, 1, 2, 1),
+            new BlockSpec(BlockType.EARTH, -1, 2, -1),
+            new BlockSpec(BlockType.NOVACORE, -1, 2, 1),
+            new BlockSpec(BlockType.NOVACORE, 1, 2, -1)), "Tank");
 
     private static TowerDetails towerDetails4 = new TowerDetails(Arrays.asList(
             new BlockSpec(BlockType.NOVACORE, 0, 2, 0),
@@ -76,26 +82,10 @@ public class TowerPresets {
             new BlockSpec(BlockType.FIRE, 0, 3, 0),
             new BlockSpec(BlockType.FIRE, 0, 4, 0)), "Balanced boi");
 
-    //TODO - change to be buff
     private static TowerDetails towerDetails6 = new TowerDetails(Arrays.asList(
-            new BlockSpec(BlockType.ETHERITE, 0, 0, -1),
-            new BlockSpec(BlockType.ETHERITE, -1, 0, -1),
-            new BlockSpec(BlockType.ETHERITE, 0, 0, 0),
-            new BlockSpec(BlockType.ETHERITE, -1, 0, 0),
-            new BlockSpec(BlockType.ETHERITE, 0, 0, 1),
-            new BlockSpec(BlockType.ETHERITE, -1, 0, 1),
-            new BlockSpec(BlockType.FIRE, 0, 1, -1),
-            new BlockSpec(BlockType.NOVACORE, -1, 1, -1),
-            new BlockSpec(BlockType.WATER, 0, 1, 0),
-            new BlockSpec(BlockType.WATER, -1, 1, 0),
-            new BlockSpec(BlockType.NOVACORE, 0, 1, 1),
-            new BlockSpec(BlockType.FIRE, -1, 1, 1),
-            new BlockSpec(BlockType.KUIPERIUM, 0, 2, -1),
-            new BlockSpec(BlockType.KUIPERIUM, -1, 2, -1),
-            new BlockSpec(BlockType.KUIPERIUM, 0, 2, 0),
-            new BlockSpec(BlockType.KUIPERIUM, -1, 2, 0),
-            new BlockSpec(BlockType.KUIPERIUM, 0, 2, 1),
-            new BlockSpec(BlockType.KUIPERIUM, -1, 2, 1)), "Tank");
+            new BlockSpec(BlockType.SPAWNER, 0, 0, 0),
+            new BlockSpec(BlockType.ETHERITE, 0, 1, 0),
+            new BlockSpec(BlockType.WATER, 0, 2, 0)), "Spawner");
 
 
     public static TowerDetails highlightGround = new TowerDetails(Arrays.asList(new BlockSpec(BlockType.GROUND_HIGHLIGHT, -2, -1, 0),
