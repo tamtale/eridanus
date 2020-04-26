@@ -605,7 +605,12 @@ public class GameWorld implements GameRenderable {
             batch.render(chunkedModelCaches[i], env);
         }
 
-        batch.end();
+        try {
+            batch.end();
+        } catch (Exception e) {
+            e.printStackTrace();
+            batch.end();
+        }
     }
 
     public int getHeight(int i, int j) {

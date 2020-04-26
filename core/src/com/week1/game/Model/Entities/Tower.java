@@ -30,7 +30,7 @@ public class Tower implements Clickable {
     }
 
     public int ID;
-    private static final Random r = new Random(123456789);
+    private final Random r = new Random(123456789);
     private PositionComponent positionComponent;
     private HealthComponent healthComponent;
     private OwnedComponent ownedComponent;
