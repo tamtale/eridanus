@@ -47,8 +47,8 @@ public class TowerPresets {
             new BlockSpec(BlockType.ETHERITE, -1, 1, 1),
             new BlockSpec(BlockType.EARTH, 1, 2, 1),
             new BlockSpec(BlockType.EARTH, -1, 2, -1),
-            new BlockSpec(BlockType.NOVACORE, -1, 2, 1),
-            new BlockSpec(BlockType.NOVACORE, 1, 2, -1)), "Tank");
+            new BlockSpec(BlockType.KUIPERIUM, -1, 2, 1),
+            new BlockSpec(BlockType.KUIPERIUM, 1, 2, -1)), "Tank");
 
     private static TowerDetails towerDetails4 = new TowerDetails(Arrays.asList(
             new BlockSpec(BlockType.NOVACORE, 0, 2, 0),
