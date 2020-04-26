@@ -66,6 +66,7 @@ public class GameScreen implements Screen {
 			@Override
 			public void endGame(int winOrLoss) {
 				renderer.endGame(winOrLoss);
+				clickOracle.stopInput();
 			}
 
 			@Override
