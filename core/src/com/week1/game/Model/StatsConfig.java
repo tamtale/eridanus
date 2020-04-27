@@ -3,6 +3,8 @@ package com.week1.game.Model;
 public class StatsConfig {
     static final int PLAYERNOTASSIGNED = -1;
 
+    public static boolean doLog = false;
+
     static final double startingMana = 1000;
     public static final double manaRegenRate = 5;
     static public final double towerDestructionBonus = 0.5; // This will be multiplies by the cost of the tower to determine bonus mana.

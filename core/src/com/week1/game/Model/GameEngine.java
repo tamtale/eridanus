@@ -18,6 +18,8 @@ import java.io.*;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
+import static com.week1.game.Model.StatsConfig.doLog;
+
 public class GameEngine implements GameRenderable {
 
     private GameState gameState;
@@ -54,26 +56,33 @@ public class GameEngine implements GameRenderable {
                     if (PREFS.getBoolean("visualTargeting")) {
                         adapter.subscribeSelection(gameState.getSelectionSubscriber());
                     }
+
+                    if (!PREFS.contains("doLog")) {
+                        PREFS.putBoolean("doLog", false);
+                        PREFS.flush();
+                    }
+                    doLog = PREFS.getBoolean("doLog");
+                    // Initialize and truncate the log file for the engine and Error log.
+                    if (doLog) {
+                        try {
+                            File logFile = Gdx.files.local("logs/STATE-ERROR-LOG.txt").file();
+                            FileChannel outChan = new FileOutputStream(logFile, true).getChannel();
+                            outChan.truncate(0);
+
+                            logFile = Gdx.files.local("logs/LOCAL-SYNC-STATE-LOG.txt").file();
+                            writer = new BufferedWriter(new FileWriter(logFile, true));
+                            outChan = new FileOutputStream(logFile, true).getChannel();
+                            outChan.truncate(0);
+                            writer.flush();
+                        } catch (IOException e) {
+                            Gdx.app.error("GameEngine", "UNABLE TO CREATE LOG FILES");
+                        }
+                    }
                 },
                 adapter.getPlayerInfo(),
                 playerId);
         Gdx.app.log("wab2- GameEngine", "gameState built");
         this.util = util;
-
-        // Initialize and truncate the log file for the engine and Error log.
-        try {
-            File logFile = Gdx.files.local("logs/STATE-ERROR-LOG.txt").file();
-            FileChannel outChan = new FileOutputStream(logFile, true).getChannel();
-            outChan.truncate(0);
-
-            logFile = Gdx.files.local("logs/LOCAL-SYNC-STATE-LOG.txt").file();
-            writer = new BufferedWriter(new FileWriter(logFile, true));
-            outChan = new FileOutputStream(logFile, true).getChannel();
-            outChan.truncate(0);
-            writer.flush();
-        } catch (IOException e) {
-            Gdx.app.error("GameEngine", "UNABLE TO CREATE LOG FILES");
-        }
     }
 
     public void receiveMessages(List<? extends GameMessage> messages) {
@@ -83,13 +92,15 @@ public class GameEngine implements GameRenderable {
             adapter.sendMessage(new CheckSyncMessage(enginePlayerId, MessageType.CHECKSYNC, getGameStateHash(), communicationTurn));
 
             // Log the state to the file
-            if (writer != null) {
-                try {
-                    String newContent = "Turn: " + communicationTurn + " hash: " + getGameStateHash() + " String: " + getGameStateString() + "\n";
-                    writer.append(newContent);
-                    writer.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
+            if (doLog) {
+                if (writer != null) {
+                    try {
+                        String newContent = "Turn: " + communicationTurn + " hash: " + getGameStateHash() + " String: " + getGameStateString() + "\n";
+                        writer.append(newContent);
+                        writer.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

@@ -39,7 +39,7 @@ public class NetworkUtils {
                     if (addr instanceof Inet6Address) continue;
 
                     // try all the ports from 8000 to 9000, in case some of them are being used
-                    for (int i = 8000; i < 8050; i++) {
+                    for (int i = 8000; i < 8005; i++) {
                         try (SocketChannel socket = SocketChannel.open()) {
                             socket.socket().setSoTimeout(3000);
                             socket.bind(new InetSocketAddress(addr, i));
@@ -62,7 +62,8 @@ public class NetworkUtils {
         } 
         
         Gdx.app.error(TAG, "Unable to obtain valid ip address.");
-        return "failure to obtain ip address - see NetworkUtils";
+        NetworkUtils.addr = "Check ipConfig";
+        return NetworkUtils.addr;
     }
 
     /**
