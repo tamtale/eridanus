@@ -39,12 +39,13 @@ public class RenderNametagComponent {
             requiredWidth += bmfData.getGlyph(str.charAt(i)).width;
         }
 
+        // Colors are on a scale from 0 - 1.0
+        // for alpha, 1 is completely dark, 0 is clear
+        
         // Initialize the map
         int mapHeight = 20;
         Pixmap map = new Pixmap(requiredWidth, mapHeight, Pixmap.Format.RGBA8888);
-        map.setColor(c.r, c.g, c.b, 100);
-//        map.setColor(100, 0,0,100); // tint the background
-//        map.setColor(0,0,0,255);
+        map.setColor(0f,0f,0f,0f); // clear background
         map.fill();
 
         // Draw the characters on the pixmap
@@ -55,38 +56,21 @@ public class RenderNametagComponent {
             cursorLocation += letter.width;
         }
 
-        
-        
-//        Map<Integer, Integer> colorsMap = new HashMap<>();
-//        
-////        int c = Color.GREEN.toIntBits();
-//        map.setColor(Color.GREEN);
-//      // print out all the pixels
-//        for (int i = 0; i < map.getWidth(); i++) {
-//            for (int j = 0; j < map.getHeight(); j++) {
-//
-//                int color = map.getPixel(i,j);
-//                if (colorsMap.get(color) != null) {
-//                    colorsMap.put(color, colorsMap.get(color) + 1);
-//                } else {
-//                    colorsMap.put(color, 1);
-//                }
-//                
-////                System.out.println("Color: " + map.getPixel(i, j));
-//               int origColor = map.getPixel(i,j);
-//                // 65025, 845
-//                if (origColor == -1 || origColor == -1633771571 || origColor == -33685888) {
-//                    System.out.println("Changing color");
-//                    map.drawPixel(i,j);
-//                }
-//            }
-//        }
-//        
-//        colorsMap.forEach((color, numColor) -> {
-//            if (numColor > 10) {
-//                System.out.println("Color: " + color + " : " + numColor);
-//            }
-//        });
+        for (int i = 0; i < map.getWidth(); i++) {
+            for (int j = 0; j < map.getHeight(); j++) {
+
+                // Determine the value of the original shade
+                int origColor = map.getPixel(i,j);
+                Color originalColor = new Color(origColor);
+                float avgIntensity = (originalColor.r + originalColor.g + originalColor.b) / 3f;
+
+                // Make a tinted color that will match the value of the original shade
+                Color newC = new Color(c.r * avgIntensity, c.g * avgIntensity, c.b * avgIntensity, originalColor.a);
+                map.setColor(newC);
+
+                map.drawPixel(i,j);
+            }
+        }
 
         Texture textTexture = new Texture(map);
         TextureRegion textTextureRegion = new TextureRegion(textTexture);
