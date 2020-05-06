@@ -15,6 +15,7 @@ import com.week1.game.Model.Entities.*;
 import com.week1.game.Model.Events.SelectionEvent;
 import com.week1.game.Model.Systems.*;
 import com.week1.game.Model.World.*;
+import com.week1.game.Networking.Messages.Game.CreateMinionMessage;
 import com.week1.game.Networking.Messages.Game.TargetMessage;
 import com.week1.game.Pair;
 import com.week1.game.Renderer.GameRenderable;
@@ -25,9 +26,11 @@ import com.week1.game.TowerBuilder.TowerDetails;
 import com.week1.game.Tuple3;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.week1.game.MenuScreens.GameScreen.THRESHOLD;
+import static com.week1.game.Model.Components.TargetingComponent.P_MINIONS;
 import static com.week1.game.Model.StatsConfig.*;
 
 public class GameState implements GameRenderable {
@@ -53,6 +56,7 @@ public class GameState implements GameRenderable {
     private DamageRewardSystem damageRewardSystem = new DamageRewardSystem();
     private HealthRenderSystem healthRenderSystem = new HealthRenderSystem();
     private HealthGrowthSystem healthGrowthSystem = new HealthGrowthSystem();
+    private UpgradeSystem upgradeSystem = new UpgradeSystem();
     private FogSystem fogSystem = new FogSystem();
     private TowerSpawnSystem towerSpawnSystem;
 
@@ -65,7 +69,10 @@ public class GameState implements GameRenderable {
     private Array<Unit> units = new Array<>();
     private Array<Tower> towers = new Array<>();
     private IntSet unfinishedTowerSet = new IntSet();
+    private IntSet crystalIDs = new IntSet();
     private IntMap<Tower> playerBases = new IntMap<>();
+    private HashMap<String, UpgradeComponent> upgrades = new HashMap<>();
+
     private Array<PlayerEntity> players = new Array<>();
     private OwnedComponent noOwn = new OwnedComponent(-1);
     private TowerLoadouts towerLoadouts;
@@ -85,6 +92,7 @@ public class GameState implements GameRenderable {
         this.localPlayerID = localPlayerID;
         // TODO tower types in memory after exchange
         // Create player entities
+        initUpgrades();
         for (int playerId = 0; playerId < playerInfo.size(); playerId++) {
             PlayerInfo info = playerInfo.get(playerId);
             addPlayer(playerId, info.getPlayerName(), info.getFaction());
@@ -106,6 +114,8 @@ public class GameState implements GameRenderable {
         initCrystalRespawnSystem();
         initDeathSystem();
         initTowerSpawnSystem();
+        initDamageSystem();
+
         initAndSetServices();
         this.heightService = new IService<Pair<Integer, Integer>, Integer>() {
             @Override
@@ -123,6 +133,7 @@ public class GameState implements GameRenderable {
         damageSystem.addSubscriber(crystalRespawnSystem);
         this.postInit = postInit;
     }
+
 
     /*
      * Targeting system uses a service that (currently) needs intimate access to the gamestate,
@@ -305,6 +316,79 @@ public class GameState implements GameRenderable {
         );
     }
 
+    private void initDamageSystem(){
+        damageSystem.setIsCrystalService(new IService<Integer, Boolean>() {
+            @Override
+            public Boolean query(Integer key) {
+                return crystalIDs.contains(key);
+            }
+        });
+    }
+
+    private void initUpgrades() {
+        int fogID = entityManager.newID();
+        UpgradeComponent water =  new UpgradeComponent(1500, 25, key -> {
+            if (key == localPlayerID) {
+                fogSystem.addSeer(fogID, new PositionComponent(0, 0, 0), new TargetingComponent(0, 200, false, TargetingComponent.TargetingStrategy.ENEMY, P_MINIONS));
+            }
+            return null;
+        }, key -> {
+            fogSystem.remove(fogID);
+            return null;
+        });
+        UpgradeComponent air = new UpgradeComponent(2000, 400, new IService<Integer, Void>() {
+            @Override
+            public Void query(Integer key) {
+                manaRegenSystem.getMana(key).regenRate *= 5;
+
+                return null;
+            }
+        }, key -> {
+            manaRegenSystem.getMana(key).regenRate /= 5;
+
+            return null;
+        });
+
+        UpgradeComponent earth = new UpgradeComponent(2000, 200, new IService<Integer, Void>() {
+
+            @Override
+            public Void query(Integer key) {
+                for(Tower tower: towers){
+                    if (tower.getOwnedComponent().playerID == key){
+                        tower.getDamagingComponent().baseDamage *= 2;
+                    }
+                }
+                return null;
+            }
+        }, key -> {
+            for(Tower tower: towers){
+                if (tower.getOwnedComponent().playerID == key){
+                    tower.getDamagingComponent().baseDamage /= 2;
+                }
+            }
+            return null;
+        });
+        UpgradeComponent fire = new UpgradeComponent(3000, 150, new IService<Integer, Void>(){
+            @Override
+            public Void query(Integer key) {
+                damageSystem.baseDamage(key, 3);
+                return null;
+            }
+        }, key -> {
+            damageSystem.baseDamage(false);
+            return null;
+        });
+
+        upgrades.put("White", air);
+        upgrades.put("Air", air);
+        upgrades.put("Earth", earth);
+        upgrades.put("Green", earth);
+        upgrades.put("Water", water);
+        upgrades.put("Blue", water);
+        upgrades.put("Fire", fire);
+        upgrades.put("Red", fire);
+
+    }
     public void synchronousUpdateState(int communicationTurn) {
         fogSystem.update(THRESHOLD);
         manaRegenSystem.update(THRESHOLD);
@@ -321,6 +405,7 @@ public class GameState implements GameRenderable {
         deathSystem.update(THRESHOLD);
         healthGrowthSystem.update(THRESHOLD);
         towerSpawnSystem.update(THRESHOLD);
+        upgradeSystem.update(THRESHOLD);
         doTowerSpecialAbilities(communicationTurn);
     }
 
@@ -429,11 +514,14 @@ public class GameState implements GameRenderable {
         NameComponent nameComponent = new NameComponent(name);
         CrystalCounterComponent crystalCounterComponent = new CrystalCounterComponent();
         PlayerStatsComponent playerStatsComponent = new PlayerStatsComponent();
+        damageSystem.addUpgrade(playerID, upgrades.get(faction));
         ColorComponent colorComponent = new ColorComponent(UnitLoader.NAMES_TO_COLORS.get(faction));
         
         PlayerEntity player = new PlayerEntity(ownedComponent, manaComponent, nameComponent, colorComponent, crystalCounterComponent, playerStatsComponent);
         players.add(player);
-        
+        UpgradeComponent upgradeComponent = upgrades.get(faction);
+        upgradeSystem.addUpgradeComponent(playerID, upgradeComponent);
+
         // Register with manaRegenSystem so that the player's mana will regenerate over time.
         manaRegenSystem.addMana(player.getPlayerID(), manaComponent);
         
@@ -465,6 +553,7 @@ public class GameState implements GameRenderable {
         renderSystem.addNode(c.ID, renderComponent, positionComponent, visibleComponent, VelocityComponent.ZERO);
         fogSystem.addSeen(c.ID, positionComponent, visibleComponent);
         targetingSystem.addPosition(c.ID, positionComponent);
+        crystalIDs.add(c.ID);
     }
 
     public Unit addUnit(float x, float y, float z, int playerID){
@@ -490,6 +579,7 @@ public class GameState implements GameRenderable {
         targetingSystem.addPosition(u.ID, positionComponent);
         damageSystem.addHealth(u.ID, healthComponent);
         damageSystem.addDamage(u.ID, damagingComponent);
+
         damageRewardSystem.addManaReward(u.ID, manaRewardComponent);
         damageRewardSystem.addDamage(u.ID, damagingComponent);
         deathRewardSystem.addManaReward(u.ID, manaRewardComponent);

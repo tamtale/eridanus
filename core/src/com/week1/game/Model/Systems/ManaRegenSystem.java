@@ -15,7 +15,7 @@ public class ManaRegenSystem implements ISystem {
     @Override
     public void update(float delta) {
         manaComponents.values().forEach((manaComponent) -> {
-            manaComponent.mana += manaRegenRate * delta;
+            manaComponent.mana += manaComponent.regenRate * delta;
         });
     }
 
@@ -29,5 +29,9 @@ public class ManaRegenSystem implements ISystem {
 
     public void addMana(int playerID, ManaComponent manaComponent) {
         manaComponents.put(playerID, manaComponent);
+    }
+
+    public ManaComponent getMana(int playerID) {
+        return manaComponents.get(playerID);
     }
 }
